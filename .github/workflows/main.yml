@@ -2,9 +2,9 @@ name: main
 
 on:
   pull_request:
-    branches:
-    - main
-    
+    branches: [main]
+  push:
+    branches: [main]
     
 jobs:
   build:
@@ -19,27 +19,21 @@ jobs:
           node-version: 16.x
 
       - name: Run install
-        uses: borales/actions-yarn@v4
+        uses: Borales/actions-yarn@v4.2.0
         with:
-          cmd: install # will run `yarn install` command
+          cmd: install 
           
       - name: Test the app
-        uses: borales/actions-yarn@v4
+        uses: Borales/actions-yarn@v4.2.0
         with:
           cmd: test 
           
       - name: Check types
-        uses: borales/actions/yarn@v4
+        uses: Borales/actions-yarn@v4.2.0
         with:
           cmd: check-types
-          
-      - name: Run test 
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: test
-          dir: 'frontend' 
         
       - name: Build production bundle
-        uses: borales/actions-yarn@v4
+        uses: Borales/actions-yarn@v4.2.0
         with:
           cmd: build 

@@ -14,7 +14,7 @@
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
     "check-types": "tsc --noEmit --pretty && tsc --project cypress --noEmit --pretty",
     "test": "jest",
-    "commit": "cz",
+    "commit": "yarn test && cz",
     "cypress": "cypress open",
     "cypress:headless": "cypress run",
     "e2e": "start-server-and-test dev http://localhost:3003 cypress",
@@ -22,11 +22,11 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@polkadot/api": "^9.11.1",
     "next": "^13.1.1",
     "next-seo": "^5.15.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "semantic-release": "^20.0.2"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",

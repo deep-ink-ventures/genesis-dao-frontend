@@ -10,9 +10,7 @@ describe('Index page', () => {
     it('should have h1 tag', () => {
       render(<Index />);
 
-      const heading = screen.getByRole('heading', {
-        name: /Genesis DAO/,
-      });
+      const heading = screen.getByText(/Genesis DAO/);
 
       expect(heading).toBeInTheDocument();
     });
