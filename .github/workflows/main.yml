@@ -32,12 +32,6 @@ jobs:
         uses: Borales/actions-yarn@v4.2.0
         with:
           cmd: check-types
-          
-      - name: Run test 
-        uses: Borales/actions-yarn@v4.2.0
-        with:
-          cmd: test
-          dir: 'frontend' 
         
       - name: Build production bundle
         uses: Borales/actions-yarn@v4.2.0
