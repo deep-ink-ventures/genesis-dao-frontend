@@ -41,5 +41,20 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  // add daisyUI plugin
+  // disable esline because it will give Error: Unexpected require()
+  /* eslint-disable */
+  plugins: [require('daisyui')],
+
+  // daisyUI config (optional)
+  daisyui: {
+    styled: true,
+    themes: true,
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
+    prefix: '',
+    darkTheme: 'night',
+  },
 };
