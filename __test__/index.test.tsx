@@ -7,12 +7,12 @@ import Index from '@/pages/index';
 
 describe('Index page', () => {
   describe('Render method', () => {
-    it('should have h1 tag', () => {
+    it('should have Genesis Dao text', () => {
       render(<Index />);
 
-      const heading = screen.getByText(/Genesis DAO/);
+      const texts = screen.getAllByText(/Genesis DAO/);
 
-      expect(heading).toBeInTheDocument();
+      expect(texts[0]).toBeDefined();
     });
   });
 });

@@ -1,9 +1,9 @@
 import { Meta } from '@/components/Meta';
-import { Main } from '@/templates/Main';
+import MainLayout from '@/templates/MainLayout';
 
 const Index = () => {
   return (
-    <Main
+    <MainLayout
       meta={
         <Meta
           title='GenesisDAO'
@@ -12,7 +12,8 @@ const Index = () => {
         />
       }>
       <h1>Genesis DAO</h1>
-    </Main>
+      <div>eric</div>
+    </MainLayout>
   );
 };
 

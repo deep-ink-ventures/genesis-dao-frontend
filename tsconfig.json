@@ -10,7 +10,7 @@
     "alwaysStrict": true,
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
-
+    "useUnknownInCatchVariables": false,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
