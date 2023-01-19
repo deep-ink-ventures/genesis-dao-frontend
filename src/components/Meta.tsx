@@ -6,7 +6,7 @@ type IMetaProps = {
   title: string;
   description: string;
   canonical?: string;
-  siteName: string;
+  siteName?: string;
 };
 
 const Meta = (props: IMetaProps) => {
@@ -23,21 +23,21 @@ const Meta = (props: IMetaProps) => {
         />
         <link
           rel='apple-touch-icon'
-          href={`${router.basePath}/apple-touch-icon.png`}
+          href={`${router.basePath}/images/apple-touch-icon.png`}
           key='apple'
         />
         <link
           rel='icon'
           type='image/png'
           sizes='32x32'
-          href={`${router.basePath}/favicon-32x32.png`}
+          href={`${router.basePath}/images/favicon-32x32.png`}
           key='icon32'
         />
         <link
           rel='icon'
           type='image/png'
           sizes='16x16'
-          href={`${router.basePath}/favicon-16x16.png`}
+          href={`${router.basePath}/images/favicon-16x16.png`}
           key='icon16'
         />
         <link
@@ -54,7 +54,7 @@ const Meta = (props: IMetaProps) => {
           title: props.title,
           description: props.description,
           url: props.canonical,
-          site_name: props.siteName,
+          site_name: props.siteName ? props.siteName : 'GenesisDAO',
         }}
       />
     </>
