@@ -1,24 +1,83 @@
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --talisman-connect-modal-background: #1E293B;
   --talisman-connect-modal-foreground: #F1F5F9;
   --talisman-connect-control-background: #334155;
   --talisman-connect-active-background: #475569;
+  --tw-color-primary-50: 239 246 255;
+  --tw-color-primary-100: 219 234 254;
+  --tw-color-primary-200: 191 219 254;
+  --tw-color-primary-300: 147 197 253;
+  --tw-color-primary-400: 96 165 250;
+  --tw-color-primary-500: 59 130 246;
+  --tw-color-primary-600: 37 99 235;
+  --tw-color-primary-700: 29 78 216;
+  --tw-color-primary-800: 30 64 175;
+  --tw-color-primary-900: 30 58 138;
+  --color-primary-50: rgb(var(--tw-color-primary-50)); /* #eff6ff */
+  --color-primary-100: rgb(var(--tw-color-primary-100)); /* #dbeafe */
+  --color-primary-200: rgb(var(--tw-color-primary-200)); /* #bfdbfe */
+  --color-primary-300: rgb(var(--tw-color-primary-300)); /* #93c5fd */
+  --color-primary-400: rgb(var(--tw-color-primary-400)); /* #60a5fa */
+  --color-primary-500: rgb(var(--tw-color-primary-500)); /* #3b82f6 */
+  --color-primary-600: rgb(var(--tw-color-primary-600)); /* #2563eb */
+  --color-primary-700: rgb(var(--tw-color-primary-700)); /* #1d4ed8 */
+  --color-primary-800: rgb(var(--tw-color-primary-800)); /* #1e40af */
+  --color-primary-900: rgb(var(--tw-color-primary-900)); /* #1e3a8a */
+  
+}
+
+@Layer base {
+  html {
+    font-size: 18px;
+    font-family: Inter;
+  }
+   /* inter var - latin */
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: optional;
+    src: url('/fonts/inter-var-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+      U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+      U+2215, U+FEFF, U+FFFD;
+  }
+
+
+  h1,
+  .h1 {
+    @apply text-3xl font-bold md:text-4xl;
+  }
+
+  h2,
+  .h2 {
+    @apply  text-2xl font-bold md:text-3xl;
+  }
+
+  h3,
+  .h3 {
+    @apply text-xl font-bold md:text-2xl;
+  }
+
+  h4,
+  .h4 {
+    @apply text-base font-bold md:text-lg;
+  }
+
+  a {
+    @apply text-blue-700;
+  }
+
+  a:hover {
+    @apply border-b-2 border-blue-700;
+  }
 
 }
 
-a {
-  @apply text-blue-700;
-}
-
-a:hover {
-  @apply border-b-2 border-blue-700;
-}
-
-@tailwind components;
-
-@tailwind utilities;
 
 .content p {
   @apply my-6;
