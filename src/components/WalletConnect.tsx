@@ -1,68 +1,85 @@
+import { WalletSelect } from '@talismn/connect-components';
 import type { WalletAccount } from '@talismn/connect-wallets';
-import { getWallets } from '@talismn/connect-wallets';
 import { useEffect, useState } from 'react';
 
-function WalletConnect() {
-  const [connected, setConnected] = useState(false);
+import useGenesisStore from '@/stores/genesisStore';
+
+import { truncateMiddle } from '../utils/utils';
+
+const WalletConnect = () => {
+  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const walletConnected = useGenesisStore((s) => s.walletConnected);
+  const updateCurrentWalletAccount = useGenesisStore(
+    (s) => s.updateCurrentWalletAccount
+  );
+  const updateWalletConected = useGenesisStore((s) => s.updateWalletConnected);
+
   // @ts-ignore
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [account, setAccount] = useState<WalletAccount | undefined>(undefined);
 
   const handleDisconnect = () => {
-    setAccount(undefined);
-    setConnected(false);
-    console.log('Disconnect');
+    updateCurrentWalletAccount(undefined);
+    updateWalletConected(false);
   };
-  const handleConnect = async () => {
-    if (!connected) {
-      // check all the install wallet from window.injectedweb3
-      const installedWallets = getWallets().filter(
-        (wallet) => wallet.installed
-      );
-      // get talisman from the array of installed wallets
-      const talismanWallet = installedWallets.find(
-        (wallet) => wallet.extensionName === 'talisman'
-      );
-      if (talismanWallet as any) {
-        try {
-          await talismanWallet?.enable('genesisdao');
-          const unsub = await talismanWallet?.subscribeAccounts(
-            (accounts?: WalletAccount[]) => {
-              if (accounts && accounts.length > 0 && accounts[0] !== null) {
-                // only get the first account for now
-                setAccount(accounts[0]);
-                setConnected(true);
-                console.log('Accounts:', accounts);
-              } else {
-                console.log('Unable to get accounts');
-              }
-            }
-          );
-          console.log('unsub', unsub);
-        } catch (err) {
-          console.log(talismanWallet?.transformError(err));
-        }
-      }
-    } else {
-      handleDisconnect();
+
+  const handleModal = () => {
+    setModalIsOpen(!modalIsOpen);
+  };
+
+  const handleUpdateAccounts = (accounts: WalletAccount[] | undefined) => {
+    if (accounts && accounts?.length > 0) {
+      updateCurrentWalletAccount(accounts[0]);
+      updateWalletConected(true);
     }
   };
 
-  useEffect(() => {
-    console.log('Connected?', connected);
-  });
+  useEffect(() => {}, [currentWalletAccount, walletConnected]);
 
   return (
     <div>
       <div>
-        <button className='btn-primary btn' onClick={handleConnect}>
-          {!connected ? 'Connect' : 'Disconnect'}
-        </button>
+        <div>
+          <button
+            tabIndex={0}
+            className={`btn m-1 ${
+              !walletConnected
+                ? 'btn-primary'
+                : 'hover:bg-red-400 hover:text-zinc-800'
+            }`}
+            onClick={!walletConnected ? handleModal : handleDisconnect}>
+            <span>
+              {!walletConnected
+                ? 'Connect'
+                : `Disconnect from ${truncateMiddle(
+                    currentWalletAccount?.address,
+                    5,
+                    4
+                  )}`}
+            </span>
+          </button>
+        </div>
+
+        <WalletSelect
+          dappName='genesis'
+          open={!!modalIsOpen}
+          showAccountsList={false}
+          header={<h3>Select a wallet to connect</h3>}
+          onWalletConnectOpen={() => {
+            setModalIsOpen(true);
+          }}
+          onWalletConnectClose={() => {
+            setModalIsOpen(false);
+          }}
+          onUpdatedAccounts={(accounts) => {
+            handleUpdateAccounts(accounts);
+          }}
+          onError={(error) => {
+            if (error) console.log(error);
+          }} // will handle errors later
+        />
       </div>
-      <div>{connected && account !== undefined && account.address}</div>
-      <div>Sign message button here</div>
     </div>
   );
-}
+};
 
 export default WalletConnect;

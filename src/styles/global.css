@@ -1,5 +1,13 @@
 @tailwind base;
 
+:root {
+  --talisman-connect-modal-background: #1E293B;
+  --talisman-connect-modal-foreground: #F1F5F9;
+  --talisman-connect-control-background: #334155;
+  --talisman-connect-active-background: #475569;
+
+}
+
 a {
   @apply text-blue-700;
 }
@@ -19,3 +27,4 @@ a:hover {
 .content ul {
   @apply my-6;
 }
+
