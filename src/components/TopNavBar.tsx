@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const links = [
+export const pageLinks = [
   { href: '/', label: 'Home' },
   { href: '/explore', label: 'Explore' },
   { href: '/create', label: 'Create DAO' },
@@ -11,7 +11,7 @@ const TopNavBar = () => {
   return (
     <>
       <ul className='flex flex-wrap text-xl'>
-        {links.map((link) => {
+        {pageLinks.map((link) => {
           return (
             <li className='mr-6' key={link.href}>
               <Link

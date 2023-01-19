@@ -1,4 +1,6 @@
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --talisman-connect-modal-background: #1E293B;
@@ -28,10 +30,11 @@
   
 }
 
-html {
-  font-size: 16px;
-}
-@Layer base{
+@Layer base {
+  html {
+    font-size: 18px;
+    font-family: Inter;
+  }
    /* inter var - latin */
   @font-face {
     font-family: 'Inter';
@@ -44,24 +47,25 @@ html {
       U+2215, U+FEFF, U+FFFD;
   }
 
+
   h1,
   .h1 {
-    @apply font-primary text-2xl font-bold md:text-4xl;
+    @apply text-3xl font-bold md:text-4xl;
   }
 
   h2,
   .h2 {
-    @apply font-primary text-xl font-bold md:text-3xl;
+    @apply  text-2xl font-bold md:text-3xl;
   }
 
   h3,
   .h3 {
-    @apply font-primary text-lg font-bold md:text-2xl;
+    @apply text-xl font-bold md:text-2xl;
   }
 
   h4,
   .h4 {
-    @apply font-primary text-base font-bold md:text-lg;
+    @apply text-base font-bold md:text-lg;
   }
 
   a {
@@ -74,9 +78,6 @@ html {
 
 }
 
-@tailwind components;
-
-@tailwind utilities;
 
 .content p {
   @apply my-6;
