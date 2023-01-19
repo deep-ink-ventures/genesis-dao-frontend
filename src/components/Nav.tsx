@@ -1,3 +1,3 @@
-function Nav() {}
+const Nav = () => {};
 
 export default Nav;
