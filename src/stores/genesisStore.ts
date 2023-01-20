@@ -1,3 +1,5 @@
+import type { Signer as InjectedSigner } from '@polkadot/api/types';
+import type { u128 } from '@polkadot/types';
 import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
 
@@ -6,12 +8,17 @@ export interface CreateDaoData {
   daoName: string;
 }
 
+export interface IssueTokenData {
+  daoId: string;
+  supply: u128;
+}
+
 export interface WalletAccount {
   address: string;
   source: string;
   name?: string;
   wallet?: Wallet;
-  signer?: unknown;
+  signer: InjectedSigner;
 }
 
 export interface GenesisState {
@@ -19,6 +26,7 @@ export interface GenesisState {
   walletAccounts: WalletAccount[] | undefined;
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
+  rpcEndpoint: string;
 }
 
 export interface GenesisActions {
@@ -28,6 +36,7 @@ export interface GenesisActions {
   updateWalletAccounts: (walletAccounts: WalletAccount[] | undefined) => void;
   updateWalletConnected: (walletConnected: boolean) => void;
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
+  updateRpcEndpoint: (rpcEndPoint: string) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -37,11 +46,16 @@ const useGenesisStore = create<GenesisStore>()((set) => ({
   walletAccounts: undefined,
   walletConnected: false,
   createDaoData: null,
+  rpcEndpoint: 'ws://127.0.0.1:9944',
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
   updateWalletConnected: (walletConnected) => set(() => ({ walletConnected })),
   updateCreateDaoData: (createDaoData) => set(() => ({ createDaoData })),
+  updateRpcEndpoint: (rpcEndpoint) =>
+    set(() => ({
+      rpcEndpoint,
+    })),
 }));
 
 export default useGenesisStore;

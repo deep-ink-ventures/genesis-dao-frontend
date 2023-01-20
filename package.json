@@ -22,6 +22,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@hookform/error-message": "^2.0.1",
     "@polkadot/api": "^9.11.1",
     "@polkadot/extension-dapp": "^0.44.8",
     "@polkadot/keyring": "^10.2.3",

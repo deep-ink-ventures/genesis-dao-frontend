@@ -39,7 +39,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/public/*": ["./public/*"]
-    }
+    },
+    "esModuleInterop": true
   },
   "exclude": ["./out/**/*", "./node_modules/**/*", "cypress/**/*.ts"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
