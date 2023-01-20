@@ -1,7 +1,7 @@
 import { WalletSelect } from '@talismn/connect-components';
-import type { WalletAccount } from '@talismn/connect-wallets';
 import { useEffect, useState } from 'react';
 
+import type { WalletAccount } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
 import { truncateMiddle } from '../utils/utils';
@@ -71,7 +71,7 @@ const WalletConnect = () => {
             setModalIsOpen(false);
           }}
           onUpdatedAccounts={(accounts) => {
-            handleUpdateAccounts(accounts);
+            handleUpdateAccounts(accounts as WalletAccount[]);
           }}
           onError={(error) => {
             if (error) console.log(error);
