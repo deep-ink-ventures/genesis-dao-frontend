@@ -1,18 +1,28 @@
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm, useFormState } from 'react-hook-form';
 
-interface CreateDaoData {
-  daoId: string;
-  daoName: string;
-}
+import type { CreateDaoData } from '@/stores/genesisStore';
+import useGenesisStore from '@/stores/genesisStore';
 
 const CreateDaoForm = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CreateDaoData>();
-  const onSubmit = (data: CreateDaoData) => console.log(data);
-  console.log(errors);
+  const createDaoData = useGenesisStore((s) => s.createDaoData);
+  const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
+  const { register, handleSubmit, reset, control } = useForm<CreateDaoData>();
+
+  const { isSubmitted } = useFormState({ control });
+
+  const onSubmit: SubmitHandler<CreateDaoData> = (data: CreateDaoData) => {
+    updateCreateDaoData(data);
+  };
+
+  useEffect(() => {
+    reset({
+      daoId: '',
+      daoName: '',
+    });
+    console.log('gensis store create dao data', createDaoData);
+  }, [isSubmitted]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -20,16 +30,20 @@ const CreateDaoForm = () => {
         <input
           type='text'
           className='input-bordered input-primary input'
-          placeholder='DAO ID Here'
-          {...register('daoId', {})}
+          placeholder='DAO ID'
+          {...register('daoId', {
+            required: true,
+          })}
         />
       </div>
       <div className='mb-3'>
         <input
           type='text'
           className='input-bordered input-primary input'
-          placeholder='DAO NAME Here'
-          {...register('daoName', {})}
+          placeholder='DAO NAME'
+          {...register('daoName', {
+            required: true,
+          })}
         />
       </div>
 
