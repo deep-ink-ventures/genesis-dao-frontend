@@ -1,7 +1,11 @@
 import type { u128 } from '@polkadot/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 
-import type { CreateDaoData, WalletAccount } from '../stores/genesisStore';
+import type {
+  CreateDaoData,
+  DaoInfo,
+  WalletAccount,
+} from '../stores/genesisStore';
 import useApiPromise from './useApiPromise';
 
 // enum TxnResponse {
@@ -9,6 +13,13 @@ import useApiPromise from './useApiPromise';
 //   Failed = 'FAILED',
 //   Cancelled = 'CANCELLED',
 // }
+
+interface IncomingDaoInfo {
+  id: string;
+  name: string;
+  owner: string;
+  assetId: string;
+}
 
 const useExtrinsics = () => {
   const { apiPromise } = useApiPromise();
@@ -57,6 +68,34 @@ const useExtrinsics = () => {
     }
   };
 
+  const getDaos = async () => {
+    const daos: DaoInfo[] = [];
+    apiPromise
+      .then((api) => {
+        api?.query?.daoCore?.daos
+          ?.entries()
+          .then((daoEntries) => {
+            daoEntries.forEach(([_k, v]) => {
+              const dao = v.toHuman() as unknown as IncomingDaoInfo;
+              const newObj = {
+                daoId: dao.id,
+                daoName: dao.name,
+                owner: dao.owner,
+                assetId: dao.assetId,
+              };
+              daos.push(newObj);
+            });
+          })
+          .catch((err) => {
+            throw new Error(err);
+          });
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+    return daos;
+  };
+
   const destroyDao = (walletAccount: WalletAccount, daoId: string) => {
     if (walletAccount.signer) {
       apiPromise
@@ -103,7 +142,7 @@ const useExtrinsics = () => {
     }
   };
 
-  return { createDao, destroyDao, issueToken };
+  return { createDao, destroyDao, issueToken, getDaos };
 };
 
 export default useExtrinsics;

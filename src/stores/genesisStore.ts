@@ -21,12 +21,20 @@ export interface WalletAccount {
   signer: InjectedSigner;
 }
 
+export interface DaoInfo {
+  assetId: string | null;
+  daoId: string;
+  daoName: string;
+  owner: string;
+}
+
 export interface GenesisState {
   currentWalletAccount: WalletAccount | undefined;
   walletAccounts: WalletAccount[] | undefined;
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
+  daos: DaoInfo[] | null;
 }
 
 export interface GenesisActions {
@@ -37,6 +45,7 @@ export interface GenesisActions {
   updateWalletConnected: (walletConnected: boolean) => void;
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
+  updateDaos: (daos: DaoInfo[]) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -47,6 +56,7 @@ const useGenesisStore = create<GenesisStore>()((set) => ({
   walletConnected: false,
   createDaoData: null,
   rpcEndpoint: 'ws://127.0.0.1:9944',
+  daos: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -56,6 +66,7 @@ const useGenesisStore = create<GenesisStore>()((set) => ({
     set(() => ({
       rpcEndpoint,
     })),
+  updateDaos: (daos) => set(() => ({ daos })),
 }));
 
 export default useGenesisStore;

@@ -14,6 +14,7 @@
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
     "check-types": "tsc --noEmit --pretty && tsc --project cypress --noEmit --pretty",
     "test": "jest",
+    "pre-commit": "yarn format && yarn check-types",
     "commit": "yarn test && cz",
     "cypress": "cypress open",
     "cypress:headless": "cypress run",

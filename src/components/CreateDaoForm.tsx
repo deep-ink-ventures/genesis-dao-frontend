@@ -88,7 +88,10 @@ const CreateDaoForm = () => {
       </div>
 
       <div className='mb-3'>
-        <button type='submit' className='btn-primary btn'>
+        <button
+          type='submit'
+          className='btn-primary btn'
+          disabled={!currentWalletAccount}>
           Create a DAO
         </button>
       </div>
