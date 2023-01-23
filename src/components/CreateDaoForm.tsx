@@ -9,6 +9,7 @@ import useGenesisStore from '@/stores/genesisStore';
 
 const CreateDaoForm = () => {
   const { createDao } = useExtrinsics();
+  const addOneDao = useGenesisStore((s) => s.addOneDao);
   const createDaoData = useGenesisStore((s) => s.createDaoData);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
@@ -26,6 +27,7 @@ const CreateDaoForm = () => {
     if (currentWalletAccount) {
       try {
         await createDao(currentWalletAccount, data);
+        addOneDao(data);
       } catch (err) {
         throw new Error(err);
       }
@@ -36,7 +38,9 @@ const CreateDaoForm = () => {
   };
 
   useEffect(() => {
-    console.log('form errors', errors);
+    if (errors) {
+      console.log(errors);
+    }
     if (isSubmitSuccessful) {
       reset(
         {
@@ -90,9 +94,10 @@ const CreateDaoForm = () => {
       <div className='mb-3'>
         <button
           type='submit'
-          className='btn-primary btn'
-          disabled={!currentWalletAccount}>
-          Create a DAO
+          className={`btn-primary btn ${
+            !currentWalletAccount ? `btn-disabled` : ``
+          }`}>
+          {!currentWalletAccount ? `Connect Wallet First` : `Create DAO`}
         </button>
       </div>
     </form>
