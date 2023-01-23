@@ -4,6 +4,8 @@ import type { u128 } from '@polkadot/types';
 import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
 
+import { LOCAL_NODE } from './constants';
+
 // ALL TYPES and INTERFACES
 
 export interface IncomingDaoInfo {
@@ -69,7 +71,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   walletAccounts: undefined,
   walletConnected: false,
   createDaoData: null,
-  rpcEndpoint: 'ws://127.0.0.1:9944',
+  rpcEndpoint: LOCAL_NODE,
   daos: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),

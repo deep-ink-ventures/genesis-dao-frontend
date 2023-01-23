@@ -38,7 +38,9 @@ const CreateDaoForm = () => {
   };
 
   useEffect(() => {
-    console.log('form errors', errors);
+    if (errors) {
+      console.log(errors);
+    }
     if (isSubmitSuccessful) {
       reset(
         {
