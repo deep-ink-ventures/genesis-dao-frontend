@@ -1,7 +1,17 @@
+import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
 import type { u128 } from '@polkadot/types';
 import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
+
+// ALL TYPES and INTERFACES
+
+export interface IncomingDaoInfo {
+  id: string;
+  name: string;
+  owner: string;
+  assetId: string;
+}
 
 export interface CreateDaoData {
   daoId: string;
@@ -46,11 +56,15 @@ export interface GenesisActions {
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
   updateDaos: (daos: DaoInfo[]) => void;
+  fetchDaos: (rpcEndpoint: string) => void;
+  addOneDao: (createDaoData: CreateDaoData) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
 
-const useGenesisStore = create<GenesisStore>()((set) => ({
+// STORE
+
+const useGenesisStore = create<GenesisStore>()((set, get) => ({
   currentWalletAccount: undefined,
   walletAccounts: undefined,
   walletConnected: false,
@@ -67,6 +81,48 @@ const useGenesisStore = create<GenesisStore>()((set) => ({
       rpcEndpoint,
     })),
   updateDaos: (daos) => set(() => ({ daos })),
+
+  addOneDao: (createDaoData: CreateDaoData) => {
+    const currentDaos = get().daos;
+    const address = get().currentWalletAccount?.address;
+    if (currentDaos && address) {
+      const newObj = {
+        daoId: createDaoData.daoId,
+        daoName: createDaoData.daoName,
+        owner: address,
+        assetId: null,
+      };
+      set({ daos: [...currentDaos, newObj] });
+    }
+  },
+
+  fetchDaos: async (rpcEndpoint: string) => {
+    ApiPromise.create({ provider: new WsProvider(rpcEndpoint) })
+      .then((api) => {
+        api?.query?.daoCore?.daos
+          ?.entries()
+          .then((daoEntries) => {
+            const daos: DaoInfo[] = [];
+            daoEntries.forEach(([_k, v]) => {
+              const dao = v.toHuman() as unknown as IncomingDaoInfo;
+              const newObj = {
+                daoId: dao.id,
+                daoName: dao.name,
+                owner: dao.owner,
+                assetId: dao.assetId,
+              };
+              daos.push(newObj);
+            });
+            set({ daos });
+          })
+          .catch((err) => {
+            throw new Error(err);
+          });
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
+  },
 }));
 
 export default useGenesisStore;

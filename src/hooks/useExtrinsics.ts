@@ -4,6 +4,7 @@ import type { ISubmittableResult } from '@polkadot/types/types';
 import type {
   CreateDaoData,
   DaoInfo,
+  IncomingDaoInfo,
   WalletAccount,
 } from '../stores/genesisStore';
 import useApiPromise from './useApiPromise';
@@ -13,13 +14,6 @@ import useApiPromise from './useApiPromise';
 //   Failed = 'FAILED',
 //   Cancelled = 'CANCELLED',
 // }
-
-interface IncomingDaoInfo {
-  id: string;
-  name: string;
-  owner: string;
-  assetId: string;
-}
 
 const useExtrinsics = () => {
   const { apiPromise } = useApiPromise();
