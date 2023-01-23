@@ -6,11 +6,9 @@ import MainLayout from '@/templates/MainLayout';
 
 import DaosTableRow from '../components/DaosTableRow';
 
-// first wallet has to be connected
-// then check if daos store has all the daos
-// if not, fetch daos and store in the daos store
-// then filter by owner address
-// display the daos the connected wallet can manage
+// dao owners can click destroy to destroy dao
+// maybe add an extra confirmation before destroy action
+// Once txn signed and destroyed dao, finalized, should re-fetch daos
 
 const ManageDao = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
