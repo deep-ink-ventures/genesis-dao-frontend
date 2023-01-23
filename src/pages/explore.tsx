@@ -8,11 +8,10 @@ import MainLayout from '@/templates/MainLayout';
 // fix fix hydration issue
 const ExploreDaos = () => {
   const daos = useGenesisStore((s) => s.daos);
-  const rpcEndpoint = useGenesisStore((s) => s.rpcEndpoint);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
 
   useEffect(() => {
-    fetchDaos(rpcEndpoint);
+    fetchDaos();
   }, []);
 
   return (

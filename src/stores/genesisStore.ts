@@ -47,6 +47,7 @@ export interface GenesisState {
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
   daos: DaoInfo[] | null;
+  daosOwnedByWallet: DaoInfo[] | null;
 }
 
 export interface GenesisActions {
@@ -58,8 +59,8 @@ export interface GenesisActions {
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
   updateDaos: (daos: DaoInfo[]) => void;
-  fetchDaos: (rpcEndpoint: string) => void;
   addOneDao: (createDaoData: CreateDaoData) => void;
+  fetchDaos: () => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -73,6 +74,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   createDaoData: null,
   rpcEndpoint: LOCAL_NODE,
   daos: null,
+  daosOwnedByWallet: null, // all the daos that can be managed by the wallet address
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -84,6 +86,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     })),
   updateDaos: (daos) => set(() => ({ daos })),
 
+  // add the new dao to daos store when we create a new dao
   addOneDao: (createDaoData: CreateDaoData) => {
     const currentDaos = get().daos;
     const address = get().currentWalletAccount?.address;
@@ -98,8 +101,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     }
   },
 
-  fetchDaos: async (rpcEndpoint: string) => {
-    ApiPromise.create({ provider: new WsProvider(rpcEndpoint) })
+  fetchDaos: async () => {
+    ApiPromise.create({ provider: new WsProvider(get().rpcEndpoint) })
       .then((api) => {
         api?.query?.daoCore?.daos
           ?.entries()
@@ -116,6 +119,14 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
               daos.push(newObj);
             });
             set({ daos });
+            // if wallet is connected we will also set the daosOwned store
+            const ownerAddress = get().currentWalletAccount?.address;
+            if (typeof ownerAddress === 'string') {
+              const daosOwned = daos.filter((dao) => {
+                return dao.owner === ownerAddress;
+              });
+              set({ daosOwnedByWallet: daosOwned });
+            }
           })
           .catch((err) => {
             throw new Error(err);
