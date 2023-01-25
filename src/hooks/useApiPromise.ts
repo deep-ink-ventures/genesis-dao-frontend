@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
 import useGenesisStore from '@/stores/genesisStore';
-
+// fixme not sure why it keeps disconnecting
 const useApiPromise = () => {
   const rpcEndpoint = useGenesisStore((s) => s.rpcEndpoint);
 
@@ -12,7 +12,8 @@ const useApiPromise = () => {
       await api.isReady;
       return api;
     } catch (err) {
-      throw new Error(err);
+      console.log(new Error(err));
+      return err;
     }
   };
 

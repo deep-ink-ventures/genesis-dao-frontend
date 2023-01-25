@@ -6,7 +6,21 @@ import { create } from 'zustand';
 
 import { LOCAL_NODE } from './constants';
 
-// ALL TYPES and INTERFACES
+export enum TxnResponse {
+  Success = 'SUCCESS',
+  Error = 'ERROR',
+  Warning = 'WARNING',
+}
+
+// ALL TYPES and INTERFACES...
+
+export interface TxnNotification {
+  title: string;
+  message: string;
+  type: TxnResponse;
+  timestamp: number;
+  txnHash?: string;
+}
 
 export interface IncomingDaoInfo {
   id: string;
@@ -48,6 +62,9 @@ export interface GenesisState {
   rpcEndpoint: string;
   daos: DaoInfo[] | null;
   daosOwnedByWallet: DaoInfo[] | null;
+  txnNotifications: TxnNotification[];
+  loading: boolean;
+  showNotification: boolean;
 }
 
 export interface GenesisActions {
@@ -58,14 +75,19 @@ export interface GenesisActions {
   updateWalletConnected: (walletConnected: boolean) => void;
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
-  updateDaos: (daos: DaoInfo[]) => void;
+  updateDaos: (daos: DaoInfo[] | null) => void;
   addOneDao: (createDaoData: CreateDaoData) => void;
   fetchDaos: () => void;
+  updateLoading: (loading: boolean) => void;
+  updateShowNotification: (showNotification: boolean) => void;
+  updateNotifications: (notifications: TxnNotification[]) => void;
+  addTxnNotification: (notification: TxnNotification) => void;
+  removeOneNoti: () => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
 
-// STORE
+// STORE...
 
 const useGenesisStore = create<GenesisStore>()((set, get) => ({
   currentWalletAccount: undefined,
@@ -75,6 +97,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   rpcEndpoint: LOCAL_NODE,
   daos: null,
   daosOwnedByWallet: null, // all the daos that can be managed by the wallet address
+  txnNotifications: [],
+  loading: false,
+  showNotification: false,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -85,9 +110,24 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       rpcEndpoint,
     })),
   updateDaos: (daos) => set(() => ({ daos })),
+  updateLoading: (loading) => set(() => ({ loading })),
+  updateShowNotification: (showNotification) =>
+    set(() => ({ showNotification })),
+  updateNotifications: (txnNotifications) => set({ txnNotifications }),
+  addTxnNotification: (notification) => {
+    const currentTxnNotis = get().txnNotifications;
+    // add the new noti to first index because we will start displaying notis from the last index
+    const newNotis = [notification, ...currentTxnNotis];
+    set({ txnNotifications: newNotis });
+  },
+  removeOneNoti: () => {
+    const currentTxnNotis = get().txnNotifications;
+    const newNotis = currentTxnNotis.slice(currentTxnNotis.length - 2);
+    set({ txnNotifications: newNotis });
+  },
 
   // add the new dao to daos store when we create a new dao
-  addOneDao: (createDaoData: CreateDaoData) => {
+  addOneDao: (createDaoData) => {
     const currentDaos = get().daos;
     const address = get().currentWalletAccount?.address;
     if (currentDaos && address) {
@@ -100,7 +140,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       set({ daos: [...currentDaos, newObj] });
     }
   },
-
+  // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
     ApiPromise.create({ provider: new WsProvider(get().rpcEndpoint) })
       .then((api) => {
@@ -119,7 +159,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
               daos.push(newObj);
             });
             set({ daos });
-            // if wallet is connected we will also set the daosOwned store
+            // if wallet is connected we will also set the daosOwned state
             const ownerAddress = get().currentWalletAccount?.address;
             if (typeof ownerAddress === 'string') {
               const daosOwned = daos.filter((dao) => {

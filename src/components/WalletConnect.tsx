@@ -74,8 +74,10 @@ const WalletConnect = () => {
             handleUpdateAccounts(accounts as WalletAccount[]);
           }}
           onError={(error) => {
-            if (error) console.log(error);
-          }} // will handle errors later
+            if (error) {
+              console.log(error);
+            }
+          }}
         />
       </div>
     </div>

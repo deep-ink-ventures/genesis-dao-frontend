@@ -10,3 +10,8 @@ export const truncateMiddle = (str = '', start = 4, end = 4) => {
   }
   return null;
 };
+
+/* eslint-disable */
+export async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
