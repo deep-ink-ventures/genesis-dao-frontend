@@ -29,13 +29,12 @@ yarn format
 yarn check-types
 ```
 
-Then: 
+Please use this script to commit and run tests:
 
 ```
 yarn commit
 ```
 
-to commit your code
 
 This repo uses Conventional Commits specifications
 
