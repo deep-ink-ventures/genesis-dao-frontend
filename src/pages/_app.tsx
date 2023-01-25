@@ -2,13 +2,13 @@ import '../styles/global.css';
 
 import type { AppProps } from 'next/app';
 
-import NotificationToast from '@/components/NotificationToast';
+import TransactionNotification from '../components/Notification';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <div>
+      <TransactionNotification />
       <Component {...pageProps} />
-      <NotificationToast />
     </div>
   );
 };

@@ -29,8 +29,9 @@ const useExtrinsics = () => {
           const successNoti = {
             title: `${TxnResponse.Success} DAO Created`,
             message: 'Congrats! Your DAO has been created!',
-            result: TxnResponse.Success,
+            type: TxnResponse.Success,
             txnHash: result.status.asInBlock.toHex(),
+            timestamp: Date.now(),
           };
           // add txn to our store - first index
           addTxnNotification(successNoti);
@@ -41,8 +42,9 @@ const useExtrinsics = () => {
           const errorNoti = {
             title: `${TxnResponse.Error} DAO Was Not Created`,
             message: `Oops, there has been error. Please try again. `,
-            result: TxnResponse.Error,
+            type: TxnResponse.Error,
             txnHash: result.status.asInBlock.toHex(),
+            timestamp: Date.now(),
           };
           addTxnNotification(errorNoti);
           // fixme
@@ -76,8 +78,21 @@ const useExtrinsics = () => {
               txResponseCallback
             )
             .catch((err) => {
+              // if cancelled give notification
+              const errMessage = new Error(err);
+              if (errMessage.message.includes('Cancelled')) {
+                const newNoti = {
+                  title: 'Transaction Cancelled',
+                  message:
+                    'Your transaction was cancelled or rejected. Please try again. Make sure you sign and approve the transaction using your wallet',
+                  type: TxnResponse.Warning,
+                  timestamp: Date.now(),
+                };
+                addTxnNotification(newNoti);
+              }
+
               // fixme
-              console.log(new Error(err));
+              console.log(errMessage);
             });
         })
         .catch((err) => {

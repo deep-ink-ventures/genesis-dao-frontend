@@ -9,7 +9,7 @@ import { LOCAL_NODE } from './constants';
 export enum TxnResponse {
   Success = 'SUCCESS',
   Error = 'ERROR',
-  Cancelled = 'CANCELLED',
+  Warning = 'WARNING',
 }
 
 // ALL TYPES and INTERFACES...
@@ -17,8 +17,8 @@ export enum TxnResponse {
 export interface TxnNotification {
   title: string;
   message: string;
-  result: TxnResponse;
-  txnId?: number;
+  type: TxnResponse;
+  timestamp: number;
   txnHash?: string;
 }
 
@@ -80,7 +80,9 @@ export interface GenesisActions {
   fetchDaos: () => void;
   updateLoading: (loading: boolean) => void;
   updateShowNotification: (showNotification: boolean) => void;
+  updateNotifications: (notifications: TxnNotification[]) => void;
   addTxnNotification: (notification: TxnNotification) => void;
+  removeOneNoti: () => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -111,15 +113,21 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   updateLoading: (loading) => set(() => ({ loading })),
   updateShowNotification: (showNotification) =>
     set(() => ({ showNotification })),
-  addTxnNotification: (notification: TxnNotification) => {
+  updateNotifications: (txnNotifications) => set({ txnNotifications }),
+  addTxnNotification: (notification) => {
     const currentTxnNotis = get().txnNotifications;
     // add the new noti to first index because we will start displaying notis from the last index
     const newNotis = [notification, ...currentTxnNotis];
     set({ txnNotifications: newNotis });
   },
+  removeOneNoti: () => {
+    const currentTxnNotis = get().txnNotifications;
+    const newNotis = currentTxnNotis.slice(currentTxnNotis.length - 2);
+    set({ txnNotifications: newNotis });
+  },
 
   // add the new dao to daos store when we create a new dao
-  addOneDao: (createDaoData: CreateDaoData) => {
+  addOneDao: (createDaoData) => {
     const currentDaos = get().daos;
     const address = get().currentWalletAccount?.address;
     if (currentDaos && address) {
