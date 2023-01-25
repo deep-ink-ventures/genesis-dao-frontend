@@ -2,8 +2,15 @@ import '../styles/global.css';
 
 import type { AppProps } from 'next/app';
 
-const MyApp = ({ Component, pageProps }: AppProps) => (
-  <Component {...pageProps} />
-);
+import NotificationToast from '@/components/NotificationToast';
+
+const MyApp = ({ Component, pageProps }: AppProps) => {
+  return (
+    <div>
+      <Component {...pageProps} />
+      <NotificationToast />
+    </div>
+  );
+};
 
 export default MyApp;

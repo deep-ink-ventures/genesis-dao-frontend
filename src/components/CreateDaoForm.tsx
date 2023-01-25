@@ -13,6 +13,7 @@ const CreateDaoForm = () => {
   const createDaoData = useGenesisStore((s) => s.createDaoData);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
+  // const txnNotifications = useGenesisStore((s) => s.txnNotifications);
   const {
     register,
     handleSubmit,
@@ -29,6 +30,7 @@ const CreateDaoForm = () => {
         await createDao(currentWalletAccount, data);
         addOneDao(data);
       } catch (err) {
+        console.log(err);
         throw new Error(err);
       }
     } else {

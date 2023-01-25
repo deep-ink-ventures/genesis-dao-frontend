@@ -8,7 +8,7 @@ import DaosTableRow from '../components/DaosTableRow';
 
 // dao owners can click destroy to destroy dao
 // maybe add an extra confirmation before destroy action
-// Once txn signed and destroyed dao, finalized, should re-fetch daos
+// Once txn signed and destroyed dao, finalized, should re-fetch daos to get the latest daos info
 
 const ManageDao = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
