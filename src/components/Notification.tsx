@@ -1,30 +1,14 @@
-import { useEffect } from 'react';
-
 import useGenesisStore from '@/stores/genesisStore';
 
 import NotificationToast from './NotificationToast';
 
 const TransactionNotification = () => {
   const txnNotifications = useGenesisStore((s) => s.txnNotifications);
-  const showNotification = useGenesisStore((s) => s.showNotification);
-  const updateShowNotification = useGenesisStore(
-    (s) => s.updateShowNotification
-  );
-
-  useEffect(() => {
-    if (txnNotifications.length > 1 && !showNotification) {
-      updateShowNotification(true);
-      console.log('useeffect. noti show?', showNotification);
-      setTimeout(() => {
-        updateShowNotification(false);
-      }, 2000);
-    }
-  });
 
   return (
-    <div className='absolute'>
+    <div className='flex justify-center'>
       {txnNotifications.map((noti) => {
-        // we can use timestamp as stable keys here because they don't change
+        // we can use timestamp as stable keys here because they don't change once stored
         return (
           <NotificationToast
             key={noti.timestamp}

@@ -5,7 +5,6 @@ import { Meta } from '@/components/Meta';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
 
-// when user clicks on dao it should go to the main dao page
 const ExploreDaos = () => {
   const daos = useGenesisStore((s) => s.daos);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);

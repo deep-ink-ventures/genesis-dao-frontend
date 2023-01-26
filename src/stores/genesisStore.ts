@@ -6,13 +6,13 @@ import { create } from 'zustand';
 
 import { LOCAL_NODE } from './constants';
 
+// ALL TYPES and INTERFACES...
+
 export enum TxnResponse {
   Success = 'SUCCESS',
   Error = 'ERROR',
   Warning = 'WARNING',
 }
-
-// ALL TYPES and INTERFACES...
 
 export interface TxnNotification {
   title: string;
