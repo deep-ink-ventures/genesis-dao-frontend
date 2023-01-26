@@ -40,15 +40,13 @@ const useExtrinsics = () => {
         if (method === 'ExtrinsicSuccess') {
           const successNoti = {
             title: `${TxnResponse.Success}`,
-            message:
-              'Congrats! Your DAO has been created! blaggg ggggg ggggg gggg gggg ggg gggg gg ',
+            message: 'Congrats! Your DAO has been created!',
             type: TxnResponse.Success,
             txnHash: result.status.asInBlock.toHex(),
             timestamp: Date.now(),
           };
           // add txn to our store - first index
           addTxnNotification(successNoti);
-          console.log('TXN is gucci');
         }
         if (method === 'ExtrinsicFailed') {
           const errorNoti = {
@@ -59,8 +57,6 @@ const useExtrinsics = () => {
             timestamp: Date.now(),
           };
           addTxnNotification(errorNoti);
-          // fixme
-          console.log('TXN FAILED');
         }
         console.log(
           '\t',
@@ -98,8 +94,7 @@ const useExtrinsics = () => {
         })
         .catch((err) => {
           // fixme
-          console.log(err);
-          throw new Error(err);
+          console.log(new Error(err));
         });
     } else {
       // fixme

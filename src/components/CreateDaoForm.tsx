@@ -33,7 +33,7 @@ const CreateDaoForm = () => {
         throw new Error(err);
       }
     } else {
-      // fix
+      // fixme
       console.log('please connect wallet first');
     }
   };
@@ -51,7 +51,6 @@ const CreateDaoForm = () => {
         { keepErrors: true }
       );
     }
-
     console.log('gensis store create dao data', createDaoData);
   }, [createDaoData, isSubmitSuccessful, reset]);
 

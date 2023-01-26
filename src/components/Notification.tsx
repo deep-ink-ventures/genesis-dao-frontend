@@ -8,7 +8,7 @@ const TransactionNotification = () => {
   return (
     <div className='flex justify-center'>
       {txnNotifications.map((noti) => {
-        // we can use timestamp as stable keys here because they don't change
+        // we can use timestamp as stable keys here because they don't change once stored
         return (
           <NotificationToast
             key={noti.timestamp}
