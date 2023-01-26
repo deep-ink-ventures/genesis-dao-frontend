@@ -95,7 +95,7 @@ const NotificationToast = (props: ToastProps) => {
   }
 
   return (
-    <div className='absolute z-40'>
+    <div className='absolute top-[12px] z-40'>
       <div
         id='toast-success'
         className='mb-3 flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400 '

@@ -14,6 +14,7 @@ const useExtrinsics = () => {
   const { apiPromise } = useApiPromise();
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const txnNotifications = useGenesisStore((s) => s.txnNotifications);
+  const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
 
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -30,7 +31,7 @@ const useExtrinsics = () => {
   };
 
   const txResponseCallback = (result: ISubmittableResult) => {
-    console.log('Transaction status:', result.status.type);
+    console.log('Transaction status1:', result.status.type);
 
     if (result.status.isInBlock) {
       // fixme need to get this block hash
@@ -38,6 +39,7 @@ const useExtrinsics = () => {
       console.log('Events:');
       result.events.forEach(({ event: { data, method, section }, phase }) => {
         if (method === 'ExtrinsicSuccess') {
+          updateTxnProcessing(false);
           const successNoti = {
             title: `${TxnResponse.Success}`,
             message: 'Congrats! Your DAO has been created!',
@@ -49,6 +51,7 @@ const useExtrinsics = () => {
           addTxnNotification(successNoti);
         }
         if (method === 'ExtrinsicFailed') {
+          updateTxnProcessing(false);
           const errorNoti = {
             title: `${TxnResponse.Error} DAO Was Not Created`,
             message: `Oops, there has been error. Please try again.`,

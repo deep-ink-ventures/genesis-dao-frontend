@@ -7,6 +7,7 @@ import useGenesisStore from '@/stores/genesisStore';
 import { truncateMiddle } from '../utils/utils';
 
 const WalletConnect = () => {
+  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const walletConnected = useGenesisStore((s) => s.walletConnected);
   const updateCurrentWalletAccount = useGenesisStore(
@@ -45,7 +46,10 @@ const WalletConnect = () => {
               !walletConnected
                 ? 'btn-primary'
                 : 'hover:bg-red-400 hover:text-zinc-800'
-            }`}
+            }
+            ${modalIsOpen ? 'loading' : ''}
+            ${txnProcessing ? 'loading' : ''}
+            `}
             onClick={!walletConnected ? handleModal : handleDisconnect}>
             <span>
               {!walletConnected

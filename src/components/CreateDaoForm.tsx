@@ -8,11 +8,13 @@ import type { CreateDaoData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
 const CreateDaoForm = () => {
-  const { createDao } = useExtrinsics();
-  const addOneDao = useGenesisStore((s) => s.addOneDao);
+  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const createDaoData = useGenesisStore((s) => s.createDaoData);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const { createDao } = useExtrinsics();
+  const addOneDao = useGenesisStore((s) => s.addOneDao);
   const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
+  const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const {
     register,
     handleSubmit,
@@ -20,9 +22,22 @@ const CreateDaoForm = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<CreateDaoData>();
 
+  const buttonText = () => {
+    if (!currentWalletAccount) {
+      return 'Please Connect Wallet';
+    }
+
+    if (txnProcessing) {
+      return 'Processing';
+    }
+
+    return 'Create DAO';
+  };
+
   const onSubmit: SubmitHandler<CreateDaoData> = async (
     data: CreateDaoData
   ) => {
+    updateTxnProcessing(true);
     updateCreateDaoData(data);
     if (currentWalletAccount) {
       try {
@@ -55,52 +70,56 @@ const CreateDaoForm = () => {
   }, [createDaoData, isSubmitSuccessful, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className='mb-3'>
-        <input
-          type='text'
-          className='input-bordered input-primary input'
-          placeholder='DAO ID'
-          {...register('daoId', {
-            required: 'required',
-            minLength: 3,
-            maxLength: 22,
-          })}
-        />
-        <ErrorMessage
-          errors={errors}
-          name='daoId'
-          render={({ message }) => <p>{message}</p>}
-        />
-      </div>
-      <div className='mb-3'>
-        <input
-          type='text'
-          className='input-bordered input-primary input'
-          placeholder='DAO NAME'
-          {...register('daoName', {
-            required: 'required',
-            minLength: 3,
-            maxLength: 22,
-          })}
-        />
-        <ErrorMessage
-          errors={errors}
-          name='daoName'
-          render={({ message }) => <p>{message}</p>}
-        />
-      </div>
+    <div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className='mb-3'>
+          <input
+            type='text'
+            className='input-bordered input-primary input'
+            placeholder='DAO ID'
+            {...register('daoId', {
+              required: 'required',
+              minLength: 3,
+              maxLength: 22,
+            })}
+          />
+          <ErrorMessage
+            errors={errors}
+            name='daoId'
+            render={({ message }) => <p>{message}</p>}
+          />
+        </div>
+        <div className='mb-3'>
+          <input
+            type='text'
+            className='input-bordered input-primary input'
+            placeholder='DAO NAME'
+            {...register('daoName', {
+              required: 'required',
+              minLength: 3,
+              maxLength: 22,
+            })}
+          />
+          <ErrorMessage
+            errors={errors}
+            name='daoName'
+            render={({ message }) => <p>{message}</p>}
+          />
+        </div>
 
-      <div className='mb-3'>
-        <button
-          type='submit'
-          className={`btn-primary btn ${
-            !currentWalletAccount ? `btn-disabled` : ``
-          }`}>
-          {!currentWalletAccount ? `Connect Wallet First` : `Create DAO`}
-        </button>
-      </div>
-    </form>
+        <div className='mb-3'>
+          <button
+            type='submit'
+            // disabled={!currentWalletAccount}
+            className={`btn-primary btn 
+          ${!currentWalletAccount ? `btn-disabled` : ``}
+          ${txnProcessing ? `loading` : ``}
+          `}>
+            {buttonText()}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
