@@ -64,7 +64,7 @@ export interface GenesisState {
   daosOwnedByWallet: DaoInfo[] | null;
   txnNotifications: TxnNotification[];
   loading: boolean;
-  showNotification: boolean;
+  txnProcessing: boolean;
 }
 
 export interface GenesisActions {
@@ -79,10 +79,10 @@ export interface GenesisActions {
   addOneDao: (createDaoData: CreateDaoData) => void;
   fetchDaos: () => void;
   updateLoading: (loading: boolean) => void;
-  updateShowNotification: (showNotification: boolean) => void;
   updateNotifications: (notifications: TxnNotification[]) => void;
   addTxnNotification: (notification: TxnNotification) => void;
   removeOneNoti: () => void;
+  updateTxnProcessing: (txnProcessing: boolean) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -99,7 +99,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   daosOwnedByWallet: null, // all the daos that can be managed by the wallet address
   txnNotifications: [],
   loading: false,
-  showNotification: false,
+  txnProcessing: false,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -111,8 +111,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     })),
   updateDaos: (daos) => set(() => ({ daos })),
   updateLoading: (loading) => set(() => ({ loading })),
-  updateShowNotification: (showNotification) =>
-    set(() => ({ showNotification })),
   updateNotifications: (txnNotifications) => set({ txnNotifications }),
   addTxnNotification: (notification) => {
     const currentTxnNotis = get().txnNotifications;
@@ -176,6 +174,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         throw new Error(err);
       });
   },
+  updateTxnProcessing: (txnProcessing) => set(() => ({ txnProcessing })),
 }));
 
 export default useGenesisStore;
