@@ -12,6 +12,7 @@ export enum TxnResponse {
   Success = 'SUCCESS',
   Error = 'ERROR',
   Warning = 'WARNING',
+  Cancelled = 'CANCELLED',
 }
 
 export interface TxnNotification {
@@ -65,6 +66,7 @@ export interface GenesisState {
   txnNotifications: TxnNotification[];
   loading: boolean;
   txnProcessing: boolean;
+  apiConnection: Promise<ApiPromise>;
 }
 
 export interface GenesisActions {
@@ -83,6 +85,8 @@ export interface GenesisActions {
   addTxnNotification: (notification: TxnNotification) => void;
   removeOneNoti: () => void;
   updateTxnProcessing: (txnProcessing: boolean) => void;
+  updateApiConnection: (apiConnection: any) => void;
+  createApiConnection: () => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -100,6 +104,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   txnNotifications: [],
   loading: false,
   txnProcessing: false,
+  apiConnection: ApiPromise.create({
+    provider: new WsProvider(LOCAL_NODE),
+  }),
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -140,8 +147,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
-    ApiPromise.create({ provider: new WsProvider(get().rpcEndpoint) })
-      .then((api) => {
+    get()
+      .apiConnection.then((api) => {
         api?.query?.daoCore?.daos
           ?.entries()
           .then((daoEntries) => {
@@ -167,7 +174,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
             }
           })
           .catch((err) => {
-            throw new Error(err);
+            console.log(new Error(err));
           });
       })
       .catch((err) => {
@@ -175,6 +182,23 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       });
   },
   updateTxnProcessing: (txnProcessing) => set(() => ({ txnProcessing })),
+  updateApiConnection: (apiConnection) => set(() => ({ apiConnection })),
+  createApiConnection: async () => {
+    const { rpcEndpoint } = get();
+    const createApi = async (): Promise<ApiPromise> => {
+      const wsProvider = new WsProvider(rpcEndpoint);
+      try {
+        const api = await ApiPromise.create({ provider: wsProvider });
+        await api.isReady;
+        return api;
+      } catch (err) {
+        console.log(new Error(err));
+        return err;
+      }
+    };
+
+    set({ apiConnection: createApi() });
+  },
 }));
 
 export default useGenesisStore;

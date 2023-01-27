@@ -2,6 +2,7 @@ import useGenesisStore from '@/stores/genesisStore';
 
 import NotificationToast from './NotificationToast';
 
+// fixme currently we don't delete notifications
 const TransactionNotification = () => {
   const txnNotifications = useGenesisStore((s) => s.txnNotifications);
 

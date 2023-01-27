@@ -16,7 +16,7 @@ const DaoHome = () => {
       }>
       <div className='hero mt-12'>
         <div className='hero-content rounded-xl bg-slate-800 text-center'>
-          {daoId}
+          Dao Name : {daoId}
         </div>
       </div>
     </MainLayout>

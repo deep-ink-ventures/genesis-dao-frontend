@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 
+import DaosTableRow from '@/components/DaosTableRow';
 import { Meta } from '@/components/Meta';
+import Spinner from '@/components/Spinner';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
 
-import DaosTableRow from '../components/DaosTableRow';
-
+// fixme something this page fires connection so many times it gets disconnected
 const ManageDao = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daos = useGenesisStore((s) => s.daos);
@@ -13,10 +14,10 @@ const ManageDao = () => {
   const daosOwnedByWallet = useGenesisStore((s) => s.daosOwnedByWallet);
 
   useEffect(() => {
-    if (!daos && currentWalletAccount?.address) {
+    if (!daosOwnedByWallet && currentWalletAccount?.address) {
       fetchDaos();
     }
-  });
+  }, [daos, daosOwnedByWallet, currentWalletAccount]);
 
   const noWallet = () => {
     return (
@@ -36,6 +37,19 @@ const ManageDao = () => {
 
   if (!currentWalletAccount) {
     return noWallet();
+  }
+  if (!daosOwnedByWallet) {
+    return (
+      <MainLayout
+        meta={
+          <Meta
+            title='Manage Your DAO - GenesisDAO'
+            description='Manage Your DAO - GenesisDAO'
+          />
+        }>
+        <Spinner />
+      </MainLayout>
+    );
   }
   return (
     <MainLayout
