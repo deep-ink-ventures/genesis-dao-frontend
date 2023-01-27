@@ -4,7 +4,6 @@ export const pageLinks = [
   { href: '/', label: 'Home' },
   { href: '/explore', label: 'Explore' },
   { href: '/create', label: 'Create DAO' },
-  { href: '/manage', label: 'Manage DAO' },
 ];
 
 const TopNavBar = () => {

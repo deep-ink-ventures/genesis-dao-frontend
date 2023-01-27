@@ -105,7 +105,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   loading: false,
   txnProcessing: false,
   apiConnection: ApiPromise.create({
-    provider: new WsProvider(get().rpcEndpoint),
+    provider: new WsProvider(LOCAL_NODE),
   }),
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
