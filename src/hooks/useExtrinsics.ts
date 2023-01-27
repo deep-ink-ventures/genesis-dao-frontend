@@ -10,6 +10,7 @@ import type {
 import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 import useApiPromise from './useApiPromise';
 
+// fixme open one connection and reuse that connection
 const useExtrinsics = () => {
   const { apiPromise } = useApiPromise();
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
@@ -26,11 +27,17 @@ const useExtrinsics = () => {
         type: TxnResponse.Warning,
         timestamp: Date.now(),
       };
+      updateTxnProcessing(false);
       addTxnNotification(newNoti);
     }
   };
 
-  const txResponseCallback = (result: ISubmittableResult) => {
+  // fixme need to be able to separate txn types to send different response msgs
+  const txResponseCallback = (
+    result: ISubmittableResult,
+    successMsg: string,
+    errorMsg: string
+  ) => {
     console.log('Transaction status1:', result.status.type);
 
     if (result.status.isInBlock) {
@@ -38,11 +45,12 @@ const useExtrinsics = () => {
       console.log('Included at block hash', result.status.asInBlock.toHex());
       console.log('Events:');
       result.events.forEach(({ event: { data, method, section }, phase }) => {
+        console.log(data, method, section, phase);
         if (method === 'ExtrinsicSuccess') {
           updateTxnProcessing(false);
           const successNoti = {
             title: `${TxnResponse.Success}`,
-            message: 'Congrats! Your DAO has been created!',
+            message: successMsg,
             type: TxnResponse.Success,
             txnHash: result.status.asInBlock.toHex(),
             timestamp: Date.now(),
@@ -53,8 +61,8 @@ const useExtrinsics = () => {
         if (method === 'ExtrinsicFailed') {
           updateTxnProcessing(false);
           const errorNoti = {
-            title: `${TxnResponse.Error} DAO Was Not Created`,
-            message: `Oops, there has been error. Please try again.`,
+            title: `${TxnResponse.Error}`,
+            message: errorMsg,
             type: TxnResponse.Error,
             txnHash: result.status.asInBlock.toHex(),
             timestamp: Date.now(),
@@ -74,6 +82,7 @@ const useExtrinsics = () => {
     }
   };
 
+  // fixme I need to be able to see what error I get like duplicated daoId error
   const createDao = (
     walletAccount: WalletAccount,
     { daoId, daoName }: CreateDaoData
@@ -86,7 +95,13 @@ const useExtrinsics = () => {
             .signAndSend?.(
               walletAccount.address,
               { signer: walletAccount.signer },
-              txResponseCallback
+              (result) => {
+                txResponseCallback(
+                  result,
+                  'Congrats! Your DAO is created.',
+                  'Something went wrong. Please try again.'
+                );
+              }
             )
             .catch((err) => {
               const errMessage = new Error(err);
@@ -142,7 +157,13 @@ const useExtrinsics = () => {
             .signAndSend(
               walletAccount.address,
               { signer: walletAccount.signer },
-              txResponseCallback
+              (result) => {
+                txResponseCallback(
+                  result,
+                  'DAO Destroyed. Bye Bye.',
+                  'Something went wrong. Please try again.'
+                );
+              }
             )
             .catch((err) => {
               const errMessage = new Error(err);
@@ -171,7 +192,13 @@ const useExtrinsics = () => {
             .signAndSend(
               walletAccount.address,
               { signer: walletAccount.signer },
-              txResponseCallback
+              (result) => {
+                txResponseCallback(
+                  result,
+                  'Tokens Issued',
+                  'Something went wrong. Please try again. '
+                );
+              }
             )
             .catch((err) => {
               const errMessage = new Error(err);

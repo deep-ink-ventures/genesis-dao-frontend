@@ -1,5 +1,5 @@
 // @ts-ignore
-export const truncateMiddle = (str = '', start = 4, end = 4) => {
+export const truncateMiddle = (str?, start = 4, end = 4) => {
   if (str && str.length) {
     if (str.length <= start + end) {
       return str;
@@ -8,7 +8,7 @@ export const truncateMiddle = (str = '', start = 4, end = 4) => {
       end > 0 ? str.substring(str.length - end) : ''
     }`;
   }
-  return null;
+  return '';
 };
 
 /* eslint-disable */

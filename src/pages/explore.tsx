@@ -2,8 +2,11 @@ import { useEffect } from 'react';
 
 import DaoCard from '@/components/DaoCard';
 import { Meta } from '@/components/Meta';
+import Spinner from '@/components/Spinner';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
+
+import { truncateMiddle } from '../utils/utils';
 
 const ExploreDaos = () => {
   const daos = useGenesisStore((s) => s.daos);
@@ -30,12 +33,14 @@ const ExploreDaos = () => {
                   key={dao.daoId}
                   daoId={dao.daoId}
                   daoName={dao.daoName}
-                  owner={dao.owner}
+                  owner={truncateMiddle(dao.owner)}
                 />
               );
             })
           ) : (
-            <div>{`no daos`}</div>
+            <div>
+              <Spinner />
+            </div>
           )}
         </div>
       </div>
