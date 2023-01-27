@@ -8,28 +8,32 @@ import type {
   WalletAccount,
 } from '../stores/genesisStore';
 import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
-import useApiPromise from './useApiPromise';
 
 // fixme open one connection and reuse that connection
 const useExtrinsics = () => {
-  const { apiPromise } = useApiPromise();
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
-  const txnNotifications = useGenesisStore((s) => s.txnNotifications);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
-
+  const apiConnection = useGenesisStore((s) => s.apiConnection);
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
+    let newNoti = {
+      title: TxnResponse.Error,
+      message: err.message,
+      type: TxnResponse.Error,
+      timestamp: Date.now(),
+    };
     if (err.message.includes('Cancelled')) {
-      const newNoti = {
-        title: 'Transaction Cancelled',
+      newNoti = {
+        title: TxnResponse.Cancelled,
         message:
           'Please try again. Make sure you sign and approve the transaction using your wallet',
         type: TxnResponse.Warning,
         timestamp: Date.now(),
       };
-      updateTxnProcessing(false);
-      addTxnNotification(newNoti);
     }
+
+    updateTxnProcessing(false);
+    addTxnNotification(newNoti);
   };
 
   // fixme need to be able to separate txn types to send different response msgs
@@ -78,7 +82,6 @@ const useExtrinsics = () => {
       });
     } else if (result.status.isFinalized) {
       console.log('Finalized block hash', result.status.asFinalized.toHex());
-      console.log(txnNotifications);
     }
   };
 
@@ -88,7 +91,7 @@ const useExtrinsics = () => {
     { daoId, daoName }: CreateDaoData
   ) => {
     if (walletAccount.signer) {
-      apiPromise
+      apiConnection
         .then(async (api) => {
           api?.tx?.daoCore
             ?.createDao?.(daoId, daoName)
@@ -104,13 +107,15 @@ const useExtrinsics = () => {
               }
             )
             .catch((err) => {
+              updateTxnProcessing(false);
               const errMessage = new Error(err);
               handleTxnError(errMessage);
               // fixme
-              console.log(errMessage);
+              console.log('create dao', errMessage);
             });
         })
         .catch((err) => {
+          updateTxnProcessing(false);
           // fixme
           console.log(new Error(err));
         });
@@ -122,7 +127,7 @@ const useExtrinsics = () => {
 
   const getDaos = () => {
     const daos: DaoInfo[] = [];
-    apiPromise
+    apiConnection
       .then((api) => {
         api?.query?.daoCore?.daos
           ?.entries()
@@ -139,10 +144,12 @@ const useExtrinsics = () => {
             });
           })
           .catch((err) => {
+            updateTxnProcessing(false);
             console.log(new Error(err));
           });
       })
       .catch((err) => {
+        updateTxnProcessing(false);
         console.log(new Error(err));
       });
     return daos;
@@ -150,7 +157,7 @@ const useExtrinsics = () => {
 
   const destroyDao = (walletAccount: WalletAccount, daoId: string) => {
     if (walletAccount.signer) {
-      apiPromise
+      apiConnection
         .then((api) => {
           api?.tx?.daoCore
             ?.destroyDao?.(daoId)
@@ -166,12 +173,14 @@ const useExtrinsics = () => {
               }
             )
             .catch((err) => {
+              updateTxnProcessing(false);
               const errMessage = new Error(err);
               handleTxnError(errMessage);
-              console.log(new Error(err));
+              console.log('destroyDao', new Error(err));
             });
         })
         .catch((err) => {
+          updateTxnProcessing(false);
           console.log(new Error(err));
         });
     } else {
@@ -185,7 +194,7 @@ const useExtrinsics = () => {
     supply: u128
   ) => {
     if (walletAccount.signer) {
-      apiPromise
+      apiConnection
         .then((api) => {
           api?.tx?.daoCore
             ?.issueToken?.(daoId, supply)
@@ -201,12 +210,14 @@ const useExtrinsics = () => {
               }
             )
             .catch((err) => {
+              updateTxnProcessing(false);
               const errMessage = new Error(err);
               handleTxnError(errMessage);
               console.log(new Error(err));
             });
         })
         .catch((err) => {
+          updateTxnProcessing(false);
           console.log(new Error(err));
         });
     } else {
