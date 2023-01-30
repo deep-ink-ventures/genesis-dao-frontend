@@ -75,6 +75,11 @@
 }
 
 
+/* a:hover {
+  @apply border-b-2 border-blue-600 text-blue-500;
+} */
+
+
 .content p {
   @apply my-6;
 }
@@ -88,5 +93,7 @@
 }
 
 @Layer utilities{
-
+  a:hover {
+    @apply border-b-2 border-blue-700;
+  }
 }

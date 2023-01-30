@@ -13,14 +13,14 @@ const WalletConnect = () => {
   const updateCurrentWalletAccount = useGenesisStore(
     (s) => s.updateCurrentWalletAccount
   );
-  const updateWalletConected = useGenesisStore((s) => s.updateWalletConnected);
+  const updateWalletConnected = useGenesisStore((s) => s.updateWalletConnected);
 
   // @ts-ignore
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const handleDisconnect = () => {
     updateCurrentWalletAccount(undefined);
-    updateWalletConected(false);
+    updateWalletConnected(false);
   };
 
   const handleModal = () => {
@@ -30,7 +30,7 @@ const WalletConnect = () => {
   const handleUpdateAccounts = (accounts: WalletAccount[] | undefined) => {
     if (accounts && accounts?.length > 0) {
       updateCurrentWalletAccount(accounts[0]);
-      updateWalletConected(true);
+      updateWalletConnected(true);
     }
   };
 

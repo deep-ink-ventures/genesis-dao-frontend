@@ -9,6 +9,12 @@ interface IMainProps {
   children: ReactNode;
 }
 
+/**
+ *
+ * @param meta
+ * @param children
+ * @returns
+ */
 const MainLayout = (props: IMainProps) => (
   <div className='w-full px-1'>
     {props.meta}

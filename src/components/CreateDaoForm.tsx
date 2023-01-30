@@ -44,8 +44,7 @@ const CreateDaoForm = () => {
         await createDao(currentWalletAccount, data);
         addOneDao(data);
       } catch (err) {
-        console.log(err);
-        throw new Error(err);
+        console.log(new Error(err));
       }
     } else {
       // fixme

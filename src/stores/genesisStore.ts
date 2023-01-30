@@ -1,6 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
-import type { u128 } from '@polkadot/types';
 import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
 
@@ -35,9 +34,9 @@ export interface CreateDaoData {
   daoName: string;
 }
 
-export interface IssueTokenData {
+export interface IssueTokensData {
   daoId: string;
-  supply: u128;
+  supply: number;
 }
 
 export interface WalletAccount {
@@ -61,7 +60,7 @@ export interface GenesisState {
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
-  daos: DaoInfo[] | null;
+  daos: DaoInfo[] | null; // need to refactor this to an object for quicker access
   daosOwnedByWallet: DaoInfo[] | null;
   txnNotifications: TxnNotification[];
   loading: boolean;
@@ -87,6 +86,7 @@ export interface GenesisActions {
   updateTxnProcessing: (txnProcessing: boolean) => void;
   updateApiConnection: (apiConnection: any) => void;
   createApiConnection: () => void;
+  updateDaosOwnedByWallet: () => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -147,8 +147,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
-    get()
-      .apiConnection.then((api) => {
+    const apiCon = get().apiConnection;
+    apiCon
+      .then((api) => {
         api?.query?.daoCore?.daos
           ?.entries()
           .then((daoEntries) => {
@@ -164,14 +165,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
               daos.push(newObj);
             });
             set({ daos });
-            // if wallet is connected we will also set the daosOwned state
-            const ownerAddress = get().currentWalletAccount?.address;
-            if (typeof ownerAddress === 'string') {
-              const daosOwned = daos.filter((dao) => {
-                return dao.owner === ownerAddress;
-              });
-              set({ daosOwnedByWallet: daosOwned });
-            }
           })
           .catch((err) => {
             console.log(new Error(err));
@@ -180,6 +173,19 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       .catch((err) => {
         throw new Error(err);
       });
+  },
+  updateDaosOwnedByWallet: async () => {
+    await get().fetchDaos();
+    const { daos } = get();
+    const address = get().currentWalletAccount?.address;
+    if (!daos || typeof address === 'undefined') {
+      return;
+    }
+    const daosByAddress = daos.filter((el) => {
+      return el.owner === address;
+    });
+
+    set({ daosOwnedByWallet: daosByAddress });
   },
   updateTxnProcessing: (txnProcessing) => set(() => ({ txnProcessing })),
   updateApiConnection: (apiConnection) => set(() => ({ apiConnection })),

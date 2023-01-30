@@ -1,4 +1,3 @@
-import type { u128 } from '@polkadot/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 
 import type {
@@ -46,10 +45,12 @@ const useExtrinsics = () => {
 
     if (result.status.isInBlock) {
       // fixme need to get this block hash
-      console.log('Included at block hash', result.status.asInBlock.toHex());
-      console.log('Events:');
+      console.log(
+        'Included at block hash',
+        result.status.asInBlock.toHex(),
+        '\nwait for 10-20 seconds to finalize'
+      );
       result.events.forEach(({ event: { data, method, section }, phase }) => {
-        console.log(data, method, section, phase);
         if (method === 'ExtrinsicSuccess') {
           updateTxnProcessing(false);
           const successNoti = {
@@ -73,12 +74,12 @@ const useExtrinsics = () => {
           };
           addTxnNotification(errorNoti);
         }
-        console.log(
-          '\t',
-          phase.toString(),
-          `: ${section}.${method}`,
-          data.toString()
-        );
+        // console.log(
+        //   '\t',
+        //   phase.toString(),
+        //   `: ${section}.${method}`,
+        //   data.toString()
+        // );
       });
     } else if (result.status.isFinalized) {
       console.log('Finalized block hash', result.status.asFinalized.toHex());
@@ -188,10 +189,10 @@ const useExtrinsics = () => {
     }
   };
 
-  const issueToken = (
+  const issueTokens = (
     walletAccount: WalletAccount,
     daoId: string,
-    supply: u128
+    supply: number
   ) => {
     if (walletAccount.signer) {
       apiConnection
@@ -225,7 +226,7 @@ const useExtrinsics = () => {
     }
   };
 
-  return { createDao, destroyDao, issueToken, getDaos, handleTxnError };
+  return { createDao, destroyDao, issueTokens, getDaos, handleTxnError };
 };
 
 export default useExtrinsics;
