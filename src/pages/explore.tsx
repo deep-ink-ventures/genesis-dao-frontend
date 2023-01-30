@@ -42,10 +42,7 @@ const ExploreDaos = () => {
   // const [daosToShow, setDaosToShow] = useState(daos);
 
   const handleFilterDaos = (event: any) => {
-    console.log('daosOwnedByWallet', daosOwnedByWallet);
     setFilterDaosOwned(!filterDaosOwned);
-    // setDaosToShow(daosOwnedByWallet);
-    console.log(event.target.checked);
   };
 
   useEffect(() => {
@@ -57,7 +54,6 @@ const ExploreDaos = () => {
     if (typeof currentWalletAccount !== undefined) {
       updateDaosOwnedByWallet();
     }
-    console.log('daos owned', daosOwnedByWallet);
   }, [currentWalletAccount]);
 
   return (

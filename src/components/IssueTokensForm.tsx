@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import useExtrinsics from '@/hooks/useExtrinsics';
 import type { IssueTokensData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
@@ -11,10 +12,22 @@ const IssueTokensForm = () => {
   const router = useRouter();
   const { daoId } = router.query;
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const { issueTokens } = useExtrinsics();
 
-  const onSubmit: SubmitHandler<IssueTokensData> = (data: IssueTokensData) => {
+  const onSubmit: SubmitHandler<IssueTokensData> = async (
+    data: IssueTokensData
+  ) => {
     console.log('form data', data);
+    updateTxnProcessing(true);
+    if (currentWalletAccount) {
+      try {
+        await issueTokens(currentWalletAccount, data.daoId, data.supply);
+      } catch (err) {
+        console.log(new Error(err));
+      }
+    }
   };
 
   const {
@@ -29,11 +42,9 @@ const IssueTokensForm = () => {
     if (!currentWalletAccount) {
       return 'Please Connect Wallet';
     }
-
     if (txnProcessing) {
       return 'Processing';
     }
-
     return 'Issue Tokens';
   };
 
@@ -42,7 +53,6 @@ const IssueTokensForm = () => {
     if (errors.supply) {
       console.log('errors', errors);
     }
-    console.log('daoid', daoId);
   }, [daoId]);
 
   useEffect(() => {
