@@ -87,6 +87,7 @@ export interface GenesisActions {
   updateApiConnection: (apiConnection: any) => void;
   createApiConnection: () => void;
   updateDaosOwnedByWallet: () => void;
+  handleErrors: (err: Error) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -130,8 +131,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     const newNotis = currentTxnNotis.slice(currentTxnNotis.length - 2);
     set({ txnNotifications: newNotis });
   },
-
-  // add the new dao to daos store when we create a new dao
   addOneDao: (createDaoData) => {
     const currentDaos = get().daos;
     const address = get().currentWalletAccount?.address;
@@ -167,11 +166,11 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
             set({ daos });
           })
           .catch((err) => {
-            console.log(new Error(err));
+            get().handleErrors(new Error(err));
           });
       })
       .catch((err) => {
-        throw new Error(err);
+        get().handleErrors(new Error(err));
       });
   },
   updateDaosOwnedByWallet: async () => {
@@ -198,12 +197,23 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         await api.isReady;
         return api;
       } catch (err) {
-        console.log(new Error(err));
+        get().handleErrors(new Error(err));
         return err;
       }
     };
 
     set({ apiConnection: createApi() });
+  },
+  handleErrors: (err: Error) => {
+    const newNoti = {
+      title: TxnResponse.Error,
+      message: err.message,
+      type: TxnResponse.Error,
+      timestamp: Date.now(),
+    };
+
+    set({ txnProcessing: false });
+    get().addTxnNotification(newNoti);
   },
 }));
 

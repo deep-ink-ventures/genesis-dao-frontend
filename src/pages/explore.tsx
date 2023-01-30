@@ -30,6 +30,7 @@ const DaoCards = ({ daos }: { daos: DaoInfo[] | null }) => {
   );
 };
 
+// fixme sometimes the filter toggle doesn't show
 const ExploreDaos = () => {
   const daos = useGenesisStore((s) => s.daos);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
@@ -39,7 +40,6 @@ const ExploreDaos = () => {
     (s) => s.updateDaosOwnedByWallet
   );
   const [filterDaosOwned, setFilterDaosOwned] = useState(false);
-  // const [daosToShow, setDaosToShow] = useState(daos);
 
   const handleFilterDaos = (event: any) => {
     setFilterDaosOwned(!filterDaosOwned);
