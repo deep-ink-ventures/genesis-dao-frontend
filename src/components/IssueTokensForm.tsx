@@ -77,6 +77,7 @@ const IssueTokensForm = () => {
             placeholder='Tokens Supply'
             {...register('supply', {
               required: 'required',
+              valueAsNumber: true,
               min: 1,
             })}
           />

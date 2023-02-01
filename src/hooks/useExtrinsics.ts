@@ -13,23 +13,15 @@ const useExtrinsics = () => {
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
+
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
-    let newNoti = {
+    const newNoti = {
       title: TxnResponse.Error,
       message: err.message,
       type: TxnResponse.Error,
       timestamp: Date.now(),
     };
-    if (err.message.includes('Cancelled')) {
-      newNoti = {
-        title: TxnResponse.Cancelled,
-        message:
-          'Please try again. Make sure you sign and approve the transaction using your wallet',
-        type: TxnResponse.Warning,
-        timestamp: Date.now(),
-      };
-    }
 
     updateTxnProcessing(false);
     addTxnNotification(newNoti);
@@ -41,10 +33,7 @@ const useExtrinsics = () => {
     successMsg: string,
     errorMsg: string
   ) => {
-    console.log('Transaction status1:', result.status.type);
-
     if (result.status.isInBlock) {
-      // fixme need to get this block hash
       console.log(
         'Included at block hash',
         result.status.asInBlock.toHex(),
@@ -74,12 +63,6 @@ const useExtrinsics = () => {
           };
           addTxnNotification(errorNoti);
         }
-        // console.log(
-        //   '\t',
-        //   phase.toString(),
-        //   `: ${section}.${method}`,
-        //   data.toString()
-        // );
       });
     } else if (result.status.isFinalized) {
       console.log('Finalized block hash', result.status.asFinalized.toHex());
@@ -117,8 +100,7 @@ const useExtrinsics = () => {
         })
         .catch((err) => {
           updateTxnProcessing(false);
-          // fixme
-          console.log(new Error(err));
+          handleTxnError(new Error(err));
         });
     } else {
       // fixme
@@ -146,12 +128,12 @@ const useExtrinsics = () => {
           })
           .catch((err) => {
             updateTxnProcessing(false);
-            console.log(new Error(err));
+            handleTxnError(new Error(err));
           });
       })
       .catch((err) => {
         updateTxnProcessing(false);
-        console.log(new Error(err));
+        handleTxnError(new Error(err));
       });
     return daos;
   };
@@ -175,14 +157,12 @@ const useExtrinsics = () => {
             )
             .catch((err) => {
               updateTxnProcessing(false);
-              const errMessage = new Error(err);
-              handleTxnError(errMessage);
-              console.log('destroyDao', new Error(err));
+              handleTxnError(new Error(err));
             });
         })
         .catch((err) => {
           updateTxnProcessing(false);
-          console.log(new Error(err));
+          handleTxnError(new Error(err));
         });
     } else {
       console.log('wallet does not have a signer');
@@ -212,14 +192,12 @@ const useExtrinsics = () => {
             )
             .catch((err) => {
               updateTxnProcessing(false);
-              const errMessage = new Error(err);
-              handleTxnError(errMessage);
-              console.log(new Error(err));
+              handleTxnError(new Error(err));
             });
         })
         .catch((err) => {
           updateTxnProcessing(false);
-          console.log(new Error(err));
+          handleTxnError(new Error(err));
         });
     } else {
       console.log('wallet does not have a signer');

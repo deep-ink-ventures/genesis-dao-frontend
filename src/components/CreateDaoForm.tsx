@@ -15,6 +15,7 @@ const CreateDaoForm = () => {
   const addOneDao = useGenesisStore((s) => s.addOneDao);
   const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  const handleErrors = useGenesisStore((s) => s.handleErrors);
   const {
     register,
     handleSubmit,
@@ -44,11 +45,8 @@ const CreateDaoForm = () => {
         await createDao(currentWalletAccount, data);
         addOneDao(data);
       } catch (err) {
-        console.log(new Error(err));
+        handleErrors(new Error(err));
       }
-    } else {
-      // fixme
-      console.log('please connect wallet first');
     }
   };
 
