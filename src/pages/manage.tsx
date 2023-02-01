@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
 import DaosTableRow from '@/components/DaosTableRow';
-import { Meta } from '@/components/Meta';
 import Spinner from '@/components/Spinner';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
@@ -22,12 +21,8 @@ const ManageDao = () => {
   const noWallet = () => {
     return (
       <MainLayout
-        meta={
-          <Meta
-            title='Manage Your DAO - GenesisDAO'
-            description='Manage Your DAO - GenesisDAO'
-          />
-        }>
+        title='Manage Your DAO - GenesisDAO'
+        description='Manage Your DAO - GenesisDAO'>
         <div className='flex justify-center py-3 pt-5'>
           <div>Connect Wallet First</div>
         </div>
@@ -41,24 +36,16 @@ const ManageDao = () => {
   if (!daosOwnedByWallet) {
     return (
       <MainLayout
-        meta={
-          <Meta
-            title='Manage Your DAO - GenesisDAO'
-            description='Manage Your DAO - GenesisDAO'
-          />
-        }>
+        title='Manage Your DAO - GenesisDAO'
+        description='Manage Your DAO - GenesisDAO'>
         <Spinner />
       </MainLayout>
     );
   }
   return (
     <MainLayout
-      meta={
-        <Meta
-          title='Manage Your DAO - GenesisDAO'
-          description='Manage Your DAO - GenesisDAO'
-        />
-      }>
+      title='Manage Your DAO - GenesisDAO'
+      description='Manage Your DAO - GenesisDAO'>
       <div className='py-3 pt-5'>
         <h1 className='mb-3 text-center text-3xl'>{`Here are the DAOS managed by you:`}</h1>
         <div className='overflow-x-auto p-5'>

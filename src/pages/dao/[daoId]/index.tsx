@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { Meta } from '@/components/Meta';
 import MainLayout from '@/templates/MainLayout';
 
 import useGenesisStore from '../../../stores/genesisStore';
@@ -13,12 +12,8 @@ const DaoHome = () => {
 
   return (
     <MainLayout
-      meta={
-        <Meta
-          title='GenesisDAO - DAO Platform On Polkadot'
-          description='GenesisDAO Description'
-        />
-      }>
+      title='GenesisDAO - DAO Platform On Polkadot'
+      description='GenesisDAO Description'>
       <div>{!currentWalletAccount ? `Connect Wallet to manage dao` : null}</div>
       <div className='space-between mt-12 flex'>
         <div className='hero mt-3 p-2'>

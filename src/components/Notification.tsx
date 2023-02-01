@@ -1,6 +1,5 @@
 import useGenesisStore from '@/stores/genesisStore';
 
-
 import NotificationToast from './NotificationToast';
 
 // fixme currently we don't delete notifications
