@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import useExtrinsics from '@/hooks/useExtrinsics';
+import useGenesisDao from '@/hooks/useGenesisDao';
 import type { IssueTokensData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
@@ -14,7 +14,8 @@ const IssueTokensForm = () => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const { issueTokens } = useExtrinsics();
+  const handleErrors = useGenesisStore((s) => s.handleErrors);
+  const { issueTokens } = useGenesisDao();
 
   const onSubmit: SubmitHandler<IssueTokensData> = async (
     data: IssueTokensData
@@ -25,7 +26,7 @@ const IssueTokensForm = () => {
       try {
         await issueTokens(currentWalletAccount, data.daoId, data.supply);
       } catch (err) {
-        console.log(new Error(err));
+        handleErrors(new Error(err));
       }
     }
   };

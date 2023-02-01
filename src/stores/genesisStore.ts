@@ -14,6 +14,12 @@ export enum TxnResponse {
   Cancelled = 'CANCELLED',
 }
 
+export interface TransferFormValues {
+  assetId: string;
+  toAddress: string;
+  amount: number;
+}
+
 export interface TxnNotification {
   title: string;
   message: string;

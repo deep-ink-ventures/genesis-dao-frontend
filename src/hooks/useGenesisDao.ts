@@ -9,19 +9,27 @@ import type {
 import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 
 // fixme open one connection and reuse that connection
-const useExtrinsics = () => {
+const useGenesisDao = () => {
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
-
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
-    const newNoti = {
+    let newNoti = {
       title: TxnResponse.Error,
       message: err.message,
       type: TxnResponse.Error,
       timestamp: Date.now(),
     };
+    if (err.message.includes('Cancelled')) {
+      newNoti = {
+        title: TxnResponse.Cancelled,
+        message:
+          'Please try again. Make sure you sign and approve the transaction using your wallet',
+        type: TxnResponse.Warning,
+        timestamp: Date.now(),
+      };
+    }
 
     updateTxnProcessing(false);
     addTxnNotification(newNoti);
@@ -33,7 +41,10 @@ const useExtrinsics = () => {
     successMsg: string,
     errorMsg: string
   ) => {
+    console.log('Transaction status1:', result.status.type);
+
     if (result.status.isInBlock) {
+      // fixme need to get this block hash
       console.log(
         'Included at block hash',
         result.status.asInBlock.toHex(),
@@ -92,10 +103,7 @@ const useExtrinsics = () => {
             )
             .catch((err) => {
               updateTxnProcessing(false);
-              const errMessage = new Error(err);
-              handleTxnError(errMessage);
-              // fixme
-              console.log('create dao', errMessage);
+              handleTxnError(new Error(err));
             });
         })
         .catch((err) => {
@@ -158,6 +166,8 @@ const useExtrinsics = () => {
             .catch((err) => {
               updateTxnProcessing(false);
               handleTxnError(new Error(err));
+
+              console.log('destroyDao', new Error(err));
             });
         })
         .catch((err) => {
@@ -174,11 +184,12 @@ const useExtrinsics = () => {
     daoId: string,
     supply: number
   ) => {
+    const amount = supply * 1000000000;
     if (walletAccount.signer) {
       apiConnection
         .then((api) => {
           api?.tx?.daoCore
-            ?.issueToken?.(daoId, supply)
+            ?.issueToken?.(daoId, amount)
             .signAndSend(
               walletAccount.address,
               { signer: walletAccount.signer },
@@ -204,7 +215,53 @@ const useExtrinsics = () => {
     }
   };
 
-  return { createDao, destroyDao, issueTokens, getDaos, handleTxnError };
+  const transfer = (
+    walletAccount: WalletAccount,
+    assetId: string,
+    toAddress: string,
+    amount: number
+  ) => {
+    const newAmount = amount * 1000000000;
+    if (walletAccount.signer) {
+      apiConnection
+        .then((api) => {
+          api?.tx?.assets
+            ?.transfer?.(assetId, toAddress, newAmount)
+            .signAndSend(
+              walletAccount.address,
+              { signer: walletAccount.signer },
+              (result) => {
+                txResponseCallback(
+                  result,
+                  `Transferred ${amount}`,
+                  'Something went wrong. Please try again. '
+                );
+              }
+            )
+            .catch((err) => {
+              updateTxnProcessing(false);
+              const errMessage = new Error(err);
+              handleTxnError(errMessage);
+              console.log(new Error(err));
+            });
+        })
+        .catch((err) => {
+          updateTxnProcessing(false);
+          console.log(new Error(err));
+        });
+    } else {
+      console.log('wallet does not have a signer');
+    }
+  };
+
+  return {
+    createDao,
+    destroyDao,
+    issueTokens,
+    getDaos,
+    handleTxnError,
+    transfer,
+  };
 };
 
-export default useExtrinsics;
+export default useGenesisDao;

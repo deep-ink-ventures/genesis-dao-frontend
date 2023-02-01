@@ -61,4 +61,4 @@ const Meta = (props: IMetaProps) => {
   );
 };
 
-export { Meta };
+export default Meta;

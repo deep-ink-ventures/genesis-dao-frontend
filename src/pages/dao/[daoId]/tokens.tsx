@@ -1,22 +1,14 @@
 import { useRouter } from 'next/router';
 
 import IssueTokensForm from '@/components/IssueTokensForm';
-import { Meta } from '@/components/Meta';
 import MainLayout from '@/templates/MainLayout';
 
 const Tokens = () => {
   const router = useRouter();
   const { daoId } = router.query;
 
-  // useEffect(() => {
-  //   console.log(daoId)
-  // })
-
   return (
-    <MainLayout
-      meta={
-        <Meta title='Tokens page for DAOS' description='Tokens page for DAOS' />
-      }>
+    <MainLayout title='Tokens page for DAOS' description='Tokens page for DAOS'>
       <div>Manage Tokens here</div>
       <div className='hero mt-12'>
         <div className='hero-content rounded-xl bg-slate-800 text-center'>

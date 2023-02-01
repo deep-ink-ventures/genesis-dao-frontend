@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import DaoCard from '@/components/DaoCard';
-import { Meta } from '@/components/Meta';
 import Spinner from '@/components/Spinner';
 import type { DaoInfo } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -58,12 +57,8 @@ const ExploreDaos = () => {
 
   return (
     <MainLayout
-      meta={
-        <Meta
-          title='Explore DAOs - GenesisDAO'
-          description='GenesisDAO Description'
-        />
-      }>
+      title='Explore DAOs - GenesisDAO'
+      description='GenesisDAO Description'>
       <div>
         <div>
           {daosOwnedByWallet && daosOwnedByWallet.length > 1 ? (
