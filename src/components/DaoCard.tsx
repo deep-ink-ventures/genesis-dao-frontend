@@ -4,6 +4,7 @@ interface DaoCardProps {
   daoId: string;
   daoName: string;
   owner: string;
+  assetId: number | null;
 }
 
 const DaoCard = (props: DaoCardProps) => {
@@ -12,8 +13,9 @@ const DaoCard = (props: DaoCardProps) => {
       <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
         <div className='card-body text-center'>
           <h1 className='mb-1 text-2xl font-bold'>{props.daoName}</h1>
-          <p>{`ID: ${props.daoId}`}</p>
+          <p>{`DAO ID: ${props.daoId}`}</p>
           <p>{`Owner: ${props.owner}`}</p>
+          <p>{`Asset ID: ${props.assetId ? props.assetId : 'N/A'}`}</p>
           <p>You can check out this dao</p>
         </div>
       </Link>

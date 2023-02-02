@@ -13,7 +13,7 @@ import useGenesisStore from '@/stores/genesisStore';
 // get the balance of the user's wallet tokens
 // add dao token options in to the select input
 
-const TransferForm = () => {
+const TransferForm = (props: { assetId: number }) => {
   const { transfer } = useGenesisDao();
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
@@ -24,6 +24,7 @@ const TransferForm = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitSuccessful },
+    setValue,
   } = useForm<TransferFormValues>();
 
   const onSubmit: SubmitHandler<TransferFormValues> = async (
@@ -35,7 +36,7 @@ const TransferForm = () => {
       try {
         await transfer(
           currentWalletAccount,
-          data.assetId,
+          props.assetId,
           data.toAddress,
           data.amount
         );
@@ -56,10 +57,11 @@ const TransferForm = () => {
   };
 
   useEffect(() => {
+    setValue('assetId', props.assetId);
     if (isSubmitSuccessful) {
       reset(
         {
-          assetId: '',
+          assetId: props.assetId,
           toAddress: '',
           amount: 0,
         },
@@ -86,32 +88,6 @@ const TransferForm = () => {
             name='toAddress'
             render={({ message }) => <p>{message}</p>}
           />
-        </div>
-        <div className='mb-3'>
-          <input
-            type='text'
-            className='input-bordered input-primary input'
-            placeholder='Asset ID'
-            {...register('assetId', {
-              required: 'required',
-            })}
-          />
-          <ErrorMessage
-            errors={errors}
-            name='assetId'
-            render={({ message }) => <p>{message}</p>}
-          />
-        </div>
-        <div className='mb-3'>
-          <select className='select-primary select w-full max-w-xs'>
-            <option disabled selected>
-              Select DAO Token Name
-            </option>
-            <option>Game of Thrones</option>
-            <option>Lost</option>
-            <option>Breaking Bad</option>
-            <option>Walking Dead</option>
-          </select>
         </div>
         <div className='mb-3'>
           <input

@@ -13,6 +13,8 @@ const useGenesisDao = () => {
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
+  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
+
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
     let newNoti = {
@@ -99,6 +101,7 @@ const useGenesisDao = () => {
                   'Congrats! Your DAO is created.',
                   'Something went wrong. Please try again.'
                 );
+                fetchDaos();
               }
             )
             .catch((err) => {
@@ -199,6 +202,7 @@ const useGenesisDao = () => {
                   'Tokens Issued',
                   'Something went wrong. Please try again. '
                 );
+                fetchDaos();
               }
             )
             .catch((err) => {
@@ -217,7 +221,7 @@ const useGenesisDao = () => {
 
   const transfer = (
     walletAccount: WalletAccount,
-    assetId: string,
+    assetId: number,
     toAddress: string,
     amount: number
   ) => {
