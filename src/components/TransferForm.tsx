@@ -10,15 +10,15 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
-// get the balance of the user's wallet tokens
-// add dao token options in to the select input
-
-const TransferForm = (props: { assetId: number }) => {
+const TransferForm = (props: { assetId: number; daoId: string }) => {
   const { transfer } = useGenesisDao();
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
+  const fetchTokenBalance = useGenesisStore((s) => s.fetchTokenBalance);
+  const currentAssetBalance = useGenesisStore((s) => s.currentAssetBalance);
+
   const {
     register,
     handleSubmit,
@@ -70,8 +70,19 @@ const TransferForm = (props: { assetId: number }) => {
     }
   });
 
+  useEffect(() => {
+    if (currentWalletAccount) {
+      fetchTokenBalance(props.assetId, currentWalletAccount.address);
+    }
+  });
+
   return (
     <div>
+      <div>
+        <div>
+          {`Your current ${props.daoId} token balance is ${currentAssetBalance}`}
+        </div>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='mb-3'>
           {/* fixme validate address */}

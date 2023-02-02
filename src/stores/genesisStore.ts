@@ -14,6 +14,13 @@ export enum TxnResponse {
   Cancelled = 'CANCELLED',
 }
 
+export interface IncomingTokenBalanceData {
+  balance: string;
+  extra: string | null;
+  reason: string;
+  reserved: string; // number string
+}
+
 export interface TransferFormValues {
   assetId: number;
   toAddress: string;
@@ -76,6 +83,7 @@ export interface GenesisState {
   loading: boolean;
   txnProcessing: boolean;
   apiConnection: Promise<ApiPromise>;
+  currentAssetBalance: number | null;
 }
 
 export interface GenesisActions {
@@ -98,6 +106,8 @@ export interface GenesisActions {
   createApiConnection: () => void;
   updateDaosOwnedByWallet: () => void;
   handleErrors: (err: Error) => void;
+  updateCurrentAssetBalance: (currentAssetBalance: number) => void;
+  fetchTokenBalance: (assetId: number, accountId: string) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -118,6 +128,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   apiConnection: ApiPromise.create({
     provider: new WsProvider(LOCAL_NODE),
   }),
+  currentAssetBalance: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -215,6 +226,29 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     };
 
     set({ apiConnection: createApi() });
+  },
+
+  updateCurrentAssetBalance: (currentAssetBalance) =>
+    set(() => ({ currentAssetBalance })),
+
+  fetchTokenBalance: (assetId: number, accountId: string) => {
+    get()
+      .apiConnection.then((api) => {
+        api?.query?.assets
+          ?.account?.(assetId, accountId)
+          .then((data) => {
+            const assetData =
+              data.toHuman() as unknown as IncomingTokenBalanceData;
+            const balanceStr = assetData.balance.replaceAll(',', '');
+            get().updateCurrentAssetBalance(Number(balanceStr) / 1000000000);
+          })
+          .catch((err) => {
+            get().handleErrors(new Error(err));
+          });
+      })
+      .catch((err) => {
+        get().handleErrors(new Error(err));
+      });
   },
   handleErrors: (err: Error) => {
     const newNoti = {

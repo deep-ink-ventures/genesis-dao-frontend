@@ -9,7 +9,6 @@ const Tokens = () => {
   const router = useRouter();
   const { daoId } = router.query;
   const daos = useGenesisStore((s) => s.daos);
-
   if (!daos) {
     <MainLayout title='Tokens page for DAOS' description='Tokens page for DAOS'>
       <div>something is wrong</div>
@@ -45,6 +44,7 @@ const Tokens = () => {
             <h1 className='text-3xl font-bold'>{`Transfer ${daoId} tokens`}</h1>
             <TransferForm
               assetId={daos?.[daoId as string]?.assetId as number}
+              daoId={daoId as string}
             />
           </div>
         </div>
