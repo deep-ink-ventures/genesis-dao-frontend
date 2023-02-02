@@ -254,6 +254,8 @@ const useGenesisDao = () => {
     }
   };
 
+  const getTokenBalance = () => {};
+
   return {
     createDao,
     destroyDao,
@@ -261,6 +263,7 @@ const useGenesisDao = () => {
     getDaos,
     handleTxnError,
     transfer,
+    getTokenBalance,
   };
 };
 

@@ -167,6 +167,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
                 owner: dao.owner,
                 assetId: dao.assetId,
               };
+              console.log(newObj);
               daos.push(newObj);
             });
             set({ daos });

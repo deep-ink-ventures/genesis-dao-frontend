@@ -10,6 +10,9 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
+// get the balance of the user's wallet tokens
+// add dao token options in to the select input
+
 const TransferForm = () => {
   const { transfer } = useGenesisDao();
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
@@ -98,6 +101,17 @@ const TransferForm = () => {
             name='assetId'
             render={({ message }) => <p>{message}</p>}
           />
+        </div>
+        <div className='mb-3'>
+          <select className='select-primary select w-full max-w-xs'>
+            <option disabled selected>
+              Select DAO Token Name
+            </option>
+            <option>Game of Thrones</option>
+            <option>Lost</option>
+            <option>Breaking Bad</option>
+            <option>Walking Dead</option>
+          </select>
         </div>
         <div className='mb-3'>
           <input

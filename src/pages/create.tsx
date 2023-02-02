@@ -10,7 +10,7 @@ const CreateDao = () => {
       <div className='hero mt-12'>
         <div className='hero-content rounded-xl bg-slate-800 text-center'>
           <div className='max-w-md'>
-            <h1 className='text-3xl font-bold'>Create a DAO</h1>
+            <h1 className='mb-2 text-3xl font-bold'>Create a DAO</h1>
             <CreateDaoForm />
           </div>
         </div>
