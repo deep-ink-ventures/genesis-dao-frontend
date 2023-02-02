@@ -65,6 +65,7 @@ export interface DaoInfo {
   daoId: string;
   daoName: string;
   owner: string;
+  owned: boolean;
 }
 
 export interface AllDaos {
@@ -161,6 +162,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         daoName: createDaoData.daoName,
         owner: address,
         assetId: null,
+        owned: address === get().currentWalletAccount?.address,
       };
       set({ daos: { ...get().daos, [createDaoData.daoId]: newObj } });
     }
@@ -181,7 +183,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
                 daoName: dao.name,
                 owner: dao.owner,
                 assetId: dao.assetId,
+                owned: dao.owner === get().currentWalletAccount?.address,
               };
+
               daos[dao.id] = newObj;
             });
             set({ daos });
@@ -194,6 +198,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         get().handleErrors(new Error(err));
       });
   },
+
   updateDaosOwnedByWallet: async () => {
     await get().fetchDaos();
     const { daos } = get();

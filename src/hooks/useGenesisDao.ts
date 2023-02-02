@@ -1,11 +1,6 @@
 import type { ISubmittableResult } from '@polkadot/types/types';
 
-import type {
-  CreateDaoData,
-  DaoInfo,
-  IncomingDaoInfo,
-  WalletAccount,
-} from '../stores/genesisStore';
+import type { CreateDaoData, WalletAccount } from '../stores/genesisStore';
 import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 
 // fixme open one connection and reuse that connection
@@ -119,35 +114,35 @@ const useGenesisDao = () => {
     }
   };
 
-  const getDaos = () => {
-    const daos: DaoInfo[] = [];
-    apiConnection
-      .then((api) => {
-        api?.query?.daoCore?.daos
-          ?.entries()
-          .then((daoEntries) => {
-            daoEntries.forEach(([_k, v]) => {
-              const dao = v.toHuman() as unknown as IncomingDaoInfo;
-              const newObj = {
-                daoId: dao.id,
-                daoName: dao.name,
-                owner: dao.owner,
-                assetId: dao.assetId,
-              };
-              daos.push(newObj);
-            });
-          })
-          .catch((err) => {
-            updateTxnProcessing(false);
-            handleTxnError(new Error(err));
-          });
-      })
-      .catch((err) => {
-        updateTxnProcessing(false);
-        handleTxnError(new Error(err));
-      });
-    return daos;
-  };
+  // const getDaos = () => {
+  //   const daos: DaoInfo[] = [];
+  //   apiConnection
+  //     .then((api) => {
+  //       api?.query?.daoCore?.daos
+  //         ?.entries()
+  //         .then((daoEntries) => {
+  //           daoEntries.forEach(([_k, v]) => {
+  //             const dao = v.toHuman() as unknown as IncomingDaoInfo;
+  //             const newObj = {
+  //               daoId: dao.id,
+  //               daoName: dao.name,
+  //               owner: dao.owner,
+  //               assetId: dao.assetId,
+  //             };
+  //             daos.push(newObj);
+  //           });
+  //         })
+  //         .catch((err) => {
+  //           updateTxnProcessing(false);
+  //           handleTxnError(new Error(err));
+  //         });
+  //     })
+  //     .catch((err) => {
+  //       updateTxnProcessing(false);
+  //       handleTxnError(new Error(err));
+  //     });
+  //   return daos;
+  // };
 
   const destroyDao = (walletAccount: WalletAccount, daoId: string) => {
     if (walletAccount.signer) {
@@ -260,7 +255,6 @@ const useGenesisDao = () => {
     createDao,
     destroyDao,
     issueTokens,
-    getDaos,
     handleTxnError,
     transfer,
   };

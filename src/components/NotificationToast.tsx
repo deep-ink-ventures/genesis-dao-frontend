@@ -106,7 +106,7 @@ const NotificationToast = (props: ToastProps) => {
           <p className='ml-3 text-xs'>{props.message}</p>
           {/* fixme convert this into a component */}
           {props.txnHash ? (
-            <p className='ml-3 break-words text-xs text-blue-500 decoration-solid'>
+            <p className='ml-3 break-words text-xs text-blue-500 underline'>
               <a
                 href={makeExplorerLink(props.txnHash)}
                 target='_blank'

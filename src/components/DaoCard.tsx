@@ -5,11 +5,14 @@ interface DaoCardProps {
   daoName: string;
   owner: string;
   assetId: number | null;
+  owned: boolean;
 }
 
 const DaoCard = (props: DaoCardProps) => {
   return (
-    <div className='card m-1 w-96 break-words bg-slate-800 text-center text-sm shadow-xl hover:cursor-pointer hover:bg-slate-700'>
+    <div
+      className={`card m-1 w-60 break-words bg-slate-800 text-center text-sm shadow-xl hover:cursor-pointer hover:bg-slate-700
+      ${!props.owned ? `bg-slate-800` : `bg-blue-800`} `}>
       <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
         <div className='card-body text-center'>
           <h1 className='mb-1 text-2xl font-bold'>{props.daoName}</h1>

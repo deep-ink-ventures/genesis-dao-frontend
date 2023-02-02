@@ -14,6 +14,9 @@ const WalletConnect = () => {
     (s) => s.updateCurrentWalletAccount
   );
   const updateWalletConnected = useGenesisStore((s) => s.updateWalletConnected);
+  const updateDaosOwnedByWallet = useGenesisStore(
+    (s) => s.updateDaosOwnedByWallet
+  );
 
   // @ts-ignore
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -31,6 +34,7 @@ const WalletConnect = () => {
     if (accounts && accounts?.length > 0) {
       updateCurrentWalletAccount(accounts[0]);
       updateWalletConnected(true);
+      updateDaosOwnedByWallet();
     }
   };
 

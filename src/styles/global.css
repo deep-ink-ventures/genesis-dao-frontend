@@ -74,6 +74,21 @@
 
 }
 
+h1 {
+  @apply text-3xl font-bold md:text-2xl;
+}
+
+h2 {
+  @apply  text-2xl font-bold md:text-2xl;
+}
+
+h3{
+  @apply text-xl font-bold md:text-xl;
+}
+
+h4 {
+  @apply text-base font-bold md:text-lg;
+}
 
 /* a:hover {
   @apply border-b-2 border-blue-600 text-blue-500;
