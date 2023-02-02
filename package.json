@@ -34,6 +34,7 @@
     "@talismn/connect-components": "^1.1.6",
     "@talismn/connect-ui": "^1.1.2",
     "@talismn/connect-wallets": "^1.2.3",
+    "bignumber.js": "^9.1.1",
     "daisyui": "^2.46.1",
     "next": "^13.1.1",
     "next-seo": "^5.15.0",

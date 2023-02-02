@@ -14,8 +14,15 @@ export enum TxnResponse {
   Cancelled = 'CANCELLED',
 }
 
+export interface IncomingTokenBalanceData {
+  balance: string;
+  extra: string | null;
+  reason: string;
+  reserved: string; // number string
+}
+
 export interface TransferFormValues {
-  assetId: string;
+  assetId: number;
   toAddress: string;
   amount: number;
 }
@@ -32,7 +39,7 @@ export interface IncomingDaoInfo {
   id: string;
   name: string;
   owner: string;
-  assetId: string;
+  assetId: number;
 }
 
 export interface CreateDaoData {
@@ -42,7 +49,7 @@ export interface CreateDaoData {
 
 export interface IssueTokensData {
   daoId: string;
-  supply: number;
+  supply: number; // fixme change this to BN
 }
 
 export interface WalletAccount {
@@ -54,10 +61,14 @@ export interface WalletAccount {
 }
 
 export interface DaoInfo {
-  assetId: string | null;
+  assetId: number | null;
   daoId: string;
   daoName: string;
   owner: string;
+}
+
+export interface AllDaos {
+  [daoId: string]: DaoInfo;
 }
 
 export interface GenesisState {
@@ -66,12 +77,13 @@ export interface GenesisState {
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
-  daos: DaoInfo[] | null; // need to refactor this to an object for quicker access
+  daos: AllDaos | null; // fixme need to refactor this to an object for quicker access
   daosOwnedByWallet: DaoInfo[] | null;
   txnNotifications: TxnNotification[];
   loading: boolean;
   txnProcessing: boolean;
   apiConnection: Promise<ApiPromise>;
+  currentAssetBalance: number | null;
 }
 
 export interface GenesisActions {
@@ -82,7 +94,7 @@ export interface GenesisActions {
   updateWalletConnected: (walletConnected: boolean) => void;
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
-  updateDaos: (daos: DaoInfo[] | null) => void;
+  updateDaos: (daos: AllDaos | null) => void;
   addOneDao: (createDaoData: CreateDaoData) => void;
   fetchDaos: () => void;
   updateLoading: (loading: boolean) => void;
@@ -94,6 +106,8 @@ export interface GenesisActions {
   createApiConnection: () => void;
   updateDaosOwnedByWallet: () => void;
   handleErrors: (err: Error) => void;
+  updateCurrentAssetBalance: (currentAssetBalance: number) => void;
+  fetchTokenBalance: (assetId: number, accountId: string) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -114,6 +128,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   apiConnection: ApiPromise.create({
     provider: new WsProvider(LOCAL_NODE),
   }),
+  currentAssetBalance: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -147,7 +162,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         owner: address,
         assetId: null,
       };
-      set({ daos: [...currentDaos, newObj] });
+      set({ daos: { ...get().daos, [createDaoData.daoId]: newObj } });
     }
   },
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
@@ -158,7 +173,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         api?.query?.daoCore?.daos
           ?.entries()
           .then((daoEntries) => {
-            const daos: DaoInfo[] = [];
+            const daos: AllDaos = {};
             daoEntries.forEach(([_k, v]) => {
               const dao = v.toHuman() as unknown as IncomingDaoInfo;
               const newObj = {
@@ -167,7 +182,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
                 owner: dao.owner,
                 assetId: dao.assetId,
               };
-              daos.push(newObj);
+              daos[dao.id] = newObj;
             });
             set({ daos });
           })
@@ -186,7 +201,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     if (!daos || typeof address === 'undefined') {
       return;
     }
-    const daosByAddress = daos.filter((el) => {
+
+    const daosArr = Object.values(daos);
+    const daosByAddress = daosArr.filter((el) => {
       return el.owner === address;
     });
 
@@ -209,6 +226,29 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     };
 
     set({ apiConnection: createApi() });
+  },
+
+  updateCurrentAssetBalance: (currentAssetBalance) =>
+    set(() => ({ currentAssetBalance })),
+
+  fetchTokenBalance: (assetId: number, accountId: string) => {
+    get()
+      .apiConnection.then((api) => {
+        api?.query?.assets
+          ?.account?.(assetId, accountId)
+          .then((data) => {
+            const assetData =
+              data.toHuman() as unknown as IncomingTokenBalanceData;
+            const balanceStr = assetData.balance.replaceAll(',', '');
+            get().updateCurrentAssetBalance(Number(balanceStr) / 1000000000);
+          })
+          .catch((err) => {
+            get().handleErrors(new Error(err));
+          });
+      })
+      .catch((err) => {
+        get().handleErrors(new Error(err));
+      });
   },
   handleErrors: (err: Error) => {
     const newNoti = {

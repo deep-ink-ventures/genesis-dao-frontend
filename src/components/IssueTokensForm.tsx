@@ -8,6 +8,8 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { IssueTokensData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
+// fix me after token issue, should go to another page
+
 const IssueTokensForm = () => {
   const router = useRouter();
   const { daoId } = router.query;
@@ -15,6 +17,7 @@ const IssueTokensForm = () => {
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
+  const daos = useGenesisStore((s) => s.daos);
   const { issueTokens } = useGenesisDao();
 
   const onSubmit: SubmitHandler<IssueTokensData> = async (
@@ -42,6 +45,9 @@ const IssueTokensForm = () => {
   const buttonText = () => {
     if (!currentWalletAccount) {
       return 'Please Connect Wallet';
+    }
+    if (daos && currentWalletAccount.address !== daos[daoId as string]?.owner) {
+      return `Only DAO owner can issue`;
     }
     if (txnProcessing) {
       return 'Processing';
@@ -72,6 +78,7 @@ const IssueTokensForm = () => {
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='mb-3'>
+          {/* // fixme change this to BN */}
           <input
             type='number'
             className='input-bordered input-primary input'
@@ -97,7 +104,13 @@ const IssueTokensForm = () => {
           <button
             type='submit'
             className={`btn-primary btn 
-          ${!currentWalletAccount ? `btn-disabled` : ``}
+          ${
+            !currentWalletAccount ||
+            (daos &&
+              currentWalletAccount.address !== daos[daoId as string]?.owner)
+              ? `btn-disabled`
+              : ``
+          }
           ${txnProcessing ? `loading` : ``}
           `}>
             {buttonText()}

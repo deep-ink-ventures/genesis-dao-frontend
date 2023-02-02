@@ -9,7 +9,7 @@ import MainLayout from '@/templates/MainLayout';
 import { truncateMiddle } from '../utils/utils';
 
 const DaoCards = ({ daos }: { daos: DaoInfo[] | null }) => {
-  return daos && daos.length > 0 ? (
+  return daos && Object.keys(daos).length > 0 ? (
     <>
       {daos.map((dao) => {
         return (
@@ -17,6 +17,7 @@ const DaoCards = ({ daos }: { daos: DaoInfo[] | null }) => {
             key={dao.daoId}
             daoId={dao.daoId}
             daoName={dao.daoName}
+            assetId={dao.assetId}
             owner={truncateMiddle(dao.owner)}
           />
         );
@@ -46,7 +47,7 @@ const ExploreDaos = () => {
 
   useEffect(() => {
     fetchDaos();
-    console.log('all daos', daos, 'daos owned', daosOwnedByWallet);
+    console.log('DAOs fetched');
   }, []);
 
   useEffect(() => {
@@ -54,6 +55,16 @@ const ExploreDaos = () => {
       updateDaosOwnedByWallet();
     }
   }, [currentWalletAccount]);
+
+  if (!daos) {
+    return (
+      <MainLayout
+        title='Explore DAOs - GenesisDAO'
+        description='GenesisDAO Description'>
+        <div>No DAOS created yet</div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout
@@ -77,7 +88,9 @@ const ExploreDaos = () => {
         </div>
         <div className='hero mt-12'>
           <div className='flex flex-wrap'>
-            <DaoCards daos={filterDaosOwned ? daosOwnedByWallet : daos} />
+            <DaoCards
+              daos={filterDaosOwned ? daosOwnedByWallet : Object.values(daos)}
+            />
           </div>
         </div>
       </div>

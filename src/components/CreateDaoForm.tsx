@@ -7,6 +7,8 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { CreateDaoData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
+// fixme after dao created it should go to another page
+
 const CreateDaoForm = () => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const createDaoData = useGenesisStore((s) => s.createDaoData);
