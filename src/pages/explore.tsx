@@ -6,7 +6,7 @@ import type { DaoInfo } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
 
-import { truncateMiddle } from '../utils/utils';
+import { truncateMiddle } from '../utils';
 
 const DaoCards = ({ daos }: { daos: DaoInfo[] | null }) => {
   return daos && Object.keys(daos).length > 0 ? (

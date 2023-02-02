@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+import { isValidPolkadotAddress } from '@/utils';
 
 const TransferForm = (props: { assetId: number; daoId: string }) => {
   const { transfer } = useGenesisDao();
@@ -85,13 +86,14 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='mb-3'>
-          {/* fixme validate address */}
           <input
             type='text'
             className='input-bordered input-primary input'
             placeholder='Recipient Address'
             {...register('toAddress', {
-              required: 'required',
+              required: 'Required',
+              validate: (add) =>
+                isValidPolkadotAddress(add) === true || 'Not a valid address',
             })}
           />
           <ErrorMessage
@@ -107,8 +109,11 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
             placeholder='Amount'
             {...register('amount', {
               valueAsNumber: true,
-              required: 'required',
-              min: 1,
+              required: 'Required',
+              min: {
+                value: 0.0000000001,
+                message: 'The Amount is zero or too small',
+              },
             })}
           />
           <ErrorMessage

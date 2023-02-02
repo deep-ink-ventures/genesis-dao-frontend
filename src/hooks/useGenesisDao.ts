@@ -244,14 +244,12 @@ const useGenesisDao = () => {
             )
             .catch((err) => {
               updateTxnProcessing(false);
-              const errMessage = new Error(err);
-              handleTxnError(errMessage);
-              console.log(new Error(err));
+              handleTxnError(new Error(err));
             });
         })
         .catch((err) => {
           updateTxnProcessing(false);
-          console.log(new Error(err));
+          handleTxnError(new Error(err));
         });
     } else {
       console.log('wallet does not have a signer');

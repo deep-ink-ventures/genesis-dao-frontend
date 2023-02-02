@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { TxnResponse } from '../stores/genesisStore';
-import { truncateMiddle } from '../utils/utils';
+import { truncateMiddle } from '../utils';
 
 interface ToastProps {
   type: TxnResponse;
@@ -104,8 +104,9 @@ const NotificationToast = (props: ToastProps) => {
         <div className='flex-col flex-wrap '>
           <h4 className='font-bol ml-3'>{props.title}</h4>
           <p className='ml-3 text-xs'>{props.message}</p>
+          {/* fixme convert this into a component */}
           {props.txnHash ? (
-            <p className='ml-3 break-words text-xs'>
+            <p className='ml-3 break-words text-xs text-blue-500 decoration-solid'>
               <a
                 href={makeExplorerLink(props.txnHash)}
                 target='_blank'

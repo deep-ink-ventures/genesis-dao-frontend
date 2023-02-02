@@ -77,7 +77,7 @@ const CreateDaoForm = () => {
             className='input-bordered input-primary input'
             placeholder='DAO ID'
             {...register('daoId', {
-              required: 'required',
+              required: 'Required',
               minLength: 3,
               maxLength: 22,
             })}
@@ -94,7 +94,7 @@ const CreateDaoForm = () => {
             className='input-bordered input-primary input'
             placeholder='DAO NAME'
             {...register('daoName', {
-              required: 'required',
+              required: 'Required',
               minLength: 3,
               maxLength: 22,
             })}
