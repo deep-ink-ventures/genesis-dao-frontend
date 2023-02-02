@@ -1,3 +1,5 @@
+import { decodeAddress, encodeAddress } from '@polkadot/keyring';
+import { hexToU8a, isHex } from '@polkadot/util';
 // @ts-ignore
 export const truncateMiddle = (str?, start = 4, end = 4) => {
   if (str && str.length) {
@@ -15,3 +17,12 @@ export const truncateMiddle = (str?, start = 4, end = 4) => {
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export const isValidPolkadotAddress = (address: string) => {
+  try {
+    encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address));
+    return true;
+  } catch {
+    return false;
+  }
+};

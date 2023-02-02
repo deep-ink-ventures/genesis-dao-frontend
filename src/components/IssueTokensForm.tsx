@@ -84,7 +84,7 @@ const IssueTokensForm = () => {
             className='input-bordered input-primary input'
             placeholder='Tokens Supply'
             {...register('supply', {
-              required: 'required',
+              required: 'Required',
               valueAsNumber: true,
               min: 1,
             })}

@@ -1,10 +1,10 @@
 import { WalletSelect } from '@talismn/connect-components';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import type { WalletAccount } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
-import { truncateMiddle } from '../utils/utils';
+import { truncateMiddle } from '../utils';
 
 const WalletConnect = () => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
@@ -34,7 +34,8 @@ const WalletConnect = () => {
     }
   };
 
-  useEffect(() => {}, [currentWalletAccount, walletConnected]);
+  // useEffect(() => {
+  // }, [walletConnected, currentWalletAccount])
 
   return (
     <div>
