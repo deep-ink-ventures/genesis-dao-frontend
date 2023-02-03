@@ -1,5 +1,4 @@
 import { ErrorMessage } from '@hookform/error-message';
-import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
@@ -10,9 +9,7 @@ import useGenesisStore from '@/stores/genesisStore';
 
 // fix me after token issue, should go to another page
 
-const IssueTokensForm = () => {
-  const router = useRouter();
-  const { daoId } = router.query;
+const IssueTokensForm = (props: { daoId: string }) => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
@@ -46,7 +43,10 @@ const IssueTokensForm = () => {
     if (!currentWalletAccount) {
       return 'Please Connect Wallet';
     }
-    if (daos && currentWalletAccount.address !== daos[daoId as string]?.owner) {
+    if (
+      daos &&
+      currentWalletAccount.address !== daos[props.daoId as string]?.owner
+    ) {
       return `Only DAO owner can issue`;
     }
     if (txnProcessing) {
@@ -56,17 +56,17 @@ const IssueTokensForm = () => {
   };
 
   useEffect(() => {
-    setValue('daoId', daoId as string);
+    setValue('daoId', props.daoId as string);
     if (errors.supply) {
       console.log('errors', errors);
     }
-  }, [daoId]);
+  }, [props.daoId]);
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset(
         {
-          daoId: daoId as string,
+          daoId: props.daoId as string,
           supply: 0,
         },
         { keepErrors: true }
@@ -107,7 +107,8 @@ const IssueTokensForm = () => {
           ${
             !currentWalletAccount ||
             (daos &&
-              currentWalletAccount.address !== daos[daoId as string]?.owner)
+              currentWalletAccount.address !==
+                daos[props.daoId as string]?.owner)
               ? `btn-disabled`
               : ``
           }

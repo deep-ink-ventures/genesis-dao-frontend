@@ -127,9 +127,9 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
             type='submit'
             // disabled={!currentWalletAccount}
             className={`btn-primary btn 
-          ${!currentWalletAccount ? `btn-disabled` : ``}
           ${txnProcessing ? `loading` : ``}
-          `}>
+          `}
+            disabled={!currentWalletAccount}>
             {buttonText()}
           </button>
         </div>

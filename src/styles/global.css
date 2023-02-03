@@ -125,3 +125,7 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.disable-link {
+  pointer-events: none;
+}

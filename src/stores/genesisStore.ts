@@ -85,6 +85,8 @@ export interface GenesisState {
   txnProcessing: boolean;
   apiConnection: Promise<ApiPromise>;
   currentAssetBalance: number | null;
+  createDaoSteps: number | null;
+  newCreatedDao: DaoInfo | null;
 }
 
 export interface GenesisActions {
@@ -109,6 +111,8 @@ export interface GenesisActions {
   handleErrors: (err: Error) => void;
   updateCurrentAssetBalance: (currentAssetBalance: number) => void;
   fetchTokenBalance: (assetId: number, accountId: string) => void;
+  updateCreateDaoSteps: (steps: number) => void;
+  updateNewCreatedDao: (dao: DaoInfo) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -130,6 +134,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     provider: new WsProvider(LOCAL_NODE),
   }),
   currentAssetBalance: null,
+  createDaoSteps: 1,
+  newCreatedDao: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -165,6 +171,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         owned: address === get().currentWalletAccount?.address,
       };
       set({ daos: { ...get().daos, [createDaoData.daoId]: newObj } });
+      set({ newCreatedDao: newObj });
+      set({ createDaoSteps: 2 });
     }
   },
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
@@ -185,7 +193,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
                 assetId: dao.assetId,
                 owned: dao.owner === get().currentWalletAccount?.address,
               };
-
               daos[dao.id] = newObj;
             });
             set({ daos });
@@ -266,6 +273,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     set({ txnProcessing: false });
     get().addTxnNotification(newNoti);
   },
+  updateCreateDaoSteps: (createDaoSteps) => set(() => ({ createDaoSteps })),
+  updateNewCreatedDao: (newCreatedDao) => set(() => ({ newCreatedDao })),
 }));
 
 export default useGenesisStore;

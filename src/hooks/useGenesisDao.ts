@@ -9,6 +9,8 @@ const useGenesisDao = () => {
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
+  const updateNewCreatedDao = useGenesisStore((s) => s.updateNewCreatedDao);
+  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -36,7 +38,8 @@ const useGenesisDao = () => {
   const txResponseCallback = (
     result: ISubmittableResult,
     successMsg: string,
-    errorMsg: string
+    errorMsg: string,
+    successCB?: Function
   ) => {
     console.log('Transaction status1:', result.status.type);
 
@@ -59,6 +62,7 @@ const useGenesisDao = () => {
           };
           // add txn to our store - first index
           addTxnNotification(successNoti);
+          successCB?.();
         }
         if (method === 'ExtrinsicFailed') {
           updateTxnProcessing(false);
@@ -94,9 +98,20 @@ const useGenesisDao = () => {
                 txResponseCallback(
                   result,
                   'Congrats! Your DAO is created.',
-                  'Something went wrong. Please try again.'
+                  'Something went wrong. Please try again.',
+                  () => {
+                    console.log('DAO CREATED', daoName, daoId);
+                    updateCreateDaoSteps(2);
+                  }
                 );
                 fetchDaos();
+                updateNewCreatedDao({
+                  daoId,
+                  daoName,
+                  owner: walletAccount.address,
+                  assetId: null,
+                  owned: true,
+                });
               }
             )
             .catch((err) => {
@@ -198,8 +213,15 @@ const useGenesisDao = () => {
                   'Something went wrong. Please try again. '
                 );
                 fetchDaos();
+                // updateNewCreatedDao({
+                //   assetId: daos?.[daoId]?.assetId,
+                //   ...daos?.[daoId],
+                // });
               }
             )
+            .then(() => {
+              updateCreateDaoSteps(3);
+            })
             .catch((err) => {
               updateTxnProcessing(false);
               handleTxnError(new Error(err));
@@ -251,12 +273,52 @@ const useGenesisDao = () => {
     }
   };
 
+  const makeCreateDaoTxn = async (
+    txns: any[],
+    daoId: string,
+    daoName: string,
+    tokenSupply: number
+  ) => {
+    const amount = tokenSupply * 1000000000;
+    const api = await apiConnection;
+    const createDaoTxn = api.tx.daoCore?.createDao?.(daoId, daoName);
+    const issueTokensTxn = api.tx.daoCore?.issueTokens?.(daoId, amount);
+
+    return [...txns, createDaoTxn, issueTokensTxn];
+  };
+
+  const sendMultipleTxns = async (
+    walletAccount: WalletAccount,
+    txns: any[],
+    successMsg: string,
+    errorMsg: string
+  ) => {
+    if (walletAccount.signer) {
+      const api = await apiConnection;
+      api.tx.utility
+        ?.batch?.(txns)
+        .signAndSend(
+          walletAccount.address,
+          { signer: walletAccount.signer },
+          (result) => {
+            txResponseCallback(result, successMsg, errorMsg);
+          }
+        )
+        .catch((err) => {
+          updateTxnProcessing(false);
+          handleTxnError(new Error(err));
+        });
+    }
+  };
+
   return {
     createDao,
     destroyDao,
     issueTokens,
     handleTxnError,
     transfer,
+    sendMultipleTxns,
+    makeCreateDaoTxn,
   };
 };
 

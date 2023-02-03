@@ -52,8 +52,9 @@ const WalletConnect = () => {
                 ? 'btn-primary'
                 : 'hover:bg-red-400 hover:text-zinc-800'
             }
-            ${modalIsOpen ? 'loading' : ''}
-            ${txnProcessing ? 'loading' : ''}
+            ${modalIsOpen && 'loading'} 
+            ${txnProcessing && 'loading'}
+            ${!currentWalletAccount && 'animate-pulse'}
             `}
             onClick={!walletConnected ? handleModal : handleDisconnect}>
             <span>
