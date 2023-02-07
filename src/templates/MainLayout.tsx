@@ -41,7 +41,7 @@ const MainLayout = (props: IMainProps) => (
             <WalletConnect />
           </div>
         </div>
-        <div className='m-3 min-h-screen rounded-2xl border-2 border-slate-800'>
+        <div className='m-3 min-h-screen rounded-2xl border-2 border-slate-800 p-3'>
           {props.children}
         </div>
       </div>
