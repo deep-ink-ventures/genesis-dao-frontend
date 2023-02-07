@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+import DestroyDao from '@/components/DestroyDao';
+import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
 import { truncateMiddle } from '@/utils';
-
-import useGenesisStore from '../../../stores/genesisStore';
 
 const DaoHome = () => {
   const router = useRouter();
@@ -12,6 +12,8 @@ const DaoHome = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[daoId as string];
+  const isOwner =
+    dao && currentWalletAccount && dao.owner === currentWalletAccount.address;
 
   return (
     <MainLayout
@@ -58,11 +60,9 @@ const DaoHome = () => {
           </div>
           <div className='hero mb-4'>
             <div className='hero-content flex-col rounded-xl bg-slate-800 text-center'>
-              <button
-                className='btn-primary btn'
-                disabled={!currentWalletAccount}>
-                Destroy Dao
-              </button>
+              {dao && isOwner && (
+                <DestroyDao daoId={dao?.daoId} assetId={dao?.assetId} />
+              )}
             </div>
           </div>
         </div>

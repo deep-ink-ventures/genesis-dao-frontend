@@ -192,6 +192,93 @@ const useGenesisDao = () => {
     }
   };
 
+  const destroyDaoAndAssets = async (
+    walletAccount: WalletAccount,
+    daoId: string,
+    assetId: number | null
+  ) => {
+    updateTxnProcessing(true);
+    const api = await apiConnection;
+    const nonce = await api.rpc.system.accountNextIndex(walletAccount.address);
+    if (!assetId) {
+      destroyDao(walletAccount, daoId);
+    } else {
+      api.tx.assets
+        ?.startDestroy?.(assetId)
+        .signAndSend(
+          walletAccount.address,
+          { signer: walletAccount.signer, nonce },
+          (result) => {
+            txResponseCallback(
+              result,
+              'Start destroying assets.',
+              'Something went wrong. Please try again.',
+              () => {
+                api.tx.assets
+                  ?.destroyAccounts?.(assetId)
+                  .signAndSend(
+                    walletAccount.address,
+                    { signer: walletAccount.signer, nonce: nonce.addn(1) },
+                    (destroyAccountsRes) => {
+                      txResponseCallback(
+                        destroyAccountsRes,
+                        'Asset accounts destroyed',
+                        'Something went wrong. Please try again.',
+                        () => {
+                          api.tx.assets
+                            ?.destroyApprovals?.(assetId)
+                            .signAndSend(
+                              walletAccount.address,
+                              {
+                                signer: walletAccount.signer,
+                                nonce: nonce.addn(2),
+                              },
+                              (destroyApprovalsRes) => {
+                                txResponseCallback(
+                                  destroyApprovalsRes,
+                                  'Asset approvals destroyed',
+                                  'Something went wrong. Please try again.',
+                                  () => {
+                                    api.tx.assets
+                                      ?.finishDestroy?.(assetId)
+                                      .signAndSend(
+                                        walletAccount.address,
+                                        {
+                                          signer: walletAccount.signer,
+                                          nonce: nonce.addn(3),
+                                        },
+                                        (finishDestroyRes) => {
+                                          txResponseCallback(
+                                            finishDestroyRes,
+                                            'Finish destroying assets',
+                                            'Something went wrong. Please try again.',
+                                            () => {
+                                              destroyDao(walletAccount, daoId);
+                                            }
+                                          );
+                                        }
+                                      );
+                                  }
+                                );
+                              }
+                            );
+                        }
+                      );
+                    }
+                  );
+              }
+            );
+          }
+        )
+        .catch((err) => {
+          handleTxnError(err);
+        })
+        .finally(() => {
+          updateTxnProcessing(false);
+        });
+    }
+  };
+
   const issueTokens = (
     walletAccount: WalletAccount,
     daoId: string,
@@ -319,6 +406,7 @@ const useGenesisDao = () => {
     transfer,
     sendMultipleTxns,
     makeCreateDaoTxn,
+    destroyDaoAndAssets,
   };
 };
 
