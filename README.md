@@ -18,7 +18,7 @@ This application is built with React and Next.js. We use Tailwind for CSS and [Z
 
 ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Polkadot](https://img.shields.io/badge/polkadot-E6007A?style=for-the-badge&logo=polkadot&logoColor=white)
 
-Zustand stores folder is [here](./src/stores/). Query actions are also in the [`useGenesisStore`](./src/stores/useGenesisStore.ts) file. 
+Zustand stores folder is [here](./src/stores/). Query actions are also in the [`useGenesisStore`](./src/stores/genesisStore.ts) file. 
 
 Most of the transaction actions are in the [`useGenesisDao`](./src/hooks/useGenesisDao.ts) hook
 
