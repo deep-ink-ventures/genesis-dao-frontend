@@ -5,12 +5,14 @@ const DestroyDao = (props: { daoId: string; assetId: number | null }) => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const { destroyDaoAndAssets } = useGenesisDao();
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
-
+  const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  // fixme need to fix button loading
   const handleDestroy = () => {
     if (!currentWalletAccount) {
       return;
     }
-    destroyDaoAndAssets(currentWalletAccount, props.daoId, props.assetId);
+    updateTxnProcessing(true);
+    destroyDaoAndAssets(props.daoId, props.assetId);
   };
   return (
     <div className='mb-2 flex justify-center p-2'>

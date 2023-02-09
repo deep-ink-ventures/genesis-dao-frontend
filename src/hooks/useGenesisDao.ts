@@ -1,6 +1,11 @@
 import type { ISubmittableResult } from '@polkadot/types/types';
+import type { BN } from '@polkadot/util';
 
-import type { CreateDaoData, WalletAccount } from '../stores/genesisStore';
+import type {
+  AssetDetails,
+  CreateDaoData,
+  WalletAccount,
+} from '../stores/genesisStore';
 import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 
 // fixme open one connection and reuse that connection
@@ -11,6 +16,7 @@ const useGenesisDao = () => {
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const updateNewCreatedDao = useGenesisStore((s) => s.updateNewCreatedDao);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
 
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -52,7 +58,6 @@ const useGenesisDao = () => {
       );
       result.events.forEach(({ event: { data, method, section }, phase }) => {
         if (method === 'ExtrinsicSuccess') {
-          updateTxnProcessing(false);
           const successNoti = {
             title: `${TxnResponse.Success}`,
             message: successMsg,
@@ -63,9 +68,9 @@ const useGenesisDao = () => {
           // add txn to our store - first index
           addTxnNotification(successNoti);
           successCB?.();
+          updateTxnProcessing(false);
         }
         if (method === 'ExtrinsicFailed') {
-          updateTxnProcessing(false);
           const errorNoti = {
             title: `${TxnResponse.Error}`,
             message: errorMsg,
@@ -74,6 +79,7 @@ const useGenesisDao = () => {
             timestamp: Date.now(),
           };
           addTxnNotification(errorNoti);
+          updateTxnProcessing(false);
         }
       });
     } else if (result.status.isFinalized) {
@@ -87,41 +93,36 @@ const useGenesisDao = () => {
     { daoId, daoName }: CreateDaoData
   ) => {
     if (walletAccount.signer) {
-      apiConnection
-        .then(async (api) => {
-          api?.tx?.daoCore
-            ?.createDao?.(daoId, daoName)
-            .signAndSend?.(
-              walletAccount.address,
-              { signer: walletAccount.signer },
-              (result) => {
-                txResponseCallback(
-                  result,
-                  'Congrats! Your DAO is created.',
-                  'Something went wrong. Please try again.',
-                  () => {
-                    console.log('DAO CREATED', daoName, daoId);
-                    updateCreateDaoSteps(2);
-                  }
-                );
-                fetchDaos();
-                updateNewCreatedDao({
-                  daoId,
-                  daoName,
-                  owner: walletAccount.address,
-                  assetId: null,
-                  owned: true,
-                });
+      updateTxnProcessing(true);
+      apiConnection?.tx?.daoCore
+        ?.createDao?.(daoId, daoName)
+        .signAndSend?.(
+          walletAccount.address,
+          { signer: walletAccount.signer },
+          (result) => {
+            txResponseCallback(
+              result,
+              'Congrats! Your DAO is created.',
+              'Something went wrong. Please try again.',
+              () => {
+                console.log('DAO CREATED', daoName, daoId);
+                updateCreateDaoSteps(2);
               }
-            )
-            .catch((err) => {
-              updateTxnProcessing(false);
-              handleTxnError(new Error(err));
+            );
+            fetchDaos();
+            updateNewCreatedDao({
+              daoId,
+              daoName,
+              owner: walletAccount.address,
+              assetId: null,
+              owned: true,
             });
-        })
+          }
+        )
         .catch((err) => {
-          updateTxnProcessing(false);
+          console.log(err);
           handleTxnError(new Error(err));
+          updateTxnProcessing(false);
         });
     } else {
       // fixme
@@ -129,143 +130,124 @@ const useGenesisDao = () => {
     }
   };
 
-  // const getDaos = () => {
-  //   const daos: DaoInfo[] = [];
-  //   apiConnection
-  //     .then((api) => {
-  //       api?.query?.daoCore?.daos
-  //         ?.entries()
-  //         .then((daoEntries) => {
-  //           daoEntries.forEach(([_k, v]) => {
-  //             const dao = v.toHuman() as unknown as IncomingDaoInfo;
-  //             const newObj = {
-  //               daoId: dao.id,
-  //               daoName: dao.name,
-  //               owner: dao.owner,
-  //               assetId: dao.assetId,
-  //             };
-  //             daos.push(newObj);
-  //           });
-  //         })
-  //         .catch((err) => {
-  //           updateTxnProcessing(false);
-  //           handleTxnError(new Error(err));
-  //         });
-  //     })
-  //     .catch((err) => {
-  //       updateTxnProcessing(false);
-  //       handleTxnError(new Error(err));
-  //     });
-  //   return daos;
-  // };
+  const getAssetDetails = async (assetId: number) => {
+    try {
+      const result = await apiConnection.query.assets?.asset?.(assetId);
+      const assetDetails = result?.toHuman() as unknown as AssetDetails;
+      return assetDetails;
+    } catch (err) {
+      handleTxnError(err);
+      return undefined;
+    }
+  };
 
   const destroyDao = (walletAccount: WalletAccount, daoId: string) => {
     if (walletAccount.signer) {
-      apiConnection
-        .then((api) => {
-          api?.tx?.daoCore
-            ?.destroyDao?.(daoId)
-            .signAndSend(
-              walletAccount.address,
-              { signer: walletAccount.signer },
-              (result) => {
-                txResponseCallback(
-                  result,
-                  'DAO Destroyed. Bye Bye.',
-                  'Something went wrong. Please try again.'
-                );
-              }
-            )
-            .catch((err) => {
-              updateTxnProcessing(false);
-              handleTxnError(new Error(err));
-
-              console.log('destroyDao', new Error(err));
-            });
-        })
+      apiConnection?.tx?.daoCore
+        ?.destroyDao?.(daoId)
+        .signAndSend(
+          walletAccount.address,
+          { signer: walletAccount.signer },
+          (result) => {
+            txResponseCallback(
+              result,
+              'DAO Destroyed. Bye Bye.',
+              'Something went wrong. Please try again.'
+            );
+          }
+        )
         .catch((err) => {
           updateTxnProcessing(false);
           handleTxnError(new Error(err));
+
+          console.log('destroyDao', new Error(err));
         });
     } else {
       console.log('wallet does not have a signer');
     }
   };
 
-  const destroyDaoAndAssets = async (
-    walletAccount: WalletAccount,
-    daoId: string,
-    assetId: number | null
-  ) => {
+  const destroyDaoAndAssets = async (daoId: string, assetId: number | null) => {
+    if (!currentWalletAccount) {
+      return;
+    }
     updateTxnProcessing(true);
-    const api = await apiConnection;
-    const nonce = await api.rpc.system.accountNextIndex(walletAccount.address);
+    const nonce = await apiConnection.rpc.system.accountNextIndex(
+      currentWalletAccount.address
+    );
+
     if (!assetId) {
-      destroyDao(walletAccount, daoId);
+      destroyDao(currentWalletAccount, daoId);
     } else {
-      api.tx.assets
+      apiConnection.tx.assets
         ?.startDestroy?.(assetId)
         .signAndSend(
-          walletAccount.address,
-          { signer: walletAccount.signer, nonce },
+          currentWalletAccount.address,
+          { signer: currentWalletAccount.signer, nonce },
           (result) => {
             txResponseCallback(
               result,
               'Start destroying assets.',
               'Something went wrong. Please try again.',
               () => {
-                api.tx.assets
-                  ?.destroyAccounts?.(assetId)
-                  .signAndSend(
-                    walletAccount.address,
-                    { signer: walletAccount.signer, nonce: nonce.addn(1) },
-                    (destroyAccountsRes) => {
-                      txResponseCallback(
-                        destroyAccountsRes,
-                        'Asset accounts destroyed',
-                        'Something went wrong. Please try again.',
-                        () => {
-                          api.tx.assets
-                            ?.destroyApprovals?.(assetId)
-                            .signAndSend(
-                              walletAccount.address,
-                              {
-                                signer: walletAccount.signer,
-                                nonce: nonce.addn(2),
-                              },
-                              (destroyApprovalsRes) => {
-                                txResponseCallback(
-                                  destroyApprovalsRes,
-                                  'Asset approvals destroyed',
-                                  'Something went wrong. Please try again.',
-                                  () => {
-                                    api.tx.assets
-                                      ?.finishDestroy?.(assetId)
-                                      .signAndSend(
-                                        walletAccount.address,
-                                        {
-                                          signer: walletAccount.signer,
-                                          nonce: nonce.addn(3),
-                                        },
-                                        (finishDestroyRes) => {
-                                          txResponseCallback(
-                                            finishDestroyRes,
-                                            'Finish destroying assets',
-                                            'Something went wrong. Please try again.',
-                                            () => {
-                                              destroyDao(walletAccount, daoId);
-                                            }
-                                          );
-                                        }
-                                      );
-                                  }
-                                );
-                              }
-                            );
-                        }
-                      );
-                    }
-                  );
+                // fixme need to check remaining accounts so we can run destroy again
+                apiConnection.tx.assets?.destroyAccounts?.(assetId).signAndSend(
+                  currentWalletAccount.address,
+                  {
+                    signer: currentWalletAccount.signer,
+                    nonce: nonce.addn(1),
+                  },
+                  (destroyAccountsRes) => {
+                    txResponseCallback(
+                      destroyAccountsRes,
+                      'Asset accounts destroyed',
+                      'Something went wrong. Please try again.',
+                      () => {
+                        // fixme need to check remaining approvals so we can run destroy again
+                        apiConnection.tx.assets
+                          ?.destroyApprovals?.(assetId)
+                          .signAndSend(
+                            currentWalletAccount.address,
+                            {
+                              signer: currentWalletAccount.signer,
+                              nonce: nonce.addn(2),
+                            },
+                            (destroyApprovalsRes) => {
+                              txResponseCallback(
+                                destroyApprovalsRes,
+                                'Asset approvals destroyed',
+                                'Something went wrong. Please try again.',
+                                () => {
+                                  apiConnection.tx.assets
+                                    ?.finishDestroy?.(assetId)
+                                    .signAndSend(
+                                      currentWalletAccount.address,
+                                      {
+                                        signer: currentWalletAccount.signer,
+                                        nonce: nonce.addn(3),
+                                      },
+                                      (finishDestroyRes) => {
+                                        txResponseCallback(
+                                          finishDestroyRes,
+                                          'Finish destroying assets',
+                                          'Something went wrong. Please try again.',
+                                          () => {
+                                            destroyDao(
+                                              currentWalletAccount,
+                                              daoId
+                                            );
+                                          }
+                                        );
+                                      }
+                                    );
+                                }
+                              );
+                            }
+                          );
+                      }
+                    );
+                  }
+                );
               }
             );
           }
@@ -279,6 +261,89 @@ const useGenesisDao = () => {
     }
   };
 
+  const destroyAssetAccounts = async (
+    assetId: number,
+    nonce?: BN,
+    cb?: Function
+  ) => {
+    if (!currentWalletAccount) {
+      return;
+    }
+    const nonceCount = nonce;
+    const assetDetails = await getAssetDetails(assetId);
+    console.log('asset details', assetDetails);
+    if (assetDetails?.accounts === '0') {
+      console.log('ZERO ACCOUNTS');
+      cb?.();
+      return;
+    }
+
+    try {
+      apiConnection.tx.assets?.destroyAccounts?.(assetId).signAndSend(
+        currentWalletAccount.address,
+        {
+          signer: currentWalletAccount.signer,
+          nonce: nonceCount,
+        },
+        (result) => {
+          if (result.status.isInBlock) {
+            getAssetDetails(assetId).then((asset) => {
+              if (asset?.accounts !== '0') {
+                destroyAssetAccounts(assetId, nonce, cb);
+              } else {
+                cb?.();
+              }
+            });
+          }
+          // check if all accounts are destroyed
+        }
+      );
+    } catch (err) {
+      handleTxnError(err);
+    }
+  };
+
+  const destroyAssetApprovals = async (
+    assetId: number,
+    nonce?: BN,
+    cb?: Function
+  ) => {
+    if (!currentWalletAccount) {
+      return;
+    }
+
+    const assetDetails = await getAssetDetails(assetId);
+    if (assetDetails?.approvals === '0') {
+      console.log('ZERO APPROVALS');
+      cb?.();
+      return;
+    }
+
+    try {
+      apiConnection.tx.assets?.destroyApprovals?.(assetId).signAndSend(
+        currentWalletAccount.address,
+        {
+          signer: currentWalletAccount.signer,
+          nonce,
+        },
+        (result) => {
+          // check if all accounts are destroyed
+          if (result.status.isInBlock) {
+            getAssetDetails(assetId).then((asset) => {
+              if (asset?.approvals !== '0') {
+                destroyAssetApprovals(assetId, nonce, cb);
+              } else {
+                cb?.();
+              }
+            });
+          }
+        }
+      );
+    } catch (err) {
+      handleTxnError(err);
+    }
+  };
+
   const issueTokens = (
     walletAccount: WalletAccount,
     daoId: string,
@@ -286,33 +351,22 @@ const useGenesisDao = () => {
   ) => {
     const amount = supply * 1000000000;
     if (walletAccount.signer) {
-      apiConnection
-        .then((api) => {
-          api?.tx?.daoCore
-            ?.issueToken?.(daoId, amount)
-            .signAndSend(
-              walletAccount.address,
-              { signer: walletAccount.signer },
-              (result) => {
-                txResponseCallback(
-                  result,
-                  'Tokens Issued',
-                  'Something went wrong. Please try again. '
-                );
-                fetchDaos();
-                // updateNewCreatedDao({
-                //   assetId: daos?.[daoId]?.assetId,
-                //   ...daos?.[daoId],
-                // });
-              }
-            )
-            .then(() => {
-              updateCreateDaoSteps(3);
-            })
-            .catch((err) => {
-              updateTxnProcessing(false);
-              handleTxnError(new Error(err));
-            });
+      apiConnection.tx?.daoCore
+        ?.issueToken?.(daoId, amount)
+        .signAndSend(
+          walletAccount.address,
+          { signer: walletAccount.signer },
+          (result) => {
+            txResponseCallback(
+              result,
+              'Tokens Issued',
+              'Something went wrong. Please try again. '
+            );
+            fetchDaos();
+          }
+        )
+        .then(() => {
+          updateCreateDaoSteps(3);
         })
         .catch((err) => {
           updateTxnProcessing(false);
@@ -331,26 +385,19 @@ const useGenesisDao = () => {
   ) => {
     const newAmount = amount * 1000000000;
     if (walletAccount.signer) {
-      apiConnection
-        .then((api) => {
-          api?.tx?.assets
-            ?.transfer?.(assetId, toAddress, newAmount)
-            .signAndSend(
-              walletAccount.address,
-              { signer: walletAccount.signer },
-              (result) => {
-                txResponseCallback(
-                  result,
-                  `Transferred ${amount}`,
-                  'Something went wrong. Please try again. '
-                );
-              }
-            )
-            .catch((err) => {
-              updateTxnProcessing(false);
-              handleTxnError(new Error(err));
-            });
-        })
+      apiConnection.tx?.assets
+        ?.transfer?.(assetId, toAddress, newAmount)
+        .signAndSend(
+          walletAccount.address,
+          { signer: walletAccount.signer },
+          (result) => {
+            txResponseCallback(
+              result,
+              `Transferred ${amount}`,
+              'Something went wrong. Please try again. '
+            );
+          }
+        )
         .catch((err) => {
           updateTxnProcessing(false);
           handleTxnError(new Error(err));
@@ -367,7 +414,7 @@ const useGenesisDao = () => {
     tokenSupply: number
   ) => {
     const amount = tokenSupply * 1000000000;
-    const api = await apiConnection;
+    const api = apiConnection;
     const createDaoTxn = api.tx.daoCore?.createDao?.(daoId, daoName);
     const issueTokensTxn = api.tx.daoCore?.issueTokens?.(daoId, amount);
 
@@ -381,8 +428,7 @@ const useGenesisDao = () => {
     errorMsg: string
   ) => {
     if (walletAccount.signer) {
-      const api = await apiConnection;
-      api.tx.utility
+      apiConnection.tx.utility
         ?.batch?.(txns)
         .signAndSend(
           walletAccount.address,

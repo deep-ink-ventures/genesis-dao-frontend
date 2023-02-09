@@ -95,49 +95,47 @@ const NotificationToast = (props: ToastProps) => {
   }
 
   return (
-    <div className='absolute top-[12px] z-40'>
-      <div
-        id='toast-success'
-        className='mb-3 flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400 '
-        role='alert'>
-        <ToastIcon type={props.type} />
-        <div className='flex-col flex-wrap '>
-          <h4 className='font-bol ml-3'>{props.title}</h4>
-          <p className='ml-3 text-xs'>{props.message}</p>
-          {/* fixme convert this into a component */}
-          {props.txnHash ? (
-            <p className='ml-3 break-words text-xs text-blue-500 underline'>
-              <a
-                href={makeExplorerLink(props.txnHash)}
-                target='_blank'
-                rel='noreferrer'>{`Txn Hash: ${truncateMiddle(
-                props.txnHash,
-                5,
-                5
-              )}`}</a>
-            </p>
-          ) : null}
-        </div>
-        <button
-          type='button'
-          className='-m-1.5 ml-auto inline-flex h-8 w-8 rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white'
-          data-dismiss-target='#toast-success'
-          aria-label='Close'
-          onClick={handleClose}>
-          <span className='sr-only'>Close</span>
-          <svg
-            aria-hidden='true'
-            className='h-5 w-5'
-            fill='currentColor'
-            viewBox='0 0 20 20'
-            xmlns='http://www.w3.org/2000/svg'>
-            <path
-              fillRule='evenodd'
-              d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
-              clipRule='evenodd'></path>
-          </svg>
-        </button>
+    <div
+      id='toast-success'
+      className='mb-3 flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400 '
+      role='alert'>
+      <ToastIcon type={props.type} />
+      <div className='flex-col flex-wrap '>
+        <h4 className='font-bol ml-3'>{props.title}</h4>
+        <p className='ml-3 text-xs'>{props.message}</p>
+        {/* fixme convert this into a component */}
+        {props.txnHash ? (
+          <p className='ml-3 break-words text-xs text-blue-500 underline'>
+            <a
+              href={makeExplorerLink(props.txnHash)}
+              target='_blank'
+              rel='noreferrer'>{`Txn Hash: ${truncateMiddle(
+              props.txnHash,
+              5,
+              5
+            )}`}</a>
+          </p>
+        ) : null}
       </div>
+      <button
+        type='button'
+        className='-m-1.5 ml-auto inline-flex h-8 w-8 rounded-lg bg-white p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:ring-2 focus:ring-gray-300 dark:bg-gray-800 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-white'
+        data-dismiss-target='#toast-success'
+        aria-label='Close'
+        onClick={handleClose}>
+        <span className='sr-only'>Close</span>
+        <svg
+          aria-hidden='true'
+          className='h-5 w-5'
+          fill='currentColor'
+          viewBox='0 0 20 20'
+          xmlns='http://www.w3.org/2000/svg'>
+          <path
+            fillRule='evenodd'
+            d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
+            clipRule='evenodd'></path>
+        </svg>
+      </button>
     </div>
   );
 };

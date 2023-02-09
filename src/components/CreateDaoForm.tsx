@@ -79,7 +79,8 @@ const CreateDaoForm = () => {
             {...register('daoId', {
               required: 'Required',
               minLength: 3,
-              maxLength: 22,
+              maxLength: 8,
+              pattern: /^[A-Z0-9]+$/,
             })}
           />
           <ErrorMessage
@@ -96,7 +97,7 @@ const CreateDaoForm = () => {
             {...register('daoName', {
               required: 'Required',
               minLength: 3,
-              maxLength: 22,
+              maxLength: 32,
             })}
           />
           <ErrorMessage
