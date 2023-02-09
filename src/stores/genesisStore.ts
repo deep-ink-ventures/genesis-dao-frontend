@@ -21,6 +21,20 @@ export interface IncomingTokenBalanceData {
   reserved: string; // number string
 }
 
+export interface AssetDetails {
+  owner: string;
+  issuer: string;
+  admin: string;
+  supply: string;
+  deposit: string;
+  minBalance: string;
+  isSufficient: boolean;
+  accounts: string;
+  sufficients: string;
+  approvals: string;
+  status: string;
+}
+
 export interface TransferFormValues {
   assetId: number;
   toAddress: string;
@@ -83,7 +97,7 @@ export interface GenesisState {
   txnNotifications: TxnNotification[];
   loading: boolean;
   txnProcessing: boolean;
-  apiConnection: Promise<ApiPromise>;
+  apiConnection: ApiPromise;
   currentAssetBalance: number | null;
   createDaoSteps: number | null;
   newCreatedDao: DaoInfo | null;
@@ -130,9 +144,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   txnNotifications: [],
   loading: false,
   txnProcessing: false,
-  apiConnection: ApiPromise.create({
-    provider: new WsProvider(LOCAL_NODE),
-  }),
+  apiConnection: new ApiPromise({ provider: new WsProvider(LOCAL_NODE) }),
   currentAssetBalance: null,
   createDaoSteps: 1,
   newCreatedDao: null,
@@ -178,28 +190,22 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
     const apiCon = get().apiConnection;
-    apiCon
-      .then((api) => {
-        api?.query?.daoCore?.daos
-          ?.entries()
-          .then((daoEntries) => {
-            const daos: AllDaos = {};
-            daoEntries.forEach(([_k, v]) => {
-              const dao = v.toHuman() as unknown as IncomingDaoInfo;
-              const newObj = {
-                daoId: dao.id,
-                daoName: dao.name,
-                owner: dao.owner,
-                assetId: dao.assetId,
-                owned: dao.owner === get().currentWalletAccount?.address,
-              };
-              daos[dao.id] = newObj;
-            });
-            set({ daos });
-          })
-          .catch((err) => {
-            get().handleErrors(new Error(err));
-          });
+    apiCon.query?.daoCore?.daos
+      ?.entries()
+      .then((daoEntries) => {
+        const daos: AllDaos = {};
+        daoEntries.forEach(([_k, v]) => {
+          const dao = v.toHuman() as unknown as IncomingDaoInfo;
+          const newObj = {
+            daoId: dao.id,
+            daoName: dao.name,
+            owner: dao.owner,
+            assetId: dao.assetId,
+            owned: dao.owner === get().currentWalletAccount?.address,
+          };
+          daos[dao.id] = newObj;
+        });
+        set({ daos });
       })
       .catch((err) => {
         get().handleErrors(new Error(err));
@@ -227,8 +233,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     const { rpcEndpoint } = get();
     const createApi = async (): Promise<ApiPromise> => {
       const wsProvider = new WsProvider(rpcEndpoint);
+      let api: any;
       try {
-        const api = await ApiPromise.create({ provider: wsProvider });
+        api = await ApiPromise.create({ provider: wsProvider });
         await api.isReady;
         return api;
       } catch (err) {
@@ -237,7 +244,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       }
     };
 
-    set({ apiConnection: createApi() });
+    set({ apiConnection: await createApi() });
   },
 
   updateCurrentAssetBalance: (currentAssetBalance) =>
@@ -245,18 +252,11 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
 
   fetchTokenBalance: (assetId: number, accountId: string) => {
     get()
-      .apiConnection.then((api) => {
-        api?.query?.assets
-          ?.account?.(assetId, accountId)
-          .then((data) => {
-            const assetData =
-              data.toHuman() as unknown as IncomingTokenBalanceData;
-            const balanceStr = assetData.balance.replaceAll(',', '');
-            get().updateCurrentAssetBalance(Number(balanceStr) / 1000000000);
-          })
-          .catch((err) => {
-            get().handleErrors(new Error(err));
-          });
+      .apiConnection.query?.assets?.account?.(assetId, accountId)
+      .then((data) => {
+        const assetData = data.toHuman() as unknown as IncomingTokenBalanceData;
+        const balanceStr = assetData.balance.replaceAll(',', '');
+        get().updateCurrentAssetBalance(Number(balanceStr) / 1000000000);
       })
       .catch((err) => {
         get().handleErrors(new Error(err));
