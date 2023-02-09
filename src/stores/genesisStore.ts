@@ -3,7 +3,7 @@ import type { Signer as InjectedSigner } from '@polkadot/api/types';
 import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
 
-import { LOCAL_NODE } from './constants';
+import { LOCAL_NODE } from '@/config';
 
 // ALL TYPES and INTERFACES...
 
