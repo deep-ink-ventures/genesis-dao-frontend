@@ -16,7 +16,7 @@ module.exports = {
       '6xl': '4rem',
     },
     fontFamily: {
-      primary: ['Inter'],
+      primary: ['Poppins', 'sans-serif'],
     },
     extend: {
       colors: {
@@ -66,12 +66,42 @@ module.exports = {
   // daisyUI config (optional)
   daisyui: {
     styled: true,
-    themes: true,
+    themes: [ {
+      genesis: {
+          "primary": "#FFCF27",
+          'primary-focus': '#D2A820',
+          'primary-content': '#1E1B21',
+          "secondary": "#FF7A00",
+          'secondary-focus': '#D26400',
+          'secondary-content': '#1E1B21',
+          "accent": "#A3E635",
+          'accent-focus': '#87BB2B',
+          'accent-content': '#1E1B21',
+          'neutral': '#FAFAFA',
+          'neutral-focus': '#BABABA',
+          'neutral-content': '#FAFAFA',
+          'base-50': '#37323D',
+          "base-100": "#1E1B21",
+          'base-200': '#16141A',
+          'base-300': '#1E1B21',
+          'base-content': '#FAFAFA',
+          "info": "#22D3EE",
+          'info-content': '#083B43',
+          "success": "#34D399",
+          'success-content': '#0E3B2B',
+          "warning": "#F472B6",
+          'warning-content': '#44182F',
+          "error": "#E11D48",
+          'error-content': '#3F0814'
+        }
+      },
+      'night'
+    ],
     base: true,
     utils: true,
     logs: true,
     rtl: false,
     prefix: '',
-    darkTheme: 'night',
+    darkTheme: 'genesis',
   },
 };

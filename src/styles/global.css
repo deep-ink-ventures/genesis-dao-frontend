@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap");
+
 :root {
   --talisman-connect-modal-background: #1E293B;
   --talisman-connect-modal-foreground: #F1F5F9;
@@ -31,65 +33,70 @@
 }
 
 @Layer base {
-  html {
-    font-size: 18px;
-    font-family: Inter;
-  }
-   /* inter var - latin */
-  @font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 100 900;
-    font-display: optional;
-    src: url('/fonts/inter-var-latin.woff2') format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-      U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
-      U+2215, U+FEFF, U+FFFD;
-  }
+
+}
 
 
+
+@Layer components {
+  
+}
+
+@Layer utilities {
   h1 {
-    @apply text-3xl font-bold md:text-2xl;
+    /* font-size: 96px; */
+    @apply text-[96px] font-bold 
   }
+}
 
-  h2 {
-    @apply  text-2xl font-bold md:text-2xl;
-  }
-
-  h3{
-    @apply text-xl font-bold md:text-xl;
-  }
-
-  h4 {
-    @apply text-base font-bold md:text-lg;
-  }
-
-  a {
-    @apply text-blue-700;
-  }
-
-  a:hover {
-    @apply border-b-2 border-blue-700;
-  }
+html {
+  font-size: 17px;
+  @apply font-primary;
 
 }
 
 h1 {
-  @apply text-3xl font-bold md:text-2xl;
+  /* font-size: 96px; */
+  @apply text-5xl font-bold ;
 }
 
 h2 {
-  @apply  text-2xl font-bold md:text-2xl;
+  @apply  text-4xl font-bold ;
 }
 
 h3{
-  @apply text-xl font-bold md:text-xl;
+  @apply text-3xl font-bold;
 }
 
 h4 {
-  @apply text-base font-bold md:text-lg;
+  @apply text-xl font-bold;
 }
 
+.btn {
+  @apply rounded-3xl py-3.5 px-6 font-medium text-sm;
+
+}
+
+.btn:disabled {
+  @apply opacity-50;
+}
+.btn-disabled {
+  @apply opacity-50;
+}
+.btn-primary {
+  @apply text-primary-content;
+}
+
+.btn-connected {
+  background: rgba(19, 17, 22, 0.5);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+
+.card-body {
+  @apply text-base
+}
 /* a:hover {
   @apply border-b-2 border-blue-600 text-blue-500;
 } */
@@ -103,15 +110,6 @@ h4 {
   @apply my-6;
 }
 
-@Layer components{
-
-}
-
-@Layer utilities{
-  a:hover {
-    @apply border-b-2 border-blue-700;
-  }
-}
 
 /* Hide arrows in number input */
 /* Chrome, Safari, Edge, Opera */
