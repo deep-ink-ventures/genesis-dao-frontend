@@ -105,7 +105,6 @@ const useGenesisDao = () => {
               'Congrats! Your DAO is created.',
               'Something went wrong. Please try again.',
               () => {
-                console.log('DAO CREATED', daoName, daoId);
                 updateCreateDaoSteps(2);
               }
             );
@@ -120,7 +119,6 @@ const useGenesisDao = () => {
           }
         )
         .catch((err) => {
-          console.log(err);
           handleTxnError(new Error(err));
           updateTxnProcessing(false);
         });
@@ -159,8 +157,6 @@ const useGenesisDao = () => {
         .catch((err) => {
           updateTxnProcessing(false);
           handleTxnError(new Error(err));
-
-          console.log('destroyDao', new Error(err));
         });
     } else {
       console.log('wallet does not have a signer');
@@ -271,9 +267,7 @@ const useGenesisDao = () => {
     }
     const nonceCount = nonce;
     const assetDetails = await getAssetDetails(assetId);
-    console.log('asset details', assetDetails);
     if (assetDetails?.accounts === '0') {
-      console.log('ZERO ACCOUNTS');
       cb?.();
       return;
     }
@@ -314,7 +308,6 @@ const useGenesisDao = () => {
 
     const assetDetails = await getAssetDetails(assetId);
     if (assetDetails?.approvals === '0') {
-      console.log('ZERO APPROVALS');
       cb?.();
       return;
     }

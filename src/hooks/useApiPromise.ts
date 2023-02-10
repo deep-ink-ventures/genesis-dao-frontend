@@ -12,7 +12,6 @@ const useApiPromise = () => {
       await api.isReady;
       return api;
     } catch (err) {
-      console.log(new Error(err));
       return err;
     }
   };
