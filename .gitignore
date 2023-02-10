@@ -42,3 +42,5 @@ local
 
 # vercel
 .vercel
+
+.vscode
