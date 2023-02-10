@@ -9,14 +9,14 @@ This is the frontend UI for GenesisDAO. Users can use this interface to explore 
 
 :hammer_and_wrench: This repo is still in the early development stage and please use it at your own risk. 
 
+Our design guide and mockups are [here](./design/)
 
 ## Tech and code structure
 
+![Polkadot](https://img.shields.io/badge/polkadot-E6007A?style=for-the-badge&logo=polkadot&logoColor=white) ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) 
+
 This application is built with React and Next.js. We use Tailwind for CSS and [Zustand](https://github.com/pmndrs/zustand) for state management.
 
-
-
-![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Polkadot](https://img.shields.io/badge/polkadot-E6007A?style=for-the-badge&logo=polkadot&logoColor=white)
 
 Zustand stores folder is [here](./src/stores/). Query actions are also in the [`useGenesisStore`](./src/stores/genesisStore.ts) file. 
 
