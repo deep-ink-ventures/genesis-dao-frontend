@@ -32,7 +32,7 @@ const MainLayout = (props: IMainProps) => (
         <div className='flex justify-between'>
           <div className='py-2 pl-3 text-center'>
             {/* Genesis Dao logo */}
-            <div className='text-3xl font-bold'>Genesis DAO</div>
+            <h1>Genesis DAO</h1>
           </div>
           <div className='pt-4 pb-2'>
             <TopNavBar />

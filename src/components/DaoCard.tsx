@@ -11,8 +11,8 @@ interface DaoCardProps {
 const DaoCard = (props: DaoCardProps) => {
   return (
     <div
-      className={`card m-1 w-60 break-words bg-slate-800 text-center text-sm shadow-xl hover:cursor-pointer hover:bg-slate-700
-      ${!props.owned ? `bg-slate-800` : `bg-blue-800`} `}>
+      className={`card m-1 w-60 break-words rounded-[10px] bg-neutral text-center text-sm text-primary-content mix-blend-soft-light shadow-xl hover:cursor-pointer hover:bg-neutral-focus
+      ${!props.owned ? `bg-neutral` : `bg-accent`} `}>
       <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
         <div className='card-body text-center'>
           <h1 className='mb-1 text-2xl font-bold'>{props.daoName}</h1>
