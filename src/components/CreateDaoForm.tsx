@@ -53,9 +53,6 @@ const CreateDaoForm = () => {
   };
 
   useEffect(() => {
-    if (errors) {
-      console.log(errors);
-    }
     if (isSubmitSuccessful) {
       reset(
         {
@@ -65,7 +62,6 @@ const CreateDaoForm = () => {
         { keepErrors: true }
       );
     }
-    console.log('gensis store create dao data', createDaoData);
   }, [createDaoData, isSubmitSuccessful, reset]);
 
   return (

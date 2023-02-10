@@ -25,11 +25,9 @@ const ExploreDaos = () => {
 
   useEffect(() => {
     fetchDaos();
-    console.log('DAOs fetched');
   }, []);
 
   useEffect(() => {
-    console.log('new daos', daos);
     if (currentWalletAccount?.address) {
       updateDaosOwnedByWallet();
     }

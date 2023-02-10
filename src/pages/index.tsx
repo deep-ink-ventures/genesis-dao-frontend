@@ -12,7 +12,6 @@ const Index = () => {
   const daosOwnedByWallet = useGenesisStore((s) => s.daosOwnedByWallet);
   useEffect(() => {
     if (!daos) {
-      console.log('fetch daos');
       fetchDaos();
     }
   }, []);

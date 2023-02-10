@@ -31,7 +31,6 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
   const onSubmit: SubmitHandler<TransferFormValues> = async (
     data: TransferFormValues
   ) => {
-    console.log('form data', data);
     updateTxnProcessing(true);
     if (currentWalletAccount) {
       try {

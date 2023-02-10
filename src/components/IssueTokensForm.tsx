@@ -20,7 +20,6 @@ const IssueTokensForm = (props: { daoId: string }) => {
   const onSubmit: SubmitHandler<IssueTokensData> = async (
     data: IssueTokensData
   ) => {
-    console.log('form data', data);
     updateTxnProcessing(true);
     if (currentWalletAccount) {
       try {
@@ -57,9 +56,6 @@ const IssueTokensForm = (props: { daoId: string }) => {
 
   useEffect(() => {
     setValue('daoId', props.daoId as string);
-    if (errors.supply) {
-      console.log('errors', errors);
-    }
   }, [props.daoId]);
 
   useEffect(() => {
