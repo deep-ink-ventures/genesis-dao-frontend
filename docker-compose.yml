@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  web:
+    build:
+      context: .
+    container_name: genesis-dao-frontend
+    image: node:lts
+    command: ["yarn", "start"]
+    env_file:
+      - .env
+    ports:
+      - ${BASE_PORT:-3000}:3000
