@@ -1,7 +1,9 @@
+import Image from 'next/image';
 import type { ReactNode } from 'react';
 
 import Meta from '@/components/Meta';
 import WalletConnect from '@/components/WalletConnect';
+import logo from '@/svg/logo.svg';
 
 import TopNavBar from '../components/TopNavBar';
 
@@ -29,15 +31,22 @@ const MainLayout = (props: IMainProps) => (
     />
     <div className='mx-auto max-w-screen-2xl pt-2'>
       <div>
-        <div className='flex justify-between'>
-          <div className='py-2 pl-3 text-center'>
-            {/* Genesis Dao logo */}
-            <h1>Genesis DAO</h1>
+        <div className='flex justify-between px-6'>
+          <div className='flex justify-center align-middle'>
+            <div className='flex justify-center align-middle'>
+              <Image
+                src={logo}
+                width={32}
+                height={32}
+                alt='GenesisDAO logo'></Image>
+              <h1 className='m-auto pl-2 text-[22px]'>Genesis DAO</h1>
+            </div>
           </div>
+
           <div className='pt-4 pb-2'>
             <TopNavBar />
           </div>
-          <div className='mr-5 py-2'>
+          <div className='py-2'>
             <WalletConnect />
           </div>
         </div>
