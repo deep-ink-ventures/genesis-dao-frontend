@@ -6,6 +6,7 @@ export const pageLinks = [
   { href: '/create', label: 'Create DAO' },
 ];
 
+// fixme styles
 const TopNavBar = () => {
   return (
     <>
@@ -15,7 +16,7 @@ const TopNavBar = () => {
             <li className='mr-6' key={link.href}>
               <Link
                 href={link.href}
-                className='border-none hover:text-gray-900'>
+                className='border-none hover:text-neutral-focus'>
                 {link.label}
               </Link>
             </li>

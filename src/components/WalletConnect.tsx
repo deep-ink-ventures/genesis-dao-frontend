@@ -61,32 +61,24 @@ const WalletConnect = () => {
             onClick={!walletConnected ? handleModal : handleDisconnect}>
             {currentWalletAccount ? (
               <div className='mr-2'>
-                <Image
-                  src={avatar}
-                  alt='wallet avatar'
-                  height='20'
-                  width='20'></Image>
+                <Image src={avatar} alt='avatar' height='18' width='18'></Image>
               </div>
             ) : (
               <div className='mr-2'>
                 <Image src={wallet} alt='wallet' height='15' width='15'></Image>
               </div>
             )}
-            <span>
+            <span className='align-middle'>
               {!walletConnected
                 ? 'Connect'
-                : `Disconnect from ${truncateMiddle(
-                    currentWalletAccount?.address,
-                    5,
-                    4
-                  )}`}
+                : `${truncateMiddle(currentWalletAccount?.address, 5, 4)}`}
             </span>
             {currentWalletAccount ? (
               <span className='ml-2'>
                 <svg
-                  width='24'
-                  height='24'
-                  viewBox='0 0 24 24'
+                  width='20'
+                  height='16'
+                  viewBox='0 0 20 20'
                   fill='none'
                   xmlns='http://www.w3.org/2000/svg'>
                   <path
@@ -101,7 +93,7 @@ const WalletConnect = () => {
 
         <WalletSelect
           dappName='genesis'
-          open={!!modalIsOpen}
+          open={modalIsOpen}
           showAccountsList={false}
           header={<h3>Select a wallet to connect</h3>}
           onWalletConnectOpen={() => {

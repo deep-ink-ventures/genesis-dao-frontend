@@ -5,10 +5,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap");
 
 :root {
-  --talisman-connect-modal-background: #1E293B;
+  --talisman-connect-modal-background: #131116;
   --talisman-connect-modal-foreground: #F1F5F9;
-  --talisman-connect-control-background: #334155;
+  --talisman-connect-control-background: #37323D;
   --talisman-connect-active-background: #475569;
+  --talisman-connect-button-border-radius: 24px;
+  --talisman-connect-border-radius: 24px;
+  --talisman-connect-font-family: Poppins, sans-serif;
+  --talisman-connect-modal-header-color: #FFCF27;
   --tw-color-primary-50: 239 246 255;
   --tw-color-primary-100: 219 234 254;
   --tw-color-primary-200: 191 219 254;
@@ -50,8 +54,7 @@
 }
 
 html {
-  font-size: 17px;
-  @apply font-primary;
+  @apply font-primary text-[16px];
 
 }
 
@@ -98,9 +101,9 @@ h4 {
   @apply text-base
 }
 
-a:hover {
+/* a:hover {
   @apply border-b-2 border-blue-600 text-blue-500;
-}
+} */
 
 .content p {
   @apply my-6;
@@ -110,6 +113,9 @@ a:hover {
   @apply my-6;
 }
 
+.hero-content {
+  @apply bg-card-primary opacity-60 rounded-[10px] border-[rgba(250,250,250,0.1)] border-t-[0.5px]
+}
 
 /* Hide arrows in number input */
 /* Chrome, Safari, Edge, Opera */
