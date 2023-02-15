@@ -194,6 +194,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       ?.entries()
       .then((daoEntries) => {
         const daos: AllDaos = {};
+        // eslint-disable-next-line
         daoEntries.forEach(([_k, v]) => {
           const dao = v.toHuman() as unknown as IncomingDaoInfo;
           const newObj = {

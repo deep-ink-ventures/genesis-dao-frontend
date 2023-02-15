@@ -1,11 +1,10 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 import Meta from '@/components/Meta';
 import WalletConnect from '@/components/WalletConnect';
 import logo from '@/svg/logo.svg';
-
-import TopNavBar from '../components/TopNavBar';
 
 interface IMainProps {
   title: string;
@@ -26,35 +25,42 @@ const MainLayout = (props: IMainProps) => (
     <Meta
       title={props.title}
       description={props.description}
-      canonical={props.canonical ? props.canonical : undefined}
-      siteName={props.siteName ? props.siteName : undefined}
+      canonical={props.canonical ? props.canonical : ''}
+      siteName={props.siteName ? props.siteName : 'Genesis DAO'}
     />
-    <div className='mx-auto max-w-screen-2xl pt-2'>
+    <div className='mx-auto max-w-screen-2xl'>
       <div>
+        <div className='header'></div>
         <div className='flex justify-between px-6'>
           <div className='flex justify-center align-middle'>
-            <div className='flex justify-center align-middle'>
-              <Image
-                src={logo}
-                width={32}
-                height={32}
-                alt='GenesisDAO logo'></Image>
-              <h1 className='m-auto pl-2 text-[22px]'>Genesis DAO</h1>
+            <div className='flex items-center justify-center align-middle'>
+              <Link href='/'>
+                <Image
+                  src={logo}
+                  width={32}
+                  height={32}
+                  alt='GenesisDAO logo'
+                />
+              </Link>
+              <h1 className='m-auto pl-2 text-[24px]'>
+                <Link href='/'>Genesis DAO</Link>
+              </h1>
             </div>
-          </div>
-
-          <div className='pt-4 pb-2'>
-            <TopNavBar />
           </div>
           <div className='py-2'>
             <WalletConnect />
           </div>
         </div>
-        <div className='m-3 min-h-screen rounded-2xl border-2 border-slate-800 p-3'>
+        <div className='m-2 min-h-screen rounded-2xl border-2 border-slate-800 p-4'>
           {props.children}
         </div>
       </div>
     </div>
+    <div
+      className={`absolute top-[-15px] left-[15%] z-[-100] h-[60%] w-[80%] bg-[url('../../public/images/background-texture.png')] mix-blend-screen`}></div>
+    <div className='blur0'></div>
+    <div className='blur1'></div>
+    <div className='blur2'></div>
   </div>
 );
 

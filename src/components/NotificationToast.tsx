@@ -88,6 +88,7 @@ const NotificationToast = (props: ToastProps) => {
     return () => {
       clearTimeout(timeId);
     };
+    // eslint-disable-next-line
   }, []);
 
   if (!show) {
@@ -101,7 +102,7 @@ const NotificationToast = (props: ToastProps) => {
       role='alert'>
       <ToastIcon type={props.type} />
       <div className='flex-col flex-wrap '>
-        <h4 className='font-bol ml-3'>{props.title}</h4>
+        <h4 className='ml-3 font-bold'>{props.title}</h4>
         <p className='ml-3 text-xs'>{props.message}</p>
         {/* fixme convert this into a component */}
         {props.txnHash ? (

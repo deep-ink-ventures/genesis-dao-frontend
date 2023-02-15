@@ -15,7 +15,7 @@ const ExploreDaos = () => {
   );
   const [filterDaosOwned, setFilterDaosOwned] = useState(false);
 
-  const handleFilterDaos = (event: any) => {
+  const handleFilterDaos = () => {
     setFilterDaosOwned(!filterDaosOwned);
   };
 
@@ -25,13 +25,13 @@ const ExploreDaos = () => {
 
   useEffect(() => {
     fetchDaos();
-  }, []);
+  }, [fetchDaos]);
 
   useEffect(() => {
     if (currentWalletAccount?.address) {
       updateDaosOwnedByWallet();
     }
-  }, [currentWalletAccount]);
+  }, [currentWalletAccount, updateDaosOwnedByWallet]);
 
   if (!daos) {
     return (

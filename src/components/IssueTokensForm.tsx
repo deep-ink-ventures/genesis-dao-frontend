@@ -56,7 +56,7 @@ const IssueTokensForm = (props: { daoId: string }) => {
 
   useEffect(() => {
     setValue('daoId', props.daoId as string);
-  }, [props.daoId]);
+  }, [props.daoId, setValue]);
 
   useEffect(() => {
     if (isSubmitSuccessful) {
