@@ -19,7 +19,7 @@ const DaoHome = () => {
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
       description='GenesisDAO Description'>
-      <div className='space-between mt-12 flex'>
+      <div className='mt-12 flex'>
         <div className='hero mt-3 p-2'>
           <div className='flex flex-col rounded-xl bg-slate-800 p-5'>
             <h1 className='mb-2'>

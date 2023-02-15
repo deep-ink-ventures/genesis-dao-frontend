@@ -16,7 +16,7 @@ const ManageDao = () => {
     if (!daosOwnedByWallet && currentWalletAccount?.address) {
       fetchDaos();
     }
-  }, [daos, daosOwnedByWallet, currentWalletAccount]);
+  }, [daos, daosOwnedByWallet, currentWalletAccount, fetchDaos]);
 
   const noWallet = () => {
     return (

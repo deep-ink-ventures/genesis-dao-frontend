@@ -41,9 +41,6 @@ const WalletConnect = () => {
     }
   };
 
-  // useEffect(() => {
-  // }, [walletConnected, currentWalletAccount])
-
   return (
     <div>
       <div>
@@ -107,6 +104,7 @@ const WalletConnect = () => {
           }}
           onError={(error) => {
             if (error) {
+              // eslint-disable-next-line
               console.log(error);
             }
           }}

@@ -47,16 +47,18 @@ const useGenesisDao = () => {
     errorMsg: string,
     successCB?: Function
   ) => {
+    // eslint-disable-next-line
     console.log('Transaction status1:', result.status.type);
 
     if (result.status.isInBlock) {
       // fixme need to get this block hash
+      // eslint-disable-next-line
       console.log(
         'Included at block hash',
         result.status.asInBlock.toHex(),
         '\nwait for 10-20 seconds to finalize'
       );
-      result.events.forEach(({ event: { data, method, section }, phase }) => {
+      result.events.forEach(({ event: { method } }) => {
         if (method === 'ExtrinsicSuccess') {
           const successNoti = {
             title: `${TxnResponse.Success}`,
@@ -83,6 +85,7 @@ const useGenesisDao = () => {
         }
       });
     } else if (result.status.isFinalized) {
+      // eslint-disable-next-line
       console.log('Finalized block hash', result.status.asFinalized.toHex());
     }
   };
@@ -124,6 +127,7 @@ const useGenesisDao = () => {
         });
     } else {
       // fixme
+      // eslint-disable-next-line
       console.log('wallet does not have a signer');
     }
   };
@@ -159,6 +163,8 @@ const useGenesisDao = () => {
           handleTxnError(new Error(err));
         });
     } else {
+      // fixme
+      // eslint-disable-next-line
       console.log('wallet does not have a signer');
     }
   };
@@ -366,6 +372,7 @@ const useGenesisDao = () => {
           handleTxnError(new Error(err));
         });
     } else {
+      // eslint-disable-next-line
       console.log('wallet does not have a signer');
     }
   };
@@ -396,7 +403,9 @@ const useGenesisDao = () => {
           handleTxnError(new Error(err));
         });
     } else {
-      console.log('wallet does not have a signer');
+      // fixme
+      // eslint-disable-next-line
+      console.log('no signer')
     }
   };
 
@@ -446,6 +455,8 @@ const useGenesisDao = () => {
     sendMultipleTxns,
     makeCreateDaoTxn,
     destroyDaoAndAssets,
+    destroyAssetAccounts,
+    destroyAssetApprovals,
   };
 };
 

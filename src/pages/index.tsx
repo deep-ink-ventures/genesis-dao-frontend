@@ -12,7 +12,7 @@ const Index = () => {
     if (!daos) {
       fetchDaos();
     }
-  }, []);
+  }, [fetchDaos, daos]);
 
   useEffect(() => {}, [daosOwnedByWallet, currentWalletAccount]);
 
@@ -20,33 +20,33 @@ const Index = () => {
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
       description='GenesisDAO Description'>
-      <div className='z-1 flex-col'>
-        <div className='align-center flex-col justify-center'>
-          <div className='py-  my-4'>
+      <div className='flex-col'>
+        <div className='flex-col items-center justify-center pt-2'>
+          <div className='my-4 py-5'>
             <h1 className='text-center'>
               Empower The People: Unleash the Potential of Your Organization
               With a DAO
             </h1>
           </div>
-          <div className='my-4 flex justify-between px-10 py-4 text-center align-middle'>
-            <div className='shadow-[0_2px_2px_rgb(0,0,0,0.2) h-[156px] w-[300px] rounded-[10px] border-[0.5px] bg-card-primary py-2 opacity-80'>
+          <div className='my-4 flex items-center justify-between px-10 py-4 text-center'>
+            <div className='h-[156px] w-[300px] rounded-[10px] border-[0.5px] border-primary/10 bg-card-primary/60 py-2 shadow-[0_2px_2px_rgb(0,0,0,0.2)]'>
               <h4 className='m-2'>NO-CODE DAO SETUP</h4>
-              <h3 className='mb-2'>200</h3>
+              <h2 className='mb-2'>200</h2>
               <p className='text-primary'>TOTAL DAO CREATED</p>
             </div>
-            <div className='shadow-[0_2px_2px_rgb(0,0,0,0.2) h-[156px] w-[300px] rounded-[10px] border-[0.5px] bg-card-primary py-2 opacity-80'>
+            <div className='h-[156px] w-[300px] rounded-[10px] border-[0.5px] border-primary/10 bg-card-primary/60 py-2 shadow-[0_2px_2px_rgb(0,0,0,0.2)]'>
               <h4 className='m-2'>COMMUNITY-LED</h4>
-              <h3 className='mb-2'>323K</h3>
+              <h2 className='mb-2'>323K</h2>
               <p className='text-primary'>TOTAL MEMBERS</p>
             </div>
-            <div className='shadow-[0_2px_2px_rgb(0,0,0,0.2) h-[156px] w-[300px] rounded-[10px] border-[0.5px] bg-card-primary py-2 opacity-80'>
+            <div className='h-[156px] w-[300px] rounded-[10px] border-[0.5px] border-primary/10 bg-card-primary/60 py-2 shadow-[0_2px_2px_rgb(0,0,0,0.2)]'>
               <h4 className='m-2'>TRANSPARENCY</h4>
-              <h3 className='mb-2'>2.7K</h3>
+              <h2 className='mb-2'>2.7K</h2>
               <p className='text-primary'>TOTAL PROPOSALS</p>
             </div>
-            <div className='shadow-[0_2px_2px_rgb(0,0,0,0.2) h-[156px] w-[300px] rounded-[10px] border-[0.5px] bg-card-primary py-2 opacity-80'>
+            <div className='h-[156px] w-[300px] rounded-[10px] border-[0.5px] border-primary/10 bg-card-primary/60 py-2 shadow-[0_2px_2px_rgb(0,0,0,0.2)]'>
               <h4 className='m-2'>DEMOCRATIC</h4>
-              <h3 className='mb-2'>2314</h3>
+              <h2 className='mb-2'>2314</h2>
               <p className='text-primary'>WALLETS VOTED</p>
             </div>
           </div>
@@ -54,8 +54,6 @@ const Index = () => {
         <div>mid</div>
         <div>botom</div>
       </div>
-      <div
-        className={`absolute top-[-40px] left-[15%] z-[-100] h-[60%] w-[80%] bg-[url('../../public/images/background-texture.png')] mix-blend-screen`}></div>
     </MainLayout>
   );
 };

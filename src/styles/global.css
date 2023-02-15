@@ -1,16 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap");
 
 :root {
   --talisman-connect-modal-background: #131116;
   --talisman-connect-modal-foreground: #F1F5F9;
   --talisman-connect-control-background: #37323D;
   --talisman-connect-active-background: #475569;
-  --talisman-connect-button-border-radius: 24px;
-  --talisman-connect-border-radius: 24px;
+  --talisman-connect-button-border-radius: 48px;
+  --talisman-connect-border-radius: 48px;
   --talisman-connect-font-family: Poppins, sans-serif;
   --talisman-connect-modal-header-color: #FFCF27;
   --tw-color-primary-50: 239 246 255;
@@ -37,7 +38,10 @@
 }
 
 @Layer base {
-
+  html {
+    @apply text-[16px];
+    font-family: Poppins, sans-serif;
+  }
 }
 
 
@@ -48,13 +52,14 @@
 
 @Layer utilities {
   h1 {
-    /* font-size: 96px; */
+    /* 48px */
     @apply text-[96px] font-bold 
   }
 }
 
 html {
-  @apply font-primary text-[16px];
+  font-family: Poppins, sans-serif;
+  @apply text-[16px];
 
 }
 
@@ -72,11 +77,11 @@ h3{
 }
 
 h4 {
-  @apply text-xl font-bold;
+  @apply text-lg font-bold;
 }
 
 .btn {
-  @apply rounded-3xl py-3.5 px-6 font-medium text-sm;
+  @apply rounded-3xl py-3.5 px-6 font-medium text-sm normal-case;
 
 }
 
@@ -87,7 +92,7 @@ h4 {
   @apply opacity-50;
 }
 .btn-primary {
-  @apply text-primary-content;
+  @apply text-primary-content font-medium;
 }
 
 .btn-connected {
@@ -117,6 +122,52 @@ h4 {
   @apply bg-card-primary opacity-60 rounded-[10px] border-[rgba(250,250,250,0.1)] border-t-[0.5px]
 }
 
+.blur1 {
+  position: absolute;
+  width: 825.75px;
+  height: 604.74px;
+  left: 80px;
+  top: -160px;
+
+  background: radial-gradient(57.83% 75.75% at 70.11% 109.82%, rgba(255, 122, 0, 0.294) 0%, rgba(255, 122, 0, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  filter: blur(100px);
+  transform: rotate(-28.34deg);
+  z-index: -50;
+}
+
+.blur2 {
+  position: absolute;
+  width: 754px;
+  height: 615px;
+  left: 220px;
+  top: -280px;
+
+  background: radial-gradient(62.47% 65.01% at 64.05% 109.82%, rgba(163, 230, 53, 0.343) 0%, rgba(163, 230, 53, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  filter: blur(100px);
+  z-index: -100;
+}
+
+.blur0 {
+  position: absolute;
+  width: 527px;
+  height: 430px;
+  left: 1000px;
+  top: -265px;
+
+  background: radial-gradient(62.47% 65.01% at 64.05% 109.82%, rgba(163, 230, 53, 0.343) 0%, rgba(163, 230, 53, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  filter: blur(100px);
+  z-index: -96;
+}
+
+.header {
+  backdrop-filter: blur(5px);
+  height: 80px;
+  z-index: -2;
+  @apply absolute w-full top-0; 
+}
+
+
+
 /* Hide arrows in number input */
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
@@ -132,4 +183,8 @@ input[type=number] {
 
 .disable-link {
   pointer-events: none;
+}
+
+a {
+  cursor:pointer;
 }
