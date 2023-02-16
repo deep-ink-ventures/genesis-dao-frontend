@@ -14,7 +14,6 @@ const Index = () => {
     if (!daos) {
       fetchDaos();
     }
-    console.log('index');
   }, [daos, fetchDaos]);
 
   useEffect(() => {}, [daosOwnedByWallet, currentWalletAccount]);

@@ -1,4 +1,7 @@
 {
+  "env": {
+    "jest": true
+  },
   // Configuration for JavaScript files
   "extends": [
     "airbnb-base",
