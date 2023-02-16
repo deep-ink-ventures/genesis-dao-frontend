@@ -24,6 +24,7 @@ const ExploreDaos = () => {
   };
 
   useEffect(() => {
+    console.log('fetch dao explore');
     fetchDaos();
   }, [fetchDaos]);
 
@@ -31,6 +32,7 @@ const ExploreDaos = () => {
     if (currentWalletAccount?.address) {
       updateDaosOwnedByWallet();
     }
+    console.log('update dao explore');
   }, [currentWalletAccount, updateDaosOwnedByWallet]);
 
   if (!daos) {
