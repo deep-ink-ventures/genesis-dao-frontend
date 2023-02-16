@@ -47,7 +47,7 @@ const WalletConnect = () => {
         <div>
           <button
             tabIndex={0}
-            className={`btn m-1 min-w-[180px] ${
+            className={`btn m-1 ${
               !currentWalletAccount
                 ? 'btn-primary'
                 : 'btn-connected hover:bg-base-100'

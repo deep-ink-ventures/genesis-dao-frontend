@@ -14,27 +14,7 @@
   --talisman-connect-border-radius: 48px;
   --talisman-connect-font-family: Poppins, sans-serif;
   --talisman-connect-modal-header-color: #FFCF27;
-  --tw-color-primary-50: 239 246 255;
-  --tw-color-primary-100: 219 234 254;
-  --tw-color-primary-200: 191 219 254;
-  --tw-color-primary-300: 147 197 253;
-  --tw-color-primary-400: 96 165 250;
-  --tw-color-primary-500: 59 130 246;
-  --tw-color-primary-600: 37 99 235;
-  --tw-color-primary-700: 29 78 216;
-  --tw-color-primary-800: 30 64 175;
-  --tw-color-primary-900: 30 58 138;
-  --color-primary-50: rgb(var(--tw-color-primary-50)); /* #eff6ff */
-  --color-primary-100: rgb(var(--tw-color-primary-100)); /* #dbeafe */
-  --color-primary-200: rgb(var(--tw-color-primary-200)); /* #bfdbfe */
-  --color-primary-300: rgb(var(--tw-color-primary-300)); /* #93c5fd */
-  --color-primary-400: rgb(var(--tw-color-primary-400)); /* #60a5fa */
-  --color-primary-500: rgb(var(--tw-color-primary-500)); /* #3b82f6 */
-  --color-primary-600: rgb(var(--tw-color-primary-600)); /* #2563eb */
-  --color-primary-700: rgb(var(--tw-color-primary-700)); /* #1d4ed8 */
-  --color-primary-800: rgb(var(--tw-color-primary-800)); /* #1e40af */
-  --color-primary-900: rgb(var(--tw-color-primary-900)); /* #1e3a8a */
-  
+
 }
 
 @Layer base {
@@ -44,90 +24,102 @@
   }
 }
 
-
-
 @Layer components {
-  
+  .header {
+    backdrop-filter: blur(5px);
+    height: 80px;
+    z-index: -2;
+
+    /* background: rgba(19, 17, 22, 0.2); */
+    @apply absolute w-screen top-0 bg-base-100/40 left-0;
+  }
+  .container {
+    @apply rounded-[10px] bg-card-primary/60 border-[0.5px] border-content-primary/10 shadow-[0_2px_2px_rgb(0,0,0,0.2)] box-border;
+  }
+
+ 
 }
 
+
+
 @Layer utilities {
-  h1 {
-    /* 48px */
-    @apply text-[96px] font-bold 
-  }
+
 }
 
 html {
   font-family: Poppins, sans-serif;
   @apply text-[16px];
-
 }
 
 h1 {
   /* font-size: 96px; */
-  @apply text-5xl font-bold ;
+  @apply text-5xl font-semibold;
 }
 
 h2 {
-  @apply  text-4xl font-bold ;
+  @apply  text-4xl font-semibold;
 }
 
 h3{
-  @apply text-3xl font-bold;
+  @apply text-3xl font-semibold;
 }
 
 h4 {
-  @apply text-lg font-bold;
+  @apply text-lg font-semibold;
 }
 
 .btn {
   @apply rounded-3xl py-3.5 px-6 font-medium text-sm normal-case;
-
 }
-
 .btn:disabled {
   @apply opacity-50;
 }
 .btn-disabled {
   @apply opacity-50;
 }
-.btn-primary {
-  @apply text-primary-content font-medium;
-}
-
 .btn-connected {
   background: rgba(19, 17, 22, 0.5);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5px);
 }
-
+.btn-primary {
+  @apply text-primary-content font-medium;
+}
 
 .card-body {
   @apply text-base
 }
 
-/* a:hover {
-  @apply border-b-2 border-blue-600 text-blue-500;
-} */
-
 .content p {
-  @apply my-6;
+  @apply my-3;
 }
 
 .content ul {
-  @apply my-6;
+  @apply my-3;
 }
 
 .hero-content {
   @apply bg-card-primary opacity-60 rounded-[10px] border-[rgba(250,250,250,0.1)] border-t-[0.5px]
 }
 
+.blur0 {
+  position: absolute;
+  width: 527px;
+  height: 430px;
+  left: 900px;
+  top: -275px;
+
+  background: radial-gradient(62.47% 65.01% at 64.05% 109.82%, rgba(163, 230, 53, 0.343) 0%, rgba(163, 230, 53, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  filter: blur(100px);
+  z-index: -96;
+}
+
 .blur1 {
   position: absolute;
   width: 825.75px;
   height: 604.74px;
-  left: 80px;
-  top: -160px;
+  left: 65px;
+  top: -170px;
 
   background: radial-gradient(57.83% 75.75% at 70.11% 109.82%, rgba(255, 122, 0, 0.294) 0%, rgba(255, 122, 0, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
   filter: blur(100px);
@@ -145,25 +137,6 @@ h4 {
   background: radial-gradient(62.47% 65.01% at 64.05% 109.82%, rgba(163, 230, 53, 0.343) 0%, rgba(163, 230, 53, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
   filter: blur(100px);
   z-index: -100;
-}
-
-.blur0 {
-  position: absolute;
-  width: 527px;
-  height: 430px;
-  left: 1000px;
-  top: -265px;
-
-  background: radial-gradient(62.47% 65.01% at 64.05% 109.82%, rgba(163, 230, 53, 0.343) 0%, rgba(163, 230, 53, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
-  filter: blur(100px);
-  z-index: -96;
-}
-
-.header {
-  backdrop-filter: blur(5px);
-  height: 80px;
-  z-index: -2;
-  @apply absolute w-full top-0; 
 }
 
 

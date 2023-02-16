@@ -21,14 +21,14 @@ interface IMainProps {
  * @returns
  */
 const MainLayout = (props: IMainProps) => (
-  <div className='w-full px-1'>
+  <div className='m-auto max-w-screen-xl px-1'>
     <Meta
       title={props.title}
       description={props.description}
       canonical={props.canonical ? props.canonical : ''}
       siteName={props.siteName ? props.siteName : 'Genesis DAO'}
     />
-    <div className='mx-auto max-w-screen-2xl'>
+    <div className='mx-auto'>
       <div>
         <div className='header'></div>
         <div className='flex justify-between px-6'>
@@ -51,16 +51,16 @@ const MainLayout = (props: IMainProps) => (
             <WalletConnect />
           </div>
         </div>
-        <div className='m-2 min-h-screen rounded-2xl border-2 border-slate-800 p-4'>
+        <div className='m-2 min-h-screen rounded-2xl border-slate-800 p-4'>
           {props.children}
         </div>
       </div>
+      <div
+        className={`absolute top-[-15px] left-[18%] z-[-100] mx-auto h-[60%] w-[64%] bg-[url('../../public/images/background-texture.png')] mix-blend-screen`}></div>
+      <div className='blur0'></div>
+      <div className='blur1'></div>
+      <div className='blur2'></div>
     </div>
-    <div
-      className={`absolute top-[-15px] left-[15%] z-[-100] h-[60%] w-[80%] bg-[url('../../public/images/background-texture.png')] mix-blend-screen`}></div>
-    <div className='blur0'></div>
-    <div className='blur1'></div>
-    <div className='blur2'></div>
   </div>
 );
 
