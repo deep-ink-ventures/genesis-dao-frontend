@@ -23,6 +23,5 @@ describe('DaoCard', () => {
 
     const daoIdElement = screen.getByText(`DAO ID: ${daoId}`);
     expect(daoIdElement).toBeInTheDocument();
-
   });
 });
