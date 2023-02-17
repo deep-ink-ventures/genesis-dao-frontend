@@ -1,4 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
+
+import placeholderImage from '@/svg/placeholderImage.svg';
 
 interface DaoCardProps {
   daoId: string;
@@ -11,15 +14,22 @@ interface DaoCardProps {
 const DaoCard = (props: DaoCardProps) => {
   return (
     <div
-      className={`card m-1 w-60 break-words rounded-[10px] bg-neutral text-center text-sm text-primary-content mix-blend-soft-light shadow-xl hover:cursor-pointer hover:bg-neutral-focus
-      ${!props.owned ? `bg-neutral` : `bg-accent`} `}>
+      className={`card z-0 m-1 h-60 w-56 break-words text-center shadow-xl hover:cursor-pointer hover:bg-neutral-focus`}>
       <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
         <div className='card-body text-center'>
-          <h1 className='mb-1 text-2xl font-bold'>{props.daoName}</h1>
-          <p>{`DAO ID: ${props.daoId}`}</p>
-          <p>{`Owner: ${props.owner}`}</p>
-          <p>{`Asset ID: ${props.assetId ? props.assetId : 'N/A'}`}</p>
-          <p>You can check out this dao</p>
+          <p className='mb-2 flex items-center justify-center'>
+            <Image
+              src={placeholderImage}
+              alt='placeholder'
+              height={60}
+              width={60}
+            />
+          </p>
+          <h4 className='z-10 mb-1 text-base-content mix-blend-normal'>
+            {props.daoName}
+          </h4>
+          <p className='text-sm text-accent'>{`DAO ID: ${props.daoId}`}</p>
+          <p className='mt-5 text-sm underline underline-offset-2'>{`See more >`}</p>
         </div>
       </Link>
     </div>

@@ -89,7 +89,7 @@ const NotificationToast = (props: ToastProps) => {
       clearTimeout(timeId);
     };
     // eslint-disable-next-line
-  }, []);
+  });
 
   if (!show) {
     return null;

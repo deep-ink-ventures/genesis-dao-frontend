@@ -21,12 +21,8 @@ const customJestConfig = {
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
-  coveragePathIgnorePatterns : [
-    "stores",
-    "hooks"
-  ],
+  coveragePathIgnorePatterns: ['stores', 'hooks'],
   testEnvironment: 'jest-environment-jsdom',
-  
 };
 
 module.exports = createJestConfig(customJestConfig);

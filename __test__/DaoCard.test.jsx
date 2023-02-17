@@ -23,16 +23,5 @@ describe('DaoCard', () => {
 
     const daoIdElement = screen.getByText(`DAO ID: ${daoId}`);
     expect(daoIdElement).toBeInTheDocument();
-
-    const ownerElement = screen.getByText(`Owner: ${owner}`);
-    expect(ownerElement).toBeInTheDocument();
-
-    const assetIdElement = screen.getByText(`Asset ID: ${assetId}`);
-    expect(assetIdElement).toBeInTheDocument();
-
-    const youCanCheckOutElement = screen.getByText(
-      'You can check out this dao'
-    );
-    expect(youCanCheckOutElement).toBeInTheDocument();
   });
 });
