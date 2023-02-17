@@ -5,7 +5,7 @@ import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
 
 // fixme sometimes the filter toggle doesn't show
-const ExploreDaos = () => {
+const Explore = () => {
   const daos = useGenesisStore((s) => s.daos);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
@@ -25,7 +25,8 @@ const ExploreDaos = () => {
 
   useEffect(() => {
     fetchDaos();
-  }, [fetchDaos]);
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     if (currentWalletAccount?.address) {
@@ -39,6 +40,11 @@ const ExploreDaos = () => {
         title='Explore DAOs - GenesisDAO'
         description='GenesisDAO Description'>
         <div>No DAOS created yet</div>
+        <div>
+          <button className='btn-primary btn' onClick={handleRefresh}>
+            Refresh
+          </button>
+        </div>
       </MainLayout>
     );
   }
@@ -76,4 +82,4 @@ const ExploreDaos = () => {
   );
 };
 
-export default ExploreDaos;
+export default Explore;

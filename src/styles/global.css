@@ -36,8 +36,6 @@
   .container {
     @apply rounded-[10px] bg-card-primary/60 border-[0.5px] border-content-primary/10 shadow-[0_2px_2px_rgb(0,0,0,0.2)] box-border;
   }
-
- 
 }
 
 
@@ -86,8 +84,23 @@ h4 {
   @apply text-primary-content font-medium;
 }
 
+.card {
+  @apply rounded-[10px] z-0 bg-base-100;
+} 
+
+.card::before { /* Apply blend mode to this pseudo element */
+  content: '';
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  @apply mix-blend-soft-light bg-neutral rounded-[10px]
+}
+
 .card-body {
-  @apply text-base
+  @apply text-base text-content-primary ;
 }
 
 .content p {
@@ -98,8 +111,12 @@ h4 {
   @apply my-3;
 }
 
-.hero-content {
+/* .hero-content {
   @apply bg-card-primary opacity-60 rounded-[10px] border-[rgba(250,250,250,0.1)] border-t-[0.5px]
+} */
+
+.input {
+  @apply px-2 bg-base-50;
 }
 
 .blur0 {

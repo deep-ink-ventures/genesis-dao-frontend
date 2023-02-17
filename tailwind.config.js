@@ -20,11 +20,16 @@ module.exports = {
     },
     extend: {
       colors: {
+        white: '#FAFAFA',
+        black: '#16141A',
         content: {
           primary: '#FAFAFA',
         },
         card: {
           primary: '#262229',
+        },
+        base: {
+          50: '#37323D',
         },
       },
     },
@@ -51,10 +56,9 @@ module.exports = {
           'neutral': '#FAFAFA',
           'neutral-focus': '#BABABA',
           'neutral-content': '#FAFAFA',
-          'base-50': '#37323D',
           "base-100": "#1E1B21",
           'base-200': '#16141A',
-          'base-300': '#1E1B21',
+          'base-300': '#0D0B0E',
           'base-content': '#FAFAFA',
           "info": "#22D3EE",
           'info-content': '#083B43',

@@ -244,7 +244,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         return err;
       }
     };
-
     set({ apiConnection: await createApi() });
   },
 

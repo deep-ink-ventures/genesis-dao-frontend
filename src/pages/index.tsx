@@ -1,8 +1,13 @@
 import Image from 'next/image';
 import { useEffect } from 'react';
 
+import ExploreDaos from '@/components/ExploreDaos';
 import useGenesisStore from '@/stores/genesisStore';
 import circleBG from '@/svg/BG.svg';
+import handAndBalls from '@/svg/handandballs.svg';
+import justice from '@/svg/justice.svg';
+import scale from '@/svg/scale.svg';
+import sticker from '@/svg/sticker.svg';
 import MainLayout from '@/templates/MainLayout';
 
 const Index = () => {
@@ -14,7 +19,8 @@ const Index = () => {
     if (!daos) {
       fetchDaos();
     }
-  }, [daos, fetchDaos]);
+    // eslint-disable-next-line
+  }, []);
 
   useEffect(() => {}, [daosOwnedByWallet, currentWalletAccount]);
 
@@ -55,10 +61,47 @@ const Index = () => {
         </div>
         <div className='container mb-8 flex min-h-[400px] justify-around'>
           <div className='flex min-w-[50%] flex-auto flex-col items-center text-center'>
-            <div className='mx-10 px-28'>
+            <div className='mx-10 mb-5 px-28'>
               <h4 className='mt-6'>
                 Step into the future of Governance with DAO
               </h4>
+            </div>
+            <div>
+              <ul className='relative ml-16 border-l text-left'>
+                <li className='ml-5 mb-6'>
+                  <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
+                    <Image src={justice} height={28} width={28} alt='justice' />
+                  </span>
+                  <p className='ml-4 pt-1 text-xs'>Step 1</p>
+                  <p className='ml-4'>Find or create a DAO</p>
+                </li>
+                <li className='ml-5 mb-6'>
+                  <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
+                    <Image src={scale} height={28} width={28} alt='justice' />
+                  </span>
+                  <p className='ml-4 pt-1 text-xs'>Step 2</p>
+                  <p className='ml-4'>Create or vote on Proposals</p>
+                </li>
+                <li className='ml-5 mb-6'>
+                  <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
+                    <Image src={sticker} height={25} width={25} alt='justice' />
+                  </span>
+                  <p className='ml-4 pt-1 text-xs'>Step 3</p>
+                  <p className='ml-4'>Monitor and maintain the goals</p>
+                </li>
+                <li className='ml-5 mb-6'>
+                  <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
+                    <Image
+                      src={handAndBalls}
+                      height={28}
+                      width={28}
+                      alt='justice'
+                    />
+                  </span>
+                  <p className='ml-4 pt-1 text-xs'>Step 4</p>
+                  <p className='ml-4'>Get rewarded with tokens</p>
+                </li>
+              </ul>
             </div>
             <div className='absolute z-[-20] opacity-50 mix-blend-soft-light'>
               <Image src={circleBG} alt='circle bg' height={459} width={598} />
@@ -80,9 +123,7 @@ const Index = () => {
             </div>
           </div>
         </div>
-        <div className='container mb-6 flex min-h-[600px] justify-center'>
-          bottom
-        </div>
+        <ExploreDaos />
       </div>
     </MainLayout>
   );
