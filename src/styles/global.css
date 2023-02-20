@@ -85,19 +85,17 @@ h4 {
 }
 
 .card {
-  @apply rounded-[10px] z-0 bg-base-100;
+  @apply rounded-[10px] z-0 bg-[#403945] hover:border hover:border-neutral hover:brightness-[1.15];
 } 
 
-.card::before { /* Apply blend mode to this pseudo element */
-  content: '';
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  @apply mix-blend-soft-light bg-neutral rounded-[10px]
+.card:hover {
+  
 }
+
+.dao-card:hover .dao-image {
+  display: none;
+}
+
 
 .card-body {
   @apply text-base text-content-primary ;
@@ -117,6 +115,18 @@ h4 {
 
 .input {
   @apply px-2 bg-base-50;
+}
+
+.input-primary {
+  @apply border-neutral-focus focus:outline-neutral-focus border-[0.3px]
+}
+
+#search-input {
+  background: url('../svg/search.svg') no-repeat;
+  background-size: 20px;
+  background-position: 4%;
+  @apply pl-9 bg-base-50;
+  
 }
 
 .blur0 {

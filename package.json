@@ -14,7 +14,7 @@
     "format": "next lint --fix && prettier '**/*.{json,yaml}' --write --ignore-path .gitignore",
     "check-types": "tsc --noEmit --pretty",
     "test": "jest",
-    "pre-commit": "yarn format && yarn check-types",
+    "pre-commit": "yarn format && yarn check-types & yarn test",
     "commit": "yarn test && cz",
     "prepare": "husky install"
   },
