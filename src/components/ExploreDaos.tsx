@@ -1,7 +1,9 @@
+import Image from 'next/image';
 import { useEffect } from 'react';
 
 import DaoCards from '@/components/DaoCards';
 import useGenesisStore from '@/stores/genesisStore';
+import telescope from '@/svg/telescope.svg';
 
 const ExploreDaos = () => {
   const daos = useGenesisStore((s) => s.daos);
@@ -19,15 +21,18 @@ const ExploreDaos = () => {
 
   return (
     <div className='container mb-20 flex min-h-[600px] flex-col py-5 px-6'>
-      <div className='flex h-16 justify-between'>
-        <div className='flex'>
-          <span className='mx-1 flex items-center justify-center'>[Icon] </span>
-          <h3>Explore</h3>
+      <div className='flex h-16 justify-between px-2'>
+        <div className='flex items-center'>
+          <div className='mr-2'>
+            <Image src={telescope} width={27} height={28} alt='building' />
+          </div>
+          <h3 className='flex items-center'>Explore</h3>
         </div>
-        <div>
+        <div className='flex items-center'>
           <input
+            id='search-input'
             className='input-primary input w-72 text-sm'
-            placeholder='[icon] Search DAO name or DAO ID'></input>
+            placeholder='Search DAO name or DAO ID'></input>
         </div>
       </div>
       <div className='my-2 flex justify-center'>
