@@ -18,7 +18,7 @@ const Logo = () => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       console.log('reset here');
-      reset()
+      reset();
     }
   });
 
@@ -46,8 +46,9 @@ const Logo = () => {
             <form onSubmit={handleSubmit(onSubmit)} className='min-w-full'>
               <div className='mb-8 flex flex-col items-center gap-y-8'>
                 <div className='min-w-full'>
+                  <p className='mb-1 ml-2'>Email</p>
                   <input
-                    className='input'
+                    className='input-primary input'
                     type='text'
                     placeholder='Email '
                     {...register('Email ', {})}
@@ -55,14 +56,16 @@ const Logo = () => {
                 </div>
                 <div>Upload Logo [form]</div>
                 <div className='min-w-full'>
+                  <p className='mb-1 ml-2'>Short Overview</p>
                   <textarea
-                    className='input'
+                    className='textarea h-48'
                     {...register('Short Overview', {})}
                   />
                 </div>
                 <div className='min-w-full'>
+                  <p className='mb-1 ml-2'>Long Description</p>
                   <textarea
-                    className='input'
+                    className='textarea h-64'
                     {...register('Long Description', {})}
                   />
                 </div>
