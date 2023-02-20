@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import Create from '../src/pages/create';
+import Create from '../src/pages/logo';
 
 describe('Create page', () => {
   describe('Render method', () => {

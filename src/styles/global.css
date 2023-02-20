@@ -33,9 +33,7 @@
     /* background: rgba(19, 17, 22, 0.2); */
     @apply absolute w-screen top-0 bg-base-100/40 left-0;
   }
-  .container {
-    @apply rounded-[10px] bg-card-primary/60 border-[0.5px] border-content-primary/10 shadow-[0_2px_2px_rgb(0,0,0,0.2)] box-border;
-  }
+  
 }
 
 
@@ -66,6 +64,10 @@ h4 {
   @apply text-lg font-semibold;
 }
 
+.container {
+    @apply rounded-[10px] bg-card-primary/60 border-[0.5px] border-content-primary/10 shadow-[0_2px_2px_rgb(0,0,0,0.2)] box-border;
+  }
+
 .btn {
   @apply rounded-3xl py-3.5 px-6 font-medium text-sm normal-case;
 }
@@ -87,18 +89,14 @@ h4 {
 .card {
   @apply rounded-[10px] z-0 bg-[#403945] hover:border hover:border-neutral hover:brightness-[1.15];
 } 
-
 .card:hover {
   
 }
-
+.card-body {
+  @apply text-base text-content-primary;
+}
 .dao-card:hover .dao-image {
   display: none;
-}
-
-
-.card-body {
-  @apply text-base text-content-primary ;
 }
 
 .content p {
@@ -114,7 +112,7 @@ h4 {
 } */
 
 .input {
-  @apply px-2 bg-base-50;
+  @apply px-2 bg-base-50 w-full min-w-full;
 }
 
 .input-primary {
@@ -128,6 +126,10 @@ h4 {
   @apply pl-9 bg-base-50;
   
 }
+.textarea {
+  @apply bg-base-50 w-full min-w-full px-2 py-1 border-neutral-focus focus:outline-neutral-focus border-[0.3px];
+}
+
 
 .blur0 {
   position: absolute;
