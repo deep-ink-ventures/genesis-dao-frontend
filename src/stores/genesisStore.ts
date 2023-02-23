@@ -101,6 +101,7 @@ export interface GenesisState {
   currentAssetBalance: number | null;
   createDaoSteps: number | null;
   newCreatedDao: DaoInfo | null;
+  isStartModalOpen: boolean;
 }
 
 export interface GenesisActions {
@@ -127,6 +128,7 @@ export interface GenesisActions {
   fetchTokenBalance: (assetId: number, accountId: string) => void;
   updateCreateDaoSteps: (steps: number) => void;
   updateNewCreatedDao: (dao: DaoInfo) => void;
+  updateIsStartModalOpen: (isStartModalOpen: boolean) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -148,6 +150,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   currentAssetBalance: null,
   createDaoSteps: 1,
   newCreatedDao: null,
+  isStartModalOpen: false,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -275,6 +278,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   updateCreateDaoSteps: (createDaoSteps) => set(() => ({ createDaoSteps })),
   updateNewCreatedDao: (newCreatedDao) => set(() => ({ newCreatedDao })),
+  updateIsStartModalOpen: (isStartModalOpen) =>
+    set(() => ({ isStartModalOpen })),
 }));
 
 export default useGenesisStore;
