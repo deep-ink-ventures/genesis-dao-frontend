@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useEffect } from 'react';
 
+import CreateDaoModal from '@/components/CreateDaoModal';
 import ExploreDaos from '@/components/ExploreDaos';
 import useGenesisStore from '@/stores/genesisStore';
 import circleBG from '@/svg/BG.svg';
@@ -11,10 +12,18 @@ import sticker from '@/svg/sticker.svg';
 import MainLayout from '@/templates/MainLayout';
 
 const Index = () => {
-  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const daos = useGenesisStore((s) => s.daos);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daosOwnedByWallet = useGenesisStore((s) => s.daosOwnedByWallet);
+  const updateIsStartModalOpen = useGenesisStore(
+    (s) => s.updateIsStartModalOpen
+  );
+  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
+
+  const handleStartModal = () => {
+    updateIsStartModalOpen(true);
+  };
+
   useEffect(() => {
     if (!daos) {
       fetchDaos();
@@ -119,7 +128,10 @@ const Index = () => {
               </p>
             </div>
             <div>
-              <button className='btn-primary btn'>Create a New DAO</button>
+              <button className='btn-primary btn' onClick={handleStartModal}>
+                Create a New DAO
+              </button>
+              <CreateDaoModal />
             </div>
           </div>
         </div>

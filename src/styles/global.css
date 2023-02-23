@@ -168,6 +168,41 @@ h4 {
   z-index: -100;
 }
 
+/* .ant-modal {
+  background-color:#131116 !important;
+  color: #FAFAFA !important;
+  padding-bottom: 0px;
+  border-radius: 10px !important;
+  border-width: 1px !important;
+  border-color: #131116;
+  @apply border-[10px]
+} */
+
+.a-modal {
+  background-color:#131116 !important;
+  color: #FAFAFA !important;
+  padding-bottom: 0px;
+  border-radius: 10px !important;
+  border-color: #131116;
+  @apply border-[0.1px];
+}
+
+.ant-modal-content {
+  background-color:#131116 !important;
+  color: #FAFAFA !important;
+  border-color: #131116;
+}
+
+/* modal's background */
+.a-modal-bg {
+  @apply bg-base-200/70 ;
+} 
+
+.ant-modal-close-icon {
+  color: #FAFAFA;
+}
+
+
 
 
 /* Hide arrows in number input */
