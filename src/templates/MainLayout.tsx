@@ -48,7 +48,7 @@ const MainLayout = (props: IMainProps) => (
             </div>
           </div>
           <div className='py-2'>
-            <WalletConnect />
+            <WalletConnect text={'Connect'} />
           </div>
         </div>
         <div className='m-2 min-h-screen rounded-2xl border-slate-800 p-2'>

@@ -1,5 +1,8 @@
+import Image from 'next/image';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+
+import upload from '@/svg/upload.svg';
 
 const LogoForm = () => {
   const {
@@ -47,7 +50,29 @@ const LogoForm = () => {
                 {...register('email', {})}
               />
             </div>
-            <div>Upload Logo [form]</div>
+            <div className='min-w-full'>
+              <p className='mb-1 ml-2'>Upload Logo File</p>
+              <div className='file-drop relative h-48'>
+                <input
+                  className='absolute z-10 h-full w-full cursor-pointer opacity-0'
+                  type='file'
+                  {...register('logo', {})}
+                />
+                <div className='flex flex-col py-6 text-center opacity-80'>
+                  <Image
+                    className='mx-auto mb-2'
+                    src={upload}
+                    width={45}
+                    height={32}
+                    alt='upload'
+                  />
+                  <p>Drop your image or browse</p>
+                  <p className='text-sm'>{`Image size: Recommended {size} x {size}`}</p>
+                  <p className='text-sm'>{`File format: .jpg or .png`}</p>
+                  <p className='text-sm'>{`File size: max of {size} mb`}</p>
+                </div>
+              </div>
+            </div>
             <div className='min-w-full'>
               <p className='mb-1 ml-2'>Short Overview</p>
               <textarea

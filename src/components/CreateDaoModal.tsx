@@ -1,5 +1,6 @@
 import { ErrorMessage } from '@hookform/error-message';
 import Modal from 'antd/lib/modal';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -7,6 +8,7 @@ import type { CreateDaoData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
 const CreateDaoModal = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -14,9 +16,11 @@ const CreateDaoModal = () => {
     watch,
     formState: { errors, isSubmitSuccessful },
   } = useForm<CreateDaoData>();
-  //fixme need to query wallet balance
+  // fixme need to query wallet balance
   const [hasTenDots, _setHasTenDots] = useState(true);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
+  // const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  // const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
@@ -25,8 +29,14 @@ const CreateDaoModal = () => {
   const watchId = watch('daoId', '');
 
   const onSubmit = (data: any) => {
-    //fixme
+    // fixme
+    setConfirmLoading(true);
     console.log(data);
+    setTimeout(() => {
+      updateIsStartModalOpen(false);
+      setConfirmLoading(false);
+      router.push('start');
+    }, 2000);
   };
 
   useEffect(() => {
@@ -209,7 +219,9 @@ const CreateDaoModal = () => {
               </div>
               <div className='flex justify-center'>
                 <button
-                  className='btn-primary btn w-96'
+                  className={`btn-primary btn w-96 ${
+                    confirmLoading ? 'loading' : null
+                  }`}
                   type='submit'
                   disabled={!hasTenDots}>
                   Proceed

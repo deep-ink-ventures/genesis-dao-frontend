@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 import CreateDaoModal from '@/components/CreateDaoModal';
 import ExploreDaos from '@/components/ExploreDaos';
+import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
 import circleBG from '@/svg/BG.svg';
 import handAndBalls from '@/svg/handandballs.svg';
@@ -128,9 +129,16 @@ const Index = () => {
               </p>
             </div>
             <div>
-              <button className='btn-primary btn' onClick={handleStartModal}>
-                Create a New DAO
-              </button>
+              {currentWalletAccount ? (
+                <button className='btn-primary btn' onClick={handleStartModal}>
+                  Create a New DAO
+                </button>
+              ) : (
+                <WalletConnect
+                  text={'Connect Wallet & Create DAO'}
+                  onClose={handleStartModal}
+                />
+              )}
               <CreateDaoModal />
             </div>
           </div>
