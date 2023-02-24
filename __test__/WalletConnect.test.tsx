@@ -4,7 +4,7 @@ import WalletConnect from '@/components/WalletConnect';
 
 describe('Wallet Connect', () => {
   it('should render the button', async () => {
-    render(<WalletConnect />);
+    render(<WalletConnect text='Connect' />);
     await screen.findAllByRole('button').then((button) => {
       expect(button[0]).toBeInTheDocument();
     });
