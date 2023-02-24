@@ -49,7 +49,7 @@ const useGenesisDao = () => {
   ) => {
     // eslint-disable-next-line
     console.log('Transaction status1:', result.status.type);
-
+    console.log('txn', result);
     if (result.status.isInBlock) {
       // fixme need to get this block hash
       // eslint-disable-next-line
@@ -58,32 +58,61 @@ const useGenesisDao = () => {
         result.status.asInBlock.toHex(),
         '\nwait for 10-20 seconds to finalize'
       );
-      result.events.forEach(({ event: { method } }) => {
-        if (method === 'ExtrinsicSuccess') {
-          const successNoti = {
-            title: `${TxnResponse.Success}`,
-            message: successMsg,
-            type: TxnResponse.Success,
-            txnHash: result.status.asInBlock.toHex(),
-            timestamp: Date.now(),
-          };
-          // add txn to our store - first index
-          addTxnNotification(successNoti);
-          successCB?.();
-          updateTxnProcessing(false);
+      result.events.forEach(
+        ({
+          event: {
+            data: [error],
+            method,
+          },
+        }) => {
+          const err = error as any;
+          if (err?.isModule) {
+            // for module errors, we have the section indexed, lookup
+            const decoded = apiConnection.registry.findMetaError(err.asModule);
+            const string = `${decoded.section}.${decoded.method}}`;
+            if (string.includes('AlreadyExists')) {
+              console.log('This DAO ID already exists');
+              const errorNoti = {
+                title: `${TxnResponse.Error}`,
+                message: 'This DAO ID already exists',
+                type: TxnResponse.Error,
+                txnHash: result.status.asInBlock.toHex(),
+                timestamp: Date.now(),
+              };
+              addTxnNotification(errorNoti);
+              updateTxnProcessing(false);
+              return;
+            }
+          }
+
+          if (method === 'ExtrinsicSuccess') {
+            const successNoti = {
+              title: `${TxnResponse.Success}`,
+              message: successMsg,
+              type: TxnResponse.Success,
+              txnHash: result.status.asInBlock.toHex(),
+              timestamp: Date.now(),
+            };
+            // add txn to our store - first index
+            addTxnNotification(successNoti);
+            successCB?.();
+            updateTxnProcessing(false);
+            return;
+          }
+
+          if (method === 'ExtrinsicFailed') {
+            const errorNoti = {
+              title: `${TxnResponse.Error}`,
+              message: errorMsg,
+              type: TxnResponse.Error,
+              txnHash: result.status.asInBlock.toHex(),
+              timestamp: Date.now(),
+            };
+            addTxnNotification(errorNoti);
+            updateTxnProcessing(false);
+          }
         }
-        if (method === 'ExtrinsicFailed') {
-          const errorNoti = {
-            title: `${TxnResponse.Error}`,
-            message: errorMsg,
-            type: TxnResponse.Error,
-            txnHash: result.status.asInBlock.toHex(),
-            timestamp: Date.now(),
-          };
-          addTxnNotification(errorNoti);
-          updateTxnProcessing(false);
-        }
-      });
+      );
     } else if (result.status.isFinalized) {
       // eslint-disable-next-line
       console.log('Finalized block hash', result.status.asFinalized.toHex());
