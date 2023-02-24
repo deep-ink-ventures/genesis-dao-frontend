@@ -107,10 +107,6 @@ h4 {
   @apply my-3;
 }
 
-/* .hero-content {
-  @apply bg-card-primary opacity-60 rounded-[10px] border-[rgba(250,250,250,0.1)] border-t-[0.5px]
-} */
-
 .input {
   @apply px-2 bg-base-50 w-full min-w-full;
 }
@@ -129,7 +125,6 @@ h4 {
 .textarea {
   @apply bg-base-50 w-full min-w-full px-2 py-1 border-neutral-focus focus:outline-neutral-focus border-[0.3px];
 }
-
 
 .blur0 {
   position: absolute;

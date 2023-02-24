@@ -54,6 +54,7 @@
         "simple-import-sort/exports": "error", // Export configuration for `eslint-plugin-simple-import-sort`
         "import/no-extraneous-dependencies": "warn",
         "@typescript-eslint/no-unused-vars": "warn",
+        "@typescript-eslint/naming-convention": "warn",
         "unused-imports/no-unused-imports": "warn",
         "unused-imports/no-unused-vars": [
           "warn",

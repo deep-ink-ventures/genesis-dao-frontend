@@ -1,31 +1,36 @@
+import { ErrorMessage } from '@hookform/error-message';
 import Modal from 'antd/lib/modal';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import type { CreateDaoData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
 const CreateDaoModal = () => {
-  const [hasTenDots, _setHasTenDots] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<CreateDaoData>();
+  //fixme need to query wallet balance
+  const [hasTenDots, _setHasTenDots] = useState(true);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
   const [confirmLoading, setConfirmLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitSuccessful },
-  } = useForm();
+  const watchName = watch('daoName', '');
+  const watchId = watch('daoId', '');
 
   const onSubmit = (data: any) => {
+    //fixme
     console.log(data);
   };
 
   useEffect(() => {
     if (isSubmitSuccessful) {
-      console.log('reset here');
       reset();
     }
   });
@@ -39,7 +44,6 @@ const CreateDaoModal = () => {
   };
 
   const handleCancel = () => {
-    console.log('Clicked cancel button');
     updateIsStartModalOpen(false);
   };
 
@@ -111,7 +115,7 @@ const CreateDaoModal = () => {
               {`Please choose DAO NAME and DAO ID wisely. They CANNOT be changed.`}
             </p>
           </div>
-          {alert(false)}
+          {alert(hasTenDots)}
           <div
             className={`flex w-full items-center ${
               !hasTenDots ? 'text-neutral/30' : null
@@ -127,13 +131,33 @@ const CreateDaoModal = () => {
                       </span>
                     </p>
                   </div>
-                  <input
-                    className='input-primary input'
-                    type='text'
-                    placeholder='DAO NAME *'
-                    disabled={!hasTenDots}
-                    {...register('daoName ', {})}
-                  />
+                  <div className='relative'>
+                    <input
+                      className={`input ${
+                        watchName.length >= 32 || errors.daoName
+                          ? 'input-error'
+                          : 'input-primary'
+                      }`}
+                      type='text'
+                      placeholder='DAO NAME *'
+                      disabled={!hasTenDots}
+                      {...register('daoName', {
+                        required: 'Required',
+                        maxLength: { value: 32, message: 'Max length is 32' },
+                        minLength: { value: 3, message: 'Minimum length is 3' },
+                      })}
+                    />
+                    <ErrorMessage
+                      errors={errors}
+                      name='daoName'
+                      render={({ message }) => (
+                        <p className='mt-1 ml-2 text-error'>{message}</p>
+                      )}
+                    />
+                    <p className='absolute top-2 right-2 opacity-60'>
+                      {watchName.length}/32
+                    </p>
+                  </div>
                 </div>
                 <div className='min-w-full'>
                   <div className='flex items-end justify-between'>
@@ -147,13 +171,40 @@ const CreateDaoModal = () => {
                       Choose from capital A-Z and numbers 0-9(no space)
                     </p>
                   </div>
-                  <input
-                    className='input-primary input'
-                    type='text'
-                    placeholder='DAO ID *'
-                    disabled={!hasTenDots}
-                    {...register('daoName ', {})}
-                  />
+                  <div className='relative'>
+                    <input
+                      className={`input ${
+                        watchId.length >= 8 || errors.daoId
+                          ? 'input-error'
+                          : 'input-primary'
+                      }`}
+                      type='text'
+                      placeholder='DAO ID *'
+                      disabled={!hasTenDots}
+                      {...register('daoId', {
+                        required: 'Required',
+                        maxLength: { value: 8, message: 'Max Length is 8' },
+                        minLength: { value: 3, message: 'Minimum length is 3' },
+                        pattern: {
+                          value: /^[A-Z0-9]+$/,
+                          message: 'Only capital A-Z or 0-9',
+                        },
+                      })}
+                    />
+                    <ErrorMessage
+                      errors={errors}
+                      name='daoId'
+                      render={({ message }) => (
+                        <p className='mt-1 ml-2 text-error'>{message}</p>
+                      )}
+                    />
+                    <p
+                      className={`absolute top-2 right-2 opacity-60 ${
+                        watchId.length >= 8 ? 'text-error' : null
+                      }`}>
+                      {watchId.length}/8
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className='flex justify-center'>
