@@ -3,10 +3,9 @@ import useGenesisStore from '@/stores/genesisStore';
 const GovernanceForm = () => {
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
-
   const handleBack = () => {
-    updateCreateDaoSteps(1)
-  }
+    updateCreateDaoSteps(1);
+  };
   return (
     <div className='flex flex-col items-center gap-y-6 '>
       <div>
@@ -27,12 +26,11 @@ const GovernanceForm = () => {
         <div className='card h-[110px] w-[180px]'>box</div>
         <div className='card h-[110px] w-[180px]'>box</div>
       </div>
-      <div className='card h-[580px] w-full'>container
-      
-      </div>
-      <button className='btn btn-primary' onClick={handleBack}>Back</button>
-      <button className='btn btn-primary'>Next</button>
-
+      <div className='card h-[580px] w-full'>container</div>
+      <button className='btn-primary btn' onClick={handleBack}>
+        Back
+      </button>
+      <button className='btn-primary btn'>Next</button>
     </div>
   );
 };
