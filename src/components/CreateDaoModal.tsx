@@ -31,7 +31,6 @@ const CreateDaoModal = () => {
   const onSubmit = (data: any) => {
     // fixme
     setConfirmLoading(true);
-    console.log(data);
     setTimeout(() => {
       updateIsStartModalOpen(false);
       setConfirmLoading(false);
@@ -144,12 +143,12 @@ const CreateDaoModal = () => {
                   <div className='relative'>
                     <input
                       className={`input ${
-                        watchName.length >= 32 || errors.daoName
+                        watchName.length > 32 || errors.daoName
                           ? 'input-error'
                           : 'input-primary'
                       }`}
                       type='text'
-                      placeholder='DAO NAME *'
+                      placeholder='e.g. Apple DAO'
                       disabled={!hasTenDots}
                       {...register('daoName', {
                         required: 'Required',
@@ -164,7 +163,10 @@ const CreateDaoModal = () => {
                         <p className='mt-1 ml-2 text-error'>{message}</p>
                       )}
                     />
-                    <p className='absolute top-2 right-2 opacity-60'>
+                    <p
+                      className={`absolute top-2 right-2 opacity-60 ${
+                        watchName.length > 32 ? 'text-error' : null
+                      }`}>
                       {watchName.length}/32
                     </p>
                   </div>
@@ -184,12 +186,12 @@ const CreateDaoModal = () => {
                   <div className='relative'>
                     <input
                       className={`input ${
-                        watchId.length >= 8 || errors.daoId
+                        watchId.length > 8 || errors.daoId
                           ? 'input-error'
                           : 'input-primary'
                       }`}
                       type='text'
-                      placeholder='DAO ID *'
+                      placeholder='e.g. APPLE'
                       disabled={!hasTenDots}
                       {...register('daoId', {
                         required: 'Required',
@@ -210,7 +212,7 @@ const CreateDaoModal = () => {
                     />
                     <p
                       className={`absolute top-2 right-2 opacity-60 ${
-                        watchId.length >= 8 ? 'text-error' : null
+                        watchId.length > 8 ? 'text-error' : null
                       }`}>
                       {watchId.length}/8
                     </p>

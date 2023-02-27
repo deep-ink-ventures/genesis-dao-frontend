@@ -83,6 +83,7 @@ const NotificationToast = (props: ToastProps) => {
   useEffect(() => {
     const timeId = setTimeout(() => {
       setShow(!show);
+      // fixme then delete
     }, 8000);
 
     return () => {

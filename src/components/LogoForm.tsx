@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
 
 const LogoForm = () => {
@@ -11,6 +12,7 @@ const LogoForm = () => {
     reset,
     formState: { isSubmitSuccessful },
   } = useForm();
+  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -18,10 +20,11 @@ const LogoForm = () => {
 
   useEffect(() => {
     if (isSubmitSuccessful) {
-      console.log('reset here');
       reset();
+      updateCreateDaoSteps(2);
     }
   });
+
   return (
     <div className='flex flex-col items-center gap-y-6 px-12'>
       <div>
