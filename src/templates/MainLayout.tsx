@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import Meta from '@/components/Meta';
 import WalletConnect from '@/components/WalletConnect';
 import logo from '@/svg/logo.svg';
+import TopNavBar from '../components/TopNavBar';
 
 interface IMainProps {
   title: string;
@@ -46,6 +47,9 @@ const MainLayout = (props: IMainProps) => (
                 <Link href='/'>Genesis DAO</Link>
               </h1>
             </div>
+          </div>
+          <div className='py-5'>
+            <TopNavBar/>
           </div>
           <div className='py-2'>
             <WalletConnect />
