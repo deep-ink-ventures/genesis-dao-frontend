@@ -40,6 +40,6 @@
     },
     "esModuleInterop": true
   },
-  "exclude": ["./out/**/*", "./node_modules/**/*", "cypress/**/*.ts"],
+  "exclude": ["./out/**/*", "./node_modules/**/*"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }
