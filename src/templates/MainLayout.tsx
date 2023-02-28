@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import Meta from '@/components/Meta';
 import WalletConnect from '@/components/WalletConnect';
 import logo from '@/svg/logo.svg';
+
 import TopNavBar from '../components/TopNavBar';
 
 interface IMainProps {
@@ -49,7 +50,7 @@ const MainLayout = (props: IMainProps) => (
             </div>
           </div>
           <div className='py-5'>
-            <TopNavBar/>
+            <TopNavBar />
           </div>
           <div className='py-2'>
             <WalletConnect />
