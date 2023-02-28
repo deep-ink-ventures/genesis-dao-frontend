@@ -3,9 +3,8 @@ services:
   web:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: genesis-dao-frontend
-    image: node:lts
-    command: ["yarn", "start"]
     env_file:
       - .env
     ports:
