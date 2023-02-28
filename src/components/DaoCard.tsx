@@ -15,7 +15,7 @@ const DaoCard = (props: DaoCardProps) => {
   return (
     <div
       className={`card z-0 m-1 h-60 w-56 break-words text-center shadow-xl hover:cursor-pointer hover:bg-neutral-focus`}>
-      <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
+      <Link href={`/dao/${encodeURIComponent(props.daoId)}`} className='z-10'>
         <div className='card-body text-center'>
           <p className='mb-2 flex items-center justify-center'>
             <Image
