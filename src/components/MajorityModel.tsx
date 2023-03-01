@@ -57,18 +57,31 @@ const MajorityModel = () => {
               Minimum percentage of circulating token supply needed to validate
               a proposal
             </p>
-            <div className='relative w-[20%]'>
-              <input
-                className='input-primary input'
-                type='number'
-                placeholder='0'
-                {...register('threshold', {
-                  min: { value: 1, message: 'Minimum is 1%' },
-                  max: { value: 70, message: 'Maximum is 70%' },
-                  required: 'Required',
-                })}
-              />
-              <div className='absolute top-3 left-16 opacity-70'>%</div>
+            <div className='flex justify-between'>
+              <div className='relative w-[20%]'>
+                <input
+                  className='input-primary input'
+                  type='number'
+                  placeholder='0'
+                  {...register('threshold', {
+                    min: { value: 1, message: 'Minimum is 1%' },
+                    max: { value: 70, message: 'Maximum is 70%' },
+                    required: 'Required',
+                  })}
+                />
+                <div className='absolute top-3 left-16 opacity-70'>%</div>
+              </div>
+              <div className='w-[78%]'>
+                <div className='flex h-12 items-center justify-evenly rounded-[10px] border-[0.3px] border-neutral-focus bg-base-50'>
+                  <p className='opacity-80'>0%</p>
+                  <input
+                    type='range'
+                    className='range range-primary h-3 w-[75%]'
+                    min={0}
+                    max={100}></input>
+                  <p className='opacity-80'>100%</p>
+                </div>
+              </div>
             </div>
           </div>
           <div className='min-w-full'>

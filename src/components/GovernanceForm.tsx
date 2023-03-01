@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+// import Image from 'next/image'
+// import diamond from '../../public/images/diamond-shape.png'
 import CustomizedModel from './CustomizedModel';
 import MajorityModel from './MajorityModel';
 
@@ -35,11 +37,12 @@ const GovernanceForm = () => {
         </p>
       </div>
       <div className='flex justify-evenly gap-x-3'>
+        {/* <Image src={diamond} width={44} height={44} alt='diamond shape' className='absolute'/> */}
         <div
-          className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm hover:cursor-pointer ${
+          className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center  hover:cursor-pointer ${
             model === 'majority'
               ? 'border border-primary hover:border-primary'
-              : null
+              : 'text-sm'
           }`}
           onClick={() => {
             handleChangeTab('majority');
@@ -50,7 +53,7 @@ const GovernanceForm = () => {
           <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black '>
             Coming Soon!
           </div>
-          <div className='card flex h-[110px] w-[170px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none'>
+          <div className='card flex h-[110px] w-[170px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'>
             Delegated Council Vote
           </div>
         </div>
@@ -58,15 +61,15 @@ const GovernanceForm = () => {
           <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
             Coming Soon!
           </div>
-          <div className='card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none'>
+          <div className='card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'>
             Create Your Own
           </div>
         </div>
         <div
-          className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm hover:cursor-pointer ${
+          className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center hover:cursor-pointer ${
             model === 'customized'
               ? 'border border-primary hover:border-primary'
-              : null
+              : 'text-sm'
           }`}
           onClick={() => {
             handleChangeTab('customized');

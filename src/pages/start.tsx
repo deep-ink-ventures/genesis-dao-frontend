@@ -1,3 +1,4 @@
+import Council from '@/components/Council';
 import GovernanceForm from '@/components/GovernanceForm';
 import LogoForm from '@/components/LogoForm';
 import useGenesisStore from '@/stores/genesisStore';
@@ -13,6 +14,10 @@ const Start = () => {
     if (createDaoSteps === 2) {
       return <GovernanceForm />;
     }
+    if (createDaoSteps === 3) {
+      return <Council />;
+    }
+
     return null;
   };
 
