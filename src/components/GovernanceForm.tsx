@@ -1,11 +1,25 @@
-import useGenesisStore from '@/stores/genesisStore';
+import { useState } from 'react';
+
+import CustomizedModel from './CustomizedModel';
+import MajorityModel from './MajorityModel';
 
 const GovernanceForm = () => {
-  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const [model, setModel] = useState('majority');
 
-  const handleBack = () => {
-    updateCreateDaoSteps(1);
+  const handleChangeTab = (mode: string) => {
+    if (mode === 'majority') {
+      setModel('majority');
+    }
+
+    if (mode === 'customized') {
+      setModel('customized');
+    }
   };
+
+  // const handleNext = () => {
+  //   updateCreateDaoSteps(3)
+  // }
+
   return (
     <div className='flex flex-col items-center gap-y-6 '>
       <div>
@@ -21,16 +35,46 @@ const GovernanceForm = () => {
         </p>
       </div>
       <div className='flex justify-evenly gap-x-3'>
-        <div className='card h-[110px] w-[180px]'>box</div>
-        <div className='card h-[110px] w-[170px]'>box</div>
-        <div className='card h-[110px] w-[180px]'>box</div>
-        <div className='card h-[110px] w-[180px]'>box</div>
+        <div
+          className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm hover:cursor-pointer ${
+            model === 'majority'
+              ? 'border border-primary hover:border-primary'
+              : null
+          }`}
+          onClick={() => {
+            handleChangeTab('majority');
+          }}>
+          Majority Vote
+        </div>
+        <div className='relative'>
+          <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black '>
+            Coming Soon!
+          </div>
+          <div className='card flex h-[110px] w-[170px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none'>
+            Delegated Council Vote
+          </div>
+        </div>
+        <div className='relative'>
+          <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
+            Coming Soon!
+          </div>
+          <div className='card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none'>
+            Create Your Own
+          </div>
+        </div>
+        <div
+          className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm hover:cursor-pointer ${
+            model === 'customized'
+              ? 'border border-primary hover:border-primary'
+              : null
+          }`}
+          onClick={() => {
+            handleChangeTab('customized');
+          }}>
+          Customized
+        </div>
       </div>
-      <div className='card h-[580px] w-full'>container</div>
-      <button className='btn-primary btn' onClick={handleBack}>
-        Back
-      </button>
-      <button className='btn-primary btn'>Next</button>
+      {model === 'majority' ? <MajorityModel /> : <CustomizedModel />}
     </div>
   );
 };

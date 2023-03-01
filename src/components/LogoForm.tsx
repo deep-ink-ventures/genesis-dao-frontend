@@ -45,7 +45,7 @@ const LogoForm = () => {
         <form onSubmit={handleSubmit(onSubmit)} className='min-w-full'>
           <div className='mb-8 flex flex-col items-center gap-y-8'>
             <div className='min-w-full'>
-              <p className='mb-1 ml-2'>Email</p>
+              <p className='mb-1 ml-1'>Email</p>
               <input
                 className='input-primary input'
                 type='text'
@@ -54,7 +54,7 @@ const LogoForm = () => {
               />
             </div>
             <div className='min-w-full'>
-              <p className='mb-1 ml-2'>Upload Logo File</p>
+              <p className='mb-1 ml-1'>Upload Logo File</p>
               <div className='file-drop relative h-48'>
                 <input
                   className='absolute z-10 h-full w-full cursor-pointer opacity-0'
@@ -77,7 +77,7 @@ const LogoForm = () => {
               </div>
             </div>
             <div className='min-w-full'>
-              <p className='mb-1 ml-2'>Short Overview</p>
+              <p className='mb-1 ml-1'>Short Overview</p>
               <textarea
                 className='textarea h-48'
                 {...register('shortOverview', {})}
