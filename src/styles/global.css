@@ -128,6 +128,11 @@ h4 {
   @apply bg-base-50 w-full min-w-full px-2 py-1 border-neutral focus:outline-neutral-focus border-[1px] rounded-[8px] border-dashed;
 }
 
+.range::-webkit-slider-thumb {
+  height: 15px;
+  width: 15px;
+}
+
 .blur0 {
   position: absolute;
   width: 527px;
