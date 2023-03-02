@@ -19,6 +19,7 @@ const Council = () => {
   const onSubmit = (data: any) => {
     console.log(data);
   };
+  
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
@@ -29,6 +30,7 @@ const Council = () => {
   const handleBack = () => {
     updateCreateDaoSteps(2);
   };
+
   return (
     <div className='flex flex-col items-center gap-y-5'>
       <div>
