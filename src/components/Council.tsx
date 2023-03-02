@@ -19,7 +19,7 @@ const Council = () => {
   const onSubmit = (data: any) => {
     console.log(data);
   };
-  
+
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
