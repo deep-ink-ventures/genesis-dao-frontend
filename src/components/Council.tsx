@@ -23,12 +23,16 @@ const Council = () => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(3);
+      updateCreateDaoSteps(4);
     }
   });
+  // fixme
+  const handleNext = () => {
+    updateCreateDaoSteps(4);
+  };
 
   const handleBack = () => {
-    updateCreateDaoSteps(2);
+    updateCreateDaoSteps(3);
   };
 
   return (
@@ -50,7 +54,7 @@ const Council = () => {
           informed decisions.
         </p>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
         <div className='card flex h-[386px] w-full flex-col items-center gap-y-5 border-none py-5 hover:brightness-100'>
           <div>
             <h3 className='text-center text-[23px]'>Council Members</h3>
@@ -155,7 +159,10 @@ const Council = () => {
           <button className='btn mr-3 w-48' onClick={handleBack} type='button'>
             Back
           </button>
-          <button className='btn-primary btn w-48' type='submit'>
+          <button
+            className='btn-primary btn w-48'
+            type='submit'
+            onClick={handleNext}>
             Next
           </button>
         </div>
