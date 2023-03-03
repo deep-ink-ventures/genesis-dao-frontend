@@ -16,6 +16,10 @@ const MajorityModel = () => {
     updateCreateDaoSteps(1);
   };
 
+  const handleNext = () => {
+    updateCreateDaoSteps(3);
+  };
+
   const onSubmit = (data: any) => {
     console.log(data);
   };
@@ -105,7 +109,10 @@ const MajorityModel = () => {
         <button className='btn mr-3 w-48' onClick={handleBack}>
           Back
         </button>
-        <button className='btn-primary btn w-48' type='submit'>
+        <button
+          className='btn-primary btn w-48'
+          type='submit'
+          onClick={handleNext}>
           Next
         </button>
       </div>
