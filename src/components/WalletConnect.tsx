@@ -69,7 +69,7 @@ const WalletConnect = (props: WalletConnectProps) => {
               <Image src={wallet} alt='wallet' height='15' width='15'></Image>
             </div>
           )}
-          <span className='align-middle text-white'>
+          <span className='align-middle'>
             {!walletConnected
               ? props.text
               : `${truncateMiddle(currentWalletAccount?.address, 5, 4)}`}
