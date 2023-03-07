@@ -44,9 +44,11 @@ const IssueTokens = () => {
   };
 
   const handleDeleteRecipient = (index: number) => {
+    const newCount = recipientCount - 1;
     const inputs = [...recipientInputs];
     inputs.splice(index, 1);
     setRecipientInputs(inputs);
+    setRecipientCount(newCount);
   };
 
   const displayRecipientInputs = (
