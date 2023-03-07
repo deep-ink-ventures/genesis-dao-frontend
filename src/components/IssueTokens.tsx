@@ -1,8 +1,9 @@
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import useGenesisStore from '@/stores/genesisStore';
+import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 
 const IssueTokens = () => {
@@ -14,6 +15,93 @@ const IssueTokens = () => {
   } = useForm();
   // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+
+  const [recipientCount, setRecipientCount] = useState(2);
+
+  const [recipientInputs, setRecipientInputs] = useState([
+    {
+      wallet: 'recipientWallet1',
+      tokens: 'recipientTokens1',
+      id: Date.now() + 1,
+    },
+    {
+      wallet: 'recipientWallet2',
+      tokens: 'recipientTokens2',
+      id: Date.now() + 2,
+    },
+  ]);
+
+  const handleAddRecipient = () => {
+    const newCount = recipientCount + 1;
+
+    const r = {
+      wallet: `recipientWallet${newCount}`,
+      tokens: `recipientTokens${newCount}`,
+      id: Date.now() + newCount,
+    };
+    setRecipientCount(newCount);
+    setRecipientInputs([...recipientInputs, r]);
+  };
+
+  const handleDeleteRecipient = (index: number) => {
+    const inputs = [...recipientInputs];
+    inputs.splice(index, 1);
+    setRecipientInputs(inputs);
+  };
+
+  const displayRecipientInputs = (
+    recipients: { wallet: string; tokens: string; id: number }[],
+    handleDelete: Function
+  ) => {
+    return recipients.map((recipient, index) => {
+      return (
+        <div className='flex' key={recipient.id} data-k={recipient.id}>
+          <div className='mr-3 flex flex-col justify-end pb-3'>{index + 1}</div>
+          <div className='flex'>
+            <div className='w-[370px] flex-col'>
+              <p className='ml-1'>Wallet Address</p>
+              <input
+                type='text'
+                placeholder='Wallet Address'
+                className='input-primary input text-xs'
+                {...register(recipient.wallet, {
+                  required: 'Required',
+                  minLength: { value: 1, message: 'Minimum is 1' },
+                  maxLength: { value: 30, message: 'Maximum is 30' },
+                })}
+              />
+            </div>
+            <div className='mx-3 flex flex-col'>
+              <p className='ml-1'>Number of Tokens</p>
+              <input
+                type='number'
+                placeholder='0'
+                className='input-primary input text-center'
+                {...register(recipient.tokens, {
+                  required: 'Required',
+                  minLength: { value: 1, message: 'Minimum is 1' },
+                  maxLength: { value: 30, message: 'Maximum is 30' },
+                })}
+              />
+            </div>
+            <div className='flex items-center justify-center pt-5'>0%</div>
+          </div>
+          <div className='ml-3 flex items-center pt-5'>
+            <Image
+              className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
+              src={d}
+              width={18}
+              height={18}
+              alt='delete button'
+              onClick={() => {
+                handleDelete(index);
+              }}
+            />
+          </div>
+        </div>
+      );
+    });
+  };
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -31,7 +119,7 @@ const IssueTokens = () => {
   };
 
   const handleNext = () => {
-    updateCreateDaoSteps(5);
+    updateCreateDaoSteps(4);
   };
 
   return (
@@ -76,44 +164,14 @@ const IssueTokens = () => {
               <h4 className='text-center'>Recipients</h4>
               <p className='text-sm'>Distribute Tokens To Wallet Addresses</p>
             </div>
-            <div className='flex'>
-              <div className='mr-3 flex flex-col justify-end pb-3'>1</div>
-              <div className='flex'>
-                <div className='w-[400px] flex-col'>
-                  <p className='ml-1'>Wallet Address</p>
-                  <input
-                    type='text'
-                    placeholder='Wallet Address'
-                    className='input-primary input text-xs'
-                    {...register('recipientAddress1', {
-                      required: 'Required',
-                      minLength: { value: 1, message: 'Minimum is 1' },
-                      maxLength: { value: 30, message: 'Maximum is 30' },
-                    })}
-                  />
-                </div>
-                <div className='mx-3 flex flex-col'>
-                  <p className='ml-1'>Number of Tokens</p>
-                  <input
-                    type='number'
-                    placeholder='0'
-                    className='input-primary input text-center'
-                    {...register('recipientAddressTokens1', {
-                      required: 'Required',
-                      minLength: { value: 1, message: 'Minimum is 1' },
-                      maxLength: { value: 30, message: 'Maximum is 30' },
-                    })}
-                  />
-                </div>
-                <div className='flex items-center justify-center pt-5'>0%</div>
-              </div>
-            </div>
+            {displayRecipientInputs(recipientInputs, handleDeleteRecipient)}
           </div>
           <div>
             {/* fixme make this functional */}
             <button
               className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
-              type='button'>
+              type='button'
+              onClick={handleAddRecipient}>
               <Image
                 src={plus}
                 width={17}
