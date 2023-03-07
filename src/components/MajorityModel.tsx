@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import useGenesisStore from '@/stores/genesisStore';
@@ -11,6 +11,7 @@ const MajorityModel = () => {
     formState: { isSubmitSuccessful },
   } = useForm();
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const [threshold, setThreshold] = useState(10);
 
   const handleBack = () => {
     updateCreateDaoSteps(1);
@@ -18,6 +19,10 @@ const MajorityModel = () => {
 
   const handleNext = () => {
     updateCreateDaoSteps(3);
+  };
+
+  const handleThresholdChange = (event: any) => {
+    setThreshold(event.target.value);
   };
 
   const onSubmit = (data: any) => {
@@ -66,7 +71,7 @@ const MajorityModel = () => {
                 <input
                   className='input-primary input'
                   type='number'
-                  placeholder='0'
+                  placeholder={threshold.toString()}
                   {...register('threshold', {
                     min: { value: 1, message: 'Minimum is 1%' },
                     max: { value: 70, message: 'Maximum is 70%' },
@@ -77,13 +82,15 @@ const MajorityModel = () => {
               </div>
               <div className='w-[78%]'>
                 <div className='flex h-12 items-center justify-evenly rounded-[10px] border-[0.3px] border-neutral-focus bg-base-50'>
-                  <p className='opacity-80'>0%</p>
                   <input
                     type='range'
                     className='range range-primary h-3 w-[75%]'
                     min={0}
-                    max={100}></input>
-                  <p className='opacity-80'>100%</p>
+                    max={100}
+                    value={threshold}
+                    onChange={handleThresholdChange}
+                  />
+                  <p className='opacity-80'>{threshold}%</p>
                 </div>
               </div>
             </div>
