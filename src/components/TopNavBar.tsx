@@ -13,7 +13,7 @@ const TopNavBar = () => {
       <ul className='flex flex-wrap text-xl'>
         {pageLinks.map((link) => {
           return (
-            <li className='mr-6' key={link.href}>
+            <li className='mr-6' key={link.label}>
               <Link
                 href={link.href}
                 className='border-none hover:text-neutral-focus'>

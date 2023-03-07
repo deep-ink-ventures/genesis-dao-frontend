@@ -22,10 +22,12 @@ const Council = () => {
     {
       name: 'councilName2',
       wallet: 'councilWallet2',
+      id: Date.now() + 2,
     },
     {
       name: 'councilName3',
       wallet: 'councilWallet3',
+      id: Date.now() + 3,
     },
   ]);
 
@@ -60,25 +62,27 @@ const Council = () => {
     const m = {
       name: `councilName${newCount}`,
       wallet: `councilWallet${newCount}`,
+      id: Date.now() + newCount,
     };
     setMembersCount(newCount);
     setMembersInputs([...membersInputs, m]);
   };
 
   const handleDeleteMember = (index: number) => {
-    console.log('delete member');
+    const newCount = membersCount - 1;
     const inputs = [...membersInputs];
     inputs.splice(index, 1);
     setMembersInputs(inputs);
+    setMembersCount(newCount);
   };
 
   const displayMembersInputs = (
-    members: { name: string; wallet: string }[],
+    members: { name: string; wallet: string; id: number | string }[],
     deleteFunc: Function
   ) => {
     return members.map((member, index) => {
       return (
-        <div className='flex' key={member.name}>
+        <div className='flex' key={member.id} data-k={member.id}>
           <div className='mr-3 flex flex-col justify-end pb-3 pl-3'>
             {index + 2}
           </div>
@@ -117,7 +121,7 @@ const Council = () => {
                 height={18}
                 alt='delete button'
                 onClick={() => {
-                  handleDeleteMember(index);
+                  deleteFunc(index);
                 }}
               />
             </div>
