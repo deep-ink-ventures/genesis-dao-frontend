@@ -1,4 +1,31 @@
+import Image from 'next/image';
+
+import useGenesisStore from '@/stores/genesisStore';
+import mountain from '@/svg/mountain.svg';
+import placeholderImage from '@/svg/placeholderImage.svg';
+import { truncateMiddle } from '@/utils';
+
 const Review = () => {
+  const daoCreationValues = useGenesisStore((s) => s.daoCreationValues);
+
+  const displayCouncilMembers = () => {
+    return daoCreationValues.councilMembers.map((member, index) => {
+      return (
+        <div
+          className='mb-3 mt-1 flex justify-evenly'
+          key={member.walletAddress}>
+          <p className='mr-4 flex items-center justify-center'>{index + 1}</p>
+          <div className='input mr-4 flex items-center justify-center border-[0.3px] border-neutral-focus bg-base-50/50'>
+            {member.name}
+          </div>
+          <div className='input flex items-center justify-center border-[0.3px] border-neutral-focus bg-base-50/50'>
+            {truncateMiddle(member.walletAddress)}
+          </div>
+        </div>
+      );
+    });
+  };
+
   return (
     <div className='flex flex-col items-center gap-y-5'>
       <div>
@@ -15,7 +42,83 @@ const Review = () => {
           Please check all DAO details and configurations
         </p>
       </div>
-      <div className='card mb-5 flex h-[1000px] w-full items-center justify-center border-none py-5 hover:brightness-100'></div>
+      <div className='card mb-5 flex w-full flex-col items-center border-none py-5 px-20 hover:brightness-100'>
+        <div className='flex w-full flex-col items-center'>
+          <div className='dao-image mb-3 flex items-center justify-center'>
+            <Image
+              src={placeholderImage}
+              alt='placeholder'
+              height={140}
+              width={140}
+            />
+            <div className='absolute'>
+              <Image
+                src={mountain}
+                alt='mountain'
+                width={60}
+                height={34}></Image>
+            </div>
+          </div>
+          <div className='mb-3 text-center'>
+            <p className='text-sm text-neutral-focus'>DAO Name:</p>
+            <h4>{daoCreationValues.daoName}</h4>
+          </div>
+          <div className='mb-3 text-center'>
+            <p className='text-sm text-neutral-focus'>DAO ID:</p>
+            <p>{daoCreationValues.daoId}</p>
+          </div>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Email:</p>
+          <p>{daoCreationValues.email}</p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Short Overview:</p>
+          <p>{daoCreationValues.shortOverview}</p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Long Description</p>
+          <p>{daoCreationValues.longDescription}</p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Governance Model</p>
+          <p>Majority Vote</p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Proposal Token Cost</p>
+          <p>
+            {daoCreationValues.proposalTokensCost} {daoCreationValues.daoId}{' '}
+            Tokens
+          </p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Approval Threshold</p>
+          <p>{daoCreationValues.approvalThreshold * 100} %</p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Proposal Duration</p>
+          <p>{daoCreationValues.votingDays} Days</p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Council Members</p>
+          {displayCouncilMembers()}
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>
+            Council Signing Threshold
+          </p>
+          <p>
+            <span className='text-primary'>
+              {daoCreationValues.councilThreshold}
+            </span>{' '}
+            Signatures out of{' '}
+            <span className='text-primary'>
+              {daoCreationValues.councilMembers.length}{' '}
+            </span>
+            Council Member(s)
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

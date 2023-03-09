@@ -200,7 +200,9 @@ const Council = () => {
         </div>
         <div className='card mt-6 flex h-[292px] w-full flex-col items-center gap-y-5 border-none py-5 hover:brightness-100'>
           <div>
-            <h3 className='text-center text-[23px]'>Approval Threshold</h3>
+            <h3 className='text-center text-[23px]'>
+              Council Signing Threshold
+            </h3>
           </div>
           <div className='px-24 text-center'>
             <p>
