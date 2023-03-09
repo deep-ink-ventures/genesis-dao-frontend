@@ -121,7 +121,7 @@ const IssueTokens = () => {
   };
 
   const handleNext = () => {
-    updateCreateDaoSteps(4);
+    updateCreateDaoSteps(5);
   };
 
   return (
@@ -129,7 +129,7 @@ const IssueTokens = () => {
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='65'
+          value='75'
           max='100'></progress>
       </div>
       <div>

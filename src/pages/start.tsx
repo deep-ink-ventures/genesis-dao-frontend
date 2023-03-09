@@ -1,10 +1,10 @@
 import Council from '@/components/Council';
 import GovernanceForm from '@/components/GovernanceForm';
+import IssueTokens from '@/components/IssueTokens';
 import LogoForm from '@/components/LogoForm';
+import Review from '@/components/Review';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
-
-import IssueTokens from '../components/IssueTokens';
 
 const Start = () => {
   const createDaoSteps = useGenesisStore((s) => s.createDaoSteps);
@@ -19,9 +19,11 @@ const Start = () => {
     if (createDaoSteps === 3) {
       return <Council />;
     }
-
     if (createDaoSteps === 4) {
       return <IssueTokens />;
+    }
+    if (createDaoSteps === 5) {
+      return <Review />;
     }
 
     return null;
