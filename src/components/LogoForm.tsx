@@ -59,7 +59,7 @@ const LogoForm = () => {
                 <input
                   className='absolute z-10 h-full w-full cursor-pointer opacity-0'
                   type='file'
-                  {...register('logo', {})}
+                  {...register('daoLogo', {})}
                 />
                 <div className='flex flex-col py-6 text-center opacity-80'>
                   <Image

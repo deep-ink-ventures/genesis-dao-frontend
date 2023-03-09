@@ -54,7 +54,7 @@ const MajorityModel = () => {
               className='input-primary input'
               type='number'
               placeholder='0'
-              {...register('tokensCost', {
+              {...register('proposalTokensCost', {
                 required: 'Required',
                 min: { value: 1, message: 'Minimum is 1' },
               })}
@@ -72,7 +72,7 @@ const MajorityModel = () => {
                   className='input-primary input'
                   type='number'
                   placeholder={threshold.toString()}
-                  {...register('threshold', {
+                  {...register('approvalThreshold', {
                     min: { value: 1, message: 'Minimum is 1%' },
                     max: { value: 70, message: 'Maximum is 70%' },
                     required: 'Required',

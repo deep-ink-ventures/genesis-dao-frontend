@@ -53,7 +53,7 @@ const Council = () => {
   };
 
   const handleBack = () => {
-    updateCreateDaoSteps(3);
+    updateCreateDaoSteps(2);
   };
 
   const handleAddMember = () => {

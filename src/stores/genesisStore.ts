@@ -5,7 +5,37 @@ import { create } from 'zustand';
 
 import { LOCAL_NODE } from '@/config';
 
+import placeholderValues from './placeholderValues';
+
 // ALL TYPES and INTERFACES...
+
+export interface CouncilMember {
+  name: string;
+  walletAddress: string;
+}
+
+export interface TokensRecipient {
+  name: string;
+  walletAddress: string;
+  tokens: number; // fixme BN
+}
+
+export interface DaoCreationValues {
+  daoId: string;
+  daoName: string;
+  email: string | null;
+  daoLogo: string | null; // url?
+  shortOverview: string | null;
+  longDescription: string | null;
+  proposalTokensCost: number;
+  approvalThreshold: number; // percentage or decimals
+  votingDays: number; // in days
+  councilMembers: CouncilMember[];
+  councilThreshold: number; // number of councils needed
+  tokensToIssue: number; // fixme BN
+  tokensRecipients: TokensRecipient[] | null;
+  treasuryTokens: number; // fixme BN
+}
 
 export enum TxnResponse {
   Success = 'SUCCESS',
@@ -102,6 +132,7 @@ export interface GenesisState {
   createDaoSteps: number | null;
   newCreatedDao: DaoInfo | null;
   isStartModalOpen: boolean;
+  daoCreationValues: DaoCreationValues;
 }
 
 export interface GenesisActions {
@@ -151,6 +182,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   createDaoSteps: 1,
   newCreatedDao: null,
   isStartModalOpen: false,
+  daoCreationValues: placeholderValues,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
