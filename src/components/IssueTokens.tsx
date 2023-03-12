@@ -129,8 +129,9 @@ const IssueTokens = () => {
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='75'
-          max='100'></progress>
+          value='65'
+          max='100'
+        />
       </div>
       <div>
         <h2 className='text-center text-primary'>Issue Tokens</h2>
