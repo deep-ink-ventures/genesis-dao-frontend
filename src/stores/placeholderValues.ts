@@ -26,17 +26,17 @@ const placeholderValues = {
   tokensToIssue: 1000000,
   tokensRecipients: [
     {
-      name: 'Eric',
+      percentage: 0.02,
       walletAddress: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
       tokens: 20000,
     },
     {
-      name: 'Tommy',
+      percentage: 0.02,
       walletAddress: '1pvJNQTckq2rWJDVbxSsE8Eggh8B7JSwg2QQrEQHJjUnPRp',
       tokens: 20000,
     },
     {
-      name: 'Dasha',
+      percentage: 0.02,
       walletAddress: '14zvCP3KRFUijMwy9SvZxUzZVMGdHovXeYVzA9PojS7FTaHT',
       tokens: 20000,
     },

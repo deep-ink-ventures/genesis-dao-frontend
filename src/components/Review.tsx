@@ -7,6 +7,7 @@ import { truncateMiddle } from '@/utils';
 
 const Review = () => {
   const daoCreationValues = useGenesisStore((s) => s.daoCreationValues);
+  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   const displayCouncilMembers = () => {
     return daoCreationValues.councilMembers.map((member, index) => {
@@ -20,6 +21,35 @@ const Review = () => {
           </div>
           <div className='input flex items-center justify-center border-[0.3px] border-neutral-focus bg-base-50/50'>
             {truncateMiddle(member.walletAddress)}
+          </div>
+        </div>
+      );
+    });
+  };
+
+  const handleBack = () => {
+    updateCreateDaoSteps(4);
+  };
+
+  const handleNext = () => {
+    updateCreateDaoSteps(6);
+  };
+
+  const displayTokenRecipients = () => {
+    return daoCreationValues?.tokensRecipients?.map((recipient, index) => {
+      return (
+        <div
+          key={recipient.walletAddress}
+          className='mb-3 mt-1 flex justify-evenly'>
+          <p className='mr-4 flex items-center justify-center'>{index + 1}</p>
+          <div className='input mr-4 flex items-center justify-center border-[0.3px] border-neutral-focus bg-base-50/50'>
+            {truncateMiddle(recipient.walletAddress)}
+          </div>
+          <div className='input mr-4 flex items-center justify-center border-[0.3px] border-neutral-focus bg-base-50/50'>
+            {recipient.tokens.toLocaleString()}
+          </div>
+          <div className='flex items-center '>
+            <p>{recipient.percentage * 100}%</p>
           </div>
         </div>
       );
@@ -42,7 +72,7 @@ const Review = () => {
           Please check all DAO details and configurations
         </p>
       </div>
-      <div className='card mb-5 flex w-full flex-col items-center border-none py-5 px-20 hover:brightness-100'>
+      <div className='card mb-1 flex w-full flex-col items-center border-none py-5 px-20 hover:brightness-100'>
         <div className='flex w-full flex-col items-center'>
           <div className='dao-image mb-3 flex items-center justify-center'>
             <Image
@@ -118,6 +148,27 @@ const Review = () => {
             Council Member(s)
           </p>
         </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>
+            Number of Tokens To Be Issued
+          </p>
+          <p>{daoCreationValues.tokensToIssue.toLocaleString()}</p>
+        </div>
+        <div className='mb-3 text-center'>
+          <p className='text-sm text-neutral-focus'>Token Recipients</p>
+          {displayTokenRecipients()}
+        </div>
+      </div>
+      <div className=' flex w-full justify-end'>
+        <button className='btn mr-3 w-48' onClick={handleBack} type='button'>
+          Back
+        </button>
+        <button
+          className='btn-primary btn w-48'
+          type='submit'
+          onClick={handleNext}>
+          Confirm
+        </button>
       </div>
     </div>
   );

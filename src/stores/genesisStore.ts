@@ -15,7 +15,7 @@ export interface CouncilMember {
 }
 
 export interface TokensRecipient {
-  name: string;
+  percentage: number;
   walletAddress: string;
   tokens: number; // fixme BN
 }

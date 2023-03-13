@@ -6,6 +6,8 @@ import Review from '@/components/Review';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
 
+import Congratulations from '../components/Congratulations';
+
 const Start = () => {
   const createDaoSteps = useGenesisStore((s) => s.createDaoSteps);
 
@@ -24,6 +26,9 @@ const Start = () => {
     }
     if (createDaoSteps === 5) {
       return <Review />;
+    }
+    if (createDaoSteps === 6) {
+      return <Congratulations />;
     }
 
     return null;
