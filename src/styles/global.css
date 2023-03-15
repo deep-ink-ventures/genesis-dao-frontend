@@ -69,7 +69,7 @@ h4 {
   }
 
 .btn {
-  @apply rounded-3xl py-3.5 px-6 font-medium text-sm normal-case;
+  @apply rounded-3xl py-3.5 px-6 font-medium text-sm normal-case text-center;
 }
 .btn:disabled {
   @apply opacity-50;

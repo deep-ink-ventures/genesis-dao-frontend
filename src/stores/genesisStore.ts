@@ -224,6 +224,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
+    console.log('fetch daos');
     const apiCon = get().apiConnection;
     apiCon.query?.daoCore?.daos
       ?.entries()

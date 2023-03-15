@@ -119,7 +119,6 @@ const useGenesisDao = () => {
     }
   };
 
-  // fixme I need to be able to see what error I get like duplicated daoId error
   const createDao = (
     walletAccount: WalletAccount,
     { daoId, daoName }: CreateDaoData

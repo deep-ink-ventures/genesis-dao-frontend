@@ -46,7 +46,10 @@ const MajorityModel = () => {
             the outcome is determined by the number of votes received.
           </div>
           <div className='min-w-full'>
-            <p className='mb-1 ml-1'>Proposal Token Cost</p>
+            <p className='mb-1 ml-1'>
+              Proposal Token Cost{' '}
+              <span className='text-lg font-medium text-red-600'>*</span>
+            </p>
             <p className='mb-1 ml-1 text-xs'>
               Number of tokens needed to create a proposal
             </p>
@@ -61,7 +64,10 @@ const MajorityModel = () => {
             />
           </div>
           <div className='min-w-full'>
-            <p className='mb-1 ml-1'>Approval Threshold</p>
+            <p className='mb-1 ml-1'>
+              Approval Threshold{' '}
+              <span className='text-lg font-medium text-red-600'>*</span>
+            </p>
             <p className='mb-1 ml-1 text-xs'>
               Minimum percentage of circulating token supply needed to validate
               a proposal
@@ -96,7 +102,10 @@ const MajorityModel = () => {
             </div>
           </div>
           <div className='min-w-full'>
-            <p className='mb-1 ml-1'>Proposal Duration</p>
+            <p className='mb-1 ml-1'>
+              Proposal Duration{' '}
+              <span className='text-lg font-medium text-red-600'>*</span>
+            </p>
             <p className='mb-1 ml-1 text-xs'>
               Number of tokens needed to create a proposal
             </p>

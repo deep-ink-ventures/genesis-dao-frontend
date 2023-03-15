@@ -13,24 +13,15 @@ import sticker from '@/svg/sticker.svg';
 import MainLayout from '@/templates/MainLayout';
 
 const Index = () => {
-  const daos = useGenesisStore((s) => s.daos);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daosOwnedByWallet = useGenesisStore((s) => s.daosOwnedByWallet);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
-  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
   };
-
-  useEffect(() => {
-    if (!daos) {
-      fetchDaos();
-    }
-    // eslint-disable-next-line
-  }, []);
 
   useEffect(() => {}, [daosOwnedByWallet, currentWalletAccount]);
 

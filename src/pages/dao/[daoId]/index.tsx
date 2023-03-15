@@ -44,27 +44,20 @@ const DaoHome = () => {
             </p>
           </div>
         </div>
-        <div className='flex flex-col'>
-          <div className='hero mb-4'>
-            <div className='hero-content flex-col rounded-xl bg-slate-800 text-center'>
-              <Link
-                href={`/dao/${encodeURIComponent(daoId as string)}/tokens`}
-                className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
-                <button
-                  className={`btn-primary btn`}
-                  disabled={!currentWalletAccount}>
-                  Manage Tokens
-                </button>
-              </Link>
-            </div>
-          </div>
-          <div className='hero mb-4'>
-            <div className='hero-content flex-col rounded-xl bg-slate-800 text-center'>
-              {dao && isOwner && (
-                <DestroyDao daoId={dao?.daoId} assetId={dao?.assetId} />
-              )}
-            </div>
-          </div>
+        <div className='flex flex-col gap-y-3'>
+          <Link
+            href={`/dao/${encodeURIComponent(daoId as string)}/tokens`}
+            className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
+            <button
+              className={`btn-primary btn w-[180px]`}
+              disabled={!currentWalletAccount}>
+              Manage Tokens
+            </button>
+          </Link>
+
+          {dao && isOwner && (
+            <DestroyDao daoId={dao?.daoId} assetId={dao?.assetId} />
+          )}
         </div>
       </div>
     </MainLayout>
