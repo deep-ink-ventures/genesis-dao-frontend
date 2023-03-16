@@ -11,6 +11,7 @@ const IssueTokens = () => {
     register,
     handleSubmit,
     reset,
+    // getValues,
     formState: { isSubmitSuccessful },
   } = useForm();
   // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
@@ -18,18 +19,9 @@ const IssueTokens = () => {
 
   const [recipientCount, setRecipientCount] = useState(2);
 
-  const [recipientInputs, setRecipientInputs] = useState([
-    {
-      wallet: 'recipientWallet1',
-      tokens: 'recipientTokens1',
-      id: Date.now() + 1,
-    },
-    {
-      wallet: 'recipientWallet2',
-      tokens: 'recipientTokens2',
-      id: Date.now() + 2,
-    },
-  ]);
+  const [recipientInputs, setRecipientInputs] = useState<
+    { wallet: string; tokens: string; id: number }[]
+  >([]);
 
   const handleAddRecipient = () => {
     const newCount = recipientCount + 1;
@@ -40,8 +32,17 @@ const IssueTokens = () => {
       id: Date.now() + newCount,
     };
     setRecipientCount(newCount);
-    setRecipientInputs([...recipientInputs, r]);
+    if (recipientInputs && recipientInputs.length > 0) {
+      setRecipientInputs([...recipientInputs, r]);
+    }
   };
+
+  // const treasuryTokens = () => {
+  //   const totalTokensToIssue = getValues('tokensToIssue');
+  //   const totalRecipientTokens = recipientInputs.reduce((acc, curr) => {
+  //     return acc + curr.tokens
+  //   }, 0)
+  // }
 
   const handleDeleteRecipient = (index: number) => {
     const newCount = recipientCount - 1;
@@ -190,30 +191,7 @@ const IssueTokens = () => {
             <h4 className='text-center'>Treasury</h4>
             <p className='text-sm'>{`Distribute Tokens to DAO's Treasury`}</p>
           </div>
-          <div className='flex justify-center px-10'>
-            <div className='flex'>
-              <div className='flex-col'>
-                <p className='ml-1 opacity-40'>Recipient Name</p>
-                <div className='flex h-12 w-[400px] items-center rounded-[10px] border-[0.3px] bg-base-50 px-2 opacity-40'>
-                  Treasury
-                </div>
-              </div>
-              <div className='mx-3 flex flex-col'>
-                <p className='ml-1'>Number of Tokens</p>
-                <input
-                  type='number'
-                  placeholder='0'
-                  className='input-primary input text-center'
-                  {...register('treasuryTokens', {
-                    required: 'Required',
-                    minLength: { value: 1, message: 'Minimum is 1' },
-                    maxLength: { value: 30, message: 'Maximum is 30' },
-                  })}
-                />
-              </div>
-              <div className='flex items-center justify-center pt-5'>0%</div>
-            </div>
-          </div>
+          <div className='flex justify-center px-10'>Distribute {}</div>
         </div>
         <div className='mt-6 flex w-full justify-end'>
           <button className='btn mr-3 w-48' onClick={handleBack} type='button'>

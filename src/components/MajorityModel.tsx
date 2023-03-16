@@ -53,15 +53,20 @@ const MajorityModel = () => {
             <p className='mb-1 ml-1 text-xs'>
               Number of tokens needed to create a proposal
             </p>
-            <input
-              className='input-primary input'
-              type='number'
-              placeholder='0'
-              {...register('proposalTokensCost', {
-                required: 'Required',
-                min: { value: 1, message: 'Minimum is 1' },
-              })}
-            />
+            <div className='relative w-[175px]'>
+              <input
+                className='input-primary input pr-20'
+                type='number'
+                placeholder='0'
+                {...register('proposalTokensCost', {
+                  required: 'Required',
+                  min: { value: 1, message: 'Minimum is 1' },
+                })}
+              />
+              <div className='absolute top-3 left-[6.5em] opacity-70'>
+                Tokens
+              </div>
+            </div>
           </div>
           <div className='min-w-full'>
             <p className='mb-1 ml-1'>
@@ -73,21 +78,9 @@ const MajorityModel = () => {
               a proposal
             </p>
             <div className='flex justify-between'>
-              <div className='relative w-[20%]'>
-                <input
-                  className='input-primary input'
-                  type='number'
-                  placeholder={threshold.toString()}
-                  {...register('approvalThreshold', {
-                    min: { value: 1, message: 'Minimum is 1%' },
-                    max: { value: 70, message: 'Maximum is 70%' },
-                    required: 'Required',
-                  })}
-                />
-                <div className='absolute top-3 left-16 opacity-70'>%</div>
-              </div>
               <div className='w-[78%]'>
                 <div className='flex h-12 items-center justify-evenly rounded-[10px] border-[0.3px] border-neutral-focus bg-base-50'>
+                  <p className='opacity-80'>{threshold}%</p>
                   <input
                     type='range'
                     className='range range-primary h-3 w-[75%]'
@@ -96,7 +89,6 @@ const MajorityModel = () => {
                     value={threshold}
                     onChange={handleThresholdChange}
                   />
-                  <p className='opacity-80'>{threshold}%</p>
                 </div>
               </div>
             </div>
@@ -107,17 +99,20 @@ const MajorityModel = () => {
               <span className='text-lg font-medium text-red-600'>*</span>
             </p>
             <p className='mb-1 ml-1 text-xs'>
-              Number of tokens needed to create a proposal
+              Number of days the proposal will be up for voting.
             </p>
-            <input
-              className='input-primary input'
-              type='number'
-              placeholder='0'
-              {...register('votingDays', {
-                required: 'Required',
-                min: { value: 1, message: 'Minimum is 1' },
-              })}
-            />
+            <div className='relative flex w-[175px]'>
+              <input
+                className='input-primary input pr-16'
+                type='number'
+                placeholder='0'
+                {...register('votingDays', {
+                  required: 'Required',
+                  min: { value: 1, message: 'Minimum is 1' },
+                })}
+              />
+              <div className='absolute top-3 left-[7.4em] opacity-70'>Days</div>
+            </div>
           </div>
         </div>
       </div>

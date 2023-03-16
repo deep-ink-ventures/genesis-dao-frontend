@@ -8,13 +8,6 @@ import plus from '@/svg/plus.svg';
 import { truncateMiddle } from '@/utils';
 
 const Council = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { isSubmitSuccessful },
-  } = useForm();
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const [membersCount, setMembersCount] = useState(3);
@@ -30,6 +23,13 @@ const Council = () => {
       id: Date.now() + 3,
     },
   ]);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { isSubmitSuccessful },
+  } = useForm();
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -214,7 +214,7 @@ const Council = () => {
             <input
               className='input-primary input text-center'
               type='number'
-              placeholder='0'
+              placeholder='1'
               {...register('councilThreshold', {
                 required: 'Required',
                 min: { value: 1, message: 'Minimum is 1' },

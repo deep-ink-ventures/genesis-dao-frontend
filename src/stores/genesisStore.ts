@@ -160,6 +160,7 @@ export interface GenesisActions {
   updateCreateDaoSteps: (steps: number) => void;
   updateNewCreatedDao: (dao: DaoInfo) => void;
   updateIsStartModalOpen: (isStartModalOpen: boolean) => void;
+  updateDaoCreationValues: (daoCreationValues: DaoCreationValues) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -313,6 +314,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   updateNewCreatedDao: (newCreatedDao) => set(() => ({ newCreatedDao })),
   updateIsStartModalOpen: (isStartModalOpen) =>
     set(() => ({ isStartModalOpen })),
+  updateDaoCreationValues: (daoCreationValues) =>
+    set(() => ({ daoCreationValues })),
 }));
 
 export default useGenesisStore;

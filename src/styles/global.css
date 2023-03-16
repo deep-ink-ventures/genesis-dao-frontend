@@ -107,7 +107,7 @@ h4 {
 }
 
 .input {
-  @apply px-2 bg-base-50 w-full min-w-full;
+  @apply bg-base-50 w-full min-w-full;
 }
 
 .input-primary {

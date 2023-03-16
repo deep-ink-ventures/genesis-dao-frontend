@@ -19,8 +19,13 @@ const CreateDaoModal = () => {
   // fixme need to query wallet balance
   const [hasTenDots, _setHasTenDots] = useState(true);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
-  // const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  // const { createDao } = useGenesisDao();
+  // const addOneDao = useGenesisStore((s) => s.addOneDao);
+  // const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
   // const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  // const handleErrors = useGenesisStore((s) => s.handleErrors);
+
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
@@ -29,6 +34,7 @@ const CreateDaoModal = () => {
   const watchId = watch('daoId', '');
 
   const onSubmit = (data: any) => {
+    console.log('create dao', data);
     // fixme
     setConfirmLoading(true);
     setTimeout(() => {
