@@ -15,9 +15,11 @@ const DestroyDao = (props: { daoId: string; assetId: number | null }) => {
     destroyDaoAndAssets(props.daoId, props.assetId);
   };
   return (
-    <div className='mb-2 flex justify-center p-2'>
+    <div className='flex justify-center'>
       <button
-        className={`btn-primary btn ${txnProcessing ? 'loading' : ''}`}
+        className={`btn-primary btn w-[180px] ${
+          txnProcessing ? 'loading' : ''
+        }`}
         disabled={!currentWalletAccount}
         onClick={handleDestroy}>
         Destroy DAO

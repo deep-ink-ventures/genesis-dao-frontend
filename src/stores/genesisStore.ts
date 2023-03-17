@@ -160,6 +160,7 @@ export interface GenesisActions {
   updateCreateDaoSteps: (steps: number) => void;
   updateNewCreatedDao: (dao: DaoInfo) => void;
   updateIsStartModalOpen: (isStartModalOpen: boolean) => void;
+  updateDaoCreationValues: (daoCreationValues: DaoCreationValues) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -224,6 +225,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
+    console.log('fetch daos');
     const apiCon = get().apiConnection;
     apiCon.query?.daoCore?.daos
       ?.entries()
@@ -312,6 +314,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   updateNewCreatedDao: (newCreatedDao) => set(() => ({ newCreatedDao })),
   updateIsStartModalOpen: (isStartModalOpen) =>
     set(() => ({ isStartModalOpen })),
+  updateDaoCreationValues: (daoCreationValues) =>
+    set(() => ({ daoCreationValues })),
 }));
 
 export default useGenesisStore;

@@ -2,22 +2,33 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 
 import DaoCards from '@/components/DaoCards';
+import Spinner from '@/components/Spinner';
 import useGenesisStore from '@/stores/genesisStore';
 import telescope from '@/svg/telescope.svg';
 
 const ExploreDaos = () => {
   const daos = useGenesisStore((s) => s.daos);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
-  // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  // const daosOwnedByWallet = useGenesisStore((s) => s.daosOwnedByWallet);
-  // const updateDaosOwnedByWallet = useGenesisStore(
-  //   (s) => s.updateDaosOwnedByWallet
-  // );
 
   useEffect(() => {
     fetchDaos();
     // eslint-disable-next-line
   },[])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchDaos();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchDaos();
+    }, 5000);
+    return () => clearInterval(interval);
+  });
 
   return (
     <div className='container mb-20 flex min-h-[600px] flex-col py-5 px-6'>
@@ -36,9 +47,8 @@ const ExploreDaos = () => {
         </div>
       </div>
       <div className='my-2 flex justify-center'>
-        {!daos ? null : <DaoCards daos={Object.values(daos)} />}
+        {!daos ? <Spinner /> : <DaoCards daos={Object.values(daos)} />}
       </div>
-      <div className='mb-4 flex justify-center p-2'>Loading more...</div>
     </div>
   );
 };
