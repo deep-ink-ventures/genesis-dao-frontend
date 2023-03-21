@@ -1,4 +1,4 @@
-import router from 'next/router';
+import { useRouter } from 'next/router';
 
 import Congratulations from '@/components/Congratulations';
 import Council from '@/components/Council';
@@ -12,6 +12,7 @@ import MainLayout from '@/templates/MainLayout';
 
 const Customize = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const router = useRouter();
   const { daoId } = router.query;
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[daoId as string];
@@ -50,6 +51,12 @@ const Customize = () => {
 
     return null;
   };
+
+  // if (!daos?.[daoId as string]?.assetId) {
+  //   return (<div>
+  //     no dao id
+  //   </div>)
+  // }
 
   return (
     <MainLayout
