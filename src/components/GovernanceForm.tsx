@@ -1,4 +1,3 @@
-import router from 'next/router';
 import { useState } from 'react';
 
 import useGenesisStore from '@/stores/genesisStore';
@@ -8,10 +7,9 @@ import useGenesisStore from '@/stores/genesisStore';
 import CustomizedModel from './CustomizedModel';
 import MajorityModel from './MajorityModel';
 
-const GovernanceForm = () => {
-  const { daoId } = router.query;
+const GovernanceForm = (props: { daoId: string }) => {
   const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[daoId as string];
+  const dao = daos?.[props.daoId as string];
   const [model, setModel] = useState('majority');
 
   const handleChangeTab = (mode: string) => {

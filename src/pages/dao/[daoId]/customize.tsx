@@ -30,19 +30,19 @@ const Customize = () => {
       );
     }
     if (createDaoSteps === 1) {
-      return <LogoForm />;
+      return <LogoForm daoId={daoId as string} />;
     }
     if (createDaoSteps === 2) {
-      return <GovernanceForm />;
+      return <GovernanceForm daoId={daoId as string} />;
     }
     if (createDaoSteps === 3) {
-      return <Council />;
+      return <Council daoId={daoId as string} />;
     }
     if (createDaoSteps === 4) {
-      return <IssueTokens />;
+      return <IssueTokens daoId={daoId as string} />;
     }
     if (createDaoSteps === 5) {
-      return <Review />;
+      return <Review daoId={daoId as string} />;
     }
     if (createDaoSteps === 6) {
       return <Congratulations />;

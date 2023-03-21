@@ -1,15 +1,13 @@
 import Image from 'next/image';
-import router from 'next/router';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
 
-const LogoForm = () => {
-  const { daoId } = router.query;
+const LogoForm = (props: { daoId: string }) => {
   const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[daoId as string];
+  const dao = daos?.[props.daoId as string];
   const {
     register,
     handleSubmit,

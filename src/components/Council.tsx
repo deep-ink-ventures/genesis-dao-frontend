@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -8,10 +7,9 @@ import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 import { truncateMiddle } from '@/utils';
 
-const Council = () => {
-  const { daoId } = router.query;
+const Council = (props: { daoId: string }) => {
   const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[daoId as string];
+  const dao = daos?.[props.daoId as string];
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const [membersCount, setMembersCount] = useState(3);

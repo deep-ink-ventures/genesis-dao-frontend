@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -7,10 +6,9 @@ import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 
-const IssueTokens = () => {
-  const { daoId } = router.query;
+const IssueTokens = (props: { daoId: string }) => {
   const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[daoId as string];
+  const dao = daos?.[props.daoId as string];
   const {
     register,
     handleSubmit,
