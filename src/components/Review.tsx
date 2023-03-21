@@ -6,7 +6,7 @@ import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
 import { truncateMiddle } from '@/utils';
 
-const Review = (props: { daoId: string }) => {
+const Review = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
   const daoCreationValues = useGenesisStore((s) => s.daoCreationValues);

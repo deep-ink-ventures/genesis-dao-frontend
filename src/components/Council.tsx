@@ -7,7 +7,7 @@ import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 import { truncateMiddle } from '@/utils';
 
-const Council = (props: { daoId: string }) => {
+const Council = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);

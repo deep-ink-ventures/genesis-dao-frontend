@@ -30,19 +30,19 @@ const Customize = () => {
       );
     }
     if (createDaoSteps === 1) {
-      return <LogoForm daoId={daoId as string} />;
+      return <LogoForm daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 2) {
-      return <GovernanceForm daoId={daoId as string} />;
+      return <GovernanceForm daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 3) {
-      return <Council daoId={daoId as string} />;
+      return <Council daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 4) {
-      return <IssueTokens daoId={daoId as string} />;
+      return <IssueTokens daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 5) {
-      return <Review daoId={daoId as string} />;
+      return <Review daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 6) {
       return <Congratulations />;

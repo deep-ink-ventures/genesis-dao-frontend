@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
 
-const LogoForm = (props: { daoId: string }) => {
+const LogoForm = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
   const {

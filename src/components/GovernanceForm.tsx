@@ -7,7 +7,7 @@ import useGenesisStore from '@/stores/genesisStore';
 import CustomizedModel from './CustomizedModel';
 import MajorityModel from './MajorityModel';
 
-const GovernanceForm = (props: { daoId: string }) => {
+const GovernanceForm = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
   const [model, setModel] = useState('majority');

@@ -6,7 +6,7 @@ import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 
-const IssueTokens = (props: { daoId: string }) => {
+const IssueTokens = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
   const {
