@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { TxnResponse } from '../stores/genesisStore';
+import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 import { truncateMiddle } from '../utils';
 
 interface ToastProps {
@@ -68,14 +68,14 @@ const ToastIcon = ({ type }: { type: TxnResponse }) => {
 
 const NotificationToast = (props: ToastProps) => {
   const [show, setShow] = useState(true);
-
+  const removeTxnNotification = useGenesisStore((s) => s.removeTxnNotification);
   const handleClose = () => {
     setShow(false);
   };
 
   const makeExplorerLink = (hash: string) => {
     const prefix =
-      'https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/explorer/query/';
+      'https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fnode.genesis-dao.org#/explorer/query/';
     return prefix + hash;
   };
 
@@ -83,7 +83,7 @@ const NotificationToast = (props: ToastProps) => {
   useEffect(() => {
     const timeId = setTimeout(() => {
       setShow(!show);
-      // fixme then delete
+      removeTxnNotification();
     }, 8000);
 
     return () => {

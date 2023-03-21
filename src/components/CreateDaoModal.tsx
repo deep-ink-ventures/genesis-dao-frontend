@@ -1,14 +1,14 @@
 import { ErrorMessage } from '@hookform/error-message';
 import Modal from 'antd/lib/modal';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import useGenesisDao from '@/hooks/useGenesisDao';
 import type { CreateDaoData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
 const CreateDaoModal = () => {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -19,29 +19,33 @@ const CreateDaoModal = () => {
   // fixme need to query wallet balance
   const [hasTenDots, _setHasTenDots] = useState(true);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
-  // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  // const { createDao } = useGenesisDao();
-  // const addOneDao = useGenesisStore((s) => s.addOneDao);
-  // const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
-  // const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
-  // const handleErrors = useGenesisStore((s) => s.handleErrors);
+  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const { createDao } = useGenesisDao();
+  const addOneDao = useGenesisStore((s) => s.addOneDao);
+  const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
+  const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  const handleErrors = useGenesisStore((s) => s.handleErrors);
 
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
-  const [confirmLoading, setConfirmLoading] = useState(false);
   const watchName = watch('daoName', '');
   const watchId = watch('daoId', '');
 
-  const onSubmit = (data: any) => {
-    console.log('create dao', data);
-    // fixme
-    setConfirmLoading(true);
-    setTimeout(() => {
-      updateIsStartModalOpen(false);
-      setConfirmLoading(false);
-      router.push('start');
-    }, 2000);
+  const onSubmit: SubmitHandler<CreateDaoData> = async (
+    data: CreateDaoData
+  ) => {
+    updateTxnProcessing(true);
+    updateCreateDaoData(data);
+    if (currentWalletAccount) {
+      try {
+        await createDao(currentWalletAccount, data);
+        addOneDao(data);
+      } catch (err) {
+        handleErrors(new Error(err));
+      }
+    }
   };
 
   useEffect(() => {
@@ -49,14 +53,6 @@ const CreateDaoModal = () => {
       reset();
     }
   });
-
-  const handleOk = () => {
-    setConfirmLoading(true);
-    setTimeout(() => {
-      updateIsStartModalOpen(false);
-      setConfirmLoading(false);
-    }, 2000);
-  };
 
   const handleCancel = () => {
     updateIsStartModalOpen(false);
@@ -116,10 +112,9 @@ const CreateDaoModal = () => {
     <>
       <Modal
         open={isStartModalOpen}
-        confirmLoading={confirmLoading}
+        confirmLoading={txnProcessing}
         wrapClassName='a-modal-bg'
         className='a-modal'
-        onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
         width={615}>
@@ -228,7 +223,7 @@ const CreateDaoModal = () => {
               <div className='flex justify-center'>
                 <button
                   className={`btn-primary btn w-96 ${
-                    confirmLoading ? 'loading' : null
+                    txnProcessing ? 'loading' : null
                   }`}
                   type='submit'
                   disabled={!hasTenDots}>

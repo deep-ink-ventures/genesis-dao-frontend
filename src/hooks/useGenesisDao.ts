@@ -1,5 +1,6 @@
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
+import { useRouter } from 'next/router';
 
 import type {
   AssetDetails,
@@ -10,12 +11,16 @@ import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 
 // fixme open one connection and reuse that connection
 const useGenesisDao = () => {
+  const router = useRouter();
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const updateNewCreatedDao = useGenesisStore((s) => s.updateNewCreatedDao);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const updateIsStartModalOpen = useGenesisStore(
+    (s) => s.updateIsStartModalOpen
+  );
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
 
   // fixme currently only handles cancelled error
@@ -51,7 +56,6 @@ const useGenesisDao = () => {
     console.log('Transaction status1:', result.status.type);
     console.log('txn', result);
     if (result.status.isInBlock) {
-      // fixme need to get this block hash
       // eslint-disable-next-line
       console.log(
         'Included at block hash',
@@ -71,7 +75,6 @@ const useGenesisDao = () => {
             const decoded = apiConnection.registry.findMetaError(err.asModule);
             const string = `${decoded.section}.${decoded.method}}`;
             if (string.includes('AlreadyExists')) {
-              console.log('This DAO ID already exists');
               const errorNoti = {
                 title: `${TxnResponse.Error}`,
                 message: 'This DAO ID already exists',
@@ -133,10 +136,12 @@ const useGenesisDao = () => {
           (result) => {
             txResponseCallback(
               result,
-              'Congrats! Your DAO is created.',
+              `Congrats! ${daoName} is created.`,
               'Something went wrong. Please try again.',
               () => {
-                updateCreateDaoSteps(2);
+                updateCreateDaoSteps(1);
+                updateIsStartModalOpen(false);
+                router.push('start');
               }
             );
             fetchDaos();

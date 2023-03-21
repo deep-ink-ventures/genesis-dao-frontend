@@ -147,9 +147,8 @@ export interface GenesisActions {
   addOneDao: (createDaoData: CreateDaoData) => void;
   fetchDaos: () => void;
   updateLoading: (loading: boolean) => void;
-  updateNotifications: (notifications: TxnNotification[]) => void;
   addTxnNotification: (notification: TxnNotification) => void;
-  removeOneNoti: () => void;
+  removeTxnNotification: () => void;
   updateTxnProcessing: (txnProcessing: boolean) => void;
   updateApiConnection: (apiConnection: any) => void;
   createApiConnection: () => void;
@@ -195,16 +194,16 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     })),
   updateDaos: (daos) => set(() => ({ daos })),
   updateLoading: (loading) => set(() => ({ loading })),
-  updateNotifications: (txnNotifications) => set({ txnNotifications }),
-  addTxnNotification: (notification) => {
-    const currentTxnNotis = get().txnNotifications;
+  addTxnNotification: (newNotification) => {
+    const oldTxnNotis = get().txnNotifications;
     // add the new noti to first index because we will start displaying notis from the last index
-    const newNotis = [notification, ...currentTxnNotis];
+    const newNotis = [newNotification, ...oldTxnNotis];
     set({ txnNotifications: newNotis });
   },
-  removeOneNoti: () => {
+  removeTxnNotification: () => {
+    // first in first out
     const currentTxnNotis = get().txnNotifications;
-    const newNotis = currentTxnNotis.slice(currentTxnNotis.length - 2);
+    const newNotis = currentTxnNotis.slice(0, -1);
     set({ txnNotifications: newNotis });
   },
   addOneDao: (createDaoData) => {
