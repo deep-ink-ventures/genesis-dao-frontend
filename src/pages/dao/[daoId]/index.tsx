@@ -46,6 +46,15 @@ const DaoHome = () => {
         </div>
         <div className='flex flex-col gap-y-3'>
           <Link
+            href={`/dao/${encodeURIComponent(daoId as string)}/customize`}
+            className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
+            <button
+              className={`btn-primary btn w-[180px]`}
+              disabled={!currentWalletAccount}>
+              Finish Customizing DAO
+            </button>
+          </Link>
+          <Link
             href={`/dao/${encodeURIComponent(daoId as string)}/tokens`}
             className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
             <button

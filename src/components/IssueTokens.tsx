@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import router from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -7,6 +8,9 @@ import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 
 const IssueTokens = () => {
+  const { daoId } = router.query;
+  const daos = useGenesisStore((s) => s.daos);
+  const dao = daos?.[daoId as string];
   const {
     register,
     handleSubmit,
@@ -14,7 +18,6 @@ const IssueTokens = () => {
     // getValues,
     formState: { isSubmitSuccessful },
   } = useForm();
-  // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   const [recipientCount, setRecipientCount] = useState(2);
@@ -135,7 +138,9 @@ const IssueTokens = () => {
         />
       </div>
       <div>
-        <h2 className='text-center text-primary'>Issue Tokens</h2>
+        <h2 className='text-center text-primary'>
+          Issue Tokens For {dao?.daoName}
+        </h2>
       </div>
       <div className='px-24'>
         <p className='text-center'>

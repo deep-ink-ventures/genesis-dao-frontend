@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import router from 'next/router';
 
 import useGenesisStore from '@/stores/genesisStore';
 import mountain from '@/svg/mountain.svg';
@@ -6,6 +8,9 @@ import placeholderImage from '@/svg/placeholderImage.svg';
 import { truncateMiddle } from '@/utils';
 
 const Review = () => {
+  const { daoId } = router.query;
+  const daos = useGenesisStore((s) => s.daos);
+  const dao = daos?.[daoId as string];
   const daoCreationValues = useGenesisStore((s) => s.daoCreationValues);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
@@ -65,7 +70,9 @@ const Review = () => {
           max='100'></progress>
       </div>
       <div>
-        <h2 className='text-center text-primary'>Review Details</h2>
+        <h2 className='text-center text-primary'>
+          Review {dao?.daoName} Details
+        </h2>
       </div>
       <div className='px-24'>
         <p className='text-center'>
@@ -163,12 +170,14 @@ const Review = () => {
         <button className='btn mr-3 w-48' onClick={handleBack} type='button'>
           Back
         </button>
-        <button
-          className='btn-primary btn w-48'
-          type='submit'
-          onClick={handleNext}>
-          Confirm
-        </button>
+        <Link href={`/dao/${encodeURIComponent(daoId as string)}`}>
+          <button
+            className='btn-primary btn'
+            type='submit'
+            onClick={handleNext}>
+            Go To DAO Dashboard
+          </button>
+        </Link>
       </div>
     </div>
   );
