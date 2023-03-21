@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 
 import Manage from '../src/pages/manage';
+// eslint-disable-next-line
+jest.mock('next/router', () => require('next-router-mock'));
 
 describe('Explore page', () => {
   describe('Render method', () => {
