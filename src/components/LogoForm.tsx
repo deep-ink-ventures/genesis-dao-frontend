@@ -5,7 +5,9 @@ import { useForm } from 'react-hook-form';
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
 
-const LogoForm = () => {
+const LogoForm = (props: { daoId: string | null }) => {
+  const daos = useGenesisStore((s) => s.daos);
+  const dao = daos?.[props.daoId as string];
   const {
     register,
     handleSubmit,
@@ -34,7 +36,7 @@ const LogoForm = () => {
           max='100'></progress>
       </div>
       <div className='text-center'>
-        <h2 className='text-primary'>Logo And Design</h2>
+        <h2 className='text-primary'>{dao?.daoName} Logo And Design</h2>
         <p className='px-24'>
           {`Add a logo and describe in a short way what your DAO is all about.
             If you don't have a logo yet, just skip that and come back to it once 

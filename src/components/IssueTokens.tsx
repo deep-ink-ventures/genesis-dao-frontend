@@ -6,7 +6,9 @@ import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 
-const IssueTokens = () => {
+const IssueTokens = (props: { daoId: string | null }) => {
+  const daos = useGenesisStore((s) => s.daos);
+  const dao = daos?.[props.daoId as string];
   const {
     register,
     handleSubmit,
@@ -14,7 +16,6 @@ const IssueTokens = () => {
     // getValues,
     formState: { isSubmitSuccessful },
   } = useForm();
-  // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   const [recipientCount, setRecipientCount] = useState(2);
@@ -135,7 +136,9 @@ const IssueTokens = () => {
         />
       </div>
       <div>
-        <h2 className='text-center text-primary'>Issue Tokens</h2>
+        <h2 className='text-center text-primary'>
+          Issue Tokens For {dao?.daoName}
+        </h2>
       </div>
       <div className='px-24'>
         <p className='text-center'>

@@ -7,7 +7,9 @@ import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
 import { truncateMiddle } from '@/utils';
 
-const Council = () => {
+const Council = (props: { daoId: string | null }) => {
+  const daos = useGenesisStore((s) => s.daos);
+  const dao = daos?.[props.daoId as string];
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const [membersCount, setMembersCount] = useState(3);
@@ -140,7 +142,9 @@ const Council = () => {
           max='100'></progress>
       </div>
       <div>
-        <h2 className='text-center text-primary'>Add a Council</h2>
+        <h2 className='text-center text-primary'>
+          Add a {dao?.daoName} Council
+        </h2>
       </div>
       <div className='px-24'>
         <p className='text-center'>

@@ -141,7 +141,7 @@ const useGenesisDao = () => {
               () => {
                 updateCreateDaoSteps(1);
                 updateIsStartModalOpen(false);
-                router.push('start');
+                router.push(`dao/${daoId}/customize`);
               }
             );
             fetchDaos();
