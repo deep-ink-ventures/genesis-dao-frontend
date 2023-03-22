@@ -14,10 +14,35 @@ export interface CouncilMember {
   walletAddress: string;
 }
 
-export interface TokensRecipient {
-  percentage: number;
+export interface TokenRecipient {
   walletAddress: string;
   tokens: number; // fixme BN
+}
+
+export interface LogoFormValues {
+  email?: string | null;
+  shortOverview?: string | null;
+  longDescription?: string | null;
+  logoImage: File | null;
+}
+
+export interface MajorityModelValues {
+  proposalTokensCost: number;
+  approvalThreshold: number; // percentage or decimals
+  votingDays: number; // in days
+}
+
+export interface CouncilFormValues {
+  creatorName: string;
+  creatorWallet: string;
+  councilMembers: CouncilMember[];
+  councilThreshold: number; // number of councils needed
+}
+
+export interface IssueTokensValues {
+  tokensToIssue: number; // fixme BN
+  tokenRecipients: TokenRecipient[] | null;
+  treasuryTokens: number;
 }
 
 export interface DaoCreationValues {
@@ -33,7 +58,7 @@ export interface DaoCreationValues {
   councilMembers: CouncilMember[];
   councilThreshold: number; // number of councils needed
   tokensToIssue: number; // fixme BN
-  tokensRecipients: TokensRecipient[] | null;
+  tokensRecipients: TokenRecipient[] | null;
   treasuryTokens: number; // fixme BN
 }
 

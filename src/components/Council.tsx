@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 
+import type { CouncilFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
@@ -12,26 +13,32 @@ const Council = (props: { daoId: string | null }) => {
   const dao = daos?.[props.daoId as string];
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
-  const [membersCount, setMembersCount] = useState(3);
-  const [membersInputs, setMembersInputs] = useState([
-    {
-      name: 'councilName2',
-      wallet: 'councilWallet2',
-      id: Date.now() + 2,
-    },
-    {
-      name: 'councilName3',
-      wallet: 'councilWallet3',
-      id: Date.now() + 3,
-    },
-  ]);
+  const [membersCount, setMembersCount] = useState(2);
+
   const {
+    control,
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { isSubmitSuccessful },
-  } = useForm();
+  } = useForm<CouncilFormValues>({
+    defaultValues: {
+      creatorName: '',
+      creatorWallet: currentWalletAccount?.address,
+      councilMembers: [
+        {
+          name: '',
+          walletAddress: '',
+        },
+      ],
+      councilThreshold: 1,
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'councilMembers',
+  });
 
   const onSubmit = (data: any) => {
     console.log(data);
@@ -44,47 +51,28 @@ const Council = (props: { daoId: string | null }) => {
     }
   });
 
-  // set creator wallet address
-  useEffect(() => {
-    setValue('creatorWallet', currentWalletAccount?.address);
-  }, [currentWalletAccount, setValue]);
-
-  // fixme
-  const handleNext = () => {
-    updateCreateDaoSteps(4);
-  };
+  // // fixme
+  // const handleNext = () => {
+  //   updateCreateDaoSteps(4);
+  // };
 
   const handleBack = () => {
     updateCreateDaoSteps(2);
   };
 
-  const handleAddMember = () => {
+  const handleAddField = () => {
     const newCount = membersCount + 1;
-
-    const m = {
-      name: `councilName${newCount}`,
-      wallet: `councilWallet${newCount}`,
-      id: Date.now() + newCount,
-    };
     setMembersCount(newCount);
-    setMembersInputs([...membersInputs, m]);
+    append({
+      name: '',
+      walletAddress: '',
+    });
   };
 
-  const handleDeleteMember = (index: number) => {
-    const newCount = membersCount - 1;
-    const inputs = [...membersInputs];
-    inputs.splice(index, 1);
-    setMembersInputs(inputs);
-    setMembersCount(newCount);
-  };
-
-  const displayMembersInputs = (
-    members: { name: string; wallet: string; id: number | string }[],
-    deleteFunc: Function
-  ) => {
-    return members.map((member, index) => {
+  const membersFields = () => {
+    return fields.map((item, index) => {
       return (
-        <div className='flex' key={member.id} data-k={member.id}>
+        <div className='flex' key={item.id} data-k={item.id}>
           <div className='mr-3 flex flex-col justify-end pb-3 pl-3'>
             {index + 2}
           </div>
@@ -95,7 +83,7 @@ const Council = (props: { daoId: string | null }) => {
                 type='text'
                 placeholder='Name'
                 className='input-primary input'
-                {...register(member.name, {
+                {...register(`councilMembers.${index}.name`, {
                   required: 'Required',
                   minLength: { value: 1, message: 'Minimum is 1' },
                   maxLength: { value: 30, message: 'Maximum is 30' },
@@ -108,7 +96,7 @@ const Council = (props: { daoId: string | null }) => {
                 type='text'
                 placeholder='Wallet Address'
                 className='input-primary input text-xs'
-                {...register(member.wallet, {
+                {...register(`councilMembers.${index}.walletAddress`, {
                   required: 'Required',
                   minLength: { value: 1, message: 'Minimum is 1' },
                   maxLength: { value: 30, message: 'Maximum is 30' },
@@ -123,7 +111,9 @@ const Council = (props: { daoId: string | null }) => {
                 height={18}
                 alt='delete button'
                 onClick={() => {
-                  deleteFunc(index);
+                  const newCount = membersCount - 1;
+                  setMembersCount(newCount);
+                  remove(index);
                 }}
               />
             </div>
@@ -184,13 +174,12 @@ const Council = (props: { daoId: string | null }) => {
               </div>
             </div>
           </div>
-          {displayMembersInputs(membersInputs, handleDeleteMember)}
+          {membersFields()}
           <div>
-            {/* fixme make this functional */}
             <button
               className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
               type='button'
-              onClick={handleAddMember}>
+              onClick={handleAddField}>
               <Image
                 src={plus}
                 width={17}
@@ -234,10 +223,7 @@ const Council = (props: { daoId: string | null }) => {
           <button className='btn mr-3 w-48' onClick={handleBack} type='button'>
             Back
           </button>
-          <button
-            className='btn-primary btn w-48'
-            type='submit'
-            onClick={handleNext}>
+          <button className='btn-primary btn w-48' type='submit'>
             Next
           </button>
         </div>
