@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import type { MajorityModelValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
 const MajorityModel = () => {
@@ -9,7 +10,8 @@ const MajorityModel = () => {
     handleSubmit,
     reset,
     formState: { isSubmitSuccessful },
-  } = useForm();
+  } = useForm<MajorityModelValues>();
+
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const [threshold, setThreshold] = useState(10);
 

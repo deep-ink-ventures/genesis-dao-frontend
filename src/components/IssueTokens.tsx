@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
+import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
+import type { IssueTokensValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
@@ -13,53 +15,82 @@ const IssueTokens = (props: { daoId: string | null }) => {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
+    control,
     // getValues,
     formState: { isSubmitSuccessful },
-  } = useForm();
+  } = useForm<IssueTokensValues>({
+    defaultValues: {
+      tokensToIssue: 0,
+      tokenRecipients: [
+        {
+          walletAddress: '',
+          tokens: 0,
+        },
+      ],
+      treasuryTokens: 0,
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'tokenRecipients',
+  });
+
+  const watchTokensToIssue = watch('tokensToIssue', 0);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
-  const [recipientCount, setRecipientCount] = useState(2);
-
-  const [recipientInputs, setRecipientInputs] = useState<
-    { wallet: string; tokens: string; id: number }[]
-  >([]);
+  const [treasuryTokens, setTreasuryTokens] = useState(0);
 
   const handleAddRecipient = () => {
-    const newCount = recipientCount + 1;
-
-    const r = {
-      wallet: `recipientWallet${newCount}`,
-      tokens: `recipientTokens${newCount}`,
-      id: Date.now() + newCount,
-    };
-    setRecipientCount(newCount);
-    if (recipientInputs && recipientInputs.length > 0) {
-      setRecipientInputs([...recipientInputs, r]);
-    }
+    append({
+      walletAddress: '',
+      tokens: 0,
+    });
   };
 
-  // const treasuryTokens = () => {
-  //   const totalTokensToIssue = getValues('tokensToIssue');
-  //   const totalRecipientTokens = recipientInputs.reduce((acc, curr) => {
-  //     return acc + curr.tokens
-  //   }, 0)
-  // }
-
-  const handleDeleteRecipient = (index: number) => {
-    const newCount = recipientCount - 1;
-    const inputs = [...recipientInputs];
-    inputs.splice(index, 1);
-    setRecipientInputs(inputs);
-    setRecipientCount(newCount);
-  };
-
-  const displayRecipientInputs = (
-    recipients: { wallet: string; tokens: string; id: number }[],
-    handleDelete: Function
+  const getTotalRecipientsTokens = (
+    recipients: IssueTokensValues['tokenRecipients']
   ) => {
-    return recipients.map((recipient, index) => {
+    let total = 0;
+
+    if (!recipients) {
+      return 0;
+    }
+
+    // eslint-disable-next-line
+    for (const item of recipients) {
+      total += Number.isNaN(item.tokens) ? 0 : Number(item.tokens);
+    }
+    return total;
+  };
+
+  const RemainingTokens = ({
+    // eslint-disable-next-line
+    control,
+  }: {
+    control: Control<IssueTokensValues>;
+  }) => {
+    const values = useWatch({
+      control,
+      name: 'tokenRecipients',
+    });
+
+    const remain = watchTokensToIssue - getTotalRecipientsTokens(values);
+    setTreasuryTokens(remain);
+
+    return <span className='mx-3 text-primary'>{remain} </span>;
+  };
+
+  useEffect(() => {
+    setValue('treasuryTokens', treasuryTokens);
+  });
+
+  const recipientsFields = () => {
+    return fields.map((item, index) => {
       return (
-        <div className='flex' key={recipient.id} data-k={recipient.id}>
+        <div className='flex' key={item.id} data-k={item.id}>
           <div className='mr-3 flex flex-col justify-end pb-3'>{index + 1}</div>
           <div className='flex'>
             <div className='w-[370px] flex-col'>
@@ -68,7 +99,7 @@ const IssueTokens = (props: { daoId: string | null }) => {
                 type='text'
                 placeholder='Wallet Address'
                 className='input-primary input text-xs'
-                {...register(recipient.wallet, {
+                {...register(`tokenRecipients.${index}.walletAddress`, {
                   required: 'Required',
                   minLength: { value: 1, message: 'Minimum is 1' },
                   maxLength: { value: 30, message: 'Maximum is 30' },
@@ -79,9 +110,8 @@ const IssueTokens = (props: { daoId: string | null }) => {
               <p className='ml-1'>Number of Tokens</p>
               <input
                 type='number'
-                placeholder='0'
                 className='input-primary input text-center'
-                {...register(recipient.tokens, {
+                {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
                   minLength: { value: 1, message: 'Minimum is 1' },
                   maxLength: { value: 30, message: 'Maximum is 30' },
@@ -98,7 +128,7 @@ const IssueTokens = (props: { daoId: string | null }) => {
               height={18}
               alt='delete button'
               onClick={() => {
-                handleDelete(index);
+                remove(index);
               }}
             />
           </div>
@@ -114,16 +144,12 @@ const IssueTokens = (props: { daoId: string | null }) => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(3);
+      updateCreateDaoSteps(5);
     }
   });
 
   const handleBack = () => {
     updateCreateDaoSteps(3);
-  };
-
-  const handleNext = () => {
-    updateCreateDaoSteps(5);
   };
 
   return (
@@ -169,12 +195,13 @@ const IssueTokens = (props: { daoId: string | null }) => {
           <div className='flex flex-col gap-y-4'>
             <div className='w-full text-center'>
               <h4 className='text-center'>Recipients</h4>
-              <p className='text-sm'>Distribute Tokens To Wallet Addresses</p>
+              <p className='text-sm'>
+                Distribute Tokens To Other Wallet Addresses
+              </p>
             </div>
-            {displayRecipientInputs(recipientInputs, handleDeleteRecipient)}
+            {recipientsFields()}
           </div>
           <div>
-            {/* fixme make this functional */}
             <button
               className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
               type='button'
@@ -192,18 +219,16 @@ const IssueTokens = (props: { daoId: string | null }) => {
           <hr className='my-2 w-[90%] border-white/80 px-20' />
           <div className='w-full text-center'>
             <h4 className='text-center'>Treasury</h4>
-            <p className='text-sm'>{`Distribute Tokens to DAO's Treasury`}</p>
           </div>
-          <div className='flex justify-center px-10'>Distribute {}</div>
+          <div className='flex justify-center px-10 text-lg'>
+            Distribute <RemainingTokens control={control} /> tokens to treasury
+          </div>
         </div>
         <div className='mt-6 flex w-full justify-end'>
           <button className='btn mr-3 w-48' onClick={handleBack} type='button'>
             Back
           </button>
-          <button
-            className='btn-primary btn w-48'
-            type='submit'
-            onClick={handleNext}>
+          <button className='btn-primary btn w-48' type='submit'>
             Next
           </button>
         </div>

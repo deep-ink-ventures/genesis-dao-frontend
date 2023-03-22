@@ -51,9 +51,6 @@ const Review = (props: { daoId: string | null }) => {
           <div className='input mr-4 flex items-center justify-center border-[0.3px] border-neutral-focus bg-base-50/50'>
             {recipient.tokens.toLocaleString()}
           </div>
-          <div className='flex items-center '>
-            <p>{recipient.percentage * 100}%</p>
-          </div>
         </div>
       );
     });

@@ -16,8 +16,8 @@ const Customize = () => {
   const { daoId } = router.query;
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[daoId as string];
-  // const isOwner =
-  //   dao && currentWalletAccount && dao.owner === currentWalletAccount.address;
+  const isOwner =
+    dao && currentWalletAccount && dao.owner === currentWalletAccount.address;
 
   const createDaoSteps = useGenesisStore((s) => s.createDaoSteps);
 
@@ -30,6 +30,13 @@ const Customize = () => {
         </div>
       );
     }
+
+    if (!isOwner) {
+      <div>
+        <p>Sorry you are not the owner of {dao?.daoName}</p>
+      </div>;
+    }
+
     if (createDaoSteps === 1) {
       return <LogoForm daoId={dao?.daoId || null} />;
     }
@@ -51,12 +58,6 @@ const Customize = () => {
 
     return null;
   };
-
-  // if (!daos?.[daoId as string]?.assetId) {
-  //   return (<div>
-  //     no dao id
-  //   </div>)
-  // }
 
   return (
     <MainLayout

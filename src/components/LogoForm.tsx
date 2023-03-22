@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import type { LogoFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
 
@@ -13,7 +14,8 @@ const LogoForm = (props: { daoId: string | null }) => {
     handleSubmit,
     reset,
     formState: { isSubmitSuccessful },
-  } = useForm();
+  } = useForm<LogoFormValues>();
+
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   const onSubmit = (data: any) => {
@@ -61,7 +63,9 @@ const LogoForm = (props: { daoId: string | null }) => {
                 <input
                   className='absolute z-10 h-full w-full cursor-pointer opacity-0'
                   type='file'
-                  {...register('daoLogo', {})}
+                  accept='image/*'
+                  id='file'
+                  {...register('logoImage', {})}
                 />
                 <div className='flex flex-col py-6 text-center opacity-80'>
                   <Image
@@ -94,8 +98,16 @@ const LogoForm = (props: { daoId: string | null }) => {
             </div>
           </div>
           <div className='flex justify-end'>
-            <button className='btn-primary btn w-48' type='submit'>
-              Next
+            <button
+              className='btn mr-4 w-48'
+              type='button'
+              onClick={() => {
+                updateCreateDaoSteps(2);
+              }}>
+              Skip
+            </button>
+            <button className='btn-primary btn' type='submit'>
+              Upload and Approve
             </button>
           </div>
         </form>

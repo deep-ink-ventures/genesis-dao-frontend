@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
 import DaoHome from '../src/pages/dao/[daoId]/index';
-
+// eslint-disable-next-line
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));
