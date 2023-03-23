@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@hookform/error-message';
 import Image from 'next/image';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,7 +14,7 @@ const LogoForm = (props: { daoId: string | null }) => {
     register,
     handleSubmit,
     reset,
-    formState: { isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<LogoFormValues>();
 
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
@@ -54,7 +55,19 @@ const LogoForm = (props: { daoId: string | null }) => {
                 className='input-primary input'
                 type='text'
                 placeholder='Email'
-                {...register('email', {})}
+                {...register('email', {
+                  pattern: {
+                    value: /\S+@\S+\.\S+/,
+                    message: 'Entered value does not match email format',
+                  },
+                })}
+              />
+              <ErrorMessage
+                errors={errors}
+                name='email'
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
               />
             </div>
             <div className='min-w-full'>
@@ -98,6 +111,9 @@ const LogoForm = (props: { daoId: string | null }) => {
             </div>
           </div>
           <div className='flex justify-end'>
+            <button className='btn-primary btn mr-3' type='submit'>
+              Approve and Sign
+            </button>
             <button
               className='btn mr-4 w-48'
               type='button'
@@ -105,9 +121,6 @@ const LogoForm = (props: { daoId: string | null }) => {
                 updateCreateDaoSteps(2);
               }}>
               Skip
-            </button>
-            <button className='btn-primary btn' type='submit'>
-              Upload and Approve
             </button>
           </div>
         </form>

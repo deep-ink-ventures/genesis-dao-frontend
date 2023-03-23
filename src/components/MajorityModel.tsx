@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { ErrorMessage } from '@hookform/error-message';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { MajorityModelValues } from '@/stores/genesisStore';
@@ -9,11 +10,19 @@ const MajorityModel = () => {
     register,
     handleSubmit,
     reset,
-    formState: { isSubmitSuccessful },
-  } = useForm<MajorityModelValues>();
+    watch,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<MajorityModelValues>({
+    defaultValues: {
+      proposalTokensCost: 0,
+      approvalThreshold: 10,
+      votingDays: 1,
+    },
+  });
+
+  const watchApprovalThreshold = watch('approvalThreshold');
 
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
-  const [threshold, setThreshold] = useState(10);
 
   const handleBack = () => {
     updateCreateDaoSteps(1);
@@ -21,10 +30,6 @@ const MajorityModel = () => {
 
   const handleNext = () => {
     updateCreateDaoSteps(3);
-  };
-
-  const handleThresholdChange = (event: any) => {
-    setThreshold(event.target.value);
   };
 
   const onSubmit = (data: any) => {
@@ -57,13 +62,22 @@ const MajorityModel = () => {
             </p>
             <div className='relative w-[175px]'>
               <input
-                className='input-primary input pr-20'
+                className={` input pr-20 ${
+                  errors.proposalTokensCost ? 'input-error' : 'input-primary'
+                }`}
                 type='number'
                 placeholder='0'
                 {...register('proposalTokensCost', {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
                 })}
+              />
+              <ErrorMessage
+                errors={errors}
+                name='proposalTokensCost'
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
               />
               <div className='absolute top-3 left-[6.5em] opacity-70'>
                 Tokens
@@ -82,14 +96,14 @@ const MajorityModel = () => {
             <div className='flex justify-between'>
               <div className='w-[78%]'>
                 <div className='flex h-12 items-center justify-evenly rounded-[10px] border-[0.3px] border-neutral-focus bg-base-50'>
-                  <p className='opacity-80'>{threshold}%</p>
+                  <p className='opacity-80'>{watchApprovalThreshold}%</p>
                   <input
                     type='range'
                     className='range range-primary h-3 w-[75%]'
                     min={0}
                     max={100}
-                    value={threshold}
-                    onChange={handleThresholdChange}
+                    value={watchApprovalThreshold}
+                    {...register('approvalThreshold')}
                   />
                 </div>
               </div>
@@ -113,6 +127,13 @@ const MajorityModel = () => {
                   min: { value: 1, message: 'Minimum is 1' },
                 })}
               />
+              <ErrorMessage
+                errors={errors}
+                name='votingDays'
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
+              />
               <div className='absolute top-3 left-[7.4em] opacity-70'>Days</div>
             </div>
           </div>
@@ -122,11 +143,11 @@ const MajorityModel = () => {
         <button className='btn mr-3 w-48' onClick={handleBack}>
           Back
         </button>
-        <button
-          className='btn-primary btn w-48'
-          type='submit'
-          onClick={handleNext}>
-          Next
+        <button className='btn-primary btn mr-3 w-48' type='submit'>
+          Approve and Sign
+        </button>
+        <button className='btn w-48' type='button' onClick={handleNext}>
+          Skip
         </button>
       </div>
     </form>

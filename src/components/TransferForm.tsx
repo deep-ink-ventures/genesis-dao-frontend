@@ -98,7 +98,9 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
           <ErrorMessage
             errors={errors}
             name='toAddress'
-            render={({ message }) => <p>{message}</p>}
+            render={({ message }) => (
+              <p className='mt-1 ml-2 text-error'>{message}</p>
+            )}
           />
         </div>
         <div className='mb-3'>

@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@hookform/error-message';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type { Control } from 'react-hook-form';
@@ -7,6 +8,7 @@ import type { IssueTokensValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
+import { isValidPolkadotAddress } from '@/utils';
 
 const IssueTokens = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
@@ -18,8 +20,7 @@ const IssueTokens = (props: { daoId: string | null }) => {
     watch,
     setValue,
     control,
-    // getValues,
-    formState: { isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<IssueTokensValues>({
     defaultValues: {
       tokensToIssue: 0,
@@ -54,11 +55,9 @@ const IssueTokens = (props: { daoId: string | null }) => {
     recipients: IssueTokensValues['tokenRecipients']
   ) => {
     let total = 0;
-
     if (!recipients) {
       return 0;
     }
-
     // eslint-disable-next-line
     for (const item of recipients) {
       total += Number.isNaN(item.tokens) ? 0 : Number(item.tokens);
@@ -76,34 +75,42 @@ const IssueTokens = (props: { daoId: string | null }) => {
       control,
       name: 'tokenRecipients',
     });
-
     const remain = watchTokensToIssue - getTotalRecipientsTokens(values);
     setTreasuryTokens(remain);
-
-    return <span className='mx-3 text-primary'>{remain} </span>;
+    return (
+      <span className='mx-3 w-[70px] text-center text-primary'>{remain} </span>
+    );
   };
-
-  useEffect(() => {
-    setValue('treasuryTokens', treasuryTokens);
-  });
 
   const recipientsFields = () => {
     return fields.map((item, index) => {
       return (
         <div className='flex' key={item.id} data-k={item.id}>
-          <div className='mr-3 flex flex-col justify-end pb-3'>{index + 1}</div>
           <div className='flex'>
             <div className='w-[370px] flex-col'>
-              <p className='ml-1'>Wallet Address</p>
-              <input
-                type='text'
-                placeholder='Wallet Address'
-                className='input-primary input text-xs'
-                {...register(`tokenRecipients.${index}.walletAddress`, {
-                  required: 'Required',
-                  minLength: { value: 1, message: 'Minimum is 1' },
-                  maxLength: { value: 30, message: 'Maximum is 30' },
-                })}
+              <p className='pl-8'>Wallet Address</p>
+              <div className='flex'>
+                <div className='mr-4 flex flex-col justify-center'>
+                  {index + 1}
+                </div>
+                <input
+                  type='text'
+                  placeholder='Wallet Address'
+                  className='input-primary input text-xs'
+                  {...register(`tokenRecipients.${index}.walletAddress`, {
+                    required: 'Required',
+                    validate: (add) =>
+                      isValidPolkadotAddress(add) === true ||
+                      'Not a valid address',
+                  })}
+                />
+              </div>
+              <ErrorMessage
+                errors={errors}
+                name={`tokenRecipients.${index}.walletAddress`}
+                render={({ message }) => (
+                  <p className='mt-1 pl-8 text-error'>{message}</p>
+                )}
               />
             </div>
             <div className='mx-3 flex flex-col'>
@@ -113,12 +120,29 @@ const IssueTokens = (props: { daoId: string | null }) => {
                 className='input-primary input text-center'
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
-                  minLength: { value: 1, message: 'Minimum is 1' },
-                  maxLength: { value: 30, message: 'Maximum is 30' },
+                  min: { value: 1, message: 'Minimum is 1' },
                 })}
               />
+              <ErrorMessage
+                errors={errors}
+                name={`tokenRecipients.${index}.tokens`}
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
+              />
             </div>
-            <div className='flex items-center justify-center pt-5'>0%</div>
+            <div className='flex w-[65px] items-center justify-center pt-5'>
+              {(watch(`tokenRecipients.${index}.tokens`) / watchTokensToIssue) *
+                100 >=
+              100
+                ? 'NaN'
+                : (
+                    (watch(`tokenRecipients.${index}.tokens`) /
+                      watchTokensToIssue) *
+                    100
+                  ).toFixed(2)}{' '}
+              %
+            </div>
           </div>
           <div className='ml-3 flex items-center pt-5'>
             <Image
@@ -142,11 +166,19 @@ const IssueTokens = (props: { daoId: string | null }) => {
   };
 
   useEffect(() => {
+    setValue('treasuryTokens', treasuryTokens);
+  });
+
+  useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
       updateCreateDaoSteps(5);
     }
   });
+
+  const handleNext = () => {
+    updateCreateDaoSteps(5);
+  };
 
   const handleBack = () => {
     updateCreateDaoSteps(3);
@@ -189,6 +221,13 @@ const IssueTokens = (props: { daoId: string | null }) => {
                 min: { value: 1, message: 'Minimum is 1' },
               })}
             />
+            <ErrorMessage
+              errors={errors}
+              name='tokensToIssue'
+              render={({ message }) => (
+                <p className='mt-1 ml-2 text-error'>{message}</p>
+              )}
+            />
           </div>
         </div>
         <div className='card flex min-h-[350px] w-full flex-col items-center gap-y-6 border-none py-5 px-3 hover:brightness-100'>
@@ -220,16 +259,23 @@ const IssueTokens = (props: { daoId: string | null }) => {
           <div className='w-full text-center'>
             <h4 className='text-center'>Treasury</h4>
           </div>
-          <div className='flex justify-center px-10 text-lg'>
-            Distribute <RemainingTokens control={control} /> tokens to treasury
+          <div className='flex flex-col justify-center px-10 text-center text-lg'>
+            <p>Distribute</p>
+            <p>
+              <RemainingTokens control={control} />
+            </p>
+            <p> tokens to treasury controlled by council members</p>
           </div>
         </div>
         <div className='mt-6 flex w-full justify-end'>
-          <button className='btn mr-3 w-48' onClick={handleBack} type='button'>
+          <button className='btn mr-3 w-48' onClick={handleBack}>
             Back
           </button>
-          <button className='btn-primary btn w-48' type='submit'>
-            Next
+          <button className='btn-primary btn mr-3 w-48' type='submit'>
+            Approve and Sign
+          </button>
+          <button className='btn w-48' type='button' onClick={handleNext}>
+            Skip
           </button>
         </div>
       </form>
