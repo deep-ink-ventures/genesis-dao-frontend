@@ -34,10 +34,6 @@ const Review = (props: { daoId: string | null }) => {
     updateCreateDaoSteps(4);
   };
 
-  const handleNext = () => {
-    updateCreateDaoSteps(6);
-  };
-
   const displayTokenRecipients = () => {
     return daoCreationValues?.tokensRecipients?.map((recipient, index) => {
       return (
@@ -166,10 +162,7 @@ const Review = (props: { daoId: string | null }) => {
           Back
         </button>
         <Link href={`/dao/${encodeURIComponent(props.daoId as string)}`}>
-          <button
-            className='btn-primary btn'
-            type='submit'
-            onClick={handleNext}>
+          <button className='btn-primary btn' type='button'>
             Go To DAO Dashboard
           </button>
         </Link>

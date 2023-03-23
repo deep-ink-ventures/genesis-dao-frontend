@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@hookform/error-message';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -6,7 +7,7 @@ import type { CouncilFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
-import { truncateMiddle } from '@/utils';
+import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
 
 const Council = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
@@ -20,7 +21,7 @@ const Council = (props: { daoId: string | null }) => {
     register,
     handleSubmit,
     reset,
-    formState: { isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<CouncilFormValues>({
     defaultValues: {
       creatorName: '',
@@ -51,10 +52,9 @@ const Council = (props: { daoId: string | null }) => {
     }
   });
 
-  // // fixme
-  // const handleNext = () => {
-  //   updateCreateDaoSteps(4);
-  // };
+  const handleNext = () => {
+    updateCreateDaoSteps(4);
+  };
 
   const handleBack = () => {
     updateCreateDaoSteps(2);
@@ -73,21 +73,33 @@ const Council = (props: { daoId: string | null }) => {
     return fields.map((item, index) => {
       return (
         <div className='flex' key={item.id} data-k={item.id}>
-          <div className='mr-3 flex flex-col justify-end pb-3 pl-3'>
+          {/* <div className='mr-3 flex flex-col justify-end pb-3 pl-3'>
             {index + 2}
-          </div>
+          </div> */}
           <div className='flex'>
             <div className='mr-3 flex flex-col'>
-              <p className='ml-1'>Name</p>
-              <input
-                type='text'
-                placeholder='Name'
-                className='input-primary input'
-                {...register(`councilMembers.${index}.name`, {
-                  required: 'Required',
-                  minLength: { value: 1, message: 'Minimum is 1' },
-                  maxLength: { value: 30, message: 'Maximum is 30' },
-                })}
+              <p className='pl-8'>Name</p>
+              <div className='flex'>
+                <div className='mr-4 flex flex-col justify-center'>
+                  {index + 2}
+                </div>
+                <input
+                  type='text'
+                  placeholder='Name'
+                  className='input-primary input '
+                  {...register(`councilMembers.${index}.name`, {
+                    required: 'Required',
+                    minLength: { value: 1, message: 'Minimum is 1' },
+                    maxLength: { value: 30, message: 'Maximum is 30' },
+                  })}
+                />
+              </div>
+              <ErrorMessage
+                errors={errors}
+                name={`councilMembers.${index}.name`}
+                render={({ message }) => (
+                  <p className='mt-1 pl-8 text-error'>{message}</p>
+                )}
               />
             </div>
             <div className='w-[370px] flex-col'>
@@ -98,9 +110,17 @@ const Council = (props: { daoId: string | null }) => {
                 className='input-primary input text-xs'
                 {...register(`councilMembers.${index}.walletAddress`, {
                   required: 'Required',
-                  minLength: { value: 1, message: 'Minimum is 1' },
-                  maxLength: { value: 30, message: 'Maximum is 30' },
+                  validate: (add) =>
+                    isValidPolkadotAddress(add) === true ||
+                    'Not a valid address',
                 })}
+              />
+              <ErrorMessage
+                errors={errors}
+                name={`councilMembers.${index}.walletAddress`}
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
               />
             </div>
             <div className='ml-3 flex items-center pt-5'>
@@ -150,19 +170,28 @@ const Council = (props: { daoId: string | null }) => {
             <h3 className='text-center text-[23px]'>Council Members</h3>
           </div>
           <div className='flex'>
-            <div className='mr-3 flex flex-col justify-end pb-3 pl-3'>1</div>
             <div className='flex'>
               <div className='mr-3 flex flex-col'>
-                <p className='ml-1'>Your Name</p>
-                <input
-                  type='text'
-                  placeholder='Your name'
-                  className='input-primary input'
-                  {...register('creatorName', {
-                    required: 'Required',
-                    minLength: { value: 1, message: 'Minimum is 1' },
-                    maxLength: { value: 30, message: 'Maximum is 30' },
-                  })}
+                <p className='pl-8'>Your Name</p>
+                <div className='flex'>
+                  <div className='mr-4 flex flex-col justify-center'>1</div>
+                  <input
+                    type='text'
+                    placeholder='Your name'
+                    className='input-primary input'
+                    {...register('creatorName', {
+                      required: 'Required',
+                      minLength: { value: 1, message: 'Minimum is 1' },
+                      maxLength: { value: 30, message: 'Maximum is 30' },
+                    })}
+                  />
+                </div>
+                <ErrorMessage
+                  errors={errors}
+                  name='creatorName'
+                  render={({ message }) => (
+                    <p className='mt-1 pl-8 text-error'>{message}</p>
+                  )}
                 />
               </div>
               <div className='flex-col'>
@@ -213,6 +242,13 @@ const Council = (props: { daoId: string | null }) => {
                 min: { value: 1, message: 'Minimum is 1' },
               })}
             />
+            <ErrorMessage
+              errors={errors}
+              name='councilThreshold'
+              render={({ message }) => (
+                <p className='mt-1 ml-2 text-error'>{message}</p>
+              )}
+            />
           </div>
           <p>
             Out of <span className='text-primary'>{membersCount}</span> Council
@@ -220,11 +256,14 @@ const Council = (props: { daoId: string | null }) => {
           </p>
         </div>
         <div className='mt-6 flex w-full justify-end'>
-          <button className='btn mr-3 w-48' onClick={handleBack} type='button'>
+          <button className='btn mr-3 w-48' onClick={handleBack}>
             Back
           </button>
-          <button className='btn-primary btn w-48' type='submit'>
-            Next
+          <button className='btn-primary btn mr-3 w-48' type='submit'>
+            Approve and Sign
+          </button>
+          <button className='btn w-48' type='button' onClick={handleNext}>
+            Skip
           </button>
         </div>
       </form>
