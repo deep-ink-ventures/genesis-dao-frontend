@@ -24,12 +24,8 @@ const MajorityModel = () => {
 
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
-  const handleBack = () => {
-    updateCreateDaoSteps(1);
-  };
-
   const handleNext = () => {
-    updateCreateDaoSteps(3);
+    updateCreateDaoSteps(2);
   };
 
   const onSubmit = (data: any) => {
@@ -39,7 +35,7 @@ const MajorityModel = () => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(3);
+      updateCreateDaoSteps(2);
     }
   });
 
@@ -101,7 +97,7 @@ const MajorityModel = () => {
                     type='range'
                     className='range range-primary h-3 w-[75%]'
                     min={0}
-                    max={100}
+                    max={25}
                     value={watchApprovalThreshold}
                     {...register('approvalThreshold')}
                   />
@@ -140,9 +136,6 @@ const MajorityModel = () => {
         </div>
       </div>
       <div className='mt-4 flex w-full justify-end'>
-        <button className='btn mr-3 w-48' onClick={handleBack}>
-          Back
-        </button>
         <button className='btn-primary btn mr-3 w-48' type='submit'>
           Approve and Sign
         </button>

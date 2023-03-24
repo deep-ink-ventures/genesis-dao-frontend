@@ -48,16 +48,12 @@ const Council = (props: { daoId: string | null }) => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(4);
+      updateCreateDaoSteps(3);
     }
   });
 
-  const handleNext = () => {
-    updateCreateDaoSteps(4);
-  };
-
   const handleBack = () => {
-    updateCreateDaoSteps(2);
+    updateCreateDaoSteps(1);
   };
 
   const handleAddField = () => {
@@ -73,9 +69,6 @@ const Council = (props: { daoId: string | null }) => {
     return fields.map((item, index) => {
       return (
         <div className='flex' key={item.id} data-k={item.id}>
-          {/* <div className='mr-3 flex flex-col justify-end pb-3 pl-3'>
-            {index + 2}
-          </div> */}
           <div className='flex'>
             <div className='mr-3 flex flex-col'>
               <p className='pl-8'>Name</p>
@@ -170,36 +163,34 @@ const Council = (props: { daoId: string | null }) => {
             <h3 className='text-center text-[23px]'>Council Members</h3>
           </div>
           <div className='flex'>
-            <div className='flex'>
-              <div className='mr-3 flex flex-col'>
-                <p className='pl-8'>Your Name</p>
-                <div className='flex'>
-                  <div className='mr-4 flex flex-col justify-center'>1</div>
-                  <input
-                    type='text'
-                    placeholder='Your name'
-                    className='input-primary input'
-                    {...register('creatorName', {
-                      required: 'Required',
-                      minLength: { value: 1, message: 'Minimum is 1' },
-                      maxLength: { value: 30, message: 'Maximum is 30' },
-                    })}
-                  />
-                </div>
-                <ErrorMessage
-                  errors={errors}
-                  name='creatorName'
-                  render={({ message }) => (
-                    <p className='mt-1 pl-8 text-error'>{message}</p>
-                  )}
+            <div className='mr-3 flex flex-col'>
+              <p className='pl-8'>Your Name</p>
+              <div className='flex'>
+                <div className='mr-4 flex flex-col justify-center'>1</div>
+                <input
+                  type='text'
+                  placeholder='Your name'
+                  className='input-primary input'
+                  {...register('creatorName', {
+                    required: 'Required',
+                    minLength: { value: 1, message: 'Minimum is 1' },
+                    maxLength: { value: 30, message: 'Maximum is 30' },
+                  })}
                 />
               </div>
-              <div className='flex-col'>
-                <p className='ml-1 opacity-40'>Wallet Address</p>
-                <input type='text' hidden {...register('creatorWallet')} />
-                <div className='flex h-12 w-[400px] items-center rounded-[10px] border-[0.3px] bg-base-50 px-2 opacity-40'>
-                  {truncateMiddle(currentWalletAccount?.address)}
-                </div>
+              <ErrorMessage
+                errors={errors}
+                name='creatorName'
+                render={({ message }) => (
+                  <p className='mt-1 pl-8 text-error'>{message}</p>
+                )}
+              />
+            </div>
+            <div className='flex-col'>
+              <p className='ml-1 opacity-40'>Wallet Address</p>
+              <input type='text' hidden {...register('creatorWallet')} />
+              <div className='flex h-12 w-[400px] items-center rounded-[10px] border-[0.3px] bg-base-50 px-2 opacity-40'>
+                {truncateMiddle(currentWalletAccount?.address)}
               </div>
             </div>
           </div>
@@ -261,9 +252,6 @@ const Council = (props: { daoId: string | null }) => {
           </button>
           <button className='btn-primary btn mr-3 w-48' type='submit'>
             Approve and Sign
-          </button>
-          <button className='btn w-48' type='button' onClick={handleNext}>
-            Skip
           </button>
         </div>
       </form>

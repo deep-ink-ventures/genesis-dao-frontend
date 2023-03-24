@@ -1,11 +1,9 @@
 import { useRouter } from 'next/router';
 
 import Congratulations from '@/components/Congratulations';
-import Council from '@/components/Council';
+import CouncilTokens from '@/components/CouncilTokens';
 import GovernanceForm from '@/components/GovernanceForm';
-import IssueTokens from '@/components/IssueTokens';
 import LogoForm from '@/components/LogoForm';
-import Review from '@/components/Review';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
@@ -36,26 +34,18 @@ const Customize = () => {
         <p>Sorry you are not the owner of {dao?.daoName}</p>
       </div>;
     }
-
     if (createDaoSteps === 1) {
-      return <LogoForm daoId={dao?.daoId || null} />;
-    }
-    if (createDaoSteps === 2) {
       return <GovernanceForm daoId={dao?.daoId || null} />;
     }
+    if (createDaoSteps === 2) {
+      return <CouncilTokens daoId={dao?.daoId || null} />;
+    }
     if (createDaoSteps === 3) {
-      return <Council daoId={dao?.daoId || null} />;
+      return <LogoForm daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 4) {
-      return <IssueTokens daoId={dao?.daoId || null} />;
-    }
-    if (createDaoSteps === 5) {
-      return <Review daoId={dao?.daoId || null} />;
-    }
-    if (createDaoSteps === 6) {
       return <Congratulations />;
     }
-
     return null;
   };
 

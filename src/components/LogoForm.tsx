@@ -1,5 +1,6 @@
 import { ErrorMessage } from '@hookform/error-message';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -16,7 +17,7 @@ const LogoForm = (props: { daoId: string | null }) => {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = useForm<LogoFormValues>();
-
+  const router = useRouter();
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   const onSubmit = (data: any) => {
@@ -26,16 +27,20 @@ const LogoForm = (props: { daoId: string | null }) => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(2);
+      updateCreateDaoSteps(4);
     }
   });
+
+  const handleSkip = () => {
+    router.push(`dao/${props.daoId}`);
+  };
 
   return (
     <div className='flex flex-col items-center gap-y-6 px-12'>
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='20'
+          value='80'
           max='100'></progress>
       </div>
       <div className='text-center'>
@@ -112,14 +117,12 @@ const LogoForm = (props: { daoId: string | null }) => {
           </div>
           <div className='flex justify-end'>
             <button className='btn-primary btn mr-3' type='submit'>
-              Approve and Sign
+              Upload and Sign
             </button>
             <button
               className='btn mr-4 w-48'
               type='button'
-              onClick={() => {
-                updateCreateDaoSteps(2);
-              }}>
+              onClick={handleSkip}>
               Skip
             </button>
           </div>
