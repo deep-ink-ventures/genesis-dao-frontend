@@ -1,7 +1,6 @@
 import { ErrorMessage } from '@hookform/error-message';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import type { Control } from 'react-hook-form';
+import { useEffect } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
 import type { IssueTokensValues } from '@/stores/genesisStore';
@@ -42,8 +41,6 @@ const IssueTokens = (props: { daoId: string | null }) => {
   const watchTokensToIssue = watch('tokensToIssue', 0);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
-  const [treasuryTokens, setTreasuryTokens] = useState(0);
-
   const handleAddRecipient = () => {
     append({
       walletAddress: '',
@@ -65,22 +62,11 @@ const IssueTokens = (props: { daoId: string | null }) => {
     return total;
   };
 
-  const RemainingTokens = ({
-    // eslint-disable-next-line
+  const values = useWatch({
     control,
-  }: {
-    control: Control<IssueTokensValues>;
-  }) => {
-    const values = useWatch({
-      control,
-      name: 'tokenRecipients',
-    });
-    const remain = watchTokensToIssue - getTotalRecipientsTokens(values);
-    setTreasuryTokens(remain);
-    return (
-      <span className='mx-3 w-[70px] text-center text-primary'>{remain} </span>
-    );
-  };
+    name: 'tokenRecipients',
+  });
+  const remain = watchTokensToIssue - getTotalRecipientsTokens(values);
 
   const recipientsFields = () => {
     return fields.map((item, index) => {
@@ -166,22 +152,22 @@ const IssueTokens = (props: { daoId: string | null }) => {
   };
 
   useEffect(() => {
-    setValue('treasuryTokens', treasuryTokens);
+    setValue('treasuryTokens', remain);
   });
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(5);
+      updateCreateDaoSteps(4);
     }
   });
 
   const handleNext = () => {
-    updateCreateDaoSteps(5);
+    updateCreateDaoSteps(4);
   };
 
   const handleBack = () => {
-    updateCreateDaoSteps(3);
+    updateCreateDaoSteps(2);
   };
 
   return (
@@ -189,7 +175,7 @@ const IssueTokens = (props: { daoId: string | null }) => {
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='65'
+          value='68'
           max='100'
         />
       </div>
@@ -262,13 +248,15 @@ const IssueTokens = (props: { daoId: string | null }) => {
           <div className='flex flex-col justify-center px-10 text-center text-lg'>
             <p>Distribute</p>
             <p>
-              <RemainingTokens control={control} />
+              <span className='mx-3 w-[70px] text-center text-primary'>
+                {remain}{' '}
+              </span>
             </p>
             <p> tokens to treasury controlled by council members</p>
           </div>
         </div>
         <div className='mt-6 flex w-full justify-end'>
-          <button className='btn mr-3 w-48' onClick={handleBack}>
+          <button className='btn mr-3 w-48' type='button' onClick={handleBack}>
             Back
           </button>
           <button className='btn-primary btn mr-3 w-48' type='submit'>

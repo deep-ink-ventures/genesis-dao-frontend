@@ -19,6 +19,12 @@ export interface TokenRecipient {
   tokens: number; // fixme BN
 }
 
+export interface CouncilTokensValues
+  extends CouncilFormValues,
+    IssueTokensValues {
+  isFinished: false;
+}
+
 export interface LogoFormValues {
   email?: string | null;
   shortOverview?: string | null;
@@ -36,7 +42,7 @@ export interface CouncilFormValues {
   creatorName: string;
   creatorWallet: string;
   councilMembers: CouncilMember[];
-  councilThreshold: number; // number of councils needed
+  councilThreshold: number; // number of councils needed to approve
 }
 
 export interface IssueTokensValues {
@@ -249,7 +255,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
-    console.log('fetch daos');
     const apiCon = get().apiConnection;
     apiCon.query?.daoCore?.daos
       ?.entries()

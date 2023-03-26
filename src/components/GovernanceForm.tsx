@@ -31,7 +31,7 @@ const GovernanceForm = (props: { daoId: string | null }) => {
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='30'
+          value='15'
           max='100'></progress>
       </div>
       <div className='text-center'>
