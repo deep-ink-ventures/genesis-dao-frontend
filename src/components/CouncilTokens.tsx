@@ -7,7 +7,11 @@ import type { CouncilTokensValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
-import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
+import {
+  getMultisigAddress,
+  isValidPolkadotAddress,
+  truncateMiddle,
+} from '@/utils';
 
 const CouncilTokens = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
@@ -86,8 +90,18 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     name: 'tokenRecipients',
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = (data: CouncilTokensValues) => {
+    // the order of the addresses matter
+    const otherAddresses = data.councilMembers.map((el) => {
+      return el.walletAddress;
+    });
+    const addresses = [data.creatorWallet, ...otherAddresses];
+
+    const multisigAddress = getMultisigAddress(
+      addresses,
+      data.councilThreshold
+    );
+    console.log(multisigAddress);
   };
 
   useEffect(() => {

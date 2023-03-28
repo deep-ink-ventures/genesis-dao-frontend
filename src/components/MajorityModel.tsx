@@ -149,10 +149,10 @@ const MajorityModel = (props: { daoId: string | null }) => {
             txnProcessing ? 'loading' : null
           }`}
           type='submit'>
-          Approve and Sign
+          {txnProcessing ? 'Processing' : 'Submit and Sign'}
         </button>
         <button
-          className={`btn w-48 ${txnProcessing ? 'disabled' : null}`}
+          className={`btn w-48 ${txnProcessing ? 'btn-disabled' : null}`}
           type='button'
           onClick={handleNext}>
           Skip

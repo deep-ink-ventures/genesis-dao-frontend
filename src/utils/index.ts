@@ -1,5 +1,7 @@
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex } from '@polkadot/util';
+import { createKeyMulti } from '@polkadot/util-crypto';
+
 // @ts-ignore
 export const truncateMiddle = (str?, start = 4, end = 4) => {
   if (str && str.length) {
@@ -26,3 +28,15 @@ export const isValidPolkadotAddress = (address: string) => {
     return false;
   }
 };
+
+export const getMultisigAddress = (signerAddresses: string[], threshold: number = 1) => {
+  for( const addy of signerAddresses) {
+    if(!isValidPolkadotAddress(addy)) {
+      return
+    }
+  }
+  const multiAddress = createKeyMulti(signerAddresses, threshold);
+  const Ss58Address = encodeAddress(multiAddress, 42); //Subtrate address
+
+  return Ss58Address
+}
