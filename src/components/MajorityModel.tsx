@@ -2,10 +2,11 @@ import { ErrorMessage } from '@hookform/error-message';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import useGenesisDao from '@/hooks/useGenesisDao';
 import type { MajorityModelValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
-const MajorityModel = () => {
+const MajorityModel = (props: { daoId: string | null }) => {
   const {
     register,
     handleSubmit,
@@ -21,21 +22,29 @@ const MajorityModel = () => {
   });
 
   const watchApprovalThreshold = watch('approvalThreshold');
-
+  const { setGovernanceMajorityVote } = useGenesisDao();
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
 
   const handleNext = () => {
     updateCreateDaoSteps(2);
   };
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = (data: MajorityModelValues) => {
+    if (!props.daoId) {
+      return;
+    }
+    setGovernanceMajorityVote(
+      props.daoId,
+      data.votingDays * 14400,
+      data.proposalTokensCost,
+      data.approvalThreshold * 10
+    );
   };
 
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(2);
     }
   });
 
@@ -82,12 +91,11 @@ const MajorityModel = () => {
           </div>
           <div className='min-w-full'>
             <p className='mb-1 ml-1'>
-              Approval Threshold{' '}
+              Minimum Majority Threshold{' '}
               <span className='text-lg font-medium text-red-600'>*</span>
             </p>
             <p className='mb-1 ml-1 text-xs'>
-              Minimum percentage of circulating token supply needed to validate
-              a proposal
+              {`DAO proposals will pass only if (votes in favor - votes against) >= (minimum majority threshold * total token supply)`}
             </p>
             <div className='flex justify-between'>
               <div className='w-[78%]'>
@@ -136,10 +144,17 @@ const MajorityModel = () => {
         </div>
       </div>
       <div className='mt-4 flex w-full justify-end'>
-        <button className='btn-primary btn mr-3 w-48' type='submit'>
+        <button
+          className={`btn-primary btn mr-3 w-48 ${
+            txnProcessing ? 'loading' : null
+          }`}
+          type='submit'>
           Approve and Sign
         </button>
-        <button className='btn w-48' type='button' onClick={handleNext}>
+        <button
+          className={`btn w-48 ${txnProcessing ? 'disabled' : null}`}
+          type='button'
+          onClick={handleNext}>
           Skip
         </button>
       </div>

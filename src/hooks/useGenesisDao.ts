@@ -54,6 +54,7 @@ const useGenesisDao = () => {
   ) => {
     // eslint-disable-next-line
     console.log('Transaction status1:', result.status.type);
+    // eslint-disable-next-line
     console.log('txn', result);
     if (result.status.isInBlock) {
       // eslint-disable-next-line
@@ -462,6 +463,7 @@ const useGenesisDao = () => {
     successMsg: string,
     errorMsg: string
   ) => {
+    updateTxnProcessing(true);
     if (walletAccount.signer) {
       apiConnection.tx.utility
         ?.batch?.(txns)
@@ -479,6 +481,45 @@ const useGenesisDao = () => {
     }
   };
 
+  const setGovernanceMajorityVote = (
+    daoId: string,
+    VoteDurationBlocks: number,
+    deposit: number,
+    minimumMajority: number
+  ) => {
+    if (!currentWalletAccount) {
+      return;
+    }
+
+    updateTxnProcessing(true);
+
+    apiConnection.tx?.votes
+      ?.setGovernanceMajorityVote?.(
+        daoId,
+        VoteDurationBlocks,
+        deposit,
+        minimumMajority
+      )
+      .signAndSend(
+        currentWalletAccount.address,
+        { signer: currentWalletAccount.signer },
+        (result) => {
+          txResponseCallback(
+            result,
+            'Governance Model Set Up Successfully',
+            'Governance Setup Transaction Failed',
+            () => {
+              updateCreateDaoSteps(2);
+            }
+          );
+        }
+      )
+      .catch((err) => {
+        updateTxnProcessing(false);
+        handleTxnError(new Error(err));
+      });
+  };
+
   return {
     createDao,
     destroyDao,
@@ -490,6 +531,7 @@ const useGenesisDao = () => {
     destroyDaoAndAssets,
     destroyAssetAccounts,
     destroyAssetApprovals,
+    setGovernanceMajorityVote,
   };
 };
 

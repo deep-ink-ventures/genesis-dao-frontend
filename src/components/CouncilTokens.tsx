@@ -413,7 +413,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                     <p className='mt-1 ml-2 text-error'>{message}</p>
                   )}
                 />
-                <div className='absolute top-3 left-[295px] opacity-70'>
+                <div className='absolute top-3 left-[245px] opacity-70'>
                   Tokens
                 </div>
               </div>

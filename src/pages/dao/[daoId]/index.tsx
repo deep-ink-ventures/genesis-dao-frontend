@@ -51,7 +51,7 @@ const DaoHome = () => {
             <button
               className={`btn-primary btn w-[180px]`}
               disabled={!currentWalletAccount}>
-              Finish Customizing DAO
+              Customize DAO
             </button>
           </Link>
           <Link
