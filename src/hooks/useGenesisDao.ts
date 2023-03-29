@@ -1,3 +1,4 @@
+import type { SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
 import { useRouter } from 'next/router';
@@ -5,6 +6,7 @@ import { useRouter } from 'next/router';
 import type {
   AssetDetails,
   CreateDaoData,
+  TokenRecipient,
   WalletAccount,
 } from '../stores/genesisStore';
 import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
@@ -54,8 +56,6 @@ const useGenesisDao = () => {
   ) => {
     // eslint-disable-next-line
     console.log('Transaction status1:', result.status.type);
-    // eslint-disable-next-line
-    console.log('txn', result);
     if (result.status.isInBlock) {
       // eslint-disable-next-line
       console.log(
@@ -100,6 +100,7 @@ const useGenesisDao = () => {
             // add txn to our store - first index
             addTxnNotification(successNoti);
             successCB?.();
+            fetchDaos();
             updateTxnProcessing(false);
             return;
           }
@@ -382,7 +383,7 @@ const useGenesisDao = () => {
     daoId: string,
     supply: number
   ) => {
-    const amount = supply * 1000000000;
+    const amount = supply;
     if (walletAccount.signer) {
       apiConnection.tx?.daoCore
         ?.issueToken?.(daoId, amount)
@@ -420,7 +421,7 @@ const useGenesisDao = () => {
     const newAmount = amount * 1000000000;
     if (walletAccount.signer) {
       apiConnection.tx?.assets
-        ?.transfer?.(assetId, toAddress, newAmount)
+        ?.transferKeepAlive?.(assetId, toAddress, newAmount)
         .signAndSend(
           walletAccount.address,
           { signer: walletAccount.signer },
@@ -443,35 +444,58 @@ const useGenesisDao = () => {
     }
   };
 
-  const makeCreateDaoTxn = async (
-    txns: any[],
-    daoId: string,
-    daoName: string,
-    tokenSupply: number
-  ) => {
-    const amount = tokenSupply * 1000000000;
-    const api = apiConnection;
-    const createDaoTxn = api.tx.daoCore?.createDao?.(daoId, daoName);
-    const issueTokensTxn = api.tx.daoCore?.issueTokens?.(daoId, amount);
+  const makeCreateDaoTxn = (txns: any[], daoId: string, daoName: string) => {
+    const createDaoTxn = apiConnection.tx.daoCore?.createDao?.(daoId, daoName);
 
-    return [...txns, createDaoTxn, issueTokensTxn];
+    return [...txns, createDaoTxn];
   };
 
-  const sendMultipleTxns = async (
-    walletAccount: WalletAccount,
+  const makeIssueTokensTxn = (
     txns: any[],
+    daoId: string,
+    tokenSupply: number
+  ) => {
+    const amount = tokenSupply;
+    const issueTokensTxn = apiConnection.tx?.daoCore?.issueToken?.(
+      daoId,
+      amount
+    );
+
+    return [...txns, issueTokensTxn];
+  };
+
+  const makeBatchTransferTxn = (
+    txns: any[],
+    recipients: TokenRecipient[],
+    assetId: number
+  ): SubmittableExtrinsicFunction<'promise'>[] => {
+    const transferTxns = recipients.map((recipient) => {
+      return apiConnection.tx.assets?.transferKeepAlive?.(
+        Number(assetId),
+        recipient.walletAddress,
+        Number(recipient.tokens)
+      );
+    });
+
+    const newTxns = [...txns, ...transferTxns];
+    return newTxns;
+  };
+
+  const sendBatchTxns = async (
+    txns: SubmittableExtrinsicFunction<'promise'>[],
     successMsg: string,
-    errorMsg: string
+    errorMsg: string,
+    successCb?: Function
   ) => {
     updateTxnProcessing(true);
-    if (walletAccount.signer) {
+    if (currentWalletAccount?.signer) {
       apiConnection.tx.utility
-        ?.batch?.(txns)
+        ?.batchAll?.(txns)
         .signAndSend(
-          walletAccount.address,
-          { signer: walletAccount.signer },
+          currentWalletAccount.address,
+          { signer: currentWalletAccount.signer },
           (result) => {
-            txResponseCallback(result, successMsg, errorMsg);
+            txResponseCallback(result, successMsg, errorMsg, successCb);
           }
         )
         .catch((err) => {
@@ -483,7 +507,7 @@ const useGenesisDao = () => {
 
   const setGovernanceMajorityVote = (
     daoId: string,
-    VoteDurationBlocks: number,
+    voteDurationBlocks: number,
     deposit: number,
     minimumMajority: number
   ) => {
@@ -496,7 +520,7 @@ const useGenesisDao = () => {
     apiConnection.tx?.votes
       ?.setGovernanceMajorityVote?.(
         daoId,
-        VoteDurationBlocks,
+        voteDurationBlocks,
         deposit,
         minimumMajority
       )
@@ -520,18 +544,39 @@ const useGenesisDao = () => {
       });
   };
 
+  const makeMajorityVoteTxn = (
+    txns: any[],
+    daoId: string,
+    voteDurationBlocks: number,
+    deposit: number,
+    minimumMajority: number
+  ) => {
+    return [
+      ...txns,
+      apiConnection.tx?.votes?.setGovernanceMajorityVote?.(
+        daoId,
+        voteDurationBlocks,
+        deposit,
+        minimumMajority
+      ),
+    ];
+  };
+
   return {
     createDao,
     destroyDao,
     issueTokens,
     handleTxnError,
     transfer,
-    sendMultipleTxns,
+    sendBatchTxns,
     makeCreateDaoTxn,
     destroyDaoAndAssets,
     destroyAssetAccounts,
     destroyAssetApprovals,
     setGovernanceMajorityVote,
+    makeIssueTokensTxn,
+    makeBatchTransferTxn,
+    makeMajorityVoteTxn,
   };
 };
 

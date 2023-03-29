@@ -112,7 +112,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
               valueAsNumber: true,
               required: 'Required',
               min: {
-                value: 0.0000000001,
+                value: 0.000001,
                 message: 'The Amount is zero or too small',
               },
             })}

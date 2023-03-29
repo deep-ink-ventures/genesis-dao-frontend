@@ -33,8 +33,9 @@ export interface LogoFormValues {
 }
 
 export interface MajorityModelValues {
+  tokensToIssue: number; // fixme BN
   proposalTokensCost: number;
-  approvalThreshold: number; // percentage or decimals
+  minimumMajority: number; // percentage or decimals
   votingDays: number; // in days
 }
 
@@ -46,8 +47,7 @@ export interface CouncilFormValues {
 }
 
 export interface IssueTokensValues {
-  tokensToIssue: number; // fixme BN
-  tokenRecipients: TokenRecipient[] | null;
+  tokenRecipients: TokenRecipient[];
   treasuryTokens: number;
 }
 
@@ -164,6 +164,7 @@ export interface GenesisState {
   newCreatedDao: DaoInfo | null;
   isStartModalOpen: boolean;
   daoCreationValues: DaoCreationValues;
+  currentAssetId: number | null;
 }
 
 export interface GenesisActions {
@@ -191,6 +192,8 @@ export interface GenesisActions {
   updateNewCreatedDao: (dao: DaoInfo) => void;
   updateIsStartModalOpen: (isStartModalOpen: boolean) => void;
   updateDaoCreationValues: (daoCreationValues: DaoCreationValues) => void;
+  updateCurrentAssetId: (currentAssetId: number) => void;
+  fetchCurrentAssetId: () => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -214,6 +217,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   newCreatedDao: null,
   isStartModalOpen: false,
   daoCreationValues: placeholderValues,
+  currentAssetId: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -253,6 +257,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       set({ createDaoSteps: 2 });
     }
   },
+
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: async () => {
     const apiCon = get().apiConnection;
@@ -322,7 +327,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       .then((data) => {
         const assetData = data.toHuman() as unknown as IncomingTokenBalanceData;
         const balanceStr = assetData.balance.replaceAll(',', '');
-        get().updateCurrentAssetBalance(Number(balanceStr) / 1000000000);
+        get().updateCurrentAssetBalance(Number(balanceStr));
       })
       .catch((err) => {
         get().handleErrors(new Error(err));
@@ -345,6 +350,17 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     set(() => ({ isStartModalOpen })),
   updateDaoCreationValues: (daoCreationValues) =>
     set(() => ({ daoCreationValues })),
+  updateCurrentAssetId: (currentAssetId) =>
+    set(() => ({
+      currentAssetId,
+    })),
+  fetchCurrentAssetId: () => {
+    get()
+      .apiConnection.query.daoCore?.currentAssetId?.()
+      .then((data) => {
+        get().updateCurrentAssetId(Number(data.toHuman()));
+      });
+  },
 }));
 
 export default useGenesisStore;

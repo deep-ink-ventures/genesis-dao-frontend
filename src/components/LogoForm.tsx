@@ -35,6 +35,10 @@ const LogoForm = (props: { daoId: string | null }) => {
     router.push(`dao/${props.daoId}`);
   };
 
+  const handleBack = () => {
+    updateCreateDaoSteps(2);
+  };
+
   return (
     <div className='flex flex-col items-center gap-y-6 px-12'>
       <div>
@@ -116,13 +120,13 @@ const LogoForm = (props: { daoId: string | null }) => {
             </div>
           </div>
           <div className='flex justify-end'>
-            <button className='btn-primary btn mr-3' type='submit'>
+            <button className='btn mr-3 w-48' onClick={handleBack}>
+              Back
+            </button>
+            <button className='btn-primary btn mr-3 w-48' type='submit'>
               Upload and Sign
             </button>
-            <button
-              className='btn mr-4 w-48'
-              type='button'
-              onClick={handleSkip}>
+            <button className='btn w-48' type='button' onClick={handleSkip}>
               Skip
             </button>
           </div>
