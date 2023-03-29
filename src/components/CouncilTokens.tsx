@@ -7,13 +7,24 @@ import type { CouncilTokensValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
-import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
+import {
+  getMultisigAddress,
+  isValidPolkadotAddress,
+  truncateMiddle,
+} from '@/utils';
+
+import useGenesisDao from '../hooks/useGenesisDao';
 
 const CouncilTokens = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
+  const assetId: number | null | undefined = dao?.assetId;
+  const fetchTokenBalance = useGenesisStore((s) => s.fetchTokenBalance);
+  const handleErrors = useGenesisStore((s) => s.handleErrors);
+  const currentAssetBalance = useGenesisStore((s) => s.currentAssetBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const { makeBatchTransferTxn, sendBatchTxns } = useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
 
   const {
@@ -35,7 +46,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
         },
       ],
       councilThreshold: 1,
-      tokensToIssue: 1,
       tokenRecipients: [
         {
           walletAddress: '',
@@ -46,7 +56,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     },
   });
 
-  const watchTokensToIssue = watch('tokensToIssue', 0);
   const tokensValues = useWatch({
     control,
     name: 'tokenRecipients',
@@ -66,7 +75,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     return total;
   };
 
-  const remain = watchTokensToIssue - getTotalRecipientsTokens(tokensValues);
+  const remain = currentAssetBalance
+    ? currentAssetBalance - getTotalRecipientsTokens(tokensValues)
+    : 0;
 
   const {
     fields: councilMembersFields,
@@ -86,9 +97,70 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     name: 'tokenRecipients',
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: CouncilTokensValues) => {
+    const otherAddresses = data.councilMembers.map((el) => {
+      return el.walletAddress;
+    });
+    const addresses = [data.creatorWallet, ...otherAddresses];
+
+    const multisigAddress = getMultisigAddress(
+      addresses,
+      data.councilThreshold
+    );
+
+    if (!currentWalletAccount || !props.daoId || !assetId || !multisigAddress) {
+      return; // fixme. handle errors here
+    }
+
+    const recipients = data.tokenRecipients.map((recipient) => {
+      return {
+        walletAddress: recipient.walletAddress,
+        tokens: Number(recipient.tokens),
+      };
+    });
+
+    const recipientsWithTreasury = [
+      ...recipients,
+      {
+        walletAddress: multisigAddress,
+        tokens: data.treasuryTokens - 2,
+      },
+    ];
+
+    const withRecipients = makeBatchTransferTxn(
+      [],
+      recipientsWithTreasury,
+      Number(assetId)
+    );
+    try {
+      await sendBatchTxns(
+        withRecipients,
+        'Distributed tokens successfully',
+        'Transaction failed',
+        () => {
+          updateCreateDaoSteps(3);
+        }
+      );
+    } catch (err) {
+      handleErrors(err);
+    }
   };
+
+  useEffect(() => {
+    if (currentWalletAccount && assetId) {
+      fetchTokenBalance(assetId, currentWalletAccount.address);
+    }
+  }, [currentWalletAccount, assetId]);
+
+  useEffect(() => {
+    let interval: any;
+    if (currentWalletAccount && assetId) {
+      interval = setInterval(() => {
+        fetchTokenBalance(assetId, currentWalletAccount.address);
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  });
 
   useEffect(() => {
     setValue('treasuryTokens', remain);
@@ -97,7 +169,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      updateCreateDaoSteps(3);
     }
   });
 
@@ -126,6 +197,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   };
 
   const recipientsFields = () => {
+    if (!currentAssetBalance) {
+      return <div className='text-center'>Please issue tokens first</div>;
+    }
     return tokenRecipientsFields.map((item, index) => {
       return (
         <div className='flex' key={item.id} data-k={item.id}>
@@ -175,13 +249,14 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               />
             </div>
             <div className='flex w-[65px] items-center justify-center pt-5'>
-              {(watch(`tokenRecipients.${index}.tokens`) / watchTokensToIssue) *
+              {(watch(`tokenRecipients.${index}.tokens`) /
+                currentAssetBalance) *
                 100 >=
               100
                 ? 'NaN'
                 : (
                     (watch(`tokenRecipients.${index}.tokens`) /
-                      watchTokensToIssue) *
+                      currentAssetBalance) *
                     100
                   ).toFixed(2)}{' '}
               %
@@ -287,7 +362,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       <div>
         <h3 className='text-center text-primary'>{dao?.daoName}</h3>
         <h2 className='text-center text-primary'>
-          Create a Council & Issue DAO Tokens
+          Create a Council & Distribute DAO Tokens
         </h2>
       </div>
       <div className='px-24'>
@@ -387,38 +462,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           </p>
         </div>
         <div className='card mb-5 flex w-full items-center justify-center gap-y-6 border-none py-5 hover:brightness-100'>
-          <div>
-            <div className='mb-2'>
-              <h4 className='text-center'>Issue DAO Tokens</h4>
-              <p className='text-center text-sm'>
-                Your DAO ID <span className='text-primary'>{dao?.daoId}</span>{' '}
-                will be the DAO token symbol
-              </p>
-            </div>
-            <div>
-              <div className='relative'>
-                <input
-                  type='number'
-                  placeholder='0'
-                  className='input-primary input pr-24 text-center'
-                  {...register('tokensToIssue', {
-                    required: 'Required',
-                    min: { value: 1, message: 'Minimum is 1' },
-                  })}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name='tokensToIssue'
-                  render={({ message }) => (
-                    <p className='mt-1 ml-2 text-error'>{message}</p>
-                  )}
-                />
-                <div className='absolute top-3 left-[245px] opacity-70'>
-                  Tokens
-                </div>
-              </div>
-            </div>
-          </div>
           <div className='flex flex-col gap-y-4'>
             <div className='w-full text-center'>
               <h4 className='text-center'>Recipients</h4>
@@ -429,19 +472,21 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             {recipientsFields()}
           </div>
           <div>
-            <button
-              className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
-              type='button'
-              onClick={handleAddRecipient}>
-              <Image
-                src={plus}
-                width={17}
-                height={17}
-                alt='add one'
-                className='mr-2'
-              />
-              Add a Recipient
-            </button>
+            {currentAssetBalance ? (
+              <button
+                className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
+                type='button'
+                onClick={handleAddRecipient}>
+                <Image
+                  src={plus}
+                  width={17}
+                  height={17}
+                  alt='add one'
+                  className='mr-2'
+                />
+                Add a Recipient
+              </button>
+            ) : null}
           </div>
           <div>
             <div className='w-full text-center'>
@@ -465,7 +510,11 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           <button className='btn mr-3 w-48' type='button' onClick={handleBack}>
             Back
           </button>
-          <button className='btn-primary btn mr-3 w-48' type='submit'>
+          <button
+            className={`btn-primary btn mr-3 w-48 ${
+              !currentAssetBalance ? 'btn-disabled' : ''
+            }`}
+            type='submit'>
             Approve and Sign
           </button>
           <button className='btn w-48' type='button' onClick={handleNext}>

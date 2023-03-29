@@ -7,8 +7,6 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { IssueTokensData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
-// fix me after token issue, should go to another page
-
 const IssueTokensForm = (props: { daoId: string }) => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
