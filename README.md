@@ -25,20 +25,18 @@ Most of the transaction actions are in the [`useGenesisDao`](./src/hooks/useGene
 
 ## Installation
 
-1. For now please have a local node running on --dev flag using [GenesisDAO Node](https://github.com/deep-ink-ventures/genesis-dao-node). The preset endpoint is `ws://127.0.0.1:9944`
-
-2. Install node packages
+1. Install node packages
 
 ```
 yarn install
 ```
 
-3. Start dev server 
+2. Start dev server 
 ```
 yarn dev
 ```
 
-4. Now you can open http://localhost:3000 on your browser to see the application.
+3. Now you can open http://localhost:3000 on your browser to see the application.
 
 If you need to change the node endpoint, you can go to the [config](./src/config) folder
 
