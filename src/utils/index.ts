@@ -40,3 +40,43 @@ export const getMultisigAddress = (signerAddresses: string[], threshold: number 
 
   return Ss58Address
 }
+
+export const readFileAsB64 = (file: File) =>{
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const b64 = reader.result?.toString().split(',')[1];
+      if (b64) {
+        resolve(b64);
+      } else {
+        reject(new Error('Failed to convert file to base64'));
+      }
+    };
+    reader.onerror = (error) => {
+      reject(error);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+
+export function hexToBase64(hexStr:string) {
+  let base64 = "";
+  for(let i = 0; i < hexStr.length; i++) {
+    base64 += !(i - 1 & 1) ? String.fromCharCode(parseInt(hexStr.substring(i - 1, i + 1), 16)) : ""
+  }
+  return window.btoa(base64);
+}
+
+export const hex2Base64 = async(hexString : string) => {
+  const base64 = await Buffer.from(hexString, 'hex').toString('base64')
+  return base64
+}
+
+export function toHex(str: string) {
+  var result = '';
+  for (var i=0; i<str.length; i++) {
+    result += str.charCodeAt(i).toString(16);
+  }
+  return result;
+}

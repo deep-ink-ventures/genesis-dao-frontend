@@ -10,10 +10,12 @@ import useGenesisStore from '@/stores/genesisStore';
 const MajorityModel = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
+  const assetId = dao?.assetId;
   const { sendBatchTxns, makeIssueTokensTxn, makeMajorityVoteTxn } =
     useGenesisDao();
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const {
@@ -76,6 +78,12 @@ const MajorityModel = (props: { daoId: string | null }) => {
     }
   });
 
+  useEffect(() => {
+    fetchDaos();
+    if (assetId) {
+      updateCreateDaoSteps(2);
+    }
+  });
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='min-w-full'>
       <div className='card flex w-full items-center justify-center pt-6 hover:border-none hover:brightness-100'>

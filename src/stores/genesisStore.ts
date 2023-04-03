@@ -26,10 +26,11 @@ export interface CouncilTokensValues
 }
 
 export interface LogoFormValues {
-  email?: string | null;
-  shortOverview?: string | null;
-  longDescription?: string | null;
-  logoImage: File | null;
+  email: string;
+  shortOverview: string;
+  longDescription: string;
+  logoImage: FileList;
+  imageString: string;
 }
 
 export interface MajorityModelValues {
@@ -326,7 +327,11 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       .apiConnection.query?.assets?.account?.(assetId, accountId)
       .then((data) => {
         const assetData = data.toHuman() as unknown as IncomingTokenBalanceData;
-        const balanceStr = assetData.balance.replaceAll(',', '');
+        if (assetData === null) {
+          get().updateCurrentAssetBalance(0);
+          return;
+        }
+        const balanceStr = assetData?.balance.replaceAll(',', '');
         get().updateCurrentAssetBalance(Number(balanceStr));
       })
       .catch((err) => {

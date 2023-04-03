@@ -22,7 +22,7 @@ const Customize = () => {
   const display = () => {
     if (!currentWalletAccount?.address) {
       return (
-        <div>
+        <div className='flex flex-col items-center'>
           <p>Please connect wallet to continue customizing {dao?.daoName}</p>
           <WalletConnect text='Connect Wallet To Continue' />
         </div>
@@ -44,7 +44,7 @@ const Customize = () => {
       return <LogoForm daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 4) {
-      return <Congratulations />;
+      return <Congratulations daoId={dao?.daoId || null} />;
     }
     return null;
   };
