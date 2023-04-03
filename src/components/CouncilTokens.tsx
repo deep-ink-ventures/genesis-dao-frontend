@@ -20,6 +20,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const dao = daos?.[props.daoId as string];
   const assetId: number | null | undefined = dao?.assetId;
   const fetchTokenBalance = useGenesisStore((s) => s.fetchTokenBalance);
+  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const currentAssetBalance = useGenesisStore((s) => s.currentAssetBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
@@ -123,7 +124,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       ...recipients,
       {
         walletAddress: multisigAddress,
-        tokens: data.treasuryTokens - 2,
+        tokens: data.treasuryTokens,
       },
     ];
 
@@ -145,6 +146,12 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       handleErrors(err);
     }
   };
+
+  useEffect(() => {
+    if (currentAssetBalance === 0) {
+      updateCreateDaoSteps(3);
+    }
+  });
 
   useEffect(() => {
     if (currentWalletAccount && assetId) {
@@ -446,6 +453,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               {...register('councilThreshold', {
                 required: 'Required',
                 min: { value: 1, message: 'Minimum is 1' },
+                max: {
+                  value: membersCount,
+                  message: 'Cannot exceed # of council members',
+                },
               })}
             />
             <ErrorMessage
@@ -513,9 +524,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           <button
             className={`btn-primary btn mr-3 w-48 ${
               !currentAssetBalance ? 'btn-disabled' : ''
-            }`}
+            } ${txnProcessing ? 'loading' : ''}`}
             type='submit'>
-            Approve and Sign
+            {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
           </button>
           <button className='btn w-48' type='button' onClick={handleNext}>
             Skip

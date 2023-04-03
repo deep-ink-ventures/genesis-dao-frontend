@@ -470,7 +470,7 @@ const useGenesisDao = () => {
     assetId: number
   ): SubmittableExtrinsicFunction<'promise'>[] => {
     const transferTxns = recipients.map((recipient) => {
-      return apiConnection.tx.assets?.transferKeepAlive?.(
+      return apiConnection.tx.assets?.transfer?.(
         Number(assetId),
         recipient.walletAddress,
         Number(recipient.tokens)
@@ -562,6 +562,18 @@ const useGenesisDao = () => {
     ];
   };
 
+  const makeSetMetadataTxn = (
+    txns: any[],
+    daoId: string,
+    meta: string,
+    hash: string
+  ) => {
+    return [
+      ...txns,
+      apiConnection.tx?.daoCore?.setMetadata?.(daoId, meta, hash),
+    ];
+  };
+
   return {
     createDao,
     destroyDao,
@@ -577,6 +589,7 @@ const useGenesisDao = () => {
     makeIssueTokensTxn,
     makeBatchTransferTxn,
     makeMajorityVoteTxn,
+    makeSetMetadataTxn,
   };
 };
 

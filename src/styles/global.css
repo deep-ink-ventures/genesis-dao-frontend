@@ -44,24 +44,24 @@
 
 html {
   font-family: Poppins, sans-serif;
-  @apply text-[16px];
+  @apply md:text-[16px] text-[14px];
 }
 
 h1 {
   /* font-size: 96px; */
-  @apply text-5xl font-semibold;
+  @apply text-3xl md:text-5xl font-semibold;
 }
 
 h2 {
-  @apply  text-4xl font-semibold;
+  @apply  text-2xl md:text-4xl font-semibold;
 }
 
 h3{
-  @apply text-3xl font-semibold;
+  @apply text-xl md:text-3xl font-semibold;
 }
 
 h4 {
-  @apply text-lg font-semibold;
+  @apply text-base md:text-lg font-semibold;
 }
 
 .container {
@@ -126,7 +126,7 @@ h4 {
 }
 
 .file-drop {
-  @apply bg-base-50 w-full min-w-full px-2 py-1 border-neutral focus:outline-neutral-focus border-[1px] rounded-[8px] border-dashed;
+  @apply bg-base-50 w-full min-w-full px-2 py-1 border-neutral focus:outline-neutral-focus border-[1px] rounded-[8px] border-dashed outline-offset-2 hover:outline;
 }
 
 .range::-webkit-slider-thumb {

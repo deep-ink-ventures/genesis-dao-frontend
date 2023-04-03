@@ -32,8 +32,8 @@ const ExploreDaos = () => {
 
   return (
     <div className='container mb-20 flex min-h-[600px] flex-col py-5 px-6'>
-      <div className='flex h-16 justify-between px-2'>
-        <div className='flex items-center'>
+      <div className='mb-5 flex h-16 flex-wrap justify-between px-2 md:mb-0'>
+        <div className='mb-3 flex items-center md:mb-0'>
           <div className='mr-2'>
             <Image src={telescope} width={27} height={28} alt='building' />
           </div>

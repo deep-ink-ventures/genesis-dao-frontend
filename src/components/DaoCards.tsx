@@ -7,7 +7,7 @@ import { truncateMiddle } from '../utils/index';
 const DaoCards = ({ daos }: { daos: DaoInfo[] | null }) => {
   return daos && daos.length > 0 ? (
     <>
-      <div className='mx-auto flex flex-wrap px-2'>
+      <div className='mx-auto flex flex-wrap justify-center  px-2'>
         {daos.map((dao) => {
           return (
             <DaoCard

@@ -17,7 +17,7 @@ const CreateDaoModal = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<CreateDaoData>();
   // fixme need to query wallet balance
-  const [hasTenDots, _setHasTenDots] = useState(true);
+  const [hasTenDots, setHasTenDots] = useState(true);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
@@ -54,6 +54,19 @@ const CreateDaoModal = () => {
     }
   });
 
+  useEffect(() => {
+    if (currentWalletAccount) {
+      fetch(
+        `https://service.genesis-dao.org/accounts/${currentWalletAccount?.address}`
+      ).then(async (data) => {
+        const jsonData = await data.json();
+        const balance = (jsonData.balance.free / 1000000000000).toFixed(0);
+        if (Number(balance) < 10) {
+          setHasTenDots(false);
+        }
+      });
+    }
+  });
   const handleCancel = () => {
     updateIsStartModalOpen(false);
   };

@@ -31,7 +31,7 @@ const MainLayout = (props: IMainProps) => (
     <div className='mx-auto'>
       <div>
         <div className='header'></div>
-        <div className='flex justify-between px-6'>
+        <div className='flex flex-wrap justify-between px-6'>
           <div className='flex justify-center align-middle'>
             <div className='flex items-center justify-center align-middle'>
               <Link href='/'>
@@ -42,7 +42,7 @@ const MainLayout = (props: IMainProps) => (
                   alt='GenesisDAO logo'
                 />
               </Link>
-              <h1 className='m-auto pl-2 text-[24px]'>
+              <h1 className='m-auto pl-2 text-[20px] md:text-[24px]'>
                 <Link href='/'>Genesis DAO</Link>
               </h1>
             </div>
