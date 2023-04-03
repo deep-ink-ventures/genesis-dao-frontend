@@ -104,7 +104,7 @@ const Index = () => {
                 </li>
               </ul>
             </div>
-            <div className='absolute z-[-20] opacity-50 mix-blend-soft-light'>
+            <div className='absolute z-[-20] hidden opacity-50 mix-blend-soft-light md:block'>
               <Image src={circleBG} alt='circle bg' height={459} width={598} />
             </div>
           </div>
