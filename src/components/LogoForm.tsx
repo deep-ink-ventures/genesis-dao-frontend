@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import useGenesisDao from '@/hooks/useGenesisDao';
 import type { LogoFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
@@ -32,16 +33,14 @@ const LogoForm = (props: { daoId: string | null }) => {
   });
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
-  // const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
-  // const { makeSetMetadataTxn, sendBatchTxns } = useGenesisDao();
+  const { makeSetMetadataTxn, sendBatchTxns } = useGenesisDao();
 
   const onSubmit = async (data: LogoFormValues) => {
-    if (!data.logoImage[0]) {
+    if (!data.logoImage[0] || !props.daoId) {
       return;
     }
-    console.log(data);
     const jsonData = JSON.stringify({
       email: data.email,
       description_short: data.shortOverview,
@@ -59,13 +58,10 @@ const LogoForm = (props: { daoId: string | null }) => {
         data: stringToHex(challengeString.challenge),
         type: 'bytes',
       });
-      console.log('signed string', signerResult?.signature);
       if (!signerResult) {
         return;
       }
-      const base64Signature = hexToBase64(signerResult.signature);
-      console.log('base 64', base64Signature);
-      // post request
+      const base64Signature = hexToBase64(signerResult.signature.substring(2));
       const metadataResponse = await fetch(
         `https://service.genesis-dao.org/daos/${props.daoId}/metadata/`,
         {
@@ -78,17 +74,23 @@ const LogoForm = (props: { daoId: string | null }) => {
         }
       );
 
-      // const metadata = await metadataResponse.json()
-
-      console.log('metadata response', metadataResponse);
-      // set metaData url on chain
-
-      // const txns = makeSetMetadataTxn([], props.daoId, metadata.metadata_url, metadata.metadata_hash)
-      // await sendBatchTxns(txns, 'Set metadata successfully', 'Transaction failed', () => {
-      //   updateCreateDaoSteps(5)
-      // })
+      const metadata = await metadataResponse.json();
+      const txns = makeSetMetadataTxn(
+        [],
+        props.daoId,
+        metadata.metadata_url,
+        metadata.metadata_hash
+      );
+      await sendBatchTxns(
+        txns,
+        'Set metadata successfully',
+        'Transaction failed',
+        () => {
+          updateCreateDaoSteps(4);
+        }
+      );
     } catch (err) {
-      console.log(err);
+      handleErrors(err);
     }
   };
 
@@ -113,7 +115,7 @@ const LogoForm = (props: { daoId: string | null }) => {
   });
 
   const handleSkip = () => {
-    router.push(`dao/${props.daoId}`);
+    router.push(`/dao/${props.daoId}`);
   };
 
   const handleBack = () => {

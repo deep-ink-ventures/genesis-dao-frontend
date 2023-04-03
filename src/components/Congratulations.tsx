@@ -1,10 +1,16 @@
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 import useGenesisStore from '@/stores/genesisStore';
 import congratsImage from '@/svg/congrats.svg';
 
-const Congratulations = () => {
+const Congratulations = (props: { daoId: string | null }) => {
   const daoCreationValues = useGenesisStore((s) => s.daoCreationValues);
+  const router = useRouter();
+
+  const handleDashboard = () => {
+    router.push(`/dao/${props.daoId}`);
+  };
 
   return (
     <div className='flex flex-col items-center'>
@@ -24,11 +30,10 @@ const Congratulations = () => {
           <span className='text-lg font-bold'>{daoCreationValues.daoName}</span>{' '}
           has been successfully set up!
         </p>
-        <p>You may now release it to the council.</p>
       </div>
       <div>
-        <button className='btn-primary btn'>
-          Transfer DAO ownership to the council
+        <button className='btn-primary btn' onClick={handleDashboard}>
+          Return to DAO dashboard
         </button>
       </div>
     </div>

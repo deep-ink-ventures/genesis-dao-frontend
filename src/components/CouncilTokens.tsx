@@ -157,7 +157,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     if (currentWalletAccount && assetId) {
       fetchTokenBalance(assetId, currentWalletAccount.address);
     }
-  }, [currentWalletAccount, assetId]);
+  }, [currentWalletAccount, assetId, fetchTokenBalance]);
 
   useEffect(() => {
     let interval: any;
