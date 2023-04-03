@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import useGenesisDao from '@/hooks/useGenesisDao';
 import type { LogoFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
@@ -33,10 +32,10 @@ const LogoForm = (props: { daoId: string | null }) => {
   });
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
-  const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  // const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const { makeSetMetadataTxn, sendBatchTxns } = useGenesisDao();
+  // const { makeSetMetadataTxn, sendBatchTxns } = useGenesisDao();
 
   const onSubmit = async (data: LogoFormValues) => {
     if (!data.logoImage[0]) {
