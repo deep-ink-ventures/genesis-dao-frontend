@@ -38,7 +38,7 @@ const Index = () => {
             </h1>
           </div>
           <div className='my-4 flex flex-wrap items-center justify-center py-4 text-center md:justify-between md:px-10'>
-            <div className='container h-[156px] w-[180px] py-2 md:max-w-[272px]'>
+            <div className='container h-[156px] max-w-[180px] py-2 md:max-w-[272px]'>
               <h4 className='m-2'>NO-CODE DAO SETUP</h4>
               <h2 className='mb-2'>200</h2>
               <p className='font-medium text-primary'>TOTAL DAO CREATED</p>
@@ -62,7 +62,7 @@ const Index = () => {
         </div>
         <div className='container mb-8 flex min-h-[400px] flex-wrap justify-around md:flex-nowrap'>
           <div className='flex min-w-[50%] flex-auto flex-col items-center text-center'>
-            <div className='mx-10 mb-5 px-28'>
+            <div className='mx-10 mb-5 px-14 md:px-28'>
               <h4 className='mt-6'>
                 Step into the future of Governance with DAO
               </h4>
@@ -119,7 +119,7 @@ const Index = () => {
                 processes
               </p>
             </div>
-            <div>
+            <div className='my-3 md:my-0'>
               {currentWalletAccount ? (
                 <button className='btn-primary btn' onClick={handleStartModal}>
                   Create a New DAO
