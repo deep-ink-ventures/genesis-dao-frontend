@@ -144,6 +144,7 @@ h4 {
   background: radial-gradient(62.47% 65.01% at 64.05% 109.82%, rgba(163, 230, 53, 0.343) 0%, rgba(163, 230, 53, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
   filter: blur(100px);
   z-index: -96;
+  @apply md:block hidden
 }
 
 .blur1 {
@@ -157,6 +158,8 @@ h4 {
   filter: blur(100px);
   transform: rotate(-28.34deg);
   z-index: -50;
+  @apply md:block hidden
+
 }
 
 .blur2 {
@@ -169,6 +172,8 @@ h4 {
   background: radial-gradient(62.47% 65.01% at 64.05% 109.82%, rgba(163, 230, 53, 0.343) 0%, rgba(163, 230, 53, 0) 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
   filter: blur(100px);
   z-index: -100;
+  @apply md:block hidden
+
 }
 
 /* .ant-modal {
