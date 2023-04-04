@@ -67,16 +67,3 @@ export function hexToBase64(hexStr:string) {
   }
   return window.btoa(base64);
 }
-
-export const hex2Base64 = async(hexString : string) => {
-  const base64 = await Buffer.from(hexString, 'hex').toString('base64')
-  return base64
-}
-
-export function toHex(str: string) {
-  var result = '';
-  for (var i=0; i<str.length; i++) {
-    result += str.charCodeAt(i).toString(16);
-  }
-  return result;
-}

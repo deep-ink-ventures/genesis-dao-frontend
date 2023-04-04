@@ -1,7 +1,6 @@
 import { ErrorMessage } from '@hookform/error-message';
 import { stringToHex } from '@polkadot/util';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -12,7 +11,6 @@ import upload from '@/svg/upload.svg';
 import { hexToBase64, readFileAsB64 } from '@/utils';
 
 const LogoForm = (props: { daoId: string | null }) => {
-  const router = useRouter();
   const daos = useGenesisStore((s) => s.daos);
   const dao = daos?.[props.daoId as string];
   const [daoLogo, setDaoLogo] = useState(null);
@@ -86,7 +84,7 @@ const LogoForm = (props: { daoId: string | null }) => {
         'Set metadata successfully',
         'Transaction failed',
         () => {
-          updateCreateDaoSteps(4);
+          updateCreateDaoSteps(2);
         }
       );
     } catch (err) {
@@ -114,20 +112,12 @@ const LogoForm = (props: { daoId: string | null }) => {
     }
   });
 
-  const handleSkip = () => {
-    router.push(`/dao/${props.daoId}`);
-  };
-
-  const handleBack = () => {
-    updateCreateDaoSteps(2);
-  };
-
   return (
     <div className='flex flex-col items-center gap-y-6 px-12'>
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='80'
+          value='25'
           max='100'></progress>
       </div>
       <div className='text-center'>
@@ -218,18 +208,12 @@ const LogoForm = (props: { daoId: string | null }) => {
             </div>
           </div>
           <div className='flex justify-end'>
-            <button className='btn mr-3 w-48' onClick={handleBack}>
-              Back
-            </button>
             <button
               className={`btn-primary btn mr-3 w-48 ${
                 txnProcessing ? 'loading' : ''
               }`}
               type='submit'>
               {`${txnProcessing ? 'Processing' : 'Upload and Sign'}`}
-            </button>
-            <button className='btn w-48' type='button' onClick={handleSkip}>
-              Skip
             </button>
           </div>
         </form>

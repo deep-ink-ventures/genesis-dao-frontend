@@ -35,10 +35,6 @@ const MajorityModel = (props: { daoId: string | null }) => {
 
   const watchMinimumMajority = watch('minimumMajority');
 
-  const handleSkip = () => {
-    updateCreateDaoSteps(2);
-  };
-
   const onSubmit: SubmitHandler<MajorityModelValues> = async (
     data: MajorityModelValues
   ) => {
@@ -64,7 +60,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
         'Issue tokens & set governance model successfully',
         'Transaction Failed',
         () => {
-          updateCreateDaoSteps(2);
+          updateCreateDaoSteps(3);
         }
       );
     } catch (err) {
@@ -221,12 +217,6 @@ const MajorityModel = (props: { daoId: string | null }) => {
           }`}
           type='submit'>
           {txnProcessing ? 'Processing' : 'Submit and Sign'}
-        </button>
-        <button
-          className={`btn w-48 ${txnProcessing ? 'btn-disabled' : null}`}
-          type='button'
-          onClick={handleSkip}>
-          Skip
         </button>
       </div>
     </form>
