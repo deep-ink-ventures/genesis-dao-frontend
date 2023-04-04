@@ -2,8 +2,6 @@ import { useState } from 'react';
 
 import useGenesisStore from '@/stores/genesisStore';
 
-// import Image from 'next/image'
-// import diamond from '../../public/images/diamond-shape.png'
 import CustomizedModel from './CustomizedModel';
 import MajorityModel from './MajorityModel';
 
@@ -22,16 +20,12 @@ const GovernanceForm = (props: { daoId: string | null }) => {
     }
   };
 
-  // const handleNext = () => {
-  //   updateCreateDaoSteps(3)
-  // }
-
   return (
     <div className='flex flex-col items-center gap-y-6 '>
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='15'
+          value='50'
           max='100'></progress>
       </div>
       <div className='text-center'>
@@ -41,7 +35,6 @@ const GovernanceForm = (props: { daoId: string | null }) => {
         </p>
       </div>
       <div className='flex justify-evenly gap-x-3'>
-        {/* <Image src={diamond} width={44} height={44} alt='diamond shape' className='absolute'/> */}
         <div
           className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center  hover:cursor-pointer ${
             model === 'majority'
@@ -54,7 +47,7 @@ const GovernanceForm = (props: { daoId: string | null }) => {
           Majority Vote
         </div>
         <div className='relative'>
-          <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black '>
+          <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
             Coming Soon!
           </div>
           <div className='card flex h-[110px] w-[170px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'>

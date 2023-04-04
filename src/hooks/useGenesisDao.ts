@@ -574,6 +574,17 @@ const useGenesisDao = () => {
     ];
   };
 
+  const makeChangeOwnerTxns = (
+    txns: any[],
+    daoId: string,
+    newOwnerAddress: string
+  ) => {
+    return [
+      ...txns,
+      apiConnection.tx?.daoCore?.changeOwner?.(daoId, newOwnerAddress),
+    ];
+  };
+
   return {
     createDao,
     destroyDao,
@@ -590,6 +601,7 @@ const useGenesisDao = () => {
     makeBatchTransferTxn,
     makeMajorityVoteTxn,
     makeSetMetadataTxn,
+    makeChangeOwnerTxns,
   };
 };
 

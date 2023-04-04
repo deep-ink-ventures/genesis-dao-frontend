@@ -5,8 +5,9 @@ import useGenesisStore from '@/stores/genesisStore';
 import congratsImage from '@/svg/congrats.svg';
 
 const Congratulations = (props: { daoId: string | null }) => {
-  const daoCreationValues = useGenesisStore((s) => s.daoCreationValues);
   const router = useRouter();
+  const daos = useGenesisStore((s) => s.daos);
+  const dao = daos?.[props.daoId as string];
 
   const handleDashboard = () => {
     router.push(`/dao/${props.daoId}`);
@@ -27,8 +28,8 @@ const Congratulations = (props: { daoId: string | null }) => {
       <div className='mb-5 text-center'>
         <h2 className='font-semibold text-primary'>Congratulations!</h2>
         <p>
-          <span className='text-lg font-bold'>{daoCreationValues.daoName}</span>{' '}
-          has been successfully set up!
+          <span className='text-lg font-bold'>{dao?.daoName}</span> has been
+          successfully set up!
         </p>
       </div>
       <div>

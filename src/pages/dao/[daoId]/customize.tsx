@@ -35,13 +35,13 @@ const Customize = () => {
       </div>;
     }
     if (createDaoSteps === 1) {
-      return <GovernanceForm daoId={dao?.daoId || null} />;
+      return <LogoForm daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 2) {
-      return <CouncilTokens daoId={dao?.daoId || null} />;
+      return <GovernanceForm daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 3) {
-      return <LogoForm daoId={dao?.daoId || null} />;
+      return <CouncilTokens daoId={dao?.daoId || null} />;
     }
     if (createDaoSteps === 4) {
       return <Congratulations daoId={dao?.daoId || null} />;

@@ -19,7 +19,6 @@ const CustomizedModel = () => {
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
-      // fixme
       updateCreateDaoSteps(3);
     }
   });

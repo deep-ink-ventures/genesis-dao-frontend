@@ -25,7 +25,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const currentAssetBalance = useGenesisStore((s) => s.currentAssetBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
-  const { makeBatchTransferTxn, sendBatchTxns } = useGenesisDao();
+  const { makeBatchTransferTxn, sendBatchTxns, makeChangeOwnerTxns } =
+    useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
 
   const {
@@ -133,13 +134,20 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       recipientsWithTreasury,
       Number(assetId)
     );
+
+    const withChangeOwner = makeChangeOwnerTxns(
+      withRecipients,
+      props.daoId,
+      multisigAddress
+    );
+
     try {
       await sendBatchTxns(
-        withRecipients,
-        'Distributed tokens successfully',
+        withChangeOwner,
+        'Tokens Issued and Transferred DAO Ownership!',
         'Transaction failed',
         () => {
-          updateCreateDaoSteps(3);
+          updateCreateDaoSteps(4);
         }
       );
     } catch (err) {
@@ -147,11 +155,11 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     }
   };
 
-  useEffect(() => {
-    if (currentAssetBalance === 0) {
-      updateCreateDaoSteps(3);
-    }
-  });
+  // useEffect(() => {
+  //   if (dao?.owner !== currentWalletAccount?.address) {
+  //     updateCreateDaoSteps(4)
+  //   }
+  // });
 
   useEffect(() => {
     if (currentWalletAccount && assetId) {
@@ -179,10 +187,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     }
   });
 
-  const handleBack = () => {
-    updateCreateDaoSteps(1);
-  };
-
   const handleAddMember = () => {
     const newCount = membersCount + 1;
     setMembersCount(newCount);
@@ -197,10 +201,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       walletAddress: '',
       tokens: 0,
     });
-  };
-
-  const handleNext = () => {
-    updateCreateDaoSteps(3);
   };
 
   const recipientsFields = () => {
@@ -362,7 +362,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
-          value='35'
+          value='75'
           max='100'
         />
       </div>
@@ -518,18 +518,12 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           </div>
         </div>
         <div className='mt-6 flex w-full justify-end'>
-          <button className='btn mr-3 w-48' type='button' onClick={handleBack}>
-            Back
-          </button>
           <button
             className={`btn-primary btn mr-3 w-48 ${
               !currentAssetBalance ? 'btn-disabled' : ''
             } ${txnProcessing ? 'loading' : ''}`}
             type='submit'>
             {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
-          </button>
-          <button className='btn w-48' type='button' onClick={handleNext}>
-            Skip
           </button>
         </div>
       </form>
