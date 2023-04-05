@@ -10,12 +10,6 @@ const ExploreDaos = () => {
   const exploreDaos = useGenesisStore((s) => s.exploreDaos);
   const fetchDaosFromDB = useGenesisStore((s) => s.fetchDaosFromDB);
 
-  // useEffect(() => {
-  //   console.log('fetch daos')
-  //   fetchDaosFromDB()
-  //   // eslint-disable-next-line
-  // },[])
-
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchDaosFromDB();
@@ -23,13 +17,6 @@ const ExploreDaos = () => {
     return () => clearTimeout(timer);
     // eslint-disable-next-line
   }, []);
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     fetchDaosFromDB()
-  //   }, 20000);
-  //   return () => clearInterval(interval);
-  // },[]);
 
   return (
     <div className='container mb-20 flex min-h-[600px] flex-col py-5 px-6'>

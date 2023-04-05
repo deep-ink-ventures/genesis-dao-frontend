@@ -13,6 +13,7 @@ const CustomizedModel = () => {
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
 
   const onSubmit = (data: any) => {
+    // eslint-disable-next-line
     console.log(data);
   };
 
