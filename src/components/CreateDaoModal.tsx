@@ -16,7 +16,6 @@ const CreateDaoModal = () => {
     watch,
     formState: { errors, isSubmitSuccessful },
   } = useForm<CreateDaoData>();
-  // fixme need to query wallet balance
   const [hasTenDots, setHasTenDots] = useState<boolean | null>(null);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
@@ -63,7 +62,7 @@ const CreateDaoModal = () => {
       ).then(async (data) => {
         let balance = '0';
         const jsonData = await data.json();
-        if (jsonData.balance.free) {
+        if (jsonData?.balance?.free) {
           balance = (jsonData.balance.free / 1000000000000).toFixed(0);
         }
         if (Number(balance) < 10) {

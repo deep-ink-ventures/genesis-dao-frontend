@@ -1,5 +1,6 @@
 import {
   getMultisigAddress,
+  hexToBase64,
   isValidPolkadotAddress,
   truncateMiddle,
 } from '../src/utils';
@@ -40,6 +41,15 @@ describe('Utils', () => {
 
     test('correct address', () => {
       expect(generatedAddress === correctMultisig).toBeTruthy();
+    });
+  });
+
+  describe('hexToBase64 can transform a hex string to base 64 string', () => {
+    const hexString = '3d89ee71a7e17d160a12bc0e04d8ee9e';
+    const base64String = 'PYnucafhfRYKErwOBNjung==';
+
+    test('correct address', () => {
+      expect(hexToBase64(hexString) === base64String).toBeTruthy();
     });
   });
 });

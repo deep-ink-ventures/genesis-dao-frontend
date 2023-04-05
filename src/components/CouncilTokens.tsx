@@ -111,7 +111,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     );
 
     if (!currentWalletAccount || !props.daoId || !assetId || !multisigAddress) {
-      return; // fixme. handle errors here
+      handleErrors(
+        `Sorry we've run into some issues related to the multisig account`
+      );
+      return;
     }
 
     const recipients = data.tokenRecipients.map((recipient) => {
@@ -154,12 +157,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       handleErrors(err);
     }
   };
-
-  // useEffect(() => {
-  //   if (dao?.owner !== currentWalletAccount?.address) {
-  //     updateCreateDaoSteps(4)
-  //   }
-  // });
 
   useEffect(() => {
     if (currentWalletAccount && assetId) {

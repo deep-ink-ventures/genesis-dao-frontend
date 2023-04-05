@@ -278,7 +278,16 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     set({ txnNotifications: newNotis });
     // fixme don't use global scroll?
     // eslint-disable-next-line
-    scroll(0, 0);
+    // window.scroll(0, 0);
+    // $('html, body').animate({ scrollTop: 0 }, 'fast');
+    // const isBrowser = () => typeof window !== 'undefined'; // The approach recommended by Next.js
+
+    // const scrollToTop = () => {
+    //   if (!isBrowser()) return;
+    //   window.scrollTo({ top: 0, behavior: 'smooth' });
+    // };
+    // scrollToTop();
+    // window.scrollTo(0, 0)
   },
   removeTxnNotification: () => {
     // first in first out
@@ -323,7 +332,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         'https://service.genesis-dao.org/daos/?order_by=id&limit=50'
       );
       const daosRes = await getDaosResponse.json();
-      // console.log('daos from db', daosRes.results)
       const daosArr = daosRes.results;
       const newDaos = daosArr?.map((dao: any) => {
         return {
@@ -334,7 +342,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       });
       set({ exploreDaos: newDaos });
     } catch (err) {
-      console.log(err);
       get().handleErrors(err);
     }
   },
@@ -392,7 +399,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       });
   },
   handleErrors: (err: Error | string) => {
-    console.log('err type', typeof err);
     let message: string;
     if (typeof err === 'object') {
       message = err.message;

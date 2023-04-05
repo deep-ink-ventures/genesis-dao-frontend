@@ -52,7 +52,6 @@ const LogoForm = (props: { daoId: string | null }) => {
       );
       const challengeString = await challengeRes.json();
       if (!challengeString.challenge) {
-        console.log('Not able to validate ownership');
         handleErrors('Not able to validate ownership');
         return;
       }
@@ -63,7 +62,6 @@ const LogoForm = (props: { daoId: string | null }) => {
       });
 
       if (!signerResult) {
-        console.log('Not able to validate ownership');
         handleErrors('Not able to validate ownership');
         return;
       }

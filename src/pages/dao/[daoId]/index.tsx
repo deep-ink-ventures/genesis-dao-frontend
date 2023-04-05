@@ -75,7 +75,6 @@ const DaoHome = () => {
 
         if (d.metadata_url) {
           const jsonResponse = await fetch(d.metadata_url);
-          console.log('json reponse', jsonResponse);
           const m = await jsonResponse.json();
           daoDetail.descriptionShort = m.description_short;
           daoDetail.descriptionLong = m.description_long;
@@ -86,17 +85,14 @@ const DaoHome = () => {
           daoDetail.images.large = m.images.logo.large.url;
         }
 
-        console.log('daoDetail', daoDetail);
         setCurrentDao(daoDetail);
       } catch (err) {
-        console.log(err);
         handleErrors(err);
       }
     })();
-  }, [daoId]);
+  }, [daoId, handleErrors]);
 
   const displayImage = () => {
-    console.log('image medium', currentDao?.images.medium);
     if (!currentDao || !currentDao.images.medium) {
       return (
         <div className='relative flex items-center justify-center'>
@@ -188,77 +184,5 @@ const DaoHome = () => {
     </MainLayout>
   );
 };
-
-// export async function getStaticProps({ params } :any) {
-//   const router = useRouter();
-//   const { daoId } = router.query;
-
-//   try {
-//     const response = await fetch(`https://service.genesis-dao.org/daos/${params.daoId}/`)
-//     console.log(response)
-//     const d = await response.json()
-//     const jsonResponse = await fetch(d.metadata_url)
-//     const m = await jsonResponse.json()
-//     const daoDetail = {
-//       daoId: d.id,
-//       daoName: d.name,
-//       daoOwnerAddress: d.owner_id,
-//       daoAssetId: d.asset_id,
-//       metadataUrl: d.metadata_url,
-//       metadataHash: d.metadata_hash,
-//       descriptionShort: m.description_short,
-//       descriptionLong: m.description_long,
-//       email: m.email,
-//       images: {
-//         contentType: m.images.content_type,
-//         small: m.images.small.url,
-//         medium: m.images.medium.url,
-//         large: m.images.large.url
-//       }
-//     }
-//     return {
-//       props: {
-//         daoDetail,
-//       }
-//     }
-//   } catch(err) {
-//     console.log(err)
-//     // handleErrors(err)
-//     return {
-//       props: {
-//         daoDetail: null
-//       }
-//     }
-//   }
-// }
-
-// export async function getStaticPaths() {
-
-//   try {
-//     const getDaosResponse = await fetch('https://service.genesis-dao.org/daos/?order_by=id&limit=50')
-//     const daosRes = await getDaosResponse.json();
-//     // console.log('daos from db', daosRes.results)
-//     const daosArr = daosRes.results;
-//     const newDaos =  daosArr?.map((dao: any) => {
-//       return {
-//         daoId: dao.id,
-//         daoName: dao.name,
-//         daoOwnerAddress: dao.owner_id,
-//       };
-//     })
-//     return newDaos.map((dao: any) => {
-//       return {
-//         params:{
-//           daoId: dao.daoId
-//         },
-//         fallback: false
-//       }
-//     })
-//   } catch(err) {
-//     console.log(err)
-//     // handleErrors(err)
-//     return
-//   }
-// }
 
 export default DaoHome;

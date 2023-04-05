@@ -16,6 +16,7 @@ const useGenesisDao = () => {
   const router = useRouter();
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  const handleErrors = useGenesisStore((s) => s.handleErrors);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
@@ -155,7 +156,7 @@ const useGenesisDao = () => {
     } else {
       // fixme
       // eslint-disable-next-line
-      console.log('wallet does not have a signer');
+      handleErrors('wallet does not have a signer');
     }
   };
 
@@ -190,9 +191,7 @@ const useGenesisDao = () => {
           handleTxnError(new Error(err));
         });
     } else {
-      // fixme
-      // eslint-disable-next-line
-      console.log('wallet does not have a signer');
+      handleErrors('wallet does not have a signer');
     }
   };
 
@@ -399,8 +398,7 @@ const useGenesisDao = () => {
           handleTxnError(new Error(err));
         });
     } else {
-      // eslint-disable-next-line
-      console.log('wallet does not have a signer');
+      handleErrors('wallet does not have a signer');
     }
   };
 
@@ -430,9 +428,7 @@ const useGenesisDao = () => {
           handleTxnError(new Error(err));
         });
     } else {
-      // fixme
-      // eslint-disable-next-line
-      console.log('no signer')
+      handleErrors('no signer');
     }
   };
 
