@@ -18,7 +18,6 @@ const useGenesisDao = () => {
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
-  const updateNewCreatedDao = useGenesisStore((s) => s.updateNewCreatedDao);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
@@ -147,13 +146,6 @@ const useGenesisDao = () => {
               }
             );
             fetchDaos();
-            updateNewCreatedDao({
-              daoId,
-              daoName,
-              owner: walletAccount.address,
-              assetId: null,
-              owned: true,
-            });
           }
         )
         .catch((err) => {

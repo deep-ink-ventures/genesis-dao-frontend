@@ -1,10 +1,10 @@
 import DaoCard from '@/components/DaoCard';
 import Spinner from '@/components/Spinner';
 
-import type { DaoInfo } from '../stores/genesisStore';
+import type { BasicDaoInfo } from '../stores/genesisStore';
 import { truncateMiddle } from '../utils/index';
 
-const DaoCards = ({ daos }: { daos: DaoInfo[] | null }) => {
+const DaoCards = ({ daos }: { daos: BasicDaoInfo[] | null }) => {
   return daos && daos.length > 0 ? (
     <>
       <div className='mx-auto flex flex-wrap justify-center  px-2'>
@@ -14,9 +14,7 @@ const DaoCards = ({ daos }: { daos: DaoInfo[] | null }) => {
               key={dao.daoId}
               daoId={dao.daoId}
               daoName={dao.daoName}
-              assetId={dao.assetId}
-              owner={truncateMiddle(dao.owner)}
-              owned={dao.owned}
+              owner={truncateMiddle(dao.daoOwnerAddress)}
             />
           );
         })}

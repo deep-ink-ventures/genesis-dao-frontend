@@ -51,14 +51,23 @@ const LogoForm = (props: { daoId: string | null }) => {
         `https://service.genesis-dao.org/daos/${props.daoId}/challenge/`
       );
       const challengeString = await challengeRes.json();
+      if (!challengeString.challenge) {
+        console.log('Not able to validate ownership');
+        handleErrors('Not able to validate ownership');
+        return;
+      }
       const signerResult = await currentWalletAccount?.signer?.signRaw?.({
         address: currentWalletAccount.address,
         data: stringToHex(challengeString.challenge),
         type: 'bytes',
       });
+
       if (!signerResult) {
+        console.log('Not able to validate ownership');
+        handleErrors('Not able to validate ownership');
         return;
       }
+
       const base64Signature = hexToBase64(signerResult.signature.substring(2));
       const metadataResponse = await fetch(
         `https://service.genesis-dao.org/daos/${props.daoId}/metadata/`,
@@ -73,6 +82,9 @@ const LogoForm = (props: { daoId: string | null }) => {
       );
 
       const metadata = await metadataResponse.json();
+      if (!metadata.metadata_url) {
+        return;
+      }
       const txns = makeSetMetadataTxn(
         [],
         props.daoId,
@@ -121,7 +133,9 @@ const LogoForm = (props: { daoId: string | null }) => {
           max='100'></progress>
       </div>
       <div className='text-center'>
-        <h2 className='text-primary'>{dao?.daoName} Logo And Design</h2>
+        <h2 className='text-primary' data-testid='daoName'>
+          {dao?.daoName} Logo And DAO Details
+        </h2>
         <p className='px-24'>
           {`Add a logo and describe in a short way what your DAO is all about.
             If you don't have a logo yet, just skip that and come back to it once 

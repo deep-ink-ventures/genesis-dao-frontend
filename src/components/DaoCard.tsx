@@ -8,8 +8,6 @@ interface DaoCardProps {
   daoId: string;
   daoName: string;
   owner: string;
-  assetId: number | null;
-  owned: boolean;
 }
 
 const DaoCard = (props: DaoCardProps) => {
@@ -34,7 +32,10 @@ const DaoCard = (props: DaoCardProps) => {
             </div>
           </div>
           <div className='md:overflow-visible'>
-            <h4 className='z-10 text-base-content mix-blend-normal'>
+            <h4
+              className={`z-10 inline-block w-[150px] truncate text-base-content mix-blend-normal ${
+                props.daoName.length > 20 ? 'text-sm' : ''
+              }`}>
               {props.daoName}
             </h4>
             <p className='text-sm text-accent'>{`DAO ID: ${props.daoId}`}</p>

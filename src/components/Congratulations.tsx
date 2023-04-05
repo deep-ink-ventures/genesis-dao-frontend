@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import useGenesisStore from '@/stores/genesisStore';
 import congratsImage from '@/svg/congrats.svg';
@@ -7,11 +8,21 @@ import congratsImage from '@/svg/congrats.svg';
 const Congratulations = (props: { daoId: string | null }) => {
   const router = useRouter();
   const daos = useGenesisStore((s) => s.daos);
+  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const dao = daos?.[props.daoId as string];
 
   const handleDashboard = () => {
     router.push(`/dao/${props.daoId}`);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateCreateDaoSteps(1);
+      router.push(`/dao/${props.daoId}`);
+    }, 5000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div className='flex flex-col items-center'>
