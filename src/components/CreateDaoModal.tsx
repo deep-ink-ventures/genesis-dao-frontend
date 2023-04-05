@@ -17,14 +17,14 @@ const CreateDaoModal = () => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<CreateDaoData>();
   // fixme need to query wallet balance
-  const [hasTenDots, setHasTenDots] = useState(true);
+  const [hasTenDots, setHasTenDots] = useState<boolean | null>(null);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const { createDao } = useGenesisDao();
-  const addOneDao = useGenesisStore((s) => s.addOneDao);
   const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  const fetchDaosFromDB = useGenesisStore((s) => s.fetchDaosFromDB);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
 
   const updateIsStartModalOpen = useGenesisStore(
@@ -41,7 +41,7 @@ const CreateDaoModal = () => {
     if (currentWalletAccount) {
       try {
         await createDao(currentWalletAccount, data);
-        addOneDao(data);
+        await fetchDaosFromDB();
       } catch (err) {
         handleErrors(new Error(err));
       }
@@ -55,14 +55,21 @@ const CreateDaoModal = () => {
   });
 
   useEffect(() => {
-    if (currentWalletAccount) {
+    if (currentWalletAccount && hasTenDots === null) {
       fetch(
-        `https://service.genesis-dao.org/accounts/${currentWalletAccount?.address}`
+        `https://service.genesis-dao.org/accounts/${encodeURIComponent(
+          currentWalletAccount?.address
+        )}`
       ).then(async (data) => {
+        let balance = '0';
         const jsonData = await data.json();
-        const balance = (jsonData.balance.free / 1000000000000).toFixed(0);
+        if (jsonData.balance.free) {
+          balance = (jsonData.balance.free / 1000000000000).toFixed(0);
+        }
         if (Number(balance) < 10) {
           setHasTenDots(false);
+        } else {
+          setHasTenDots(true);
         }
       });
     }
@@ -71,7 +78,7 @@ const CreateDaoModal = () => {
     updateIsStartModalOpen(false);
   };
 
-  const alert = (hasTenDot: boolean) => {
+  const alert = (hasTenDot: boolean | null) => {
     if (hasTenDot) {
       return (
         <div className='alert alert-info shadow-lg'>
@@ -130,7 +137,8 @@ const CreateDaoModal = () => {
         className='a-modal'
         onCancel={handleCancel}
         footer={null}
-        width={615}>
+        width={615}
+        zIndex={99}>
         <div className='flex flex-col items-center gap-y-6 px-16'>
           <div className='text-center'>
             <h2 className='text-primary'>{`Let's get started!`}</h2>

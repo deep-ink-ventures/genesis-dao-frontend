@@ -9,6 +9,30 @@ import placeholderValues from './placeholderValues';
 
 // ALL TYPES and INTERFACES...
 
+export interface DaoDetail {
+  daoId: string;
+  daoName: string;
+  daoOwnerAddress: string;
+  daoAssetId: number | null;
+  metadataUrl: string | null;
+  metadataHash: string | null;
+  descriptionShort: string | null;
+  descriptionLong: string | null;
+  email: string | null;
+  images: {
+    contentType: string | null;
+    small: string | null;
+    medium: string | null;
+    large: string | null;
+  };
+}
+
+export interface BasicDaoInfo {
+  daoId: string;
+  daoName: string;
+  daoOwnerAddress: string;
+}
+
 export interface CouncilMember {
   name: string;
   walletAddress: string;
@@ -116,6 +140,8 @@ export interface IncomingDaoInfo {
   name: string;
   owner: string;
   assetId: number;
+  meta: string;
+  metaHash: string;
 }
 
 export interface CreateDaoData {
@@ -141,7 +167,19 @@ export interface DaoInfo {
   daoId: string;
   daoName: string;
   owner: string;
-  owned: boolean;
+  metaUrl: string | null;
+  metaHash: string | null;
+  descriptionShort: string | null;
+  descriptionLong: string | null;
+  email: string | null;
+  images: null | {
+    logo: {
+      contentType: string;
+      small: string;
+      medium: string;
+      large: string;
+    };
+  };
 }
 
 export interface AllDaos {
@@ -154,7 +192,7 @@ export interface GenesisState {
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
-  daos: AllDaos | null; // fixme need to refactor this to an object for quicker access
+  daos: AllDaos | null;
   daosOwnedByWallet: DaoInfo[] | null;
   txnNotifications: TxnNotification[];
   loading: boolean;
@@ -166,6 +204,7 @@ export interface GenesisState {
   isStartModalOpen: boolean;
   daoCreationValues: DaoCreationValues;
   currentAssetId: number | null;
+  exploreDaos: BasicDaoInfo[] | null;
 }
 
 export interface GenesisActions {
@@ -177,8 +216,8 @@ export interface GenesisActions {
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
   updateDaos: (daos: AllDaos | null) => void;
-  addOneDao: (createDaoData: CreateDaoData) => void;
   fetchDaos: () => void;
+  fetchDaosFromDB: () => void;
   updateLoading: (loading: boolean) => void;
   addTxnNotification: (notification: TxnNotification) => void;
   removeTxnNotification: () => void;
@@ -186,7 +225,7 @@ export interface GenesisActions {
   updateApiConnection: (apiConnection: any) => void;
   createApiConnection: () => void;
   updateDaosOwnedByWallet: () => void;
-  handleErrors: (err: Error) => void;
+  handleErrors: (err: Error | string) => void;
   updateCurrentAssetBalance: (currentAssetBalance: number) => void;
   fetchTokenBalance: (assetId: number, accountId: string) => void;
   updateCreateDaoSteps: (steps: number) => void;
@@ -195,6 +234,7 @@ export interface GenesisActions {
   updateDaoCreationValues: (daoCreationValues: DaoCreationValues) => void;
   updateCurrentAssetId: (currentAssetId: number) => void;
   fetchCurrentAssetId: () => void;
+  updateExploreDaos: (exploreDaos: BasicDaoInfo[]) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -219,6 +259,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   isStartModalOpen: false,
   daoCreationValues: placeholderValues,
   currentAssetId: null,
+  exploreDaos: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -235,28 +276,15 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     // add the new noti to first index because we will start displaying notis from the last index
     const newNotis = [newNotification, ...oldTxnNotis];
     set({ txnNotifications: newNotis });
+    // fixme don't use global scroll?
+    // eslint-disable-next-line
+    scroll(0, 0);
   },
   removeTxnNotification: () => {
     // first in first out
     const currentTxnNotis = get().txnNotifications;
     const newNotis = currentTxnNotis.slice(0, -1);
     set({ txnNotifications: newNotis });
-  },
-  addOneDao: (createDaoData) => {
-    const currentDaos = get().daos;
-    const address = get().currentWalletAccount?.address;
-    if (currentDaos && address) {
-      const newObj = {
-        daoId: createDaoData.daoId,
-        daoName: createDaoData.daoName,
-        owner: address,
-        assetId: null,
-        owned: address === get().currentWalletAccount?.address,
-      };
-      set({ daos: { ...get().daos, [createDaoData.daoId]: newObj } });
-      set({ newCreatedDao: newObj });
-      set({ createDaoSteps: 2 });
-    }
   },
 
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
@@ -274,7 +302,12 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
             daoName: dao.name,
             owner: dao.owner,
             assetId: dao.assetId,
-            owned: dao.owner === get().currentWalletAccount?.address,
+            metaUrl: dao.meta,
+            metaHash: dao.metaHash,
+            descriptionShort: null,
+            descriptionLong: null,
+            email: null,
+            images: null,
           };
           daos[dao.id] = newObj;
         });
@@ -284,7 +317,27 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         get().handleErrors(new Error(err));
       });
   },
-
+  fetchDaosFromDB: async () => {
+    try {
+      const getDaosResponse = await fetch(
+        'https://service.genesis-dao.org/daos/?order_by=id&limit=50'
+      );
+      const daosRes = await getDaosResponse.json();
+      // console.log('daos from db', daosRes.results)
+      const daosArr = daosRes.results;
+      const newDaos = daosArr?.map((dao: any) => {
+        return {
+          daoId: dao.id,
+          daoName: dao.name,
+          daoOwnerAddress: dao.owner_id,
+        };
+      });
+      set({ exploreDaos: newDaos });
+    } catch (err) {
+      console.log(err);
+      get().handleErrors(err);
+    }
+  },
   updateDaosOwnedByWallet: async () => {
     await get().fetchDaos();
     const { daos } = get();
@@ -338,10 +391,18 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         get().handleErrors(new Error(err));
       });
   },
-  handleErrors: (err: Error) => {
+  handleErrors: (err: Error | string) => {
+    console.log('err type', typeof err);
+    let message: string;
+    if (typeof err === 'object') {
+      message = err.message;
+    } else {
+      message = err;
+    }
+
     const newNoti = {
       title: TxnResponse.Error,
-      message: err.message,
+      message,
       type: TxnResponse.Error,
       timestamp: Date.now(),
     };
@@ -366,6 +427,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         get().updateCurrentAssetId(Number(data.toHuman()));
       });
   },
+  updateExploreDaos: (exploreDaos) => set(() => ({ exploreDaos })),
 }));
 
 export default useGenesisStore;

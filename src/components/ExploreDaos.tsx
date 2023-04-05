@@ -7,28 +7,29 @@ import useGenesisStore from '@/stores/genesisStore';
 import telescope from '@/svg/telescope.svg';
 
 const ExploreDaos = () => {
-  const daos = useGenesisStore((s) => s.daos);
-  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
+  const exploreDaos = useGenesisStore((s) => s.exploreDaos);
+  const fetchDaosFromDB = useGenesisStore((s) => s.fetchDaosFromDB);
 
-  useEffect(() => {
-    fetchDaos();
-    // eslint-disable-next-line
-  },[])
+  // useEffect(() => {
+  //   console.log('fetch daos')
+  //   fetchDaosFromDB()
+  //   // eslint-disable-next-line
+  // },[])
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchDaos();
+      fetchDaosFromDB();
     }, 500);
     return () => clearTimeout(timer);
     // eslint-disable-next-line
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchDaos();
-    }, 5000);
-    return () => clearInterval(interval);
-  });
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetchDaosFromDB()
+  //   }, 20000);
+  //   return () => clearInterval(interval);
+  // },[]);
 
   return (
     <div className='container mb-20 flex min-h-[600px] flex-col py-5 px-6'>
@@ -47,7 +48,7 @@ const ExploreDaos = () => {
         </div>
       </div>
       <div className='my-2 flex justify-center'>
-        {!daos ? <Spinner /> : <DaoCards daos={Object.values(daos)} />}
+        {!exploreDaos ? <Spinner /> : <DaoCards daos={exploreDaos} />}
       </div>
     </div>
   );

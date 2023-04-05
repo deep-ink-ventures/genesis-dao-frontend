@@ -15,7 +15,6 @@ const MajorityModel = (props: { daoId: string | null }) => {
     useGenesisDao();
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
-  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const {
@@ -75,7 +74,6 @@ const MajorityModel = (props: { daoId: string | null }) => {
   });
 
   useEffect(() => {
-    fetchDaos();
     if (assetId) {
       updateCreateDaoSteps(2);
     }

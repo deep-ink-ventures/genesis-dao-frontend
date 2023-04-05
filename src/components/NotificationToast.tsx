@@ -14,7 +14,7 @@ interface ToastProps {
 const ToastIcon = ({ type }: { type: TxnResponse }) => {
   if (type === TxnResponse.Error) {
     return (
-      <div className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200'>
+      <div className='inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200'>
         <svg
           aria-hidden='true'
           className='h-5 w-5'
@@ -32,7 +32,7 @@ const ToastIcon = ({ type }: { type: TxnResponse }) => {
   }
   if (type === TxnResponse.Warning) {
     return (
-      <div className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-500 dark:bg-orange-700 dark:text-orange-200'>
+      <div className='inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-500 dark:bg-orange-700 dark:text-orange-200'>
         <svg
           aria-hidden='true'
           className='h-5 w-5'
@@ -49,7 +49,7 @@ const ToastIcon = ({ type }: { type: TxnResponse }) => {
     );
   }
   return (
-    <div className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200'>
+    <div className='inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-500 dark:bg-green-800 dark:text-green-200'>
       <svg
         aria-hidden='true'
         className='h-5 w-5'
@@ -99,15 +99,15 @@ const NotificationToast = (props: ToastProps) => {
   return (
     <div
       id='toast-success'
-      className='mb-3 flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400 '
+      className='mb-3 flex w-[420px] items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400 '
       role='alert'>
       <ToastIcon type={props.type} />
       <div className='flex-col flex-wrap '>
         <h4 className='ml-3 font-bold'>{props.title}</h4>
-        <p className='ml-3 text-xs'>{props.message}</p>
+        <p className='ml-3'>{props.message}</p>
         {/* fixme convert this into a component */}
         {props.txnHash ? (
-          <p className='ml-3 break-words text-xs text-blue-500 underline'>
+          <p className='ml-3 break-words text-blue-500 underline'>
             <a
               href={makeExplorerLink(props.txnHash)}
               target='_blank'
