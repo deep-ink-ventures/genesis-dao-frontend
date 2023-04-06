@@ -63,7 +63,9 @@ const DaoHome = () => {
           },
         };
         const response = await fetch(
-          `https://service.genesis-dao.org/daos/${daoId}/`
+          `https://service.genesis-dao.org/daos/${encodeURIComponent(
+            daoId as string
+          )}/`
         );
         const d = await response.json();
         daoDetail.daoId = d.id;
