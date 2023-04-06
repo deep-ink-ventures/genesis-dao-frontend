@@ -177,9 +177,13 @@ const DaoHome = () => {
                 Manage Tokens
               </button>
             </Link>
-            {currentDao && isOwner && (
-              <DestroyDao daoId={currentDao?.daoId} assetId={dao?.assetId} />
-            )}
+            {currentDao &&
+              currentDao.daoOwnerAddress === currentWalletAccount?.address && (
+                <DestroyDao
+                  daoId={currentDao?.daoId}
+                  assetId={currentDao.daoAssetId}
+                />
+              )}
           </div>
         </div>
       </div>
