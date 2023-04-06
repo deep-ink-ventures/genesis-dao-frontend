@@ -22,6 +22,7 @@ Zustand stores folder is [here](./src/stores/). Query actions are also in the [`
 
 Most of the transaction actions are in the [`useGenesisDao`](./src/hooks/useGenesisDao.ts) hook
 
+This app reads the blobkchain data via [`GenesisDAO REST API service`](https://service.genesis-dao.org/) 
 
 ## Installation
 
