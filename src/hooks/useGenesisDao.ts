@@ -18,7 +18,6 @@ const useGenesisDao = () => {
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
-  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
@@ -100,7 +99,6 @@ const useGenesisDao = () => {
             // add txn to our store - first index
             addTxnNotification(successNoti);
             successCB?.();
-            fetchDaos();
             updateTxnProcessing(false);
             return;
           }
@@ -146,7 +144,6 @@ const useGenesisDao = () => {
                 router.push(`dao/${daoId}/customize`);
               }
             );
-            fetchDaos();
           }
         )
         .catch((err) => {
@@ -387,7 +384,6 @@ const useGenesisDao = () => {
               'Tokens Issued',
               'Something went wrong. Please try again. '
             );
-            fetchDaos();
           }
         )
         .then(() => {
