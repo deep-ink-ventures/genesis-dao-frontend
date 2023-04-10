@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import Congratulations from '@/components/Congratulations';
 import CouncilTokens from '@/components/CouncilTokens';
@@ -10,20 +11,31 @@ import MainLayout from '@/templates/MainLayout';
 
 const Customize = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const fetchDao = useGenesisStore((s) => s.fetchDao);
+  const currentDao = useGenesisStore((s) => s.currentDao);
   const router = useRouter();
   const { daoId } = router.query;
-  const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[daoId as string];
   const isOwner =
-    dao && currentWalletAccount && dao.owner === currentWalletAccount.address;
+    currentDao &&
+    currentWalletAccount &&
+    currentDao.daoOwnerAddress === currentWalletAccount.address;
 
   const createDaoSteps = useGenesisStore((s) => s.createDaoSteps);
+
+  useEffect(() => {
+    if (!daoId) {
+      return;
+    }
+    fetchDao(daoId as string);
+  }, [daoId, fetchDao]);
 
   const display = () => {
     if (!currentWalletAccount?.address) {
       return (
         <div className='flex flex-col items-center'>
-          <p>Please connect wallet to continue customizing {dao?.daoName}</p>
+          <p>
+            Please connect wallet to continue customizing {currentDao?.daoName}
+          </p>
           <WalletConnect text='Connect Wallet To Continue' />
         </div>
       );
@@ -31,20 +43,20 @@ const Customize = () => {
 
     if (!isOwner) {
       <div>
-        <p>Sorry you are not the owner of {dao?.daoName}</p>
+        <p>Sorry you are not the owner of {currentDao?.daoName}</p>
       </div>;
     }
     if (createDaoSteps === 1) {
-      return <LogoForm daoId={dao?.daoId || null} />;
+      return <LogoForm daoId={daoId as string} />;
     }
     if (createDaoSteps === 2) {
-      return <GovernanceForm daoId={dao?.daoId || null} />;
+      return <GovernanceForm daoId={daoId as string} />;
     }
     if (createDaoSteps === 3) {
-      return <CouncilTokens daoId={dao?.daoId || null} />;
+      return <CouncilTokens daoId={daoId as string} />;
     }
     if (createDaoSteps === 4) {
-      return <Congratulations daoId={dao?.daoId || null} />;
+      return <Congratulations daoId={daoId as string} />;
     }
     return null;
   };

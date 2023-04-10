@@ -42,9 +42,9 @@ const MainLayout = (props: IMainProps) => (
                   alt='GenesisDAO logo'
                 />
               </Link>
-              <h1 className='m-auto pl-2 text-[20px] md:text-[24px]'>
+              <h2 className='m-auto pl-2 text-[20px] md:text-[24px]'>
                 <Link href='/'>Genesis DAO</Link>
-              </h1>
+              </h2>
             </div>
           </div>
           <div className='py-2'>

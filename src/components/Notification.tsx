@@ -7,7 +7,7 @@ const TransactionNotification = () => {
 
   return (
     <div className='flex justify-center'>
-      <div className='absolute top-[50px] z-[1000]'>
+      <div className='fixed top-[20px] z-[1000]'>
         {txnNotifications.map((noti) => {
           // we can use timestamp as stable keys here because they don't change once stored
           return (

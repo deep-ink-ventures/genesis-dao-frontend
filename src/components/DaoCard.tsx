@@ -13,10 +13,10 @@ interface DaoCardProps {
 const DaoCard = (props: DaoCardProps) => {
   return (
     <div
-      className={`dao-card card z-0 m-1 h-40 w-36 break-words text-center shadow-xl hover:cursor-pointer md:h-60 md:w-56`}>
+      className={`card z-0 m-1 h-40 w-36 break-words text-center shadow-xl hover:cursor-pointer md:h-60 md:w-56`}>
       <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
         <div className='card-body text-center'>
-          <div className='dao-image mb-2 hidden items-center justify-center md:flex md:hover:hidden'>
+          <div className='mb-2 hidden items-center justify-center md:flex'>
             <Image
               src={placeholderImage}
               alt='placeholder'
