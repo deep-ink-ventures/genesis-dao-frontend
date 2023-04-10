@@ -140,6 +140,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 {...register('proposalTokensCost', {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
+                  max: { value: 1000000, message: 'Maximum is 1 Million' },
                 })}
               />
               <ErrorMessage

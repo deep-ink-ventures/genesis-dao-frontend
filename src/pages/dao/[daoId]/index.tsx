@@ -1,10 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import DestroyDao from '@/components/DestroyDao';
-import type { DaoDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
@@ -14,85 +13,21 @@ import { truncateMiddle } from '@/utils';
 const DaoHome = () => {
   const router = useRouter();
   const { daoId } = router.query;
-  const [currentDao, setCurrentDao] = useState<DaoDetail | null>({
-    daoId: '{N/A}',
-    daoName: '{N/A}',
-    daoOwnerAddress: '{N/A}',
-    daoAssetId: null,
-    metadataUrl: '{N/A}',
-    metadataHash: '{N/A}',
-    descriptionShort: '{N/A}',
-    descriptionLong: '{N/A}',
-    email: '{N/A}',
-    images: {
-      contentType: null,
-      small: null,
-      medium: null,
-      large: null,
-    },
-  });
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[daoId as string];
+  const fetchDao = useGenesisStore((s) => s.fetchDao);
+  const currentDao = useGenesisStore((s) => s.currentDao);
   const isOwner =
-    dao && currentWalletAccount && dao.owner === currentWalletAccount.address;
+    currentDao &&
+    currentWalletAccount &&
+    currentDao.daoOwnerAddress === currentWalletAccount.address;
 
   useEffect(() => {
     if (!daoId) {
       return;
     }
 
-    (async () => {
-      try {
-        const daoDetail = {
-          daoId: '{N/A}',
-          daoName: '',
-          daoOwnerAddress: '',
-          daoAssetId: null,
-          metadataUrl: null,
-          metadataHash: null,
-          descriptionShort: null,
-          descriptionLong: null,
-          email: null,
-          images: {
-            contentType: null,
-            small: null,
-            medium: null,
-            large: null,
-          },
-        };
-        const response = await fetch(
-          `https://service.genesis-dao.org/daos/${encodeURIComponent(
-            daoId as string
-          )}/`
-        );
-        const d = await response.json();
-        daoDetail.daoId = d.id;
-        daoDetail.daoName = d.name;
-        daoDetail.daoOwnerAddress = d.owner_id;
-        daoDetail.daoAssetId = d.asset_id;
-        daoDetail.metadataUrl = d.metadata_url;
-        daoDetail.metadataHash = d.metadata_hash;
-
-        if (d.metadata_url) {
-          const jsonResponse = await fetch(d.metadata_url);
-          const m = await jsonResponse.json();
-          daoDetail.descriptionShort = m.description_short;
-          daoDetail.descriptionLong = m.description_long;
-          daoDetail.email = m.email;
-          daoDetail.images.contentType = m.images.logo.content_type;
-          daoDetail.images.small = m.images.logo.small.url;
-          daoDetail.images.medium = m.images.logo.medium.url;
-          daoDetail.images.large = m.images.logo.large.url;
-        }
-
-        setCurrentDao(daoDetail);
-      } catch (err) {
-        handleErrors(err);
-      }
-    })();
-  }, [daoId, handleErrors]);
+    fetchDao(daoId as string);
+  }, [daoId, fetchDao]);
 
   const displayImage = () => {
     if (!currentDao || !currentDao.images.medium) {
@@ -177,13 +112,12 @@ const DaoHome = () => {
                 Manage Tokens
               </button>
             </Link>
-            {currentDao &&
-              currentDao.daoOwnerAddress === currentWalletAccount?.address && (
-                <DestroyDao
-                  daoId={currentDao?.daoId}
-                  assetId={currentDao.daoAssetId}
-                />
-              )}
+            {currentDao && isOwner && (
+              <DestroyDao
+                daoId={currentDao?.daoId}
+                assetId={currentDao.daoAssetId}
+              />
+            )}
           </div>
         </div>
       </div>

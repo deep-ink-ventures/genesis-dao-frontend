@@ -28,12 +28,12 @@ const Index = () => {
   return (
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
-      description='GenesisDAO Description'>
+      description='Create a DAO. No code required'>
       <div className='flex-col'>
         <div className='mb-8 flex-col items-center justify-center border-b-2 border-dashed border-content-primary/50 pt-2'>
           <div className='md:my-4 md:py-5'>
             <h1 className='text-center'>
-              Empower The People: Unleash the Potential of Your Organization
+              Empower The People: Unleash The Potential Of Your Organization
               With a DAO
             </h1>
           </div>
@@ -41,7 +41,7 @@ const Index = () => {
             <div className='container h-[156px] max-w-[180px] py-2 md:max-w-[272px]'>
               <h4 className='m-2'>NO-CODE DAO SETUP</h4>
               <h2 className='mb-2'>200</h2>
-              <p className='font-medium text-primary'>TOTAL DAO CREATED</p>
+              <p className='font-medium text-primary'>TOTAL DAOS CREATED</p>
             </div>
             <div className='container h-[156px] max-w-[180px] py-2 md:max-w-[272px]'>
               <h4 className='m-2'>COMMUNITY-LED</h4>

@@ -99,7 +99,7 @@ const NotificationToast = (props: ToastProps) => {
   return (
     <div
       id='toast-success'
-      className='mb-3 flex w-[420px] items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400 '
+      className='mb-3 flex w-[340px] items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400 md:w-[420px]'
       role='alert'>
       <ToastIcon type={props.type} />
       <div className='flex-col flex-wrap '>

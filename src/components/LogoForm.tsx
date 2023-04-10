@@ -23,7 +23,7 @@ const LogoForm = (props: { daoId: string | null }) => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<LogoFormValues>({
     defaultValues: {
-      email: 'fake@gmail.com',
+      email: '',
       shortOverview: 'N/A',
       longDescription: 'N/A',
       imageString: '',
@@ -150,6 +150,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                 type='text'
                 placeholder='Email'
                 {...register('email', {
+                  required: 'Required',
                   pattern: {
                     value: /\S+@\S+\.\S+/,
                     message: 'Entered value does not match email format',
@@ -165,7 +166,9 @@ const LogoForm = (props: { daoId: string | null }) => {
               />
             </div>
             <div className='min-w-full'>
-              <p className='mb-1 ml-1'>Upload Logo File</p>
+              <p className='mb-1 ml-1'>
+                Upload Logo File (JPG or PNG. Max 2MB)
+              </p>
               <div className='file-drop relative h-48'>
                 <input
                   className='absolute z-10 h-full w-full cursor-pointer opacity-0'
@@ -173,6 +176,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                   accept='image/*'
                   id='file'
                   {...register('logoImage', {
+                    required: 'Required',
                     onChange: (e) => {
                       setDaoLogo(e.target.files[0]);
                     },
@@ -205,17 +209,43 @@ const LogoForm = (props: { daoId: string | null }) => {
               </div>
             </div>
             <div className='min-w-full'>
-              <p className='mb-1 ml-1'>Short Overview</p>
+              <p className='mb-1 ml-1'>
+                Short Overview (250 characters or less)
+              </p>
               <textarea
                 className='textarea h-48'
-                {...register('shortOverview', {})}
+                {...register('shortOverview', {
+                  required: 'Required',
+                  min: { value: 1, message: 'Too short' },
+                  max: { value: 250, message: 'Max character count is 250' },
+                })}
+              />
+              <ErrorMessage
+                errors={errors}
+                name='shortOverview'
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
               />
             </div>
             <div className='min-w-full'>
-              <p className='mb-1 ml-2'>Long Description</p>
+              <p className='mb-1 ml-2'>
+                Long Description (2000 characters or less)
+              </p>
               <textarea
                 className='textarea h-64'
-                {...register('longDescription', {})}
+                {...register('longDescription', {
+                  required: 'Required',
+                  min: { value: 1, message: 'Minimum character count is 1' },
+                  max: { value: 2000, message: 'Max character count is 2000' },
+                })}
+              />
+              <ErrorMessage
+                errors={errors}
+                name='longDescription'
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
               />
             </div>
           </div>

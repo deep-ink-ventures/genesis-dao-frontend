@@ -31,6 +31,8 @@ export interface BasicDaoInfo {
   daoId: string;
   daoName: string;
   daoOwnerAddress: string;
+  metadataUrl: string;
+  metadataHash: string;
 }
 
 export interface CouncilMember {
@@ -188,6 +190,9 @@ export interface AllDaos {
 
 export interface GenesisState {
   currentWalletAccount: WalletAccount | undefined;
+  currentAssetId: number | null;
+  currentAssetBalance: number | null;
+  currentDao: DaoDetail | null;
   walletAccounts: WalletAccount[] | undefined;
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
@@ -198,12 +203,10 @@ export interface GenesisState {
   loading: boolean;
   txnProcessing: boolean;
   apiConnection: ApiPromise;
-  currentAssetBalance: number | null;
   createDaoSteps: number | null;
   newCreatedDao: DaoInfo | null;
   isStartModalOpen: boolean;
   daoCreationValues: DaoCreationValues;
-  currentAssetId: number | null;
   exploreDaos: BasicDaoInfo[] | null;
 }
 
@@ -235,6 +238,8 @@ export interface GenesisActions {
   updateCurrentAssetId: (currentAssetId: number) => void;
   fetchCurrentAssetId: () => void;
   updateExploreDaos: (exploreDaos: BasicDaoInfo[]) => void;
+  fetchDao: (daoId: string) => void;
+  updateCurrentDao: (currentDao: DaoDetail) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -260,6 +265,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   daoCreationValues: placeholderValues,
   currentAssetId: null,
   exploreDaos: null,
+  currentDao: null,
   updateCurrentWalletAccount: (currentWalletAccount) =>
     set(() => ({ currentWalletAccount })),
   updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
@@ -333,11 +339,13 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       );
       const daosRes = await getDaosResponse.json();
       const daosArr = daosRes.results;
-      const newDaos = daosArr?.map((dao: any) => {
+      const newDaos: BasicDaoInfo[] = daosArr?.map((dao: any) => {
         return {
           daoId: dao.id,
           daoName: dao.name,
           daoOwnerAddress: dao.owner_id,
+          metadataUrl: dao.metadata_url,
+          metadataHash: dao.metadata_hash,
         };
       });
       set({ exploreDaos: newDaos });
@@ -434,6 +442,56 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       });
   },
   updateExploreDaos: (exploreDaos) => set(() => ({ exploreDaos })),
+  updateCurrentDao: (currentDao) => set(() => ({ currentDao })),
+  fetchDao: async (daoId) => {
+    try {
+      const daoDetail = {
+        daoId: '{N/A}',
+        daoName: '',
+        daoOwnerAddress: '',
+        daoAssetId: null,
+        metadataUrl: null,
+        metadataHash: null,
+        descriptionShort: null,
+        descriptionLong: null,
+        email: null,
+        images: {
+          contentType: null,
+          small: null,
+          medium: null,
+          large: null,
+        },
+      };
+      const response = await fetch(
+        `https://service.genesis-dao.org/daos/${encodeURIComponent(
+          daoId as string
+        )}/`
+      );
+      const d = await response.json();
+      daoDetail.daoId = d.id;
+      daoDetail.daoName = d.name;
+      daoDetail.daoOwnerAddress = d.owner_id;
+      daoDetail.daoAssetId = d.asset_id;
+      daoDetail.metadataUrl = d.metadata_url;
+      daoDetail.metadataHash = d.metadata_hash;
+
+      if (d.metadata_url) {
+        const jsonResponse = await fetch(d.metadata_url);
+        const m = await jsonResponse.json();
+        daoDetail.descriptionShort = m.description_short;
+        daoDetail.descriptionLong = m.description_long;
+        daoDetail.email = m.email;
+        daoDetail.images.contentType = m.images.logo.content_type;
+        daoDetail.images.small = m.images.logo.small.url;
+        daoDetail.images.medium = m.images.logo.medium.url;
+        daoDetail.images.large = m.images.logo.large.url;
+      }
+
+      get().updateCurrentDao(daoDetail);
+    } catch (err) {
+      get().handleErrors(err);
+    }
+  },
 }));
 
 export default useGenesisStore;

@@ -201,7 +201,7 @@ const CreateDaoModal = () => {
                       </span>
                     </p>
                     <p className='mb-1 ml-2 text-sm'>
-                      Choose from capital A-Z and numbers 0-9(no space)
+                      Choose from capital A-Z and numbers 0-9(no whitespace)
                     </p>
                   </div>
                   <div className='relative'>
@@ -220,7 +220,7 @@ const CreateDaoModal = () => {
                         minLength: { value: 3, message: 'Minimum length is 3' },
                         pattern: {
                           value: /^[A-Z0-9]+$/,
-                          message: 'Only capital A-Z or 0-9',
+                          message: 'Only capital A-Z or 0-9(no whitespace)',
                         },
                       })}
                     />
