@@ -16,6 +16,8 @@ const useGenesisDao = () => {
   const router = useRouter();
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
@@ -51,8 +53,34 @@ const useGenesisDao = () => {
     result: ISubmittableResult,
     successMsg: string,
     errorMsg: string,
-    successCB?: Function
+    successCB?: Function,
+    waitForFinalized?: boolean
   ) => {
+    if (waitForFinalized) {
+      let success = false;
+      result.events.forEach(({ event: { method } }) => {
+        if (method === 'ExtrinsicSuccess') {
+          success = true;
+        }
+      });
+      if (result.status.isFinalized) {
+        if (success) {
+          const successNoti = {
+            title: `${TxnResponse.Success}`,
+            message: successMsg,
+            type: TxnResponse.Success,
+            txnHash: result.status.asInBlock.toHex(),
+            timestamp: Date.now(),
+          };
+          // add txn to our store - first index
+          addTxnNotification(successNoti);
+          successCB?.();
+          updateTxnProcessing(false);
+        }
+        updateTxnProcessing(false);
+      }
+      return;
+    }
     // eslint-disable-next-line
     console.log('Transaction status1:', result.status.type);
     if (result.status.isInBlock) {
@@ -139,9 +167,13 @@ const useGenesisDao = () => {
               `Congrats! ${daoName} is created.`,
               'Something went wrong. Please try again.',
               () => {
-                updateCreateDaoSteps(1);
-                updateIsStartModalOpen(false);
-                router.push(`dao/${daoId}/customize`);
+                setTimeout(() => {
+                  fetchDaoFromDB(daoId as string);
+                  updateCreateDaoSteps(1);
+                  updateIsStartModalOpen(false);
+                  fetchDaos();
+                  router.push(`/dao/${daoId}/customize`);
+                });
               }
             );
           }
@@ -179,7 +211,10 @@ const useGenesisDao = () => {
             txResponseCallback(
               result,
               'DAO Destroyed. Bye Bye.',
-              'Something went wrong. Please try again.'
+              'Something went wrong. Please try again.',
+              () => {
+                router.push('/');
+              }
             );
           }
         )

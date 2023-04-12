@@ -14,7 +14,9 @@ const DaoHome = () => {
   const router = useRouter();
   const { daoId } = router.query;
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const fetchDao = useGenesisStore((s) => s.fetchDao);
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
+
   const currentDao = useGenesisStore((s) => s.currentDao);
   const isOwner =
     currentDao &&
@@ -25,9 +27,9 @@ const DaoHome = () => {
     if (!daoId) {
       return;
     }
-
-    fetchDao(daoId as string);
-  }, [daoId, fetchDao]);
+    fetchDaoFromDB(daoId as string);
+    fetchDaos();
+  }, [daoId, fetchDaoFromDB, fetchDaos]);
 
   const displayImage = () => {
     if (!currentDao || !currentDao.images.medium) {

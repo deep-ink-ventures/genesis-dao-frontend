@@ -86,18 +86,15 @@ h4 {
 .btn-primary {
   @apply text-primary-content font-medium;
 }
-
 .card {
   @apply rounded-[10px] z-0 bg-[#403945] hover:outline-1 hover:outline hover:outline-neutral hover:brightness-[1.15];
 } 
 .card-body {
   @apply text-base text-content-primary;
 }
-
 .content p {
   @apply my-3;
 }
-
 .content ul {
   @apply my-3;
 }
