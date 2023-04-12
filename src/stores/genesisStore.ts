@@ -33,6 +33,7 @@ export interface BasicDaoInfo {
   daoOwnerAddress: string;
   metadataUrl: string;
   metadataHash: string;
+  images: string | null;
 }
 
 export interface CouncilMember {
@@ -238,8 +239,9 @@ export interface GenesisActions {
   updateCurrentAssetId: (currentAssetId: number) => void;
   fetchCurrentAssetId: () => void;
   updateExploreDaos: (exploreDaos: BasicDaoInfo[]) => void;
-  fetchDao: (daoId: string) => void;
+  fetchDaoFromDB: (daoId: string) => void;
   updateCurrentDao: (currentDao: DaoDetail) => void;
+  fetchDao: (daoId: string) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -326,7 +328,23 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           };
           daos[dao.id] = newObj;
         });
+        // this is the objs of daos
         set({ daos });
+
+        // eslint-disable-next-line
+        daoEntries.map(([_k, v]) => {
+          const dao = v.toHuman() as unknown as IncomingDaoInfo;
+          return {
+            daoId: dao.id,
+            daoName: dao.name,
+            daoOwnerAddress: dao.owner,
+            metadataUrl: dao.meta,
+            metadataHash: dao.metaHash,
+            images: null,
+          };
+        });
+
+        // this is an array of daos
       })
       .catch((err) => {
         get().handleErrors(new Error(err));
@@ -346,6 +364,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           daoOwnerAddress: dao.owner_id,
           metadataUrl: dao.metadata_url,
           metadataHash: dao.metadata_hash,
+          images: null,
         };
       });
       set({ exploreDaos: newDaos });
@@ -443,7 +462,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   updateExploreDaos: (exploreDaos) => set(() => ({ exploreDaos })),
   updateCurrentDao: (currentDao) => set(() => ({ currentDao })),
-  fetchDao: async (daoId) => {
+  fetchDaoFromDB: async (daoId) => {
     try {
       const daoDetail = {
         daoId: '{N/A}',
@@ -467,6 +486,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           daoId as string
         )}/`
       );
+      if (response.status === 404) {
+        return;
+      }
       const d = await response.json();
       daoDetail.daoId = d.id;
       daoDetail.daoName = d.name;
@@ -492,6 +514,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       get().handleErrors(err);
     }
   },
+  fetchDao: () => {},
 }));
 
 export default useGenesisStore;

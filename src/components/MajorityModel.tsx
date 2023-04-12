@@ -45,10 +45,13 @@ const MajorityModel = (props: { daoId: string | null }) => {
       props.daoId,
       data.tokensToIssue
     );
+
+    const blocks = data.votingDays * 14400;
+
     const withMajorityVoteTxn = makeMajorityVoteTxn(
       withIssueTokensTxn,
       props.daoId,
-      data.votingDays,
+      blocks,
       data.proposalTokensCost,
       data.minimumMajority
     );

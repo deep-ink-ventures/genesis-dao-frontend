@@ -14,6 +14,7 @@ const DestroyDao = (props: { daoId: string; assetId: number | null }) => {
     updateTxnProcessing(true);
     destroyDaoAndAssets(props.daoId, props.assetId);
   };
+
   return (
     <div className='flex justify-center'>
       <button

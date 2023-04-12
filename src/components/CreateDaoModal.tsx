@@ -8,6 +8,8 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { CreateDaoData } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
+import { NATIVE_UNITS } from '../config/index';
+
 const CreateDaoModal = () => {
   const {
     register,
@@ -63,7 +65,7 @@ const CreateDaoModal = () => {
         let balance = '0';
         const jsonData = await data.json();
         if (jsonData?.balance?.free) {
-          balance = (jsonData.balance.free / 1000000000000).toFixed(0);
+          balance = (jsonData.balance.free / NATIVE_UNITS).toFixed(0);
         }
         if (Number(balance) < 10) {
           setHasTenDots(false);
@@ -201,7 +203,7 @@ const CreateDaoModal = () => {
                       </span>
                     </p>
                     <p className='mb-1 ml-2 text-sm'>
-                      Choose from capital A-Z and numbers 0-9(no whitespace)
+                      Choose from capital A-Z and numbers 0-9(no space)
                     </p>
                   </div>
                   <div className='relative'>

@@ -15,6 +15,8 @@ interface WalletConnectProps {
 }
 
 const WalletConnect = (props: WalletConnectProps) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const walletConnected = useGenesisStore((s) => s.walletConnected);
@@ -26,12 +28,18 @@ const WalletConnect = (props: WalletConnectProps) => {
     (s) => s.updateDaosOwnedByWallet
   );
 
-  // @ts-ignore
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const handleOpen = () => {
+    if (!currentWalletAccount) {
+      setDropdownOpen(false);
+      return;
+    }
+    setDropdownOpen(!dropdownOpen);
+  };
 
   const handleDisconnect = () => {
     updateCurrentWalletAccount(undefined);
     updateWalletConnected(false);
+    setDropdownOpen(false);
   };
 
   const handleModal = () => {
@@ -48,7 +56,7 @@ const WalletConnect = (props: WalletConnectProps) => {
 
   return (
     <div>
-      <div>
+      <div className='relative flex flex-col'>
         <button
           tabIndex={0}
           className={`btn m-1 ${
@@ -59,7 +67,7 @@ const WalletConnect = (props: WalletConnectProps) => {
             ${modalIsOpen && 'loading'} 
             ${txnProcessing && 'loading'}
             `}
-          onClick={!walletConnected ? handleModal : handleDisconnect}>
+          onClick={!walletConnected ? handleModal : handleOpen}>
           {currentWalletAccount ? (
             <div className='mr-2'>
               <Image src={avatar} alt='avatar' height='18' width='18'></Image>
@@ -70,7 +78,7 @@ const WalletConnect = (props: WalletConnectProps) => {
             </div>
           )}
           <span className='align-middle'>
-            {!walletConnected
+            {!currentWalletAccount
               ? props.text
               : `${truncateMiddle(currentWalletAccount?.address, 5, 4)}`}
           </span>
@@ -90,6 +98,13 @@ const WalletConnect = (props: WalletConnectProps) => {
             </span>
           ) : null}
         </button>
+        <div
+          className={`${
+            !dropdownOpen ? 'hidden' : ''
+          } btn-secondary btn absolute top-[50px] left-[12px] m-2 w-[160px] text-center`}
+          onClick={handleDisconnect}>
+          Disconnect
+        </div>
       </div>
 
       <WalletSelect

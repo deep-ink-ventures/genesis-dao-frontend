@@ -11,7 +11,7 @@ import MainLayout from '@/templates/MainLayout';
 
 const Customize = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const fetchDao = useGenesisStore((s) => s.fetchDao);
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const router = useRouter();
   const { daoId } = router.query;
@@ -26,8 +26,8 @@ const Customize = () => {
     if (!daoId) {
       return;
     }
-    fetchDao(daoId as string);
-  }, [daoId, fetchDao]);
+    fetchDaoFromDB(daoId as string);
+  }, [daoId, fetchDaoFromDB]);
 
   const display = () => {
     if (!currentWalletAccount?.address) {
