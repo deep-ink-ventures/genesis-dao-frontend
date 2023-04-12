@@ -38,12 +38,12 @@ const Index = () => {
             </h1>
           </div>
           <div className='my-4 flex flex-wrap items-center justify-center py-4 text-center md:justify-between md:px-10'>
-            <div className='container h-[156px] max-w-[180px] py-2 md:max-w-[272px]'>
+            {/* <div className='container h-[156px] max-w-[180px] py-2 md:max-w-[272px]'>
               <h4 className='m-2'>NO-CODE DAO SETUP</h4>
               <h2 className='mb-2'>200</h2>
               <p className='font-medium text-primary'>TOTAL DAOS CREATED</p>
-            </div>
-            <div className='container h-[156px] max-w-[180px] py-2 md:max-w-[272px]'>
+            </div> */}
+            {/* <div className='container h-[156px] max-w-[180px] py-2 md:max-w-[272px]'>
               <h4 className='m-2'>COMMUNITY-LED</h4>
               <h2 className='mb-2'>323K</h2>
               <p className='font-medium text-primary'>TOTAL MEMBERS</p>
@@ -57,7 +57,7 @@ const Index = () => {
               <h4 className='m-2'>DEMOCRATIC</h4>
               <h2 className='mb-2'>2314</h2>
               <p className='font-medium text-primary'>WALLETS VOTED</p>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className='container mb-8 flex min-h-[400px] flex-wrap justify-around md:flex-nowrap'>
