@@ -3,6 +3,8 @@ import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
+import { DAO_UNITS } from '@/config';
+
 import type {
   AssetDetails,
   CreateDaoData,
@@ -406,7 +408,7 @@ const useGenesisDao = () => {
     daoId: string,
     supply: number
   ) => {
-    const amount = supply;
+    const amount = supply * DAO_UNITS;
     if (walletAccount.signer) {
       apiConnection.tx?.daoCore
         ?.issueToken?.(daoId, amount)
@@ -439,7 +441,7 @@ const useGenesisDao = () => {
     toAddress: string,
     amount: number
   ) => {
-    const newAmount = amount * 1000000000;
+    const newAmount = amount * DAO_UNITS;
     if (walletAccount.signer) {
       apiConnection.tx?.assets
         ?.transferKeepAlive?.(assetId, toAddress, newAmount)
@@ -474,7 +476,7 @@ const useGenesisDao = () => {
     daoId: string,
     tokenSupply: number
   ) => {
-    const amount = tokenSupply;
+    const amount = tokenSupply * DAO_UNITS;
     const issueTokensTxn = apiConnection.tx?.daoCore?.issueToken?.(
       daoId,
       amount
