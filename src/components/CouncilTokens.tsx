@@ -34,7 +34,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     register,
     handleSubmit,
     reset,
-    watch,
+    // watch,
     setValue,
     control,
     formState: { errors },
@@ -528,8 +528,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 <span className='mx-3 w-[70px] text-center text-primary'>
                   {formatBalance(remain?.div(new BN(DAO_UNITS)).toString(), {
                     decimals: 10,
-                    withUnit: currentDao?.daoId
-                  })}{' Tokens'}
+                    withUnit: currentDao?.daoId,
+                  })}
+                  {' Tokens'}
                 </span>
               </p>
               <p>
