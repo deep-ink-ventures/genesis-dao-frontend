@@ -1,8 +1,10 @@
 import { ErrorMessage } from '@hookform/error-message';
+import { BN } from '@polkadot/util';
 import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { MajorityModelValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -25,7 +27,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
     formState: { errors, isSubmitSuccessful },
   } = useForm<MajorityModelValues>({
     defaultValues: {
-      tokensToIssue: 0,
+      tokensToIssue: new BN(0),
       proposalTokensCost: 0,
       minimumMajority: 10,
       votingDays: 1,
@@ -110,6 +112,10 @@ const MajorityModel = (props: { daoId: string | null }) => {
                   {...register('tokensToIssue', {
                     required: 'Required',
                     min: { value: 1, message: 'Minimum is 1' },
+                    setValueAs: (tokens) => {
+                      const bnTokens = new BN(tokens);
+                      return bnTokens.mul(new BN(DAO_UNITS));
+                    },
                   })}
                 />
                 <ErrorMessage

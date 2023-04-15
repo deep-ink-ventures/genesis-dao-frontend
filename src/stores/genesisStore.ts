@@ -1,11 +1,10 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
+import { BN } from '@polkadot/util';
 import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
 
 import { LOCAL_NODE } from '@/config';
-
-import placeholderValues from './placeholderValues';
 
 // ALL TYPES and INTERFACES...
 
@@ -13,6 +12,8 @@ export interface DaoDetail {
   daoId: string;
   daoName: string;
   daoOwnerAddress: string;
+  daoCreatorAddress: string;
+  setupComplete: boolean;
   daoAssetId: number | null;
   metadataUrl: string | null;
   metadataHash: string | null;
@@ -31,9 +32,9 @@ export interface BasicDaoInfo {
   daoId: string;
   daoName: string;
   daoOwnerAddress: string;
+  daoAssetId: number;
   metadataUrl: string;
   metadataHash: string;
-  images: string | null;
 }
 
 export interface CouncilMember {
@@ -43,7 +44,7 @@ export interface CouncilMember {
 
 export interface TokenRecipient {
   walletAddress: string;
-  tokens: number; // fixme BN
+  tokens: BN; // this is before adding DAO units
 }
 
 export interface CouncilTokensValues
@@ -61,7 +62,7 @@ export interface LogoFormValues {
 }
 
 export interface MajorityModelValues {
-  tokensToIssue: number; // fixme BN
+  tokensToIssue: BN; // fixme BN
   proposalTokensCost: number;
   minimumMajority: number; // percentage or decimals
   votingDays: number; // in days
@@ -76,7 +77,7 @@ export interface CouncilFormValues {
 
 export interface IssueTokensValues {
   tokenRecipients: TokenRecipient[];
-  treasuryTokens: number;
+  treasuryTokens: BN;
 }
 
 export interface DaoCreationValues {
@@ -127,7 +128,7 @@ export interface AssetDetails {
 export interface TransferFormValues {
   assetId: number;
   toAddress: string;
-  amount: number;
+  amount: BN;
 }
 
 export interface TxnNotification {
@@ -192,8 +193,11 @@ export interface AllDaos {
 export interface GenesisState {
   currentWalletAccount: WalletAccount | undefined;
   currentAssetId: number | null;
-  currentAssetBalance: number | null;
   currentDao: DaoDetail | null;
+  nativeTokenBalance: BN | null;
+  daoTokenBalance: BN | null;
+  currentDaoFromChain: BasicDaoInfo | null;
+  daosFromDB: BasicDaoInfo[] | null;
   walletAccounts: WalletAccount[] | undefined;
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
@@ -207,11 +211,23 @@ export interface GenesisState {
   createDaoSteps: number | null;
   newCreatedDao: DaoInfo | null;
   isStartModalOpen: boolean;
-  daoCreationValues: DaoCreationValues;
-  exploreDaos: BasicDaoInfo[] | null;
+  daoCreationValues: DaoCreationValues | null;
 }
 
 export interface GenesisActions {
+  createApiConnection: () => void;
+  handleErrors: (err: Error | string) => void;
+  removeTxnNotification: () => void;
+  addTxnNotification: (notification: TxnNotification) => void;
+
+  fetchDaos: () => void;
+  fetchDaosFromDB: () => void;
+  fetchDao: (daoId: string) => void;
+  fetchDaoTokenBalance: (assetId: number, accountId: string) => void;
+  fetchNativeTokenBalance: (address: string) => void;
+  fetchCurrentAssetId: () => void;
+  fetchDaoFromDB: (daoId: string) => void;
+
   updateCurrentWalletAccount: (
     currentWalletAccount: WalletAccount | undefined
   ) => void;
@@ -220,28 +236,20 @@ export interface GenesisActions {
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
   updateDaos: (daos: AllDaos | null) => void;
-  fetchDaos: () => void;
-  fetchDaosFromDB: () => void;
   updateLoading: (loading: boolean) => void;
-  addTxnNotification: (notification: TxnNotification) => void;
-  removeTxnNotification: () => void;
   updateTxnProcessing: (txnProcessing: boolean) => void;
   updateApiConnection: (apiConnection: any) => void;
-  createApiConnection: () => void;
   updateDaosOwnedByWallet: () => void;
-  handleErrors: (err: Error | string) => void;
-  updateCurrentAssetBalance: (currentAssetBalance: number) => void;
-  fetchTokenBalance: (assetId: number, accountId: string) => void;
   updateCreateDaoSteps: (steps: number) => void;
   updateNewCreatedDao: (dao: DaoInfo) => void;
   updateIsStartModalOpen: (isStartModalOpen: boolean) => void;
   updateDaoCreationValues: (daoCreationValues: DaoCreationValues) => void;
   updateCurrentAssetId: (currentAssetId: number) => void;
-  fetchCurrentAssetId: () => void;
-  updateExploreDaos: (exploreDaos: BasicDaoInfo[]) => void;
-  fetchDaoFromDB: (daoId: string) => void;
-  updateCurrentDao: (currentDao: DaoDetail) => void;
-  fetchDao: (daoId: string) => void;
+  updateDaosFromDB: (daosFromDB: BasicDaoInfo[] | null) => void;
+  updateCurrentDao: (currentDao: DaoDetail | null) => void;
+  updateCurrentDaoFromChain: (currentDaoFromChain: BasicDaoInfo | null) => void;
+  updateDaoTokenBalance: (daoTokenBalance: BN | null) => void;
+  updateNativeTokenBalance: (nativeTokenBalance: BN | null) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -264,38 +272,52 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   createDaoSteps: 1,
   newCreatedDao: null,
   isStartModalOpen: false,
-  daoCreationValues: placeholderValues,
+  daoCreationValues: null,
   currentAssetId: null,
-  exploreDaos: null,
+  daosFromDB: null,
   currentDao: null,
-  updateCurrentWalletAccount: (currentWalletAccount) =>
-    set(() => ({ currentWalletAccount })),
-  updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
-  updateWalletConnected: (walletConnected) => set(() => ({ walletConnected })),
-  updateCreateDaoData: (createDaoData) => set(() => ({ createDaoData })),
-  updateRpcEndpoint: (rpcEndpoint) =>
-    set(() => ({
-      rpcEndpoint,
-    })),
-  updateDaos: (daos) => set(() => ({ daos })),
-  updateLoading: (loading) => set(() => ({ loading })),
+  currentDaoFromChain: null,
+  nativeTokenBalance: null,
+  daoTokenBalance: null,
+  createApiConnection: async () => {
+    const { rpcEndpoint } = get();
+    const createApi = async (): Promise<ApiPromise> => {
+      const wsProvider = new WsProvider(rpcEndpoint);
+      let api: any;
+      try {
+        api = await ApiPromise.create({ provider: wsProvider });
+        await api.isReady;
+        return api;
+      } catch (err) {
+        get().handleErrors(new Error(err));
+        return err;
+      }
+    };
+    set({ apiConnection: await createApi() });
+  },
+  handleErrors: (err: Error | string) => {
+    let message: string;
+    if (typeof err === 'object') {
+      message = err.message;
+    } else {
+      message = err;
+    }
+
+    const newNoti = {
+      title: TxnResponse.Error,
+      message,
+      type: TxnResponse.Error,
+      timestamp: Date.now(),
+    };
+
+    set({ txnProcessing: false });
+    get().addTxnNotification(newNoti);
+  },
   addTxnNotification: (newNotification) => {
     const oldTxnNotis = get().txnNotifications;
     // add the new noti to first index because we will start displaying notis from the last index
     const newNotis = [newNotification, ...oldTxnNotis];
     set({ txnNotifications: newNotis });
-    // fixme don't use global scroll?
-    // eslint-disable-next-line
-    // window.scroll(0, 0);
-    // $('html, body').animate({ scrollTop: 0 }, 'fast');
-    // const isBrowser = () => typeof window !== 'undefined'; // The approach recommended by Next.js
-
-    // const scrollToTop = () => {
-    //   if (!isBrowser()) return;
-    //   window.scrollTo({ top: 0, behavior: 'smooth' });
-    // };
-    // scrollToTop();
-    // window.scrollTo(0, 0)
   },
   removeTxnNotification: () => {
     // first in first out
@@ -305,7 +327,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
 
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
-  fetchDaos: async () => {
+  fetchDaos: () => {
     const apiCon = get().apiConnection;
     apiCon.query?.daoCore?.daos
       ?.entries()
@@ -340,134 +362,41 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
             daoOwnerAddress: dao.owner,
             metadataUrl: dao.meta,
             metadataHash: dao.metaHash,
-            images: null,
           };
         });
-
-        // this is an array of daos
       })
       .catch((err) => {
         get().handleErrors(new Error(err));
       });
   },
-  fetchDaosFromDB: async () => {
-    try {
-      const getDaosResponse = await fetch(
-        'https://service.genesis-dao.org/daos/?order_by=id&limit=50'
-      );
-      const daosRes = await getDaosResponse.json();
-      const daosArr = daosRes.results;
-      const newDaos: BasicDaoInfo[] = daosArr?.map((dao: any) => {
-        return {
-          daoId: dao.id,
-          daoName: dao.name,
-          daoOwnerAddress: dao.owner_id,
-          metadataUrl: dao.metadata_url,
-          metadataHash: dao.metadata_hash,
-          images: null,
+  fetchDao: (daoId) => {
+    const apiCon = get().apiConnection;
+    apiCon.query?.daoCore
+      ?.daos?.(daoId)
+      .then((data) => {
+        const d = data.toHuman() as unknown as IncomingDaoInfo;
+        const dao = {
+          daoId: d.id,
+          daoName: d.name,
+          daoOwnerAddress: d.owner,
+          daoAssetId: d.assetId,
+          metadataUrl: d.meta,
+          metadataHash: d.metaHash,
         };
-      });
-      set({ exploreDaos: newDaos });
-    } catch (err) {
-      get().handleErrors(err);
-    }
-  },
-  updateDaosOwnedByWallet: async () => {
-    await get().fetchDaos();
-    const { daos } = get();
-    const address = get().currentWalletAccount?.address;
-    if (!daos || typeof address === 'undefined') {
-      return;
-    }
-
-    const daosArr = Object.values(daos);
-    const daosByAddress = daosArr.filter((el) => {
-      return el.owner === address;
-    });
-
-    set({ daosOwnedByWallet: daosByAddress });
-  },
-  updateTxnProcessing: (txnProcessing) => set(() => ({ txnProcessing })),
-  updateApiConnection: (apiConnection) => set(() => ({ apiConnection })),
-  createApiConnection: async () => {
-    const { rpcEndpoint } = get();
-    const createApi = async (): Promise<ApiPromise> => {
-      const wsProvider = new WsProvider(rpcEndpoint);
-      let api: any;
-      try {
-        api = await ApiPromise.create({ provider: wsProvider });
-        await api.isReady;
-        return api;
-      } catch (err) {
-        get().handleErrors(new Error(err));
-        return err;
-      }
-    };
-    set({ apiConnection: await createApi() });
-  },
-
-  updateCurrentAssetBalance: (currentAssetBalance) =>
-    set(() => ({ currentAssetBalance })),
-
-  fetchTokenBalance: (assetId: number, accountId: string) => {
-    get()
-      .apiConnection.query?.assets?.account?.(assetId, accountId)
-      .then((data) => {
-        const assetData = data.toHuman() as unknown as IncomingTokenBalanceData;
-        if (assetData === null) {
-          get().updateCurrentAssetBalance(0);
-          return;
-        }
-        const balanceStr = assetData?.balance.replaceAll(',', '');
-        get().updateCurrentAssetBalance(Number(balanceStr));
+        get().updateCurrentDaoFromChain(dao);
       })
       .catch((err) => {
-        get().handleErrors(new Error(err));
+        get().handleErrors(err);
       });
   },
-  handleErrors: (err: Error | string) => {
-    let message: string;
-    if (typeof err === 'object') {
-      message = err.message;
-    } else {
-      message = err;
-    }
-
-    const newNoti = {
-      title: TxnResponse.Error,
-      message,
-      type: TxnResponse.Error,
-      timestamp: Date.now(),
-    };
-
-    set({ txnProcessing: false });
-    get().addTxnNotification(newNoti);
-  },
-  updateCreateDaoSteps: (createDaoSteps) => set(() => ({ createDaoSteps })),
-  updateNewCreatedDao: (newCreatedDao) => set(() => ({ newCreatedDao })),
-  updateIsStartModalOpen: (isStartModalOpen) =>
-    set(() => ({ isStartModalOpen })),
-  updateDaoCreationValues: (daoCreationValues) =>
-    set(() => ({ daoCreationValues })),
-  updateCurrentAssetId: (currentAssetId) =>
-    set(() => ({
-      currentAssetId,
-    })),
-  fetchCurrentAssetId: () => {
-    get()
-      .apiConnection.query.daoCore?.currentAssetId?.()
-      .then((data) => {
-        get().updateCurrentAssetId(Number(data.toHuman()));
-      });
-  },
-  updateExploreDaos: (exploreDaos) => set(() => ({ exploreDaos })),
-  updateCurrentDao: (currentDao) => set(() => ({ currentDao })),
   fetchDaoFromDB: async (daoId) => {
     try {
-      const daoDetail = {
+      const daoDetail: DaoDetail = {
         daoId: '{N/A}',
-        daoName: '',
-        daoOwnerAddress: '',
+        daoName: '{N/A}',
+        daoOwnerAddress: '{N/A}',
+        daoCreatorAddress: '{N/A}',
+        setupComplete: false,
         daoAssetId: null,
         metadataUrl: null,
         metadataHash: null,
@@ -493,20 +422,20 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       daoDetail.daoId = d.id;
       daoDetail.daoName = d.name;
       daoDetail.daoOwnerAddress = d.owner_id;
+      daoDetail.daoCreatorAddress = d.creator_id;
       daoDetail.daoAssetId = d.asset_id;
       daoDetail.metadataUrl = d.metadata_url;
       daoDetail.metadataHash = d.metadata_hash;
+      daoDetail.setupComplete = d.setup_complete;
 
-      if (d.metadata_url) {
-        const jsonResponse = await fetch(d.metadata_url);
-        const m = await jsonResponse.json();
-        daoDetail.descriptionShort = m.description_short;
-        daoDetail.descriptionLong = m.description_long;
-        daoDetail.email = m.email;
-        daoDetail.images.contentType = m.images.logo.content_type;
-        daoDetail.images.small = m.images.logo.small.url;
-        daoDetail.images.medium = m.images.logo.medium.url;
-        daoDetail.images.large = m.images.logo.large.url;
+      if (d.metadata) {
+        daoDetail.descriptionShort = d.metadata.description_short;
+        daoDetail.descriptionLong = d.metadata.description_long;
+        daoDetail.email = d.metadata.email;
+        daoDetail.images.contentType = d.metadata.images.logo.content_type;
+        daoDetail.images.small = d.metadata.images.logo.small.url;
+        daoDetail.images.medium = d.metadata.images.logo.medium.url;
+        daoDetail.images.large = d.metadata.images.logo.large.url;
       }
 
       get().updateCurrentDao(daoDetail);
@@ -514,7 +443,113 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       get().handleErrors(err);
     }
   },
-  fetchDao: () => {},
+  fetchDaosFromDB: async () => {
+    try {
+      const getDaosResponse = await fetch(
+        'https://service.genesis-dao.org/daos/?order_by=id&limit=50'
+      );
+      const daosRes = await getDaosResponse.json();
+      const daosArr = daosRes.results;
+      const newDaos: BasicDaoInfo[] = daosArr?.map((dao: any) => {
+        return {
+          daoId: dao.id,
+          daoName: dao.name,
+          daoOwnerAddress: dao.owner_id,
+          metadataUrl: dao.metadata_url,
+          metadataHash: dao.metadata_hash,
+          images: null,
+        };
+      });
+      set({ daosFromDB: newDaos });
+    } catch (err) {
+      get().handleErrors(err);
+    }
+  },
+  fetchDaoTokenBalance: (assetId: number, accountId: string) => {
+    get()
+      .apiConnection.query?.assets?.account?.(assetId, accountId)
+      .then((data) => {
+        const assetData = data.toHuman() as unknown as IncomingTokenBalanceData;
+        if (assetData === null) {
+          get().updateDaoTokenBalance(new BN(0));
+          return;
+        }
+        const balanceStr = assetData?.balance.replaceAll(',', '');
+        const balance = new BN(balanceStr);
+        get().updateDaoTokenBalance(balance);
+      })
+      .catch((err) => {
+        get().handleErrors(new Error(err));
+      });
+  },
+  fetchNativeTokenBalance: async (address) => {
+    try {
+      if (!address) {
+        return;
+      }
+      const response = await fetch(
+        `https://service.genesis-dao.org/accounts/${address}/`
+      );
+      const account = await response.json();
+      const freeBalance = new BN(account.balance.free);
+      set({ nativeTokenBalance: freeBalance });
+    } catch (err) {
+      get().handleErrors(err);
+    }
+  },
+  fetchCurrentAssetId: () => {
+    get()
+      .apiConnection.query.daoCore?.currentAssetId?.()
+      .then((data) => {
+        get().updateCurrentAssetId(Number(data.toHuman()));
+      });
+  },
+  updateDaosOwnedByWallet: async () => {
+    await get().fetchDaos();
+    const { daos } = get();
+    const address = get().currentWalletAccount?.address;
+    if (!daos || typeof address === 'undefined') {
+      return;
+    }
+
+    const daosArr = Object.values(daos);
+    const daosByAddress = daosArr.filter((el) => {
+      return el.owner === address;
+    });
+
+    set({ daosOwnedByWallet: daosByAddress });
+  },
+  updateTxnProcessing: (txnProcessing) => set(() => ({ txnProcessing })),
+  updateApiConnection: (apiConnection) => set(() => ({ apiConnection })),
+  updateCreateDaoSteps: (createDaoSteps) => set(() => ({ createDaoSteps })),
+  updateNewCreatedDao: (newCreatedDao) => set(() => ({ newCreatedDao })),
+  updateIsStartModalOpen: (isStartModalOpen) =>
+    set(() => ({ isStartModalOpen })),
+  updateDaoCreationValues: (daoCreationValues) =>
+    set(() => ({ daoCreationValues })),
+  updateCurrentAssetId: (currentAssetId) =>
+    set(() => ({
+      currentAssetId,
+    })),
+
+  updateDaosFromDB: (daosFromDB) => set(() => ({ daosFromDB })),
+  updateCurrentWalletAccount: (currentWalletAccount) =>
+    set(() => ({ currentWalletAccount })),
+  updateWalletAccounts: (walletAccounts) => set(() => ({ walletAccounts })),
+  updateWalletConnected: (walletConnected) => set(() => ({ walletConnected })),
+  updateCreateDaoData: (createDaoData) => set(() => ({ createDaoData })),
+  updateRpcEndpoint: (rpcEndpoint) =>
+    set(() => ({
+      rpcEndpoint,
+    })),
+  updateDaos: (daos) => set(() => ({ daos })),
+  updateLoading: (loading) => set(() => ({ loading })),
+  updateCurrentDao: (currentDao) => set(() => ({ currentDao })),
+  updateCurrentDaoFromChain: (currentDaoFromChain) =>
+    set(() => ({ currentDaoFromChain })),
+  updateDaoTokenBalance: (daoTokenBalance) => set(() => ({ daoTokenBalance })),
+  updateNativeTokenBalance: (nativeTokenBalance) =>
+    set(() => ({ nativeTokenBalance })),
 }));
 
 export default useGenesisStore;

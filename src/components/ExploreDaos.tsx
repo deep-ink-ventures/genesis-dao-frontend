@@ -7,13 +7,12 @@ import useGenesisStore from '@/stores/genesisStore';
 import telescope from '@/svg/telescope.svg';
 
 const ExploreDaos = () => {
-  const exploreDaos = useGenesisStore((s) => s.exploreDaos);
+  const daosFromDB = useGenesisStore((s) => s.daosFromDB);
   const fetchDaosFromDB = useGenesisStore((s) => s.fetchDaosFromDB);
-  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredDaos = exploreDaos?.filter((dao) => {
+  const filteredDaos = daosFromDB?.filter((dao) => {
     return (
       dao.daoName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       dao.daoId.toLowerCase().includes(searchTerm.toLowerCase())
@@ -23,7 +22,6 @@ const ExploreDaos = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchDaosFromDB();
-      fetchDaos();
     }, 500);
     return () => clearTimeout(timer);
     // eslint-disable-next-line
@@ -59,7 +57,7 @@ const ExploreDaos = () => {
         </div>
       </div>
       <div className='my-2 flex justify-center'>
-        {!exploreDaos ? <Spinner /> : displayDaos()}
+        {!daosFromDB ? <Spinner /> : displayDaos()}
       </div>
     </div>
   );
