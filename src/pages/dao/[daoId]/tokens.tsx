@@ -7,14 +7,14 @@ import MainLayout from '@/templates/MainLayout';
 const Tokens = () => {
   const router = useRouter();
   const { daoId } = router.query;
-  const daos = useGenesisStore((s) => s.daos);
-  if (!daos) {
+  const currentDao = useGenesisStore((s) => s.currentDao);
+  if (!currentDao) {
     <MainLayout title='Tokens page for DAOS' description='Tokens page for DAOS'>
       <div>something is wrong</div>
     </MainLayout>;
   }
 
-  if (!daos?.[daoId as string]?.assetId) {
+  if (!currentDao?.daoAssetId) {
     return (
       <MainLayout
         title='Tokens page for DAOS'
@@ -33,7 +33,7 @@ const Tokens = () => {
           <div className='max-w-md'>
             <h1 className='text-3xl font-bold'>{`Transfer ${daoId} tokens`}</h1>
             <TransferForm
-              assetId={daos?.[daoId as string]?.assetId as number}
+              assetId={currentDao.daoAssetId as number}
               daoId={daoId as string}
             />
           </div>

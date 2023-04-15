@@ -20,7 +20,7 @@ const LogoForm = (props: { daoId: string | null }) => {
     reset,
     watch,
     setValue,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<LogoFormValues>({
     defaultValues: {
       email: '',
@@ -31,7 +31,11 @@ const LogoForm = (props: { daoId: string | null }) => {
   });
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
-  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  // const currentDao = useGenesisStore((s) => s.currentDao);
+  // const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
+
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  const fetchDao = useGenesisStore((s) => s.fetchDao);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const { makeSetMetadataTxn, sendBatchTxns } = useGenesisDao();
 
@@ -67,6 +71,7 @@ const LogoForm = (props: { daoId: string | null }) => {
       }
 
       const base64Signature = hexToBase64(signerResult.signature.substring(2));
+
       const metadataResponse = await fetch(
         `https://service.genesis-dao.org/daos/${props.daoId}/metadata/`,
         {
@@ -94,7 +99,11 @@ const LogoForm = (props: { daoId: string | null }) => {
         'Set metadata successfully',
         'Transaction failed',
         () => {
-          updateCreateDaoSteps(2);
+          if (props.daoId) {
+            fetchDao(props.daoId as string);
+            fetchDaoFromDB(props.daoId as string);
+            reset();
+          }
         }
       );
     } catch (err) {
@@ -105,10 +114,9 @@ const LogoForm = (props: { daoId: string | null }) => {
   const imageFile = watch('logoImage');
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-  });
+    fetchDao(props.daoId as string);
+    fetchDaoFromDB(props.daoId as string);
+  }, [fetchDao, fetchDaoFromDB, txnProcessing, props.daoId]);
 
   useEffect(() => {
     if (daoLogo) {

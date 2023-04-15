@@ -1,6 +1,7 @@
 import type { SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
+import { formatBalance } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
 import { DAO_UNITS } from '@/config';
@@ -439,19 +440,18 @@ const useGenesisDao = () => {
     walletAccount: WalletAccount,
     assetId: number,
     toAddress: string,
-    amount: number
+    amount: BN
   ) => {
-    const newAmount = amount * DAO_UNITS;
     if (walletAccount.signer) {
       apiConnection.tx?.assets
-        ?.transferKeepAlive?.(assetId, toAddress, newAmount)
+        ?.transferKeepAlive?.(assetId, toAddress, amount)
         .signAndSend(
           walletAccount.address,
           { signer: walletAccount.signer },
           (result) => {
             txResponseCallback(
               result,
-              `Transferred ${amount}`,
+              `Transferred ${formatBalance(amount, { decimals: 10 })}`,
               'Something went wrong. Please try again. '
             );
           }
@@ -471,15 +471,10 @@ const useGenesisDao = () => {
     return [...txns, createDaoTxn];
   };
 
-  const makeIssueTokensTxn = (
-    txns: any[],
-    daoId: string,
-    tokenSupply: number
-  ) => {
-    const amount = tokenSupply * DAO_UNITS;
+  const makeIssueTokensTxn = (txns: any[], daoId: string, tokenSupply: BN) => {
     const issueTokensTxn = apiConnection.tx?.daoCore?.issueToken?.(
       daoId,
-      amount
+      tokenSupply
     );
 
     return [...txns, issueTokensTxn];
@@ -494,7 +489,7 @@ const useGenesisDao = () => {
       return apiConnection.tx.assets?.transfer?.(
         Number(assetId),
         recipient.walletAddress,
-        Number(recipient.tokens)
+        recipient.tokens
       );
     });
 

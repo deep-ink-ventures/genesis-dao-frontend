@@ -1,8 +1,10 @@
 import { ErrorMessage } from '@hookform/error-message';
+import { BN, formatBalance } from '@polkadot/util';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
+import { DAO_UNITS } from '@/config';
 import type { CouncilTokensValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
@@ -16,15 +18,14 @@ import {
 import useGenesisDao from '../hooks/useGenesisDao';
 
 const CouncilTokens = (props: { daoId: string | null }) => {
-  const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[props.daoId as string];
-  const assetId: number | null | undefined = dao?.assetId;
-  const fetchTokenBalance = useGenesisStore((s) => s.fetchTokenBalance);
-  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  const fetchDaoTokenBalance = useGenesisStore((s) => s.fetchDaoTokenBalance);
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const currentAssetBalance = useGenesisStore((s) => s.currentAssetBalance);
+  const currentDao = useGenesisStore((s) => s.currentDao);
+  const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
+  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const { makeBatchTransferTxn, sendBatchTxns, makeChangeOwnerTxns } =
     useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
@@ -33,10 +34,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     register,
     handleSubmit,
     reset,
-    watch,
+    // watch,
     setValue,
     control,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<CouncilTokensValues>({
     defaultValues: {
       creatorName: '',
@@ -51,10 +52,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       tokenRecipients: [
         {
           walletAddress: '',
-          tokens: 0,
+          tokens: new BN(0),
         },
       ],
-      treasuryTokens: 0,
+      treasuryTokens: new BN(0),
     },
   });
 
@@ -66,20 +67,21 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const getTotalRecipientsTokens = (
     recipients: CouncilTokensValues['tokenRecipients']
   ) => {
-    let total = 0;
+    let total = new BN(0);
     if (!recipients) {
-      return 0;
+      return new BN(0);
     }
     // eslint-disable-next-line
     for (const item of recipients) {
-      total += Number.isNaN(item.tokens) ? 0 : Number(item.tokens);
+      total = total.add(item.tokens);
     }
+    // multiply by DAO units to get the right tokens
     return total;
   };
 
-  const remain = currentAssetBalance
-    ? currentAssetBalance - getTotalRecipientsTokens(tokensValues)
-    : 0;
+  const remain = daoTokenBalance
+    ? daoTokenBalance.sub(getTotalRecipientsTokens(tokensValues))
+    : new BN(0);
 
   const {
     fields: councilMembersFields,
@@ -110,7 +112,12 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       data.councilThreshold
     );
 
-    if (!currentWalletAccount || !props.daoId || !assetId || !multisigAddress) {
+    if (
+      !currentWalletAccount ||
+      !props.daoId ||
+      !currentDaoFromChain?.daoAssetId ||
+      !multisigAddress
+    ) {
       handleErrors(
         `Sorry we've run into some issues related to the multisig account`
       );
@@ -120,7 +127,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     const recipients = data.tokenRecipients.map((recipient) => {
       return {
         walletAddress: recipient.walletAddress,
-        tokens: Number(recipient.tokens),
+        tokens: recipient.tokens,
       };
     });
 
@@ -135,7 +142,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     const withRecipients = makeBatchTransferTxn(
       [],
       recipientsWithTreasury,
-      Number(assetId)
+      Number(currentDaoFromChain?.daoAssetId)
     );
 
     const withChangeOwner = makeChangeOwnerTxns(
@@ -150,7 +157,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
         'Tokens Issued and Transferred DAO Ownership!',
         'Transaction failed',
         () => {
-          updateCreateDaoSteps(4);
+          reset();
+          setTimeout(() => {
+            fetchDaoFromDB(props?.daoId as string);
+          }, 3000);
         }
       );
     } catch (err) {
@@ -159,16 +169,31 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   };
 
   useEffect(() => {
-    if (currentWalletAccount && assetId) {
-      fetchTokenBalance(assetId, currentWalletAccount.address);
+    if (props.daoId) {
+      fetchDaoFromDB(props.daoId);
     }
-  }, [currentWalletAccount, assetId, fetchTokenBalance]);
+    if (currentWalletAccount && currentDaoFromChain?.daoAssetId) {
+      fetchDaoTokenBalance(
+        currentDaoFromChain?.daoAssetId,
+        currentWalletAccount.address
+      );
+    }
+  }, [
+    currentWalletAccount,
+    currentDaoFromChain?.daoAssetId,
+    fetchDaoTokenBalance,
+    props.daoId,
+    fetchDaoFromDB,
+  ]);
 
   useEffect(() => {
     let interval: any;
-    if (currentWalletAccount && assetId) {
+    if (currentWalletAccount && currentDaoFromChain?.daoAssetId) {
       interval = setInterval(() => {
-        fetchTokenBalance(assetId, currentWalletAccount.address);
+        fetchDaoTokenBalance(
+          currentDaoFromChain?.daoAssetId as number,
+          currentWalletAccount.address
+        );
       }, 5000);
     }
     return () => clearInterval(interval);
@@ -176,12 +201,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
 
   useEffect(() => {
     setValue('treasuryTokens', remain);
-  });
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
   });
 
   const handleAddMember = () => {
@@ -196,12 +215,12 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const handleAddRecipient = () => {
     tokenRecipientsAppend({
       walletAddress: '',
-      tokens: 0,
+      tokens: new BN(0),
     });
   };
 
   const recipientsFields = () => {
-    if (!currentAssetBalance) {
+    if (!daoTokenBalance) {
       return <div className='text-center'>Please issue tokens first</div>;
     }
     return tokenRecipientsFields.map((item, index) => {
@@ -242,6 +261,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
+                  setValueAs: (tokens) => {
+                    const bnTokens = new BN(tokens);
+                    return bnTokens.mul(new BN(DAO_UNITS));
+                  },
                 })}
               />
               <ErrorMessage
@@ -253,17 +276,16 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               />
             </div>
             <div className='flex w-[65px] items-center justify-center pt-5'>
-              {(watch(`tokenRecipients.${index}.tokens`) /
-                currentAssetBalance) *
-                100 >=
-              100
+              {/* {watch(`tokenRecipients.${index}.tokens`)
+                .div(daoTokenBalance)
+                .mul(new BN(100))
+                .gte(new BN(100))
                 ? 'NaN'
-                : (
-                    (watch(`tokenRecipients.${index}.tokens`) /
-                      currentAssetBalance) *
-                    100
-                  ).toFixed(2)}{' '}
-              %
+                : watch(`tokenRecipients.${index}.tokens`)
+                    ?.div(daoTokenBalance)
+                    .mul(new BN(100))
+                    .toString()}{' '}
+              % */}
             </div>
           </div>
           <div className='ml-3 flex items-center pt-5'>
@@ -364,7 +386,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
         />
       </div>
       <div>
-        <h3 className='text-center text-primary'>{dao?.daoName}</h3>
+        <h3 className='text-center text-primary'>{currentDao?.daoName}</h3>
         <h2 className='text-center text-primary'>
           Create a Council & Distribute DAO Tokens
         </h2>
@@ -480,7 +502,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             {recipientsFields()}
           </div>
           <div>
-            {currentAssetBalance ? (
+            {daoTokenBalance ? (
               <button
                 className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
                 type='button'
@@ -504,12 +526,17 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <p>Distribute</p>
               <p>
                 <span className='mx-3 w-[70px] text-center text-primary'>
-                  {remain.toFixed()}{' '}
+                  {formatBalance(remain?.div(new BN(DAO_UNITS)).toString(), {
+                    decimals: 10,
+                    withUnit: currentDao?.daoId,
+                  })}
+                  {' Tokens'}
                 </span>
               </p>
               <p>
                 {' '}
-                {dao?.daoId} tokens to treasury controlled by council members
+                {currentDao?.daoId} tokens to treasury controlled by council
+                members
               </p>
             </div>
           </div>
@@ -517,7 +544,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
         <div className='mt-6 flex w-full justify-end'>
           <button
             className={`btn-primary btn mr-3 w-48 ${
-              !currentAssetBalance ? 'btn-disabled' : ''
+              !daoTokenBalance ? 'btn-disabled' : ''
             } ${txnProcessing ? 'loading' : ''}`}
             type='submit'>
             {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}

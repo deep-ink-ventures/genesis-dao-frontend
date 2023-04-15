@@ -12,22 +12,28 @@ import MainLayout from '@/templates/MainLayout';
 const Customize = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  const fetchDao = useGenesisStore((s) => s.fetchDao);
   const currentDao = useGenesisStore((s) => s.currentDao);
+  const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
   const router = useRouter();
   const { daoId } = router.query;
   const isOwner =
     currentDao &&
     currentWalletAccount &&
     currentDao.daoOwnerAddress === currentWalletAccount.address;
-
-  const createDaoSteps = useGenesisStore((s) => s.createDaoSteps);
+  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
 
   useEffect(() => {
     if (!daoId) {
       return;
     }
-    fetchDaoFromDB(daoId as string);
-  }, [daoId, fetchDaoFromDB]);
+    const TO = setTimeout(() => {
+      fetchDaoFromDB(daoId as string);
+      fetchDao(daoId as string);
+    }, 700);
+    // eslint-disable-next-line
+    return () => clearTimeout(TO);
+  }, [daoId, fetchDaoFromDB, fetchDao, txnProcessing]);
 
   const display = () => {
     if (!currentWalletAccount?.address) {
@@ -46,16 +52,30 @@ const Customize = () => {
         <p>Sorry you are not the owner of {currentDao?.daoName}</p>
       </div>;
     }
-    if (createDaoSteps === 1) {
+
+    if (!currentDaoFromChain?.metadataHash) {
       return <LogoForm daoId={daoId as string} />;
     }
-    if (createDaoSteps === 2) {
+    if (
+      currentDao &&
+      currentDaoFromChain.metadataHash &&
+      !currentDaoFromChain.daoAssetId
+    ) {
       return <GovernanceForm daoId={daoId as string} />;
     }
-    if (createDaoSteps === 3) {
+    if (
+      currentDao &&
+      currentDaoFromChain.metadataHash &&
+      currentDaoFromChain.daoAssetId &&
+      !currentDao.setupComplete
+    ) {
       return <CouncilTokens daoId={daoId as string} />;
     }
-    if (createDaoSteps === 4) {
+    if (
+      currentDao &&
+      (currentDao.setupComplete ||
+        currentDao?.daoCreatorAddress !== currentDao?.daoOwnerAddress)
+    ) {
       return <Congratulations daoId={daoId as string} />;
     }
     return null;

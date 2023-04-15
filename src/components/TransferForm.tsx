@@ -1,11 +1,13 @@
 // import  { decodeAddress, encodeAddress } from '@polkadot/keyring'
-// import { hexToU8a, isHex } from '@polkadot/util'
+// import { hexToU8a, isHex, BN } from '@polkadot/util';
 
 import { ErrorMessage } from '@hookform/error-message';
+import { BN, formatBalance } from '@polkadot/util';
 import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -17,8 +19,8 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const fetchTokenBalance = useGenesisStore((s) => s.fetchTokenBalance);
-  const currentAssetBalance = useGenesisStore((s) => s.currentAssetBalance);
+  const fetchDaoTokenBalance = useGenesisStore((s) => s.fetchDaoTokenBalance);
+  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
 
   const {
     register,
@@ -63,7 +65,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
         {
           assetId: props.assetId,
           toAddress: '',
-          amount: 0,
+          amount: new BN(0),
         },
         { keepErrors: true }
       );
@@ -72,7 +74,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
 
   useEffect(() => {
     if (currentWalletAccount) {
-      fetchTokenBalance(props.assetId, currentWalletAccount.address);
+      fetchDaoTokenBalance(props.assetId, currentWalletAccount.address);
     }
   });
 
@@ -80,7 +82,11 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
     <div>
       <div>
         <div>
-          {`Your current ${props.daoId} token balance is ${currentAssetBalance}`}
+          {`Your current ${props.daoId} token balance is ${
+            daoTokenBalance
+              ? formatBalance(daoTokenBalance, { decimals: 10 })
+              : '0'
+          }`}
         </div>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -114,6 +120,9 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
               min: {
                 value: 0.000001,
                 message: 'The Amount is zero or too small',
+              },
+              setValueAs: (tokens) => {
+                return new BN(tokens * DAO_UNITS);
               },
             })}
           />

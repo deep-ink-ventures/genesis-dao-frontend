@@ -1,4 +1,5 @@
 import { ErrorMessage } from '@hookform/error-message';
+import { BN } from '@polkadot/util';
 import Modal from 'antd/lib/modal';
 import { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
@@ -21,12 +22,20 @@ const CreateDaoModal = () => {
   const [hasTenDots, setHasTenDots] = useState<boolean | null>(null);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  const nativeTokenBalance = useGenesisStore((s) => s.nativeTokenBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const { createDao } = useGenesisDao();
   const updateCreateDaoData = useGenesisStore((s) => s.updateCreateDaoData);
+  const updateCurrentDaoFromChain = useGenesisStore(
+    (s) => s.updateCurrentDaoFromChain
+  );
+  const updateCurrentDao = useGenesisStore((s) => s.updateCurrentDao);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const fetchDaosFromDB = useGenesisStore((s) => s.fetchDaosFromDB);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
+  const fetchNativeTokenBalance = useGenesisStore(
+    (s) => s.fetchNativeTokenBalance
+  );
 
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
@@ -39,6 +48,8 @@ const CreateDaoModal = () => {
   ) => {
     updateTxnProcessing(true);
     updateCreateDaoData(data);
+    updateCurrentDaoFromChain(null);
+    updateCurrentDao(null);
     if (currentWalletAccount) {
       try {
         await createDao(currentWalletAccount, data);
@@ -56,25 +67,19 @@ const CreateDaoModal = () => {
   });
 
   useEffect(() => {
-    if (currentWalletAccount && hasTenDots === null) {
-      fetch(
-        `https://service.genesis-dao.org/accounts/${encodeURIComponent(
-          currentWalletAccount?.address
-        )}`
-      ).then(async (data) => {
-        let balance = '0';
-        const jsonData = await data.json();
-        if (jsonData?.balance?.free) {
-          balance = (jsonData.balance.free / NATIVE_UNITS).toFixed(0);
-        }
-        if (Number(balance) < 10) {
-          setHasTenDots(false);
-        } else {
-          setHasTenDots(true);
-        }
-      });
+    if (currentWalletAccount?.address) {
+      fetchNativeTokenBalance(currentWalletAccount.address);
     }
-  });
+  }, [currentWalletAccount, fetchNativeTokenBalance]);
+
+  useEffect(() => {
+    if (nativeTokenBalance?.gt(new BN(10 * NATIVE_UNITS))) {
+      setHasTenDots(true);
+    } else {
+      setHasTenDots(false);
+    }
+  }, [nativeTokenBalance]);
+
   const handleCancel = () => {
     updateIsStartModalOpen(false);
   };
