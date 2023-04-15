@@ -54,7 +54,9 @@ const LogoForm = (props: { daoId: string | null }) => {
       const challengeRes = await fetch(
         `https://service.genesis-dao.org/daos/${props.daoId}/challenge/`
       );
+      console.log('challenge res', challengeRes)
       const challengeString = await challengeRes.json();
+      console.log('challenge', challengeString)
       if (!challengeString.challenge) {
         handleErrors('Not able to validate ownership');
         return;

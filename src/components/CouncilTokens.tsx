@@ -142,7 +142,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     const withRecipients = makeBatchTransferTxn(
       [],
       recipientsWithTreasury,
-      Number(currentDao?.daoAssetId)
+      Number(currentDaoFromChain?.daoAssetId)
     );
 
     const withChangeOwner = makeChangeOwnerTxns(
@@ -276,16 +276,16 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               />
             </div>
             <div className='flex w-[65px] items-center justify-center pt-5'>
-              {watch(`tokenRecipients.${index}.tokens`)
+              {/* {watch(`tokenRecipients.${index}.tokens`)
                 .div(daoTokenBalance)
                 .mul(new BN(100))
                 .gte(new BN(100))
                 ? 'NaN'
                 : watch(`tokenRecipients.${index}.tokens`)
-                    .div(daoTokenBalance)
+                    ?.div(daoTokenBalance)
                     .mul(new BN(100))
                     .toString()}{' '}
-              %
+              % */}
             </div>
           </div>
           <div className='ml-3 flex items-center pt-5'>
@@ -526,9 +526,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <p>Distribute</p>
               <p>
                 <span className='mx-3 w-[70px] text-center text-primary'>
-                  {formatBalance(remain.div(new BN(DAO_UNITS)).toString(), {
+                  {formatBalance(remain?.div(new BN(DAO_UNITS)).toString(), {
                     decimals: 10,
-                  })}{' '}
+                    withUnit: currentDao?.daoId
+                  })}{' Tokens'}
                 </span>
               </p>
               <p>
