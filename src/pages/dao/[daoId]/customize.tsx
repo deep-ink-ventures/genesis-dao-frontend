@@ -11,6 +11,7 @@ import MainLayout from '@/templates/MainLayout';
 
 const Customize = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const showCongrats = useGenesisStore((s) => s.showCongrats);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDao = useGenesisStore((s) => s.fetchDao);
   const currentDao = useGenesisStore((s) => s.currentDao);
@@ -67,16 +68,13 @@ const Customize = () => {
       currentDao &&
       currentDaoFromChain.metadataHash &&
       currentDaoFromChain.daoAssetId &&
-      !currentDao.setupComplete
+      !currentDao.setupComplete &&
+      !showCongrats
     ) {
       return <CouncilTokens daoId={daoId as string} />;
     }
 
-    if (
-      currentDao &&
-      (currentDao.setupComplete ||
-        currentDao?.daoCreatorAddress !== currentDao?.daoOwnerAddress)
-    ) {
+    if ((currentDao && currentDao.setupComplete) || showCongrats) {
       return <Congratulations daoId={daoId as string} />;
     }
     return null;

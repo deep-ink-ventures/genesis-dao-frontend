@@ -212,6 +212,7 @@ export interface GenesisState {
   newCreatedDao: DaoInfo | null;
   isStartModalOpen: boolean;
   daoCreationValues: DaoCreationValues | null;
+  showCongrats: boolean;
 }
 
 export interface GenesisActions {
@@ -250,6 +251,7 @@ export interface GenesisActions {
   updateCurrentDaoFromChain: (currentDaoFromChain: BasicDaoInfo | null) => void;
   updateDaoTokenBalance: (daoTokenBalance: BN | null) => void;
   updateNativeTokenBalance: (nativeTokenBalance: BN | null) => void;
+  updateShowCongrats: (showCongrats: boolean) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -279,6 +281,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   currentDaoFromChain: null,
   nativeTokenBalance: null,
   daoTokenBalance: null,
+  showCongrats: false,
   createApiConnection: async () => {
     const { rpcEndpoint } = get();
     const createApi = async (): Promise<ApiPromise> => {
@@ -550,6 +553,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   updateDaoTokenBalance: (daoTokenBalance) => set(() => ({ daoTokenBalance })),
   updateNativeTokenBalance: (nativeTokenBalance) =>
     set(() => ({ nativeTokenBalance })),
+  updateShowCongrats: (showCongrats) => set(() => ({ showCongrats })),
 }));
 
 export default useGenesisStore;

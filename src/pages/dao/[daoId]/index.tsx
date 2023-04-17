@@ -94,17 +94,24 @@ const DaoHome = () => {
               <span className='font-bold'>DAO Details: </span>
               <span>{currentDao?.descriptionLong}</span>
             </p>
+            <p className='mb-2'>
+              <span className='font-bold'>Setup Complete? </span>
+              <span>{currentDao?.setupComplete ? 'Yes' : 'No'}</span>
+            </p>
           </div>
           <div className='flex flex-col gap-y-3'>
-            <Link
-              href={`/dao/${encodeURIComponent(daoId as string)}/customize`}
-              className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
-              <button
-                className={`btn-primary btn w-[180px]`}
-                disabled={!currentWalletAccount}>
-                Customize DAO
-              </button>
-            </Link>
+            {currentDao?.setupComplete ? null : (
+              <Link
+                href={`/dao/${encodeURIComponent(daoId as string)}/customize`}
+                className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
+                <button
+                  className={`btn-primary btn w-[180px]`}
+                  disabled={!currentWalletAccount}>
+                  Customize DAO
+                </button>
+              </Link>
+            )}
+
             <Link
               href={`/dao/${encodeURIComponent(daoId as string)}/tokens`}
               className={`${!currentWalletAccount ? 'disable-link' : ''}`}>

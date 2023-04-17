@@ -112,6 +112,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                   {...register('tokensToIssue', {
                     required: 'Required',
                     min: { value: 1, message: 'Minimum is 1' },
+                    max: { value: 900000000, message: 'Max is 900,000,000'},
                     setValueAs: (tokens) => {
                       const bnTokens = new BN(tokens);
                       return bnTokens.mul(new BN(DAO_UNITS));
