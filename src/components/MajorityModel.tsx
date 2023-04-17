@@ -10,13 +10,13 @@ import type { MajorityModelValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
 const MajorityModel = (props: { daoId: string | null }) => {
-  const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[props.daoId as string];
-  const assetId = dao?.assetId;
+  const currentDao = useGenesisStore((s) => s.currentDao);
+  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const { sendBatchTxns, makeIssueTokensTxn, makeMajorityVoteTxn } =
     useGenesisDao();
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  const fetchDao = useGenesisStore((s) => s.fetchDao);
+  const updateShowCongrats = useGenesisStore((s) => s.updateShowCongrats);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const {
@@ -24,7 +24,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<MajorityModelValues>({
     defaultValues: {
       tokensToIssue: new BN(0),
@@ -64,7 +64,9 @@ const MajorityModel = (props: { daoId: string | null }) => {
         'Issue tokens & set governance model successfully',
         'Transaction Failed',
         () => {
-          updateCreateDaoSteps(3);
+          reset();
+          fetchDaoFromDB(props.daoId as string);
+          fetchDao(props.daoId as string);
         }
       );
     } catch (err) {
@@ -73,16 +75,11 @@ const MajorityModel = (props: { daoId: string | null }) => {
   };
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-  });
+    fetchDaoFromDB(props.daoId as string);
+    fetchDao(props.daoId as string);
+    updateShowCongrats(false);
+  }, [fetchDaoFromDB, fetchDao, updateShowCongrats, props.daoId]);
 
-  useEffect(() => {
-    if (assetId) {
-      updateCreateDaoSteps(2);
-    }
-  });
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='min-w-full'>
       <div className='card flex w-full items-center justify-center pt-6 hover:border-none hover:brightness-100'>
@@ -99,8 +96,9 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 <span className='text-lg font-medium text-red-600'>*</span>
               </h4>
               <p className='ml-1 text-sm'>
-                Your DAO ID <span className='text-primary'>{dao?.daoId}</span>{' '}
-                will be the DAO token symbol
+                Your DAO ID{' '}
+                <span className='text-primary'>{currentDao?.daoId}</span> will
+                be the DAO token symbol
               </p>
             </div>
             <div>
@@ -112,7 +110,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                   {...register('tokensToIssue', {
                     required: 'Required',
                     min: { value: 1, message: 'Minimum is 1' },
-                    max: { value: 900000000, message: 'Max is 900,000,000'},
+                    max: { value: 900000000, message: 'Max is 900,000,000' },
                     setValueAs: (tokens) => {
                       const bnTokens = new BN(tokens);
                       return bnTokens.mul(new BN(DAO_UNITS));

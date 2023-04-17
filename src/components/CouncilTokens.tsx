@@ -161,8 +161,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           reset();
           updateShowCongrats(true);
           setTimeout(() => {
-            console.log('fetch dao for setup complete');
-
             fetchDaoFromDB(props?.daoId as string);
           }, 3000);
         }

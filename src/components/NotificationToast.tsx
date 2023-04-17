@@ -14,7 +14,7 @@ interface ToastProps {
 const ToastIcon = ({ type }: { type: TxnResponse }) => {
   if (type === TxnResponse.Error) {
     return (
-      <div className='inline-flex  h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500 dark:bg-red-800 dark:text-red-200'>
+      <div className='inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-500  dark:bg-red-800 dark:text-red-200'>
         <svg
           aria-hidden='true'
           className='h-5 w-5'

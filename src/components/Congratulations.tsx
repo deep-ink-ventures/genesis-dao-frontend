@@ -9,6 +9,8 @@ const Congratulations = (props: { daoId: string | null }) => {
   const router = useRouter();
   const daos = useGenesisStore((s) => s.daos);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
+  const updateShowCongrats = useGenesisStore((s) => s.updateShowCongrats);
+
   const dao = daos?.[props.daoId as string];
 
   const handleDashboard = () => {
@@ -19,6 +21,7 @@ const Congratulations = (props: { daoId: string | null }) => {
     const timer = setTimeout(() => {
       updateCreateDaoSteps(1);
       router.push(`/dao/${props.daoId}`);
+      updateShowCongrats(false);
     }, 5000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line
