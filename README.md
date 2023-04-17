@@ -24,11 +24,22 @@ Most of the transaction actions are in the [`useGenesisDao`](./src/hooks/useGene
 
 ## Getting Started
 
+Adjust the environment variables to your need or go with the defaults:
+
+```shell
+cp .env.example .env
+```
+
 > The frontend defaults to the service and node of the genesis dao test environment.
-> Copy `.env.example` to `.env` and overwrite the urls to adjust this.
 
 ### Docker setup
 
+We are using docker compose.
+
+```shell
+docker compose build
+docker compose up
+```
 
 ### Building from source
 1. Install node packages
