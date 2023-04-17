@@ -186,11 +186,10 @@ const LogoForm = (props: { daoId: string | null }) => {
                     required: 'Required',
                     validate: {
                       fileSize: (data) => {
-                        if (data) {
-                          if (data[0] && data[0].size <= 2 * 1024 * 1024) {
-                            return true;
-                          }
-                          return 'The file is too big';
+                        const validSize =
+                          data[0] && data[0].size <= 2 * 1024 * 1024;
+                        if (validSize) {
+                          return true;
                         }
                         return 'The file is too big';
                       },
