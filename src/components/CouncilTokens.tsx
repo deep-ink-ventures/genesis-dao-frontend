@@ -22,6 +22,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const currentDao = useGenesisStore((s) => s.currentDao);
+  const updateShowCongrats = useGenesisStore((s) => s.updateShowCongrats);
+
   const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
@@ -106,7 +108,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       return el.walletAddress;
     });
     const addresses = [data.creatorWallet, ...otherAddresses];
-
     const multisigAddress = getMultisigAddress(
       addresses,
       data.councilThreshold
@@ -158,6 +159,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
         'Transaction failed',
         () => {
           reset();
+          updateShowCongrats(true);
           setTimeout(() => {
             fetchDaoFromDB(props?.daoId as string);
           }, 3000);
@@ -184,8 +186,14 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     fetchDaoTokenBalance,
     props.daoId,
     fetchDaoFromDB,
+    txnProcessing,
   ]);
 
+  useEffect(() => {
+    if (currentDao?.setupComplete) {
+      updateShowCongrats(true);
+    }
+  });
   useEffect(() => {
     let interval: any;
     if (currentWalletAccount && currentDaoFromChain?.daoAssetId) {

@@ -11,8 +11,7 @@ import upload from '@/svg/upload.svg';
 import { hexToBase64, readFileAsB64 } from '@/utils';
 
 const LogoForm = (props: { daoId: string | null }) => {
-  const daos = useGenesisStore((s) => s.daos);
-  const dao = daos?.[props.daoId as string];
+  const currentDao = useGenesisStore((s) => s.currentDao);
   const [daoLogo, setDaoLogo] = useState(null);
   const {
     register,
@@ -140,7 +139,7 @@ const LogoForm = (props: { daoId: string | null }) => {
       </div>
       <div className='text-center'>
         <h2 className='text-primary' data-testid='daoName'>
-          {dao?.daoName} Logo And DAO Details
+          {currentDao?.daoName} Logo And DAO Details
         </h2>
         <p className='px-24'>
           {`Add a logo and describe in a short way what your DAO is all about.
@@ -173,7 +172,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                 )}
               />
             </div>
-            <div className='min-w-full'>
+            <div className='min-w-full flex-col'>
               <p className='mb-1 ml-1'>
                 Upload Logo File (JPG or PNG. Max 2MB)
               </p>
@@ -215,6 +214,13 @@ const LogoForm = (props: { daoId: string | null }) => {
                   </div>
                 </div>
               </div>
+              <ErrorMessage
+                errors={errors}
+                name='logoImage'
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
+              />
             </div>
             <div className='min-w-full'>
               <p className='mb-1 ml-1'>
