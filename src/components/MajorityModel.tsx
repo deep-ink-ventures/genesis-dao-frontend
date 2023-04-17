@@ -196,7 +196,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
             <p className='mb-2 ml-1 text-sm'>
               Number of days the proposal will be up for voting.
             </p>
-            <div className='relative flex w-[175px]'>
+            <div className='relative w-[175px] flex-col'>
               <input
                 className='input-primary input pr-16'
                 type='number'

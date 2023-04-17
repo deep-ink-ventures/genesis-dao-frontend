@@ -71,6 +71,7 @@ const Customize = () => {
     ) {
       return <CouncilTokens daoId={daoId as string} />;
     }
+
     if (
       currentDao &&
       (currentDao.setupComplete ||

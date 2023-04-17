@@ -173,7 +173,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                 )}
               />
             </div>
-            <div className='min-w-full'>
+            <div className='min-w-full flex-col'>
               <p className='mb-1 ml-1'>
                 Upload Logo File (JPG or PNG. Max 2MB)
               </p>
@@ -215,6 +215,13 @@ const LogoForm = (props: { daoId: string | null }) => {
                   </div>
                 </div>
               </div>
+              <ErrorMessage
+                errors={errors}
+                name='logoImage'
+                render={({ message }) => (
+                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                )}
+              />
             </div>
             <div className='min-w-full'>
               <p className='mb-1 ml-1'>
