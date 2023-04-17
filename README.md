@@ -2,7 +2,7 @@
 
 ## About
 
-This is the frontend UI for GenesisDAO. Users can use this interface to explore and create DAOs, issues DAO tokens, transfer tokens, and destroy DAOs.  
+This is the frontend UI for GenesisDAO. Users can use this interface to explore and create DAOs, set up a DAO voting structure, issues DAO tokens, and create a multisig treasury.   
 
 
 ## Status
@@ -22,23 +22,38 @@ Zustand stores folder is [here](./src/stores/). Query actions are also in the [`
 
 Most of the transaction actions are in the [`useGenesisDao`](./src/hooks/useGenesisDao.ts) hook
 
+## Getting Started
 
-## Installation
+Adjust the environment variables to your need or go with the defaults:
 
-1. For now please have a local node running on --dev flag using [GenesisDAO Node](https://github.com/deep-ink-ventures/genesis-dao-node). The preset endpoint is `ws://127.0.0.1:9944`
+```shell
+cp .env.example .env
+```
 
-2. Install node packages
+> The frontend defaults to the service and node of the genesis dao test environment.
+
+### Docker setup
+
+We are using docker compose.
+
+```shell
+docker compose build
+docker compose up
+```
+
+### Building from source
+1. Install node packages
 
 ```
 yarn install
 ```
 
-3. Start dev server 
+2. Start dev server 
 ```
 yarn dev
 ```
 
-4. Now you can open http://localhost:3000 on your browser to see the application.
+3. Now you can open http://localhost:3000 on your browser to see the application.
 
 If you need to change the node endpoint, you can go to the [config](./src/config) folder
 

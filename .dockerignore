@@ -1,0 +1,9 @@
+.github
+.husky
+.next
+.swc
+__test__
+coverage
+design
+node_modules
+.idea

@@ -4,7 +4,7 @@ import { BN } from '@polkadot/util';
 import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
 
-import { LOCAL_NODE } from '@/config';
+import { NODE_URL, SERVICE_URL } from '@/config';
 
 // ALL TYPES and INTERFACES...
 
@@ -263,13 +263,13 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   walletAccounts: undefined,
   walletConnected: false,
   createDaoData: null,
-  rpcEndpoint: LOCAL_NODE,
+  rpcEndpoint: NODE_URL,
   daos: null,
   daosOwnedByWallet: null, // all the daos that can be managed by the wallet address
   txnNotifications: [],
   loading: false,
   txnProcessing: false,
-  apiConnection: new ApiPromise({ provider: new WsProvider(LOCAL_NODE) }),
+  apiConnection: new ApiPromise({ provider: new WsProvider(NODE_URL) }),
   currentAssetBalance: null,
   createDaoSteps: 1,
   newCreatedDao: null,
@@ -414,7 +414,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         },
       };
       const response = await fetch(
-        `https://service.genesis-dao.org/daos/${encodeURIComponent(
+        `${SERVICE_URL}/daos/${encodeURIComponent(
           daoId as string
         )}/`
       );
@@ -449,7 +449,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   fetchDaosFromDB: async () => {
     try {
       const getDaosResponse = await fetch(
-        'https://service.genesis-dao.org/daos/?order_by=id&limit=50'
+        `${SERVICE_URL}/daos/?order_by=id&limit=50`
       );
       const daosRes = await getDaosResponse.json();
       const daosArr = daosRes.results;
@@ -491,7 +491,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         return;
       }
       const response = await fetch(
-        `https://service.genesis-dao.org/accounts/${address}/`
+        `${SERVICE_URL}/accounts/${address}/`
       );
       const account = await response.json();
       const freeBalance = new BN(account.balance.free);
