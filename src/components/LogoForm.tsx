@@ -174,7 +174,7 @@ const LogoForm = (props: { daoId: string | null }) => {
             </div>
             <div className='min-w-full flex-col'>
               <p className='mb-1 ml-1'>
-                Upload Logo File (JPG or PNG. Max 2MB)
+                Upload Logo File (JPEG or PNG. Max 2MB)
               </p>
               <div className='file-drop relative h-48'>
                 <input
@@ -184,6 +184,26 @@ const LogoForm = (props: { daoId: string | null }) => {
                   id='file'
                   {...register('logoImage', {
                     required: 'Required',
+                    validate: {
+                      fileSize: (data) => {
+                        if (data) {
+                          if (data[0] && data[0].size <= 2 * 1024 * 1024) {
+                            return true;
+                          }
+                          return 'The file is too big';
+                        }
+                        return 'The file is too big';
+                      },
+                      fileType: (data) => {
+                        const type = data[0] && data[0].type;
+                        if (
+                          type === ('image/jpeg' || 'image/jpg' || 'image/png')
+                        ) {
+                          return true;
+                        }
+                        return 'Only JPEG(JPG) or PNG please';
+                      },
+                    },
                     onChange: (e) => {
                       setDaoLogo(e.target.files[0]);
                     },
