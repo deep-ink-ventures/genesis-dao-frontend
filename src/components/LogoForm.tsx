@@ -4,12 +4,12 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { SERVICE_URL } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { LogoFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
 import { hexToBase64, readFileAsB64 } from '@/utils';
-import { SERVICE_URL } from '@/config';
 
 const LogoForm = (props: { daoId: string | null }) => {
   const currentDao = useGenesisStore((s) => s.currentDao);

@@ -100,7 +100,9 @@ const DaoHome = () => {
             </p>
           </div>
           <div className='flex flex-col gap-y-3'>
-            {currentDao?.setupComplete ? null : (
+            {currentDao?.setupComplete ||
+            currentWalletAccount?.address !==
+              currentDao?.daoOwnerAddress ? null : (
               <Link
                 href={`/dao/${encodeURIComponent(daoId as string)}/customize`}
                 className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
@@ -111,7 +113,6 @@ const DaoHome = () => {
                 </button>
               </Link>
             )}
-
             <Link
               href={`/dao/${encodeURIComponent(daoId as string)}/tokens`}
               className={`${!currentWalletAccount ? 'disable-link' : ''}`}>

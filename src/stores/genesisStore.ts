@@ -414,9 +414,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         },
       };
       const response = await fetch(
-        `${SERVICE_URL}/daos/${encodeURIComponent(
-          daoId as string
-        )}/`
+        `${SERVICE_URL}/daos/${encodeURIComponent(daoId as string)}/`
       );
       if (response.status === 404) {
         return;
@@ -490,9 +488,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       if (!address) {
         return;
       }
-      const response = await fetch(
-        `${SERVICE_URL}/accounts/${address}/`
-      );
+      const response = await fetch(`${SERVICE_URL}/accounts/${address}/`);
       const account = await response.json();
       const freeBalance = new BN(account.balance.free);
       set({ nativeTokenBalance: freeBalance });
