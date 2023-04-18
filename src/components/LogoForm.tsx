@@ -52,7 +52,7 @@ const LogoForm = (props: { daoId: string | null }) => {
 
     try {
       const challengeRes = await fetch(
-        `${SERVICE_URL}/${props.daoId}/challenge/`
+        `${SERVICE_URL}/daos/${props.daoId}/challenge/`
       );
       const challengeString = await challengeRes.json();
       if (!challengeString.challenge) {
