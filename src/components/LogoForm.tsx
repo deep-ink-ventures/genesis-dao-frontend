@@ -197,7 +197,9 @@ const LogoForm = (props: { daoId: string | null }) => {
                       fileType: (data) => {
                         const type = data[0] && data[0].type;
                         if (
-                          type === ('image/jpeg' || 'image/jpg' || 'image/png')
+                          type === 'image/jpeg' ||
+                          type === 'image/jpg' ||
+                          type === 'image/png'
                         ) {
                           return true;
                         }
