@@ -22,10 +22,26 @@ Zustand stores folder is [here](./src/stores/). Query actions are also in the [`
 
 Most of the transaction actions are in the [`useGenesisDao`](./src/hooks/useGenesisDao.ts) hook
 
-This app reads the blobkchain data via [`GenesisDAO REST API service`](https://service.genesis-dao.org/redoc) 
+## Getting Started
 
-## Installation
+Adjust the environment variables to your need or go with the defaults:
 
+```shell
+cp .env.example .env
+```
+
+> The frontend defaults to the service and node of the genesis dao test environment.
+
+### Docker setup
+
+We are using docker compose.
+
+```shell
+docker compose build
+docker compose up
+```
+
+### Building from source
 1. Install node packages
 
 ```

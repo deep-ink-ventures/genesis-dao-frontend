@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import { NODE_URL } from '@/config';
+import { truncateMiddle } from '@/utils';
+
 import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
-import { truncateMiddle } from '../utils';
 
 interface ToastProps {
   type: TxnResponse;
@@ -74,8 +76,9 @@ const NotificationToast = (props: ToastProps) => {
   };
 
   const makeExplorerLink = (hash: string) => {
-    const prefix =
-      'https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fnode.genesis-dao.org#/explorer/query/';
+    const prefix = `https://polkadot.js.org/apps/?rpc=${encodeURIComponent(
+      NODE_URL
+    )}#/explorer/query/`;
     return prefix + hash;
   };
 

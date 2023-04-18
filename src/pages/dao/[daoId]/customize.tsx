@@ -18,11 +18,11 @@ const Customize = () => {
   const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
   const router = useRouter();
   const { daoId } = router.query;
-  const isOwner =
-    currentDao &&
-    currentWalletAccount &&
-    currentDao.daoOwnerAddress === currentWalletAccount.address;
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+
+  const handleReturnToDashboard = () => {
+    router.push(`/dao/${encodeURIComponent(daoId as string)}`);
+  };
 
   useEffect(() => {
     if (!daoId) {
@@ -47,16 +47,27 @@ const Customize = () => {
         </div>
       );
     }
-
-    if (!isOwner) {
-      <div>
-        <p>Sorry you are not the owner of {currentDao?.daoName}</p>
-      </div>;
+    if (currentWalletAccount.address !== currentDao?.daoOwnerAddress) {
+      return (
+        <div className='flex justify-center'>
+          <div className='flex flex-col items-center'>
+            <p className='my-2'>
+              Sorry, you are not the owner of {currentDao?.daoName}
+            </p>
+            <button
+              className='btn-primary btn'
+              onClick={handleReturnToDashboard}>
+              Return to Dashboard
+            </button>
+          </div>
+        </div>
+      );
     }
 
     if (!currentDaoFromChain?.metadataHash) {
       return <LogoForm daoId={daoId as string} />;
     }
+
     if (
       currentDao &&
       currentDaoFromChain.metadataHash &&
@@ -64,6 +75,7 @@ const Customize = () => {
     ) {
       return <GovernanceForm daoId={daoId as string} />;
     }
+
     if (
       currentDao &&
       currentDaoFromChain.metadataHash &&

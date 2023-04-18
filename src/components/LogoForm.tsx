@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { SERVICE_URL } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { LogoFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -51,7 +52,7 @@ const LogoForm = (props: { daoId: string | null }) => {
 
     try {
       const challengeRes = await fetch(
-        `https://service.genesis-dao.org/daos/${props.daoId}/challenge/`
+        `${SERVICE_URL}/${props.daoId}/challenge/`
       );
       const challengeString = await challengeRes.json();
       if (!challengeString.challenge) {
@@ -72,7 +73,7 @@ const LogoForm = (props: { daoId: string | null }) => {
       const base64Signature = hexToBase64(signerResult.signature.substring(2));
 
       const metadataResponse = await fetch(
-        `https://service.genesis-dao.org/daos/${props.daoId}/metadata/`,
+        `${SERVICE_URL}/daos/${props.daoId}/metadata/`,
         {
           method: 'POST',
           body: jsonData,
@@ -143,7 +144,7 @@ const LogoForm = (props: { daoId: string | null }) => {
         </h2>
         <p className='px-24'>
           {`Add a logo and describe in a short way what your DAO is all about.
-            If you don't have a logo yet, just skip that and come back to it once 
+            If you don't have a logo yet, just skip that and come back to it once
             the DAO is set-up.`}
         </p>
       </div>
