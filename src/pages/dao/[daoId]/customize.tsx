@@ -47,12 +47,12 @@ const Customize = () => {
         </div>
       );
     }
-    if (currentWalletAccount.address !== currentDao?.daoOwnerAddress) {
+    if (currentWalletAccount.address !== currentDaoFromChain?.daoOwnerAddress) {
       return (
         <div className='flex justify-center'>
           <div className='flex flex-col items-center'>
             <p className='my-2'>
-              Sorry, you are not the owner of {currentDao?.daoName}
+              Sorry, you are not the admin of {currentDao?.daoName}
             </p>
             <button
               className='btn-primary btn'

@@ -52,7 +52,7 @@ const LogoForm = (props: { daoId: string | null }) => {
 
     try {
       const challengeRes = await fetch(
-        `${SERVICE_URL}/${props.daoId}/challenge/`
+        `${SERVICE_URL}/daos/${props.daoId}/challenge/`
       );
       const challengeString = await challengeRes.json();
       if (!challengeString.challenge) {
@@ -197,7 +197,9 @@ const LogoForm = (props: { daoId: string | null }) => {
                       fileType: (data) => {
                         const type = data[0] && data[0].type;
                         if (
-                          type === ('image/jpeg' || 'image/jpg' || 'image/png')
+                          type === 'image/jpeg' ||
+                          type === 'image/jpg' ||
+                          type === 'image/png'
                         ) {
                           return true;
                         }
