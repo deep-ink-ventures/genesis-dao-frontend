@@ -52,7 +52,7 @@ const DaoHome = () => {
         {/* fixme for Next Image */}
         <img
           src={currentDao.images.medium}
-          alt='placeholder'
+          alt={`${currentDao.daoName} logo image`}
           height={120}
           width={120}
         />

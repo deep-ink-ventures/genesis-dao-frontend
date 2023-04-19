@@ -45,3 +45,6 @@ local
 /.vercel
 
 /.vscode
+
+.env
+.env.*
