@@ -14,10 +14,10 @@ const DaoHome = () => {
   const router = useRouter();
   const { daoId } = router.query;
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const currentDao = useGenesisStore((s) => s.currentDao);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDao = useGenesisStore((s) => s.fetchDao);
 
-  const currentDao = useGenesisStore((s) => s.currentDao);
   const isOwner =
     currentDao &&
     currentWalletAccount &&
@@ -63,14 +63,20 @@ const DaoHome = () => {
   return (
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
-      description='GenesisDAO Description'>
+      description='GenesisDAO - Create a DAO'>
       <div className='mt-12 flex justify-center'>
         <div className='container mx-auto mt-5 flex min-w-[600px] max-w-[820px] justify-between px-12 py-5'>
           <div className='flex flex-col rounded-xl p-5'>
             <div className=''>{displayImage()}</div>
-            <h1 className='mb-2 text-center'>{currentDao?.daoName}</h1>
+            <h1 className='mb-2 max-w-[300px] break-words text-center'>
+              {currentDao?.daoName}
+            </h1>
             <p className='mb-2'>
               <span className='font-bold'>DAO ID : </span> {currentDao?.daoId}
+            </p>
+            <p className='mb-2'>
+              <span className='font-bold'>Setup Complete? </span>
+              <span>{currentDao?.setupComplete ? 'Yes' : 'No'}</span>
             </p>
             <p className='mb-2'>
               <span className='font-bold'>Asset ID: </span>{' '}
@@ -86,18 +92,18 @@ const DaoHome = () => {
               <span className='font-bold'>DAO Owner: </span>{' '}
               {truncateMiddle(currentDao?.daoOwnerAddress)}
             </p>
-            <p className='mb-2'>
-              <span className='font-bold'>DAO Overview: </span>
-              <span>{currentDao?.descriptionShort}</span>
-            </p>
-            <p className='mb-2'>
-              <span className='font-bold'>DAO Details: </span>
-              <span>{currentDao?.descriptionLong}</span>
-            </p>
-            <p className='mb-2'>
-              <span className='font-bold'>Setup Complete? </span>
-              <span>{currentDao?.setupComplete ? 'Yes' : 'No'}</span>
-            </p>
+            <div className='mb-2 max-w-[300px] overflow-hidden text-ellipsis break-words'>
+              <p className='font-bold'>DAO Overview: </p>
+              <p className='overflow-hidden text-ellipsis break-words '>
+                {currentDao?.descriptionShort}
+              </p>
+            </div>
+            <div className='mb-2 max-w-[300px] overflow-hidden text-ellipsis break-words'>
+              <p className='font-bold '>DAO Details: </p>
+              <p className='overflow-hidden text-ellipsis break-words '>
+                {currentDao?.descriptionLong}
+              </p>
+            </div>
           </div>
           <div className='flex flex-col gap-y-3'>
             {currentDao?.setupComplete ||
