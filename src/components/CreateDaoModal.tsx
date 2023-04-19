@@ -32,6 +32,7 @@ const CreateDaoModal = () => {
   const updateCurrentDao = useGenesisStore((s) => s.updateCurrentDao);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const fetchDaosFromDB = useGenesisStore((s) => s.fetchDaosFromDB);
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const fetchNativeTokenBalance = useGenesisStore(
     (s) => s.fetchNativeTokenBalance
@@ -54,6 +55,7 @@ const CreateDaoModal = () => {
       try {
         await createDao(currentWalletAccount, data);
         await fetchDaosFromDB();
+        fetchDaoFromDB(data.daoId);
       } catch (err) {
         handleErrors(new Error(err));
       }
@@ -212,6 +214,7 @@ const CreateDaoModal = () => {
                     </p>
                   </div>
                   <div className='relative'>
+                    {/* fixme: Pre fetch all dao names and validate if the dao name exists */}
                     <input
                       className={`input ${
                         watchId.length > 8 || errors.daoId

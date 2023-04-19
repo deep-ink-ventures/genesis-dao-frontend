@@ -61,7 +61,7 @@ If you need to change the node endpoint, you can go to the [config](./src/config
 
 - Please have one these wallet extensions installed on your browser: Talisman, Subwallet, or Polkadotjs extension. You can find them [here](https://wiki.polkadot.network/docs/wallets)
 
-- You will need some GenesisDAO native tokens to do transactions. For now, you can use the [Polkadotjs UI](https://polkadot.js.org/apps). Go to the `Accounts` tab and  pick one of the development accounts to transfer tokens to your own account. 
+- You will need some GenesisDAO native tokens to do transactions. For now, you can use the [Polkadotjs UI](https://polkadot.js.org/apps). Go to the `Accounts` tab and pick one of the development accounts to transfer tokens to your own account. As of now, you will need 10 native tokens to create a DAO. 
 
 
 ## Before commit

@@ -31,8 +31,8 @@ export interface DaoDetail {
 export interface BasicDaoInfo {
   daoId: string;
   daoName: string;
-  daoOwnerAddress: string;
   daoAssetId: number;
+  daoOwnerAddress: string;
   metadataUrl: string;
   metadataHash: string;
 }
@@ -197,7 +197,7 @@ export interface GenesisState {
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
   currentDaoFromChain: BasicDaoInfo | null;
-  daosFromDB: BasicDaoInfo[] | null;
+  daosFromDB: DaoDetail[] | null;
   walletAccounts: WalletAccount[] | undefined;
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
@@ -246,7 +246,7 @@ export interface GenesisActions {
   updateIsStartModalOpen: (isStartModalOpen: boolean) => void;
   updateDaoCreationValues: (daoCreationValues: DaoCreationValues) => void;
   updateCurrentAssetId: (currentAssetId: number) => void;
-  updateDaosFromDB: (daosFromDB: BasicDaoInfo[] | null) => void;
+  updateDaosFromDB: (daosFromDB: DaoDetail[] | null) => void;
   updateCurrentDao: (currentDao: DaoDetail | null) => void;
   updateCurrentDaoFromChain: (currentDaoFromChain: BasicDaoInfo | null) => void;
   updateDaoTokenBalance: (daoTokenBalance: BN | null) => void;
@@ -422,9 +422,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       const d = await response.json();
       daoDetail.daoId = d.id;
       daoDetail.daoName = d.name;
+      daoDetail.daoAssetId = d.asset_id;
       daoDetail.daoOwnerAddress = d.owner_id;
       daoDetail.daoCreatorAddress = d.creator_id;
-      daoDetail.daoAssetId = d.asset_id;
       daoDetail.metadataUrl = d.metadata_url;
       daoDetail.metadataHash = d.metadata_hash;
       daoDetail.setupComplete = d.setup_complete;
@@ -451,14 +451,25 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       );
       const daosRes = await getDaosResponse.json();
       const daosArr = daosRes.results;
-      const newDaos: BasicDaoInfo[] = daosArr?.map((dao: any) => {
+      const newDaos: DaoDetail[] = daosArr?.map((dao: any) => {
         return {
           daoId: dao.id,
           daoName: dao.name,
+          daoAssetId: dao.asset_id,
           daoOwnerAddress: dao.owner_id,
+          daoCreatorAddress: dao.creator_id,
+          setupComplete: dao.setup_complete,
           metadataUrl: dao.metadata_url,
           metadataHash: dao.metadata_hash,
-          images: null,
+          email: dao.metadata?.email || null,
+          descriptionShort: dao.metadata?.description_short || null,
+          descriptionLong: dao.metadata?.description_long || null,
+          images: {
+            contentType: dao.metadata?.images.logo.content_type || null,
+            small: dao.metadata?.images.logo.small.url || null,
+            medium: dao.metadata?.images.logo.medium.url || null,
+            large: dao.metadata?.images.logo.medium.url || null,
+          },
         };
       });
       set({ daosFromDB: newDaos });
