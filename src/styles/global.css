@@ -107,6 +107,11 @@ h4 {
   @apply border-neutral-focus focus:outline-neutral-focus border-[0.3px]
 }
 
+.selected-tab { 
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 2.79%, rgba(255, 255, 255, 0) 83.46%);
+  backdrop-filter: blur(2px);
+}
+
 #search-input {
   background: url('../svg/search.svg') no-repeat;
   background-size: 20px;
