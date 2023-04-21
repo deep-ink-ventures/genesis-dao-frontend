@@ -8,6 +8,47 @@ import { NODE_URL, SERVICE_URL } from '@/config';
 
 // ALL TYPES and INTERFACES...
 
+export enum ProposalStatus {
+  Active,
+  Counting,
+  Accepted,
+  Rejected,
+  Faulty,
+}
+
+export interface ProposalOnChain {
+  id: string;
+  daoId: string;
+  creator: string;
+  birthBlock: number;
+  meta: string;
+  metaHash: string;
+  status: ProposalStatus;
+  inFavor: BN;
+  against: BN;
+}
+
+export interface CreateProposalInfo {
+  daoId: string;
+  proposalId: string;
+  meta: string;
+  hash: string;
+}
+
+export interface ProposalDetail {
+  id: string;
+  daoId: string;
+  creator: string;
+  birthBlock: number;
+  meta: string;
+  metaHash: string;
+  status: ProposalStatus;
+  inFavor: BN;
+  against: BN;
+  description: string;
+  link: string;
+}
+
 export interface DaoDetail {
   daoId: string;
   daoName: string;
@@ -194,6 +235,7 @@ export interface GenesisState {
   currentWalletAccount: WalletAccount | undefined;
   currentAssetId: number | null;
   currentDao: DaoDetail | null;
+  currentProposal: ProposalDetail | null;
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
   currentDaoFromChain: BasicDaoInfo | null;
@@ -252,6 +294,8 @@ export interface GenesisActions {
   updateDaoTokenBalance: (daoTokenBalance: BN | null) => void;
   updateNativeTokenBalance: (nativeTokenBalance: BN | null) => void;
   updateShowCongrats: (showCongrats: boolean) => void;
+
+  updateCurrentProposal: (proposal: ProposalDetail) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -260,6 +304,7 @@ export interface GenesisStore extends GenesisState, GenesisActions {}
 
 const useGenesisStore = create<GenesisStore>()((set, get) => ({
   currentWalletAccount: undefined,
+  currentProposal: null,
   walletAccounts: undefined,
   walletConnected: false,
   createDaoData: null,
@@ -561,6 +606,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   updateNativeTokenBalance: (nativeTokenBalance) =>
     set(() => ({ nativeTokenBalance })),
   updateShowCongrats: (showCongrats) => set(() => ({ showCongrats })),
+  updateCurrentProposal: (currentProposal) => set(() => ({ currentProposal })),
 }));
 
 export default useGenesisStore;

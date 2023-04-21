@@ -40,8 +40,8 @@ const CreateProposal = (props: { dao: DaoDetail | null }) => {
             </svg>
             <p>
               <span className='font-bold'>{`10 ${props.dao?.daoId} Tokens `}</span>
-              will be reserved upon creation of your DAO. The reserved tokens
-              will be refunded when the DAO is destroyed.
+              will be reserved upon creation of a proposal. The reserved tokens
+              will be refunded when the proposal is finalized.
             </p>
           </div>
         </div>
