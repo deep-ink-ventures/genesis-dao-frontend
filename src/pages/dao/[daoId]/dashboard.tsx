@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+import Proposals from '@/components/Proposals';
 import useGenesisStore from '@/stores/genesisStore';
 import about from '@/svg/about.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
@@ -9,7 +10,6 @@ import arrowRight from '@/svg/arrow-right.svg';
 import dashboard from '@/svg/dashboard.svg';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
-import plusBlack from '@/svg/plus-black.svg';
 import proposal from '@/svg/proposal.svg';
 import settings from '@/svg/settings.svg';
 import MainLayout from '@/templates/MainLayout';
@@ -43,10 +43,6 @@ const Dashboard = () => {
   const handleReturnToDashboard = () => {
     router.push(`/dao/${encodeURIComponent(daoId as string)}`);
   };
-
-  const handleSearch = () => {};
-
-  const handleCreateProposal = () => {};
 
   const displayImage = () => {
     if (!currentDao || !currentDao.images.medium) {
@@ -171,36 +167,8 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className='container flex basis-3/4 flex-col gap-y-4 p-5'>
-          <div className='flex justify-between'>
-            <div className='flex items-center'>
-              <h1 className='text-2xl'>Proposals</h1>
-            </div>
-            <div className='flex gap-x-4'>
-              <div>
-                <input
-                  id='search-input'
-                  className='input-primary input w-72 text-sm'
-                  placeholder='Search Proposals'
-                  onChange={handleSearch}
-                />
-              </div>
-              <div className='flex items-center justify-center'>
-                <div className='flex h-12 min-w-[68px] items-center justify-center rounded-full border'>
-                  All
-                </div>
-              </div>
-              <div>
-                <button
-                  className='btn-primary btn flex items-center gap-x-1'
-                  onClick={handleCreateProposal}>
-                  <Image src={plusBlack} height={16} width={16} alt='plus' />
-                  <p className='flex items-center pt-[1px]'>New Proposal</p>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div>all proposals cards</div>
+        <div className='container basis-3/4 p-5'>
+          <Proposals />
         </div>
       </div>
     </MainLayout>

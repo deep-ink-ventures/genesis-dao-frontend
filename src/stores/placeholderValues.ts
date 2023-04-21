@@ -51,7 +51,7 @@ export const fakeDao = {
 
 export const fakeProposals: ProposalDetail[] = [
   {
-    id: 'PROP1',
+    proposalId: 'PROP1',
     daoId: 'ORANGE DAO',
     creator: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
     birthBlock: 20500,
@@ -60,12 +60,12 @@ export const fakeProposals: ProposalDetail[] = [
     status: ProposalStatus.Active,
     inFavor: new BN(5000),
     against: new BN(1200),
-    description:
-      'He ordered his regular breakfast. Two eggs sunnyside up, hash browns, and two strips of bacon. He continued to look at the menu wondering if this would be theould be added to the order before demuring and saying that would be all. It was the same exact meal that he had ordered every day for the past two years.',
+    proposalName: 'Deploy Uniswap V3 on zkSync',
+    description: `He ordered his regular breakfast. Two eggs sunnyside up, hash browns, and two strips of bacon. He continued to look at the menu wondering if this would be theould be added to the order before demuring and saying that would be all. It was the same exact meal that he had ordered every day for the past two years.`,
     link: 'https://yahoo.com',
   },
   {
-    id: 'PROP2',
+    proposalId: 'PROP2',
     daoId: 'ORANGE DAO',
     creator: '5GpGweMfmUe8rV5ScXJgfhEAVU3Aom4yVF2YH9pscNQGzZgw',
     birthBlock: 15000,
@@ -74,8 +74,23 @@ export const fakeProposals: ProposalDetail[] = [
     status: ProposalStatus.Rejected,
     inFavor: new BN(1000),
     against: new BN(7000),
-    description:
-      'He ordered his regular breakfast. Two eggs sunnyside up, hash browns, and two strips of bacon. He continued to look at the menu wondering if this would be the day he added something new. This was also part of the routine. A few seconds of hesitation to see if something else would be added to the order before demuring and saying that would be all. It was the same exact meal that he had ordered every day for the past two years.',
+    proposalName:
+      'Should Uniswap governance contribute funding to the Nomic Foundation?',
+    description: `I'm heading back to Colorado tomorrow after being down in Santa Barbara over the weekend for the festival there. I will be making October plans once there and will try to arrange so I'm back here for the birthday if possible. I'll let you know as soon as I know the doctor's appointment schedule and my flight plans.`,
     link: 'https://google.com',
+  },
+  {
+    proposalId: 'PROP101',
+    daoId: 'ORANGE DAO',
+    creator: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
+    birthBlock: 20500,
+    meta: 'fake metadata link here',
+    metaHash: 'fake hash here',
+    status: ProposalStatus.Faulty,
+    inFavor: new BN(5000),
+    against: new BN(1200),
+    proposalName: 'Deploy Uniswap V3 on ETH',
+    description: `blahbalhbalhbalghefefefrwsrgilhjuqerglhuiqergiluhqelrgiuhqleirughlqeirughlqieurghlqieurhglqieurhglqiuergh`,
+    link: 'https://yahoo.com',
   },
 ];

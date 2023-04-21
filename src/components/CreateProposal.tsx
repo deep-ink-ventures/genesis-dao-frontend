@@ -88,7 +88,7 @@ const CreateProposal = (props: { dao: DaoDetail | null }) => {
                       : 'input-primary'
                   }`}
                   type='text'
-                  placeholder='e.g. Apple DAO'
+                  placeholder='e.g. Deploy Uniswap V3 on Avalanche'
                   disabled={!hasProposalDeposit}
                   {...register('proposalName', {
                     required: 'Required',
@@ -130,7 +130,7 @@ const CreateProposal = (props: { dao: DaoDetail | null }) => {
                       : 'input-primary'
                   }`}
                   type='text'
-                  placeholder='e.g. APPLE'
+                  placeholder='e.g. Prop101'
                   disabled={!hasProposalDeposit}
                   {...register('proposalId', {
                     required: 'Required',

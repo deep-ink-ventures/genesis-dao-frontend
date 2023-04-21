@@ -9,11 +9,11 @@ import { NODE_URL, SERVICE_URL } from '@/config';
 // ALL TYPES and INTERFACES...
 
 export enum ProposalStatus {
-  Active,
-  Counting,
-  Accepted,
-  Rejected,
-  Faulty,
+  Active = 'Active',
+  Counting = 'Counting',
+  Accepted = 'Accepted',
+  Rejected = 'Rejected',
+  Faulty = 'Faulty',
 }
 
 export interface ProposalOnChain {
@@ -36,7 +36,7 @@ export interface CreateProposalInfo {
 }
 
 export interface ProposalDetail {
-  id: string;
+  proposalId: string;
   daoId: string;
   creator: string;
   birthBlock: number;
@@ -45,6 +45,7 @@ export interface ProposalDetail {
   status: ProposalStatus;
   inFavor: BN;
   against: BN;
+  proposalName: string;
   description: string;
   link: string;
 }
