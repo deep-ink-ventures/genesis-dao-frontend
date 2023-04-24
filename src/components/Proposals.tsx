@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 // import useGenesisStore from '@/stores/genesisStore';
 import { fakeProposals } from '@/stores/placeholderValues';
+import downArrow from '@/svg/downArrow.svg';
 import plusBlack from '@/svg/plus-black.svg';
 
 import ProposalCard from './ProposalCard';
@@ -56,8 +57,15 @@ const Proposals = () => {
             />
           </div>
           <div className='flex items-center justify-center'>
-            <div className='flex h-12 min-w-[68px] items-center justify-center rounded-full border'>
-              All
+            <div className='flex h-12 min-w-[76px] items-center justify-center rounded-full border'>
+              <p>All</p>
+              <Image
+                src={downArrow}
+                height={15}
+                width={12}
+                alt='down-arrow'
+                className='ml-2'
+              />
             </div>
           </div>
           <div>

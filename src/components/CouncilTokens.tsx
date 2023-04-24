@@ -28,7 +28,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const { makeBatchTransferTxn, sendBatchTxns, makeChangeOwnerTxns } =
+  const { makeBatchTransferTxn, sendBatchTxns, makeChangeOwnerTxn } =
     useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
 
@@ -146,7 +146,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       Number(currentDaoFromChain?.daoAssetId)
     );
 
-    const withChangeOwner = makeChangeOwnerTxns(
+    const withChangeOwner = makeChangeOwnerTxn(
       withRecipients,
       props.daoId,
       multisigAddress

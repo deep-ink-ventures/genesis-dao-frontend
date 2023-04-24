@@ -85,7 +85,7 @@ const Dashboard = () => {
         <div>Back</div>
       </div>
       <div className='mt-5 flex min-h-[500px] justify-between gap-x-4'>
-        <div className='container flex max-h-[640px] basis-1/4 flex-col items-center justify-evenly gap-y-4 py-4'>
+        <div className='container flex h-[640px] basis-1/4 flex-col items-center justify-evenly gap-y-4 py-4'>
           <div className='flex flex-col items-center justify-center'>
             <div>{displayImage()}</div>
             <div className='mt-3 flex flex-col items-center md:overflow-visible'>

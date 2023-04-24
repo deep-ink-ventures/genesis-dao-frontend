@@ -86,7 +86,7 @@ export const fakeProposals: ProposalDetail[] = [
     birthBlock: 20500,
     meta: 'fake metadata link here',
     metaHash: 'fake hash here',
-    status: ProposalStatus.Faulty,
+    status: ProposalStatus.Accepted,
     inFavor: new BN(5000),
     against: new BN(1200),
     proposalName: 'Deploy Uniswap V3 on ETH',

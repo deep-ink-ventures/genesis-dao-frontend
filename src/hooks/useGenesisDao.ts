@@ -590,7 +590,7 @@ const useGenesisDao = () => {
     ];
   };
 
-  const makeChangeOwnerTxns = (
+  const makeChangeOwnerTxn = (
     txns: any[],
     daoId: string,
     newOwnerAddress: string
@@ -599,6 +599,42 @@ const useGenesisDao = () => {
       ...txns,
       apiConnection.tx?.daoCore?.changeOwner?.(daoId, newOwnerAddress),
     ];
+  };
+
+  const makeCreateProposalTxn = (
+    txns: any[],
+    daoId: string,
+    proposalId: string,
+    meta: string,
+    hash: string
+  ) => {
+    return [
+      ...txns,
+      apiConnection.tx?.votes?.createProposal?.(daoId, proposalId, meta, hash),
+    ];
+  };
+
+  const makeVoteTxn = (txns: any[], proposalId: string, inFavor: boolean) => {
+    return [...txns, apiConnection.tx?.votes?.vote?.(proposalId, inFavor)];
+  };
+
+  const finalizeProprosalTxn = (txns: any[], proposalId: string) => {
+    return [...txns, apiConnection.tx?.votes?.finalizeProposal?.(proposalId)];
+  };
+
+  const faultProposalTxn = (
+    txns: any[],
+    proposalId: string,
+    reason: string
+  ) => {
+    return [
+      ...txns,
+      apiConnection.tx?.votes?.faultProposal?.(proposalId, reason),
+    ];
+  };
+
+  const markImplementedTxn = (txns: any[], proposalId: string) => {
+    return [...txns, apiConnection.tx?.votes?.markImplemented?.(proposalId)];
   };
 
   return {
@@ -617,7 +653,12 @@ const useGenesisDao = () => {
     makeBatchTransferTxn,
     makeMajorityVoteTxn,
     makeSetMetadataTxn,
-    makeChangeOwnerTxns,
+    makeChangeOwnerTxn,
+    makeCreateProposalTxn,
+    makeVoteTxn,
+    finalizeProprosalTxn,
+    faultProposalTxn,
+    markImplementedTxn,
   };
 };
 
