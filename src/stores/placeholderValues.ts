@@ -52,7 +52,7 @@ export const fakeDao = {
 export const fakeProposals: ProposalDetail[] = [
   {
     proposalId: 'PROP1',
-    daoId: 'ORANGE DAO',
+    daoId: 'ORANGE',
     creator: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
     birthBlock: 20500,
     meta: 'fake metadata link here',
@@ -66,7 +66,7 @@ export const fakeProposals: ProposalDetail[] = [
   },
   {
     proposalId: 'PROP2',
-    daoId: 'ORANGE DAO',
+    daoId: 'ORANGE',
     creator: '5GpGweMfmUe8rV5ScXJgfhEAVU3Aom4yVF2YH9pscNQGzZgw',
     birthBlock: 15000,
     meta: 'fake metadata link here',
@@ -81,14 +81,14 @@ export const fakeProposals: ProposalDetail[] = [
   },
   {
     proposalId: 'PROP101',
-    daoId: 'ORANGE DAO',
+    daoId: 'ORANGE',
     creator: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
     birthBlock: 20500,
     meta: 'fake metadata link here',
     metaHash: 'fake hash here',
     status: ProposalStatus.Accepted,
     inFavor: new BN(5000),
-    against: new BN(1200),
+    against: new BN(4000),
     proposalName: 'Deploy Uniswap V3 on ETH',
     description: `blahbalhbalhbalghefefefrwsrgilhjuqerglhuiqergiluhqelrgiuhqleirughlqeirughlqieurghlqieurhglqieurhglqiuergh`,
     link: 'https://yahoo.com',
