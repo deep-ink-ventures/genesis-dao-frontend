@@ -7,7 +7,7 @@ COPY package.json .
 RUN yarn install
 COPY . .
 
-RUN pwd
+RUN yarn format
 RUN yarn build
 
 EXPOSE 3000
