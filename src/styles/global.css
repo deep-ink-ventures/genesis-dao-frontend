@@ -86,6 +86,20 @@ h4 {
 .btn-primary {
   @apply text-primary-content font-medium;
 }
+.btn-vote {
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation: button-pop var(--animation-btn, 0.25s) ease-out;
+  height: 3rem/* 48px */;
+  padding-left: 1rem/* 16px */;
+  padding-right: 1rem/* 16px */;
+  font-size: 0.875rem/* 14px */;
+  line-height: 1.25rem/* 20px */;
+  line-height: 1em;
+  min-height: 3rem/* 48px */;
+  text-align: center;
+
+}
 .card {
   @apply rounded-[10px] z-0 bg-[#403945] hover:outline-1 hover:outline hover:outline-neutral hover:brightness-[1.15];
 } 

@@ -32,6 +32,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
 
+  formatBalance.setDefaults({ decimals: 0, unit: `${currentDao?.daoId}` });
   const {
     register,
     handleSubmit,
@@ -535,8 +536,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <p>
                 <span className='mx-3 w-[70px] text-center text-primary'>
                   {formatBalance(remain?.div(new BN(DAO_UNITS)).toString(), {
-                    decimals: 10,
-                    withUnit: currentDao?.daoId,
+                    forceUnit: currentDao?.daoId,
+                    withZero: false,
                   })}
                   {' Tokens'}
                 </span>

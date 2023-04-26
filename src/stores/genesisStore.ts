@@ -297,6 +297,7 @@ export interface GenesisActions {
   updateShowCongrats: (showCongrats: boolean) => void;
 
   updateCurrentProposal: (proposal: ProposalDetail) => void;
+  fetchDaoTokenBalanceFromDB: (assetId: number, accountId: string) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -533,18 +534,27 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           return;
         }
         const balanceStr = assetData?.balance.replaceAll(',', '');
-        const balance = new BN(balanceStr);
-        get().updateDaoTokenBalance(balance);
+        const daoTokenBalance = new BN(balanceStr);
+        set({ daoTokenBalance });
       })
       .catch((err) => {
         get().handleErrors(new Error(err));
       });
   },
-  fetchNativeTokenBalance: async (address) => {
+  fetchDaoTokenBalanceFromDB: async (assetId: number, accountId: string) => {
     try {
-      if (!address) {
-        return;
-      }
+      const response = await fetch(
+        `${SERVICE_URL}/asset-holdings/?asset_id=${assetId}&owner_id=${accountId}`
+      );
+      const daoAsset = await response.json();
+      const daoTokenBalance = new BN(daoAsset.results[0].balance);
+      set({ daoTokenBalance });
+    } catch (err) {
+      get().handleErrors(err);
+    }
+  },
+  fetchNativeTokenBalance: async (address: string) => {
+    try {
       const response = await fetch(`${SERVICE_URL}/accounts/${address}/`);
       const account = await response.json();
       const freeBalance = new BN(account.balance.free);

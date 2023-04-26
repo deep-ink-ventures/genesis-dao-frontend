@@ -8,9 +8,12 @@ import MainLayout from '@/templates/MainLayout';
 
 const Proposal = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  // const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
-
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  // const fetchDaoTokenBalanceFromDB = useGenesisStore(
+  //   (s) => s.fetchDaoTokenBalanceFromDB
+  // );
   const router = useRouter();
   const { daoId } = router.query;
 
@@ -33,8 +36,8 @@ const Proposal = () => {
   const display = () => {
     if (!currentWalletAccount?.address) {
       return (
-        <div className='flex flex-col items-center'>
-          <p>
+        <div className='flex flex-col items-center justify-center'>
+          <p className='text-center'>
             Please connect wallet to continue creating a new Proposal{' '}
             {currentDao?.daoName}
           </p>

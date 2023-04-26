@@ -1,3 +1,4 @@
+import { BN, formatBalance } from '@polkadot/util';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -14,14 +15,20 @@ import proposal from '@/svg/proposal.svg';
 import settings from '@/svg/settings.svg';
 import MainLayout from '@/templates/MainLayout';
 
-const Dashboard = () => {
+const ProposalsPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
   const [page, setPage] = useState('proposals');
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const currentDao = useGenesisStore((s) => s.currentDao);
+  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDao = useGenesisStore((s) => s.fetchDao);
+  const fetchDaoTokenBalanceFromDB = useGenesisStore(
+    (s) => s.fetchDaoTokenBalanceFromDB
+  );
+
+  formatBalance.setDefaults({ decimals: 0, unit: `${currentDao?.daoId}` });
 
   const handleChangePage = (pageParam: string) => {
     setPage(pageParam);
@@ -39,6 +46,16 @@ const Dashboard = () => {
     fetchDaoFromDB(daoId as string);
     fetchDao(daoId as string);
   }, [daoId, fetchDaoFromDB, fetchDao, currentWalletAccount]);
+
+  useEffect(() => {
+    if (currentDao?.daoAssetId && currentWalletAccount) {
+      console.log('fetch dao tokens on dashboard', daoTokenBalance?.toString());
+      fetchDaoTokenBalanceFromDB(
+        currentDao?.daoAssetId,
+        currentWalletAccount.address
+      );
+    }
+  }, [currentDao, currentWalletAccount, daoId]);
 
   const handleReturnToDashboard = () => {
     router.push(`/dao/${encodeURIComponent(daoId as string)}`);
@@ -101,13 +118,24 @@ const Dashboard = () => {
             </div>
           </div>
           <div className='flex justify-center py-3 '>
-            <div className='flex h-[75px] w-[220px] items-center justify-between rounded-xl bg-base-50 px-4'>
-              <div>
-                <p>Tokens Owned</p>
+            <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
+              <div className='px-5 text-center text-sm'>
                 {!currentWalletAccount?.address ? (
-                  <p className='text-primary underline'>Connect Wallet</p>
+                  <p className='text-primary underline'>
+                    Connect Wallet To View Tokens
+                  </p>
                 ) : (
-                  <p>10 Tokens</p>
+                  <div className='flex flex-col'>
+                    <p>You have</p>
+                    <p>
+                      {' '}
+                      {formatBalance(daoTokenBalance || new BN(0), {
+                        withZero: false,
+                        forceUnit: `${daoId}`,
+                      })}{' '}
+                      tokens
+                    </p>
+                  </div>
                 )}
               </div>
               <div>
@@ -175,4 +203,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ProposalsPage;
