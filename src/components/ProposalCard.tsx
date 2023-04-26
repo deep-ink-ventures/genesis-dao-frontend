@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import type { ProposalDetail } from '@/stores/genesisStore';
 
-const statusColors = {
+export const statusColors = {
   Active: 'bg-neutral text-base-100',
   Counting: 'bg-secondary text-base-100',
   Accepted: 'bg-accent text-base-100',
@@ -12,6 +12,8 @@ const statusColors = {
 };
 
 const ProposalCard = (props: { p: ProposalDetail }) => {
+  // const router = useRouter();
+
   formatBalance.setDefaults({ decimals: 0, unit: props.p.daoId });
   let inFavorVotes = props.p.inFavor;
   let againstVotes = props.p.against;
@@ -25,7 +27,11 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
   }, [props.p.against, props.p.inFavor]);
 
   return (
-    <div className='min-h-[193px] rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer hover:outline'>
+    <div
+      className='min-h-[193px] rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer hover:outline'
+      onClick={() => {
+        // router.push(`/dao/${props.p.daoId}/proposal/${props.p.proposalId}`) fixme
+      }}>
       <div className='flex flex-col gap-y-3'>
         <div className='flex justify-between'>
           <div>
