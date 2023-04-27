@@ -500,9 +500,16 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         return;
       }
       const response = await fetch(`${SERVICE_URL}/accounts/${address}/`);
+      if (response.status === 404) {
+        return;
+      }
       const account = await response.json();
-      const freeBalance = new BN(account.balance.free);
-      set({ nativeTokenBalance: freeBalance });
+      if (account.balance?.free) {
+        const freeBalance = new BN(account.balance.free);
+        set({ nativeTokenBalance: freeBalance });
+      } else {
+        set({ nativeTokenBalance: new BN(0) });
+      }
     } catch (err) {
       get().handleErrors(err);
     }
