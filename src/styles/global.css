@@ -222,6 +222,22 @@ h4 {
   color: #FAFAFA;
 }
 
+.vote-up:hover {
+  stroke: #1E1B21 !important
+}
+
+.vote-down:hover {
+  stroke: #1E1B21 !important
+}
+
+.vote-up path {
+  stroke: #1E1B21 !important
+}
+
+.vote-up path {
+  stroke: #1E1B21 !important
+  
+}
 
 
 

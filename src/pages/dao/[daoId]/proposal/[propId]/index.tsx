@@ -10,11 +10,13 @@ import useGenesisStore from '@/stores/genesisStore';
 import { fakeProposals } from '@/stores/placeholderValues';
 import arrowLeft from '@/svg/arrow-left.svg';
 import MainLayout from '@/templates/MainLayout';
+import { getProposalEndTime } from '@/utils/index';
 
 const Proposal = () => {
   const router = useRouter();
   const { daoId } = router.query;
-
+  // const [curBlockNum, setCurBlockNum] = useState(42056)
+  const currentBlockNumber = 42450;
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
   >(null);
@@ -26,6 +28,9 @@ const Proposal = () => {
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
+
+  const dhm = getProposalEndTime(currentBlockNumber, p.birthBlock, 14400);
+  // const fetchBlockNumber = useGenesisStore((s) =>s.fetchBlockNumber)
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
@@ -70,6 +75,10 @@ const Proposal = () => {
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
+  // useEffect(() => {
+  //   fetchBlockNumber()
+  // })
+
   return (
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
@@ -84,15 +93,25 @@ const Proposal = () => {
         <div className='container flex min-h-[640px] basis-3/4 p-4'>
           <div className='flex flex-col gap-y-3'>
             <div className='flex justify-between'>
-              <div>
+              <div className='mr-4'>
                 <p className='text-sm'>{p?.proposalId}</p>
                 <h3 className='text-lg'>{p?.proposalName}</h3>
               </div>
-              <div
-                className={`rounded-lg ${
-                  statusColors[`${p?.status}`]
-                } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
-                {p?.status}
+              <div className='flex'>
+                <div className='mr-4 flex gap-2'>
+                  Ends
+                  <div className='flex gap-2'>
+                    <div className='h-6 bg-base-card px-2'>{dhm.d}d</div>:
+                    <div className='h-6 bg-base-card px-2'>{dhm.h}h</div>:
+                    <div className='h-6 bg-base-card px-2'>{dhm.m}m</div>
+                  </div>
+                </div>
+                <div
+                  className={`rounded-lg ${
+                    statusColors[`${p?.status}`]
+                  } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
+                  {p?.status}
+                </div>
               </div>
             </div>
             <div>
@@ -147,6 +166,13 @@ const Proposal = () => {
                   onClick={(e) => {
                     handleVoteSelection(e);
                   }}>
+                  {/* <Image
+                    src={thumbUp}
+                    height={16}
+                    width={16}
+                    alt='thumb-up'
+                    className='mr-2'
+                  /> */}
                   In Favor
                 </div>
                 <div
@@ -158,6 +184,13 @@ const Proposal = () => {
                   onClick={(e) => {
                     handleVoteSelection(e);
                   }}>
+                  {/* <Image
+                    src={thumbDown}
+                    height={16}
+                    width={16}
+                    alt='thumb-down'
+                    className={`mr-2 vote-down`}
+                  /> */}
                   Against
                 </div>
               </div>

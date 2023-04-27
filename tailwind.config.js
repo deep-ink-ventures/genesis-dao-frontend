@@ -30,6 +30,7 @@ module.exports = {
         },
         base: {
           50: '#37323D',
+          card: '#403945',
         },
       },
     },
@@ -60,6 +61,7 @@ module.exports = {
           'base-200': '#16141A',
           'base-300': '#0D0B0E',
           'base-content': '#FAFAFA',
+          'base-card': '#403945',
           "info": "#22D3EE",
           'info-content': '#083B43',
           "success": "#34D399",

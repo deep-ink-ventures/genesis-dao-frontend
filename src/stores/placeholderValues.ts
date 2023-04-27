@@ -54,13 +54,14 @@ export const fakeProposals: ProposalDetail[] = [
     proposalId: 'PROP1',
     daoId: 'ORANGE',
     creator: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
-    birthBlock: 20500,
+    birthBlock: 41944,
     meta: 'fake metadata link here',
     metaHash: 'fake hash here',
     status: ProposalStatus.Active,
     inFavor: new BN(5000),
     against: new BN(1200),
-    proposalName: 'Deploy Uniswap V3 on zkSync',
+    proposalName:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vestibulum tristique tortor, quis egestas turpis luctus id.',
     description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vestibulum tristique tortor, quis egestas turpis luctus id. Sed pharetra nulla diam. Morbi vel est eleifend tortor tincidunt consequat vitae in ligula. In rhoncus magna turpis, non fringilla ipsum commodo sit amet. In sollicitudin ultrices nisi. Nullam vel bibendum ipsum. Nulla volutpat sodales sem, at molestie orci convallis vitae. In elit mi, tincidunt vel rutrum et, varius ornare orci. In pharetra diam ac odio placerat aliquam. Pellentesque tincidunt molestie diam a pharetra. Mauris eleifend nisl vitae quam fringilla, ut egestas tellus suscipit. Praesent ultrices massa non risus auctor consequat. Aliquam auctor magna nec pulvinar congue. Cras ut finibus justo. Suspendisse quis nisl sit amet risus laoreet venenatis. Ut vel tincidunt augue.
 
     Maecenas sit amet elementum felis. Sed odio erat, sollicitudin et ligula sed, lacinia ornare ligula. Quisque non risus felis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer quis est luctus, bibendum mauris at, convallis turpis. Fusce cursus commodo sem, at dictum justo ultricies nec. Quisque nec nunc ac nisl mollis accumsan. Sed sit amet risus leo. Phasellus mollis tempus luctus. Quisque non mi cursus, molestie tortor a, porta ligula. Curabitur quis felis mauris. Integer faucibus libero in imperdiet feugiat. Integer vel rutrum justo. Nulla facilisi. Etiam at justo sed nisl pretium sagittis a a dui. Pellentesque mattis metus id congue tempus.

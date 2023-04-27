@@ -67,3 +67,18 @@ export function hexToBase64(hexStr:string) {
   }
   return window.btoa(base64);
 }
+
+export const getProposalEndTime = (currentNumber: number, startNumber: number, durationNumber: number) => {
+  const leftOverNumber = durationNumber - (currentNumber - startNumber);
+  
+  const seconds = leftOverNumber * 6;
+  var d = Math.floor(seconds / (3600*24));
+  var h = Math.floor(seconds % (3600*24) / 3600);
+  var m = Math.floor(seconds % 3600 / 60);
+  
+  return {
+    d,
+    h,
+    m
+  }
+}

@@ -25,7 +25,6 @@ const Proposal = () => {
     if (!daoId) {
       return;
     }
-    console.log('useeffect');
     const TO = setTimeout(() => {
       fetchDaoFromDB(daoId as string);
     }, 700);
