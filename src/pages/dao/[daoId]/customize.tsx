@@ -47,7 +47,10 @@ const Customize = () => {
         </div>
       );
     }
-    if (currentWalletAccount.address !== currentDaoFromChain?.daoOwnerAddress && !showCongrats) {
+    if (
+      currentWalletAccount.address !== currentDaoFromChain?.daoOwnerAddress &&
+      !showCongrats
+    ) {
       return (
         <div className='flex justify-center'>
           <div className='flex flex-col items-center'>
