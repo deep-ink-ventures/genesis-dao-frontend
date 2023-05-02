@@ -10,10 +10,6 @@ import ProposalCard from './ProposalCard';
 
 const Proposals = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  // const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  // const currentDao = useGenesisStore((s) => s.currentDao);
-  // const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
-
   const filteredProposals = fakeProposals?.filter((prop) => {
     return (
       prop.proposalId.toLowerCase().includes(searchTerm.toLowerCase()) ||

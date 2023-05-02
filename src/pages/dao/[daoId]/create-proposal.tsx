@@ -1,25 +1,26 @@
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import CreateProposal from '@/components/CreateProposal';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
 
-const Proposal = () => {
+const CreateProposalPage = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  // const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
-  // const fetchDaoTokenBalanceFromDB = useGenesisStore(
-  //   (s) => s.fetchDaoTokenBalanceFromDB
-  // );
+  const [page, setPage] = useState('create');
   const router = useRouter();
   const { daoId } = router.query;
 
   // const handleReturnToDashboard = () => {
   //   router.push(`/dao/${encodeURIComponent(daoId as string)}`);
   // };
+
+  const handleChangePage = (pg: string) => {
+    setPage(pg);
+  };
 
   useEffect(() => {
     if (!daoId) {
@@ -44,9 +45,15 @@ const Proposal = () => {
         </div>
       );
     }
+
+    if (page === 'review') {
+      return <div>Review</div>;
+    }
     // need to validate whether this account has dao tokens
 
-    return <CreateProposal dao={currentDao} />;
+    return (
+      <CreateProposal dao={currentDao} handleChangePage={handleChangePage} />
+    );
   };
 
   return (
@@ -60,4 +67,4 @@ const Proposal = () => {
   );
 };
 
-export default Proposal;
+export default CreateProposalPage;

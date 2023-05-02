@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { statusColors } from '@/components/ProposalCard';
 import WalletConnect from '@/components/WalletConnect';
+import { DAO_UNITS } from '@/config';
 import type { ProposalDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { fakeProposals } from '@/stores/placeholderValues';
@@ -16,13 +17,16 @@ const Proposal = () => {
   const router = useRouter();
   const { daoId } = router.query;
   // const [curBlockNum, setCurBlockNum] = useState(42056)
-  const currentBlockNumber = 42450;
+  const currentBlockNumber = 7200;
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
   >(null);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
+  // const currentBlockNumber = useGenesisStore((s) =>
+  //   s.currentBlockNumber
+  // )
   const p = fakeProposals[0] as ProposalDetail;
 
   const updateIsStartModalOpen = useGenesisStore(
@@ -30,7 +34,7 @@ const Proposal = () => {
   );
 
   const dhm = getProposalEndTime(currentBlockNumber, p.birthBlock, 14400);
-  // const fetchBlockNumber = useGenesisStore((s) =>s.fetchBlockNumber)
+  const fetchBlockNumber = useGenesisStore((s) => s.fetchBlockNumber);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
@@ -48,7 +52,7 @@ const Proposal = () => {
   const againstPercentage = againstVotes.mul(new BN(100)).div(totalVotes);
 
   const handleReturnToDashboard = () => {
-    router.push(`/dao/${daoId as string}/proposals`);
+    router.push(`/dao/${daoId as string}/`);
   };
 
   const handleVoteSelection = (e: any) => {
@@ -75,9 +79,9 @@ const Proposal = () => {
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
-  // useEffect(() => {
-  //   fetchBlockNumber()
-  // })
+  useEffect(() => {
+    console.log('current block', currentBlockNumber);
+  });
 
   return (
     <MainLayout
@@ -142,10 +146,13 @@ const Proposal = () => {
                     <p>You have</p>
                     <p>
                       {' '}
-                      {formatBalance(daoTokenBalance || new BN(0), {
-                        withZero: false,
-                        forceUnit: `${daoId}`,
-                      })}{' '}
+                      {formatBalance(
+                        daoTokenBalance?.div(new BN(DAO_UNITS)) || new BN(0),
+                        {
+                          withZero: false,
+                          forceUnit: `${daoId}`,
+                        }
+                      )}{' '}
                       tokens
                     </p>
                   </div>

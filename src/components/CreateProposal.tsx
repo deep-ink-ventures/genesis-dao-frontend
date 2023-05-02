@@ -1,10 +1,15 @@
 import { ErrorMessage } from '@hookform/error-message';
-import { useState } from 'react';
+import { BN } from '@polkadot/util';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { DaoDetail } from '@/stores/genesisStore';
+import useGenesisStore from '@/stores/genesisStore';
 
-const CreateProposal = (props: { dao: DaoDetail | null }) => {
+const CreateProposal = (props: {
+  dao: DaoDetail | null;
+  handleChangePage: Function;
+}) => {
   const {
     register,
     handleSubmit,
@@ -15,15 +20,33 @@ const CreateProposal = (props: { dao: DaoDetail | null }) => {
   const [hasProposalDeposit, _setHasProposalDeposit] = useState<boolean | null>(
     true
   );
+
+  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
+  const fetchDaoTokenBalanceFromDB = useGenesisStore(
+    (s) => s.fetchDaoTokenBalanceFromDB
+  );
+
   const onSubmit = (data: any) => {
     console.log(data);
+    props.handleChangePage('review');
   };
+
+  useEffect(() => {
+    if (props.dao?.daoAssetId && currentWalletAccount?.address) {
+      fetchDaoTokenBalanceFromDB(
+        props?.dao?.daoAssetId,
+        currentWalletAccount?.address
+      );
+    }
+  }, [props?.dao?.daoAssetId, currentWalletAccount?.address]);
 
   const watchName = watch('proposalName', '');
   const watchId = watch('proposalId', '');
 
-  const alert = (hasDeposit: boolean | null) => {
-    if (hasDeposit) {
+  const alert = () => {
+    // fixme needs to get proposal token deposit amount
+    if (daoTokenBalance?.gte(new BN(1))) {
       return (
         <div className='alert alert-info shadow-lg'>
           <div>
@@ -47,7 +70,29 @@ const CreateProposal = (props: { dao: DaoDetail | null }) => {
         </div>
       );
     }
-    return null;
+    return (
+      <div className='alert alert-error shadow-lg'>
+        <div>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            className='h-6 w-6 shrink-0 stroke-current'
+            fill='none'
+            viewBox='0 0 24 24'>
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+            />
+          </svg>
+          <p>
+            Sorry you need at least{' '}
+            <span className='font-bold'>{`10 ${props.dao?.daoId} Tokens `}</span>{' '}
+            to create a DAO. You will get them back if you destroy the DAO.
+          </p>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -66,7 +111,7 @@ const CreateProposal = (props: { dao: DaoDetail | null }) => {
           {` Creating a proposal is your chance to share your vision, ideas, and expertise. Whether it's a project proposal, a policy change, or a community initiative, your proposal can make a difference and help shape the future of the organization.`}
         </p>
       </div>
-      {alert(hasProposalDeposit)}
+      {alert()}
       <div
         className={`flex w-full items-center ${
           !hasProposalDeposit ? 'text-neutral/30' : null
@@ -108,53 +153,6 @@ const CreateProposal = (props: { dao: DaoDetail | null }) => {
                     watchName.length > 50 ? 'text-error' : null
                   }`}>
                   {watchName.length}/50
-                </p>
-              </div>
-            </div>
-            <div className='min-w-full'>
-              <div className='flex items-end justify-between'>
-                <p className='mb-1 ml-2'>
-                  Proposal ID{' '}
-                  <span className='text-lg font-medium text-red-600'>*</span>
-                </p>
-                <p className='mb-1 ml-2 text-sm'>
-                  Choose from capital A-Z and numbers 0-9(no space)
-                </p>
-              </div>
-              <div className='relative'>
-                {/* fixme: Pre fetch all dao names and validate if the dao name exists */}
-                <input
-                  className={`input ${
-                    watchId.length > 8 || errors.daoId
-                      ? 'input-error'
-                      : 'input-primary'
-                  }`}
-                  type='text'
-                  placeholder='e.g. Prop101'
-                  disabled={!hasProposalDeposit}
-                  {...register('proposalId', {
-                    required: 'Required',
-                    maxLength: { value: 8, message: 'Max Length is 8' },
-                    minLength: { value: 3, message: 'Minimum length is 3' },
-                    pattern: {
-                      value: /^[A-Z0-9]+$/,
-                      message: 'Only capital A-Z or 0-9(no whitespace)',
-                    },
-                  })}
-                />
-                <ErrorMessage
-                  errors={errors}
-                  name='proposalId'
-                  render={({ message }) => (
-                    <p className='mt-1 ml-2 text-error'>{message}</p>
-                  )}
-                />
-                <p className='ml-2 mt-1'>Proposal ID Cannot be changed after</p>
-                <p
-                  className={`absolute top-2 right-2 opacity-60 ${
-                    watchId.length > 8 ? 'text-error' : null
-                  }`}>
-                  {watchId.length}/8
                 </p>
               </div>
             </div>

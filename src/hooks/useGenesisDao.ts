@@ -1,10 +1,11 @@
 import type { SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
-import { formatBalance } from '@polkadot/util';
+import { formatBalance, stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
-import { DAO_UNITS } from '@/config';
+import { DAO_UNITS, SERVICE_URL } from '@/config';
+import { hexToBase64 } from '@/utils';
 
 import type {
   AssetDetails,
@@ -17,17 +18,18 @@ import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 // fixme open one connection and reuse that connection
 const useGenesisDao = () => {
   const router = useRouter();
+  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const apiConnection = useGenesisStore((s) => s.apiConnection);
+
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const apiConnection = useGenesisStore((s) => s.apiConnection);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
 
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -601,16 +603,23 @@ const useGenesisDao = () => {
     ];
   };
 
-  const makeCreateProposalTxn = (
+  const makeCreateProposalTxn = (txns: any[], daoId: string) => {
+    return [...txns, apiConnection.tx?.votes?.createProposal?.(daoId)];
+  };
+
+  const makeSetProposalMetadataTxn = (
     txns: any[],
-    daoId: string,
-    proposalId: string,
-    meta: string,
-    hash: string
+    proposalId: number,
+    metadataUrl: string,
+    metadataHash: string
   ) => {
     return [
       ...txns,
-      apiConnection.tx?.votes?.createProposal?.(daoId, proposalId, meta, hash),
+      apiConnection.tx?.votes?.setMetadata?.(
+        proposalId,
+        metadataUrl,
+        metadataHash
+      ),
     ];
   };
 
@@ -618,7 +627,7 @@ const useGenesisDao = () => {
     return [...txns, apiConnection.tx?.votes?.vote?.(proposalId, inFavor)];
   };
 
-  const finalizeProprosalTxn = (txns: any[], proposalId: string) => {
+  const finalizeProposalTxn = (txns: any[], proposalId: string) => {
     return [...txns, apiConnection.tx?.votes?.finalizeProposal?.(proposalId)];
   };
 
@@ -635,6 +644,33 @@ const useGenesisDao = () => {
 
   const markImplementedTxn = (txns: any[], proposalId: string) => {
     return [...txns, apiConnection.tx?.votes?.markImplemented?.(proposalId)];
+  };
+
+  const doChallenge = async (daoId: string) => {
+    try {
+      const challengeRes = await fetch(
+        `${SERVICE_URL}/daos/${daoId}/challenge/`
+      );
+      const challengeString = await challengeRes.json();
+      if (!challengeString.challenge) {
+        handleErrors('Error in retrieving ownership-validation challenge');
+        return;
+      }
+      const signerResult = await currentWalletAccount?.signer?.signRaw?.({
+        address: currentWalletAccount.address,
+        data: stringToHex(challengeString.challenge),
+        type: 'bytes',
+      });
+
+      if (!signerResult) {
+        handleErrors('Not able to validate ownership');
+        return;
+      }
+
+      return hexToBase64(signerResult.signature.substring(2));
+    } catch (err) {
+      handleErrors(err);
+    }
   };
 
   return {
@@ -656,9 +692,11 @@ const useGenesisDao = () => {
     makeChangeOwnerTxn,
     makeCreateProposalTxn,
     makeVoteTxn,
-    finalizeProprosalTxn,
+    finalizeProposalTxn,
     faultProposalTxn,
     markImplementedTxn,
+    makeSetProposalMetadataTxn,
+    doChallenge,
   };
 };
 
