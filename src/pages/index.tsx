@@ -14,16 +14,21 @@ import MainLayout from '@/templates/MainLayout';
 
 const Index = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const daosOwnedByWallet = useGenesisStore((s) => s.daosOwnedByWallet);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
+  const apiConnection = useGenesisStore((s) => s.apiConnection);
+  const createApiConnection = useGenesisStore((s) => s.createApiConnection);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
   };
 
-  useEffect(() => {}, [daosOwnedByWallet, currentWalletAccount]);
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+  });
 
   return (
     <MainLayout

@@ -103,8 +103,8 @@ const useGenesisDao = () => {
           const err = error as any;
           if (err?.isModule) {
             // for module errors, we have the section indexed, lookup
-            const decoded = apiConnection.registry.findMetaError(err.asModule);
-            const string = `${decoded.section}.${decoded.method}}`;
+            const decoded = apiConnection?.registry.findMetaError(err.asModule);
+            const string = `${decoded?.section}.${decoded?.method}}`;
             if (string.includes('AlreadyExists')) {
               const errorNoti = {
                 title: `${TxnResponse.Error}`,
@@ -194,7 +194,7 @@ const useGenesisDao = () => {
 
   const getAssetDetails = async (assetId: number) => {
     try {
-      const result = await apiConnection.query.assets?.asset?.(assetId);
+      const result = await apiConnection?.query.assets?.asset?.(assetId);
       const assetDetails = result?.toHuman() as unknown as AssetDetails;
       return assetDetails;
     } catch (err) {
@@ -235,14 +235,14 @@ const useGenesisDao = () => {
       return;
     }
     updateTxnProcessing(true);
-    const nonce = await apiConnection.rpc.system.accountNextIndex(
+    const nonce = await apiConnection?.rpc.system.accountNextIndex(
       currentWalletAccount.address
     );
 
     if (!assetId) {
       destroyDao(currentWalletAccount, daoId);
     } else {
-      apiConnection.tx.assets
+      apiConnection?.tx.assets
         ?.startDestroy?.(assetId)
         .signAndSend(
           currentWalletAccount.address,
@@ -258,7 +258,7 @@ const useGenesisDao = () => {
                   currentWalletAccount.address,
                   {
                     signer: currentWalletAccount.signer,
-                    nonce: nonce.addn(1),
+                    nonce: nonce?.addn(1),
                   },
                   (destroyAccountsRes) => {
                     txResponseCallback(
@@ -273,7 +273,7 @@ const useGenesisDao = () => {
                             currentWalletAccount.address,
                             {
                               signer: currentWalletAccount.signer,
-                              nonce: nonce.addn(2),
+                              nonce: nonce?.addn(2),
                             },
                             (destroyApprovalsRes) => {
                               txResponseCallback(
@@ -287,7 +287,7 @@ const useGenesisDao = () => {
                                       currentWalletAccount.address,
                                       {
                                         signer: currentWalletAccount.signer,
-                                        nonce: nonce.addn(3),
+                                        nonce: nonce?.addn(3),
                                       },
                                       (finishDestroyRes) => {
                                         txResponseCallback(
@@ -340,7 +340,7 @@ const useGenesisDao = () => {
     }
 
     try {
-      apiConnection.tx.assets?.destroyAccounts?.(assetId).signAndSend(
+      apiConnection?.tx.assets?.destroyAccounts?.(assetId).signAndSend(
         currentWalletAccount.address,
         {
           signer: currentWalletAccount.signer,
@@ -380,7 +380,7 @@ const useGenesisDao = () => {
     }
 
     try {
-      apiConnection.tx.assets?.destroyApprovals?.(assetId).signAndSend(
+      apiConnection?.tx.assets?.destroyApprovals?.(assetId).signAndSend(
         currentWalletAccount.address,
         {
           signer: currentWalletAccount.signer,
@@ -411,7 +411,7 @@ const useGenesisDao = () => {
   ) => {
     const amount = supply * DAO_UNITS;
     if (walletAccount.signer) {
-      apiConnection.tx?.daoCore
+      apiConnection?.tx?.daoCore
         ?.issueToken?.(daoId, amount)
         .signAndSend(
           walletAccount.address,
@@ -443,7 +443,7 @@ const useGenesisDao = () => {
     amount: BN
   ) => {
     if (walletAccount.signer) {
-      apiConnection.tx?.assets
+      apiConnection?.tx?.assets
         ?.transferKeepAlive?.(assetId, toAddress, amount)
         .signAndSend(
           walletAccount.address,
@@ -466,13 +466,13 @@ const useGenesisDao = () => {
   };
 
   const makeCreateDaoTxn = (txns: any[], daoId: string, daoName: string) => {
-    const createDaoTxn = apiConnection.tx.daoCore?.createDao?.(daoId, daoName);
+    const createDaoTxn = apiConnection?.tx.daoCore?.createDao?.(daoId, daoName);
 
     return [...txns, createDaoTxn];
   };
 
   const makeIssueTokensTxn = (txns: any[], daoId: string, tokenSupply: BN) => {
-    const issueTokensTxn = apiConnection.tx?.daoCore?.issueToken?.(
+    const issueTokensTxn = apiConnection?.tx?.daoCore?.issueToken?.(
       daoId,
       tokenSupply
     );
@@ -486,7 +486,7 @@ const useGenesisDao = () => {
     assetId: number
   ): SubmittableExtrinsicFunction<'promise'>[] => {
     const transferTxns = recipients.map((recipient) => {
-      return apiConnection.tx.assets?.transfer?.(
+      return apiConnection?.tx.assets?.transfer?.(
         Number(assetId),
         recipient.walletAddress,
         recipient.tokens
@@ -505,7 +505,7 @@ const useGenesisDao = () => {
   ) => {
     updateTxnProcessing(true);
     if (currentWalletAccount?.signer) {
-      apiConnection.tx.utility
+      apiConnection?.tx.utility
         ?.batchAll?.(txns)
         .signAndSend(
           currentWalletAccount.address,
@@ -533,7 +533,7 @@ const useGenesisDao = () => {
 
     updateTxnProcessing(true);
 
-    apiConnection.tx?.votes
+    apiConnection?.tx?.votes
       ?.setGovernanceMajorityVote?.(
         daoId,
         voteDurationBlocks,
@@ -569,7 +569,7 @@ const useGenesisDao = () => {
   ) => {
     return [
       ...txns,
-      apiConnection.tx?.votes?.setGovernanceMajorityVote?.(
+      apiConnection?.tx?.votes?.setGovernanceMajorityVote?.(
         daoId,
         voteDurationBlocks,
         deposit,
@@ -586,7 +586,7 @@ const useGenesisDao = () => {
   ) => {
     return [
       ...txns,
-      apiConnection.tx?.daoCore?.setMetadata?.(daoId, meta, hash),
+      apiConnection?.tx?.daoCore?.setMetadata?.(daoId, meta, hash),
     ];
   };
 
@@ -597,7 +597,7 @@ const useGenesisDao = () => {
   ) => {
     return [
       ...txns,
-      apiConnection.tx?.daoCore?.changeOwner?.(daoId, newOwnerAddress),
+      apiConnection?.tx?.daoCore?.changeOwner?.(daoId, newOwnerAddress),
     ];
   };
 
