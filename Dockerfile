@@ -9,7 +9,7 @@ COPY . .
 
 ARG ENVIRONMENT
 RUN if [ "$ENVIRONMENT" = "dockerized" ]; \
-      then cp .env.dockerized .env; \
+      then cp .env.dockerized .env.production; \
     fi
 
 RUN yarn format
