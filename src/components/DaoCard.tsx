@@ -54,7 +54,7 @@ const DaoCard = (props: DaoCardProps) => {
           <div className='md:overflow-visible'>
             <h4
               className={`z-10 inline-block w-[150px] truncate text-base-content mix-blend-normal ${
-                props.daoName.length > 20 ? 'text-sm' : ''
+                props.daoName?.length > 20 ? 'text-sm' : ''
               }`}>
               {props.daoName}
             </h4>

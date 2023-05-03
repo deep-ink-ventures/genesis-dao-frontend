@@ -207,7 +207,7 @@ export interface GenesisState {
   txnNotifications: TxnNotification[];
   loading: boolean;
   txnProcessing: boolean;
-  apiConnection: ApiPromise;
+  apiConnection: ApiPromise | null;
   createDaoSteps: number | null;
   newCreatedDao: DaoInfo | null;
   isStartModalOpen: boolean;
@@ -269,7 +269,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   txnNotifications: [],
   loading: false,
   txnProcessing: false,
-  apiConnection: new ApiPromise({ provider: new WsProvider(NODE_URL) }),
+  apiConnection: null,
   currentAssetBalance: null,
   createDaoSteps: 1,
   newCreatedDao: null,
@@ -332,7 +332,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: () => {
     const apiCon = get().apiConnection;
-    apiCon.query?.daoCore?.daos
+    apiCon?.query?.daoCore?.daos
       ?.entries()
       .then((daoEntries) => {
         const daos: AllDaos = {};
@@ -374,7 +374,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   fetchDao: (daoId) => {
     const apiCon = get().apiConnection;
-    apiCon.query?.daoCore
+    apiCon?.query?.daoCore
       ?.daos?.(daoId)
       .then((data) => {
         const d = data.toHuman() as unknown as IncomingDaoInfo;
@@ -479,7 +479,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   fetchDaoTokenBalance: (assetId: number, accountId: string) => {
     get()
-      .apiConnection.query?.assets?.account?.(assetId, accountId)
+      .apiConnection?.query?.assets?.account?.(assetId, accountId)
       .then((data) => {
         const assetData = data.toHuman() as unknown as IncomingTokenBalanceData;
         if (assetData === null) {
@@ -516,7 +516,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   fetchCurrentAssetId: () => {
     get()
-      .apiConnection.query.daoCore?.currentAssetId?.()
+      .apiConnection?.query.daoCore?.currentAssetId?.()
       .then((data) => {
         get().updateCurrentAssetId(Number(data.toHuman()));
       });

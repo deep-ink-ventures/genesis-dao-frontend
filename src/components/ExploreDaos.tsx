@@ -32,7 +32,7 @@ const ExploreDaos = () => {
   };
 
   const displayDaos = () => {
-    if (!filteredDaos || filteredDaos.length === 0) {
+    if (!filteredDaos || filteredDaos?.length === 0) {
       return <div className='mt-5'>Sorry no DAOs found</div>;
     }
     return <DaoCards daos={filteredDaos} />;
