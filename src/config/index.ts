@@ -1,8 +1,8 @@
 export const NODE_URL: Readonly<string> =
-  process.env.NODE_URL || 'ws://chain:9944';
+  process.env.NODE_URL || 'wss://node.genesis-dao.org';
 
 export const SERVICE_URL: Readonly<string> =
-  process.env.SERVICE_URL || 'http://app:8000';
+  process.env.SERVICE_URL || 'https://service.genesis-dao.org';
 
 export const NATIVE_UNITS: Readonly<number> = 10000000000; // same as polkadot 10 decimals
 export const DAO_UNITS: Readonly<number> = 10000000000;
