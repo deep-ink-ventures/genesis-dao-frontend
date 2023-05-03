@@ -7,7 +7,7 @@ COPY package.json .
 RUN yarn install
 COPY . .
 
-ARG ARG=ENVIRONMENT
+ARG ENVIRONMENT
 RUN if [ "$ENVIRONMENT" = "dockerized" ]; \
       then cp .env.dockerized .env; \
     fi
