@@ -1,5 +1,4 @@
 import { BN, formatBalance } from '@polkadot/util';
-import { useEffect } from 'react';
 
 import type { ProposalDetail } from '@/stores/genesisStore';
 
@@ -12,19 +11,12 @@ export const statusColors = {
 };
 
 const ProposalCard = (props: { p: ProposalDetail }) => {
-  // const router = useRouter();
-
   formatBalance.setDefaults({ decimals: 0, unit: props.p.daoId });
-  let inFavorVotes = props.p.inFavor;
-  let againstVotes = props.p.against;
+  const inFavorVotes = props.p.inFavor;
+  const againstVotes = props.p.against;
   const totalVotes = inFavorVotes.add(againstVotes);
   const inFavorPercentage = inFavorVotes.mul(new BN(100)).div(totalVotes);
   const againstPercentage = againstVotes.mul(new BN(100)).div(totalVotes);
-
-  useEffect(() => {
-    inFavorVotes = props.p.inFavor;
-    againstVotes = props.p.against;
-  }, [props.p.against, props.p.inFavor]);
 
   return (
     <div

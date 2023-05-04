@@ -124,6 +124,7 @@ h4 {
 .selected-tab { 
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 2.79%, rgba(255, 255, 255, 0) 83.46%);
   backdrop-filter: blur(2px);
+  @apply border-r-4 border-primary;
 }
 
 #search-input {
@@ -222,6 +223,22 @@ h4 {
   color: #FAFAFA;
 }
 
+.vote-up:hover {
+  stroke: #1E1B21 !important
+}
+
+.vote-down:hover {
+  stroke: #1E1B21 !important
+}
+
+.vote-up path {
+  stroke: #1E1B21 !important
+}
+
+.vote-up path {
+  stroke: #1E1B21 !important
+  
+}
 
 
 

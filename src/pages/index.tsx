@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { useEffect } from 'react';
 
 import CreateDaoModal from '@/components/CreateDaoModal';
 import ExploreDaos from '@/components/ExploreDaos';
@@ -14,7 +13,7 @@ import MainLayout from '@/templates/MainLayout';
 
 const Index = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const daosOwnedByWallet = useGenesisStore((s) => s.daosOwnedByWallet);
+
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
@@ -22,8 +21,6 @@ const Index = () => {
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
   };
-
-  useEffect(() => {}, [daosOwnedByWallet, currentWalletAccount]);
 
   return (
     <MainLayout

@@ -8,6 +8,12 @@ import { NODE_URL, SERVICE_URL } from '@/config';
 
 // ALL TYPES and INTERFACES...
 
+export interface ProposalCreationValues {
+  title: string;
+  description: string;
+  url: string;
+}
+
 export enum ProposalStatus {
   Active = 'Active',
   Counting = 'Counting',
@@ -146,6 +152,8 @@ export enum TxnResponse {
   Cancelled = 'CANCELLED',
 }
 
+export type DaoPage = 'dashboard' | 'proposals';
+
 export interface IncomingTokenBalanceData {
   balance: string;
   extra: string | null;
@@ -256,6 +264,9 @@ export interface GenesisState {
   isStartModalOpen: boolean;
   daoCreationValues: DaoCreationValues | null;
   showCongrats: boolean;
+  currentBlockNumber: number | null;
+  proposalValues: ProposalCreationValues | null;
+  daoPage: DaoPage;
 }
 
 export interface GenesisActions {
@@ -298,6 +309,10 @@ export interface GenesisActions {
 
   updateCurrentProposal: (proposal: ProposalDetail) => void;
   fetchDaoTokenBalanceFromDB: (assetId: number, accountId: string) => void;
+  updateBlockNumber: (currentBlockNumber: number) => void;
+  fetchBlockNumber: () => void;
+  updateProposalValues: (proposalValues: ProposalCreationValues) => void;
+  updateDaoPage: (daoPage: DaoPage) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -329,6 +344,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   nativeTokenBalance: null,
   daoTokenBalance: null,
   showCongrats: false,
+  currentBlockNumber: null,
+  proposalValues: null,
+  daoPage: 'dashboard',
   createApiConnection: async () => {
     const { rpcEndpoint } = get();
     const createApi = async (): Promise<ApiPromise> => {
@@ -374,6 +392,18 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     const currentTxnNotis = get().txnNotifications;
     const newNotis = currentTxnNotis.slice(0, -1);
     set({ txnNotifications: newNotis });
+  },
+  fetchBlockNumber: () => {
+    const apiCon = get().apiConnection;
+    apiCon.query?.system
+      ?.number?.()
+      .then((data) => {
+        const blockNumber = Number(data);
+        set({ currentBlockNumber: blockNumber });
+      })
+      .catch((err) => {
+        get().handleErrors(err);
+      });
   },
 
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
@@ -497,6 +527,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         `${SERVICE_URL}/daos/?order_by=id&limit=50`
       );
       const daosRes = await getDaosResponse.json();
+      console.log('response', daosRes);
       const daosArr = daosRes.results;
       const newDaos: DaoDetail[] = daosArr?.map((dao: any) => {
         return {
@@ -618,6 +649,10 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     set(() => ({ nativeTokenBalance })),
   updateShowCongrats: (showCongrats) => set(() => ({ showCongrats })),
   updateCurrentProposal: (currentProposal) => set(() => ({ currentProposal })),
+  updateBlockNumber: (currentBlockNumber) =>
+    set(() => ({ currentBlockNumber })),
+  updateProposalValues: (proposalValues) => set(() => ({ proposalValues })),
+  updateDaoPage: (daoPage) => set(() => ({ daoPage })),
 }));
 
 export default useGenesisStore;

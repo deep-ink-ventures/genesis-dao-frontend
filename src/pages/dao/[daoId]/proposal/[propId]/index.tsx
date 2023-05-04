@@ -5,27 +5,35 @@ import { useEffect, useState } from 'react';
 
 import { statusColors } from '@/components/ProposalCard';
 import WalletConnect from '@/components/WalletConnect';
+import { DAO_UNITS } from '@/config';
 import type { ProposalDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { fakeProposals } from '@/stores/placeholderValues';
 import arrowLeft from '@/svg/arrow-left.svg';
 import MainLayout from '@/templates/MainLayout';
+import { getProposalEndTime } from '@/utils/index';
 
 const Proposal = () => {
   const router = useRouter();
   const { daoId } = router.query;
-
+  const currentBlockNumber = 7200;
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
   >(null);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
+  // const currentBlockNumber = useGenesisStore((s) =>
+  //   s.currentBlockNumber
+  // )
   const p = fakeProposals[0] as ProposalDetail;
 
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
+
+  const dhm = getProposalEndTime(currentBlockNumber, p.birthBlock, 14400);
+  // const fetchBlockNumber = useGenesisStore((s) => s.fetchBlockNumber);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
@@ -43,11 +51,10 @@ const Proposal = () => {
   const againstPercentage = againstVotes.mul(new BN(100)).div(totalVotes);
 
   const handleReturnToDashboard = () => {
-    router.push(`/dao/${daoId as string}/proposals`);
+    router.push(`/dao/${daoId as string}/`);
   };
 
   const handleVoteSelection = (e: any) => {
-    console.log(e.target.textContent === 'In Favor');
     if (e.target.textContent === 'In Favor') {
       setVoteSelection('In Favor');
     } else if (e.target.textContent === 'Against') {
@@ -70,6 +77,10 @@ const Proposal = () => {
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
+  // useEffect(() => {
+  //   console.log('current block', currentBlockNumber);
+  // });
+
   return (
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
@@ -84,15 +95,25 @@ const Proposal = () => {
         <div className='container flex min-h-[640px] basis-3/4 p-4'>
           <div className='flex flex-col gap-y-3'>
             <div className='flex justify-between'>
-              <div>
+              <div className='mr-4'>
                 <p className='text-sm'>{p?.proposalId}</p>
                 <h3 className='text-lg'>{p?.proposalName}</h3>
               </div>
-              <div
-                className={`rounded-lg ${
-                  statusColors[`${p?.status}`]
-                } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
-                {p?.status}
+              <div className='flex'>
+                <div className='mr-4 flex gap-2'>
+                  Ends
+                  <div className='flex gap-2'>
+                    <div className='h-6 bg-base-card px-2'>{dhm.d}d</div>:
+                    <div className='h-6 bg-base-card px-2'>{dhm.h}h</div>:
+                    <div className='h-6 bg-base-card px-2'>{dhm.m}m</div>
+                  </div>
+                </div>
+                <div
+                  className={`rounded-lg ${
+                    statusColors[`${p?.status}`]
+                  } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
+                  {p?.status}
+                </div>
               </div>
             </div>
             <div>
@@ -123,10 +144,13 @@ const Proposal = () => {
                     <p>You have</p>
                     <p>
                       {' '}
-                      {formatBalance(daoTokenBalance || new BN(0), {
-                        withZero: false,
-                        forceUnit: `${daoId}`,
-                      })}{' '}
+                      {formatBalance(
+                        daoTokenBalance?.div(new BN(DAO_UNITS)) || new BN(0),
+                        {
+                          withZero: false,
+                          forceUnit: `${daoId}`,
+                        }
+                      )}{' '}
                       tokens
                     </p>
                   </div>
@@ -147,6 +171,13 @@ const Proposal = () => {
                   onClick={(e) => {
                     handleVoteSelection(e);
                   }}>
+                  {/* <Image
+                    src={thumbUp}
+                    height={16}
+                    width={16}
+                    alt='thumb-up'
+                    className='mr-2'
+                  /> */}
                   In Favor
                 </div>
                 <div
@@ -158,6 +189,13 @@ const Proposal = () => {
                   onClick={(e) => {
                     handleVoteSelection(e);
                   }}>
+                  {/* <Image
+                    src={thumbDown}
+                    height={16}
+                    width={16}
+                    alt='thumb-down'
+                    className={`mr-2 vote-down`}
+                  /> */}
                   Against
                 </div>
               </div>
@@ -173,7 +211,7 @@ const Proposal = () => {
               )}
             </div>
           </div>
-          <div className='justify-content container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
+          <div className='container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
             <p className='text-xl'>Voting Progress</p>
             <div className='flex w-[100%] flex-col pr-6'>
               <div className='relative mb-2 flex w-full justify-between'>
@@ -196,7 +234,7 @@ const Proposal = () => {
               </div>
             </div>
           </div>
-          <div className='justify-content container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
+          <div className='container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
             <p className='text-xl'>Report</p>
             <p className='text-sm'>
               {`If you find this proposal does not align with the organization's

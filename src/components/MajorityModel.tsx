@@ -96,9 +96,8 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 <span className='text-lg font-medium text-red-600'>*</span>
               </h4>
               <p className='ml-1 text-sm'>
-                Your DAO ID{' '}
                 <span className='text-primary'>{currentDao?.daoId}</span> will
-                be the DAO token symbol
+                be the DAO token symbol (current max is 900,000,000)
               </p>
             </div>
             <div>

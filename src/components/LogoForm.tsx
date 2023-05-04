@@ -1,5 +1,4 @@
 import { ErrorMessage } from '@hookform/error-message';
-import { stringToHex } from '@polkadot/util';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,7 +8,7 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { LogoFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
-import { hexToBase64, readFileAsB64 } from '@/utils';
+import { readFileAsB64 } from '@/utils';
 
 const LogoForm = (props: { daoId: string | null }) => {
   const currentDao = useGenesisStore((s) => s.currentDao);
@@ -29,7 +28,6 @@ const LogoForm = (props: { daoId: string | null }) => {
       imageString: '',
     },
   });
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   // const currentDao = useGenesisStore((s) => s.currentDao);
   // const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
@@ -37,7 +35,7 @@ const LogoForm = (props: { daoId: string | null }) => {
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDao = useGenesisStore((s) => s.fetchDao);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const { makeSetMetadataTxn, sendBatchTxns } = useGenesisDao();
+  const { makeSetMetadataTxn, sendBatchTxns, doChallenge } = useGenesisDao();
 
   const onSubmit = async (data: LogoFormValues) => {
     if (!data.logoImage[0] || !props.daoId) {
@@ -51,26 +49,12 @@ const LogoForm = (props: { daoId: string | null }) => {
     });
 
     try {
-      const challengeRes = await fetch(
-        `${SERVICE_URL}/daos/${props.daoId}/challenge/`
-      );
-      const challengeString = await challengeRes.json();
-      if (!challengeString.challenge) {
+      const validatedSignature = await doChallenge(props.daoId);
+
+      if (!validatedSignature) {
         handleErrors('Not able to validate ownership');
         return;
       }
-      const signerResult = await currentWalletAccount?.signer?.signRaw?.({
-        address: currentWalletAccount.address,
-        data: stringToHex(challengeString.challenge),
-        type: 'bytes',
-      });
-
-      if (!signerResult) {
-        handleErrors('Not able to validate ownership');
-        return;
-      }
-
-      const base64Signature = hexToBase64(signerResult.signature.substring(2));
 
       const metadataResponse = await fetch(
         `${SERVICE_URL}/daos/${props.daoId}/metadata/`,
@@ -79,13 +63,14 @@ const LogoForm = (props: { daoId: string | null }) => {
           body: jsonData,
           headers: {
             'Content-Type': 'application/json',
-            Signature: base64Signature,
+            Signature: validatedSignature,
           },
         }
       );
 
       const metadata = await metadataResponse.json();
       if (!metadata.metadata_url) {
+        handleErrors('Not able to upload metadata');
         return;
       }
       const txns = makeSetMetadataTxn(
