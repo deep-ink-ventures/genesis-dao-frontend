@@ -6,6 +6,12 @@ import { useForm } from 'react-hook-form';
 import type { DaoDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
+interface ProposalValues {
+  proposalName: string;
+  proposalDescription: string;
+  discussionLink: string;
+}
+
 const CreateProposal = (props: {
   dao: DaoDetail | null;
   handleChangePage: Function;
@@ -15,7 +21,7 @@ const CreateProposal = (props: {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm<ProposalValues>();
 
   const [hasProposalDeposit, _setHasProposalDeposit] = useState<boolean | null>(
     true
@@ -26,9 +32,14 @@ const CreateProposal = (props: {
   const fetchDaoTokenBalanceFromDB = useGenesisStore(
     (s) => s.fetchDaoTokenBalanceFromDB
   );
+  const updateProposalValues = useGenesisStore((s) => s.updateProposalValues);
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = (data: ProposalValues) => {
+    updateProposalValues({
+      title: data.proposalName,
+      description: data.proposalDescription,
+      url: data.discussionLink,
+    });
     props.handleChangePage('review');
   };
 
@@ -42,7 +53,7 @@ const CreateProposal = (props: {
   }, [props?.dao?.daoAssetId, currentWalletAccount?.address]);
 
   const watchName = watch('proposalName', '');
-  const watchId = watch('proposalId', '');
+  const watchLink = watch('discussionLink', '');
 
   const alert = () => {
     // fixme needs to get proposal token deposit amount
@@ -96,17 +107,16 @@ const CreateProposal = (props: {
   };
 
   return (
-    <div className='flex flex-col items-center gap-y-6 px-12'>
+    <div className='flex flex-col items-center gap-y-6 px-12 py-4'>
       <div>
         <progress
           className='progress progress-primary h-[10px] w-[400px]'
           value='40'
-          max='100'></progress>
+          max='100'
+        />
       </div>
       <div className='text-center'>
-        <h2 className='text-primary' data-testid='daoName'>
-          New Proposal For {props.dao?.daoName}
-        </h2>
+        <h2 className='text-primary'>New Proposal For {props.dao?.daoName}</h2>
         <p className='px-16'>
           {` Creating a proposal is your chance to share your vision, ideas, and expertise. Whether it's a project proposal, a policy change, or a community initiative, your proposal can make a difference and help shape the future of the organization.`}
         </p>
@@ -128,7 +138,7 @@ const CreateProposal = (props: {
               <div className='relative'>
                 <input
                   className={`input ${
-                    watchName.length > 50 || errors.daoName
+                    watchName.length > 64 || errors.proposalName
                       ? 'input-error'
                       : 'input-primary'
                   }`}
@@ -137,8 +147,8 @@ const CreateProposal = (props: {
                   disabled={!hasProposalDeposit}
                   {...register('proposalName', {
                     required: 'Required',
-                    maxLength: { value: 50, message: 'Max length is 50' },
-                    minLength: { value: 3, message: 'Minimum length is 3' },
+                    maxLength: { value: 64, message: 'Max length is 50' },
+                    minLength: { value: 5, message: 'Minimum length is 5' },
                   })}
                 />
                 <ErrorMessage
@@ -188,7 +198,7 @@ const CreateProposal = (props: {
               </div>
               <input
                 className={`input ${
-                  watchId.length > 8 || errors.daoId
+                  watchLink.length > 250 || errors.discussionLink
                     ? 'input-error'
                     : 'input-primary'
                 }`}

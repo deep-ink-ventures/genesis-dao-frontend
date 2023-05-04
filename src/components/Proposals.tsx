@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 // import useGenesisStore from '@/stores/genesisStore';
@@ -8,7 +9,7 @@ import plusBlack from '@/svg/plus-black.svg';
 
 import ProposalCard from './ProposalCard';
 
-const Proposals = () => {
+const Proposals = (props: { daoId: string }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const filteredProposals = fakeProposals?.filter((prop) => {
     return (
@@ -18,7 +19,7 @@ const Proposals = () => {
   });
 
   const displayProposal = () => {
-    if (!filteredProposals || filteredProposals.length === 0) {
+    if (!filteredProposals || filteredProposals?.length === 0) {
       return <div>Sorry no proposals found</div>;
     }
     return (
@@ -36,7 +37,6 @@ const Proposals = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleCreateProposal = () => {};
   return (
     <div className='flex flex-col gap-y-4'>
       <div className='flex justify-between'>
@@ -65,12 +65,13 @@ const Proposals = () => {
             </div>
           </div>
           <div>
-            <button
-              className='btn-primary btn flex items-center gap-x-1'
-              onClick={handleCreateProposal}>
-              <Image src={plusBlack} height={16} width={16} alt='plus' />
-              <p className='flex items-center pt-[1px]'>New Proposal</p>
-            </button>
+            <Link
+              href={`/dao/${encodeURIComponent(props.daoId)}/create-proposal`}>
+              <button className='btn-primary btn flex items-center gap-x-1'>
+                <Image src={plusBlack} height={16} width={16} alt='plus' />
+                <p className='flex items-center pt-[1px]'>New Proposal</p>
+              </button>
+            </Link>
           </div>
         </div>
       </div>

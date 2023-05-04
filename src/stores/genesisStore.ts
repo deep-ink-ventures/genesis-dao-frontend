@@ -9,9 +9,9 @@ import { NODE_URL, SERVICE_URL } from '@/config';
 // ALL TYPES and INTERFACES...
 
 export interface ProposalCreationValues {
-  proposalName: string;
+  title: string;
   description: string;
-  link: string;
+  url: string;
 }
 
 export enum ProposalStatus {
@@ -152,6 +152,8 @@ export enum TxnResponse {
   Cancelled = 'CANCELLED',
 }
 
+export type DaoPage = 'dashboard' | 'proposals';
+
 export interface IncomingTokenBalanceData {
   balance: string;
   extra: string | null;
@@ -263,6 +265,8 @@ export interface GenesisState {
   daoCreationValues: DaoCreationValues | null;
   showCongrats: boolean;
   currentBlockNumber: number | null;
+  proposalValues: ProposalCreationValues | null;
+  daoPage: DaoPage;
 }
 
 export interface GenesisActions {
@@ -307,6 +311,8 @@ export interface GenesisActions {
   fetchDaoTokenBalanceFromDB: (assetId: number, accountId: string) => void;
   updateBlockNumber: (currentBlockNumber: number) => void;
   fetchBlockNumber: () => void;
+  updateProposalValues: (proposalValues: ProposalCreationValues) => void;
+  updateDaoPage: (daoPage: DaoPage) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -339,6 +345,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   daoTokenBalance: null,
   showCongrats: false,
   currentBlockNumber: null,
+  proposalValues: null,
+  daoPage: 'dashboard',
   createApiConnection: async () => {
     const { rpcEndpoint } = get();
     const createApi = async (): Promise<ApiPromise> => {
@@ -390,12 +398,11 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     apiCon.query?.system
       ?.number?.()
       .then((data) => {
-        console.log('get block number', data.toString());
         const blockNumber = Number(data);
         set({ currentBlockNumber: blockNumber });
       })
       .catch((err) => {
-        console.log(err);
+        get().handleErrors(err);
       });
   },
 
@@ -644,6 +651,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   updateCurrentProposal: (currentProposal) => set(() => ({ currentProposal })),
   updateBlockNumber: (currentBlockNumber) =>
     set(() => ({ currentBlockNumber })),
+  updateProposalValues: (proposalValues) => set(() => ({ proposalValues })),
+  updateDaoPage: (daoPage) => set(() => ({ daoPage })),
 }));
 
 export default useGenesisStore;

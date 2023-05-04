@@ -10,6 +10,7 @@ import { hexToBase64 } from '@/utils';
 import type {
   AssetDetails,
   CreateDaoData,
+  ProposalCreationValues,
   TokenRecipient,
   WalletAccount,
 } from '../stores/genesisStore';
@@ -20,7 +21,6 @@ const useGenesisDao = () => {
   const router = useRouter();
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const apiConnection = useGenesisStore((s) => s.apiConnection);
-
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
@@ -30,6 +30,7 @@ const useGenesisDao = () => {
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
+  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
 
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -48,7 +49,8 @@ const useGenesisDao = () => {
         timestamp: Date.now(),
       };
     }
-
+    // eslint-disable-next-line
+    console.error(err)
     updateTxnProcessing(false);
     addTxnNotification(newNoti);
   };
@@ -609,7 +611,7 @@ const useGenesisDao = () => {
 
   const makeSetProposalMetadataTxn = (
     txns: any[],
-    proposalId: number,
+    proposalId: string,
     metadataUrl: string,
     metadataHash: string
   ) => {
@@ -654,7 +656,7 @@ const useGenesisDao = () => {
       const challengeString = await challengeRes.json();
       if (!challengeString.challenge) {
         handleErrors('Error in retrieving ownership-validation challenge');
-        return;
+        return null;
       }
       const signerResult = await currentWalletAccount?.signer?.signRaw?.({
         address: currentWalletAccount.address,
@@ -664,13 +666,104 @@ const useGenesisDao = () => {
 
       if (!signerResult) {
         handleErrors('Not able to validate ownership');
-        return;
+        return null;
       }
 
       return hexToBase64(signerResult.signature.substring(2));
     } catch (err) {
       handleErrors(err);
+      return null;
     }
+  };
+  const setProposalMetadata = async (
+    daoId: string,
+    proposalId: string,
+    proposalValues: ProposalCreationValues
+  ) => {
+    try {
+      const jsonData = JSON.stringify({
+        title: proposalValues?.title,
+        description: proposalValues?.description,
+        url: proposalValues?.url,
+      });
+      const sig = await doChallenge(daoId);
+      if (!sig) {
+        handleErrors('Verification Challenge failed');
+        return;
+      }
+
+      const metadataResponse = await fetch(
+        `${SERVICE_URL}/proposals/${proposalId}/metadata/`,
+        {
+          method: 'POST',
+          body: jsonData,
+          headers: {
+            'Content-Type': 'application/json',
+            Signature: sig,
+          },
+        }
+      );
+      const metadata = await metadataResponse.json();
+      if (!metadata.metadata_url) {
+        handleErrors(`Not able to upload metadata Status:${metadata.status}`);
+        return;
+      }
+      const txns = makeSetProposalMetadataTxn(
+        [],
+        proposalId,
+        metadata.metadata_url,
+        metadata.metadata_hash
+      );
+
+      await sendBatchTxns(
+        txns,
+        'Proposal Created!',
+        'Transaction failed',
+        () => {
+          updateTxnProcessing(false);
+          updateDaoPage('proposals');
+          router.push(`/dao/${daoId}`);
+        }
+      );
+    } catch (err) {
+      handleErrors(err);
+      updateTxnProcessing(false);
+    }
+  };
+
+  const createAProposal = (
+    daoId: string,
+    proposalValues: ProposalCreationValues
+  ) => {
+    let proposalSuccess = false;
+    updateTxnProcessing(true);
+    if (!currentWalletAccount) {
+      handleErrors('Wallet not connected');
+      return;
+    }
+    apiConnection?.tx?.votes
+      ?.createProposal?.(daoId)
+      .signAndSend?.(
+        currentWalletAccount.address,
+        { signer: currentWalletAccount.signer },
+        (result) => {
+          console.log('response result', result);
+          let proposalId = '';
+          result.events.forEach(({ event: { data, method } }) => {
+            if (method === 'ProposalCreated' && !proposalSuccess) {
+              proposalSuccess = true;
+              setTimeout(() => {
+                setProposalMetadata(daoId, proposalId, proposalValues);
+              }, 2500);
+              proposalId = data[2]?.toHuman() as string;
+            }
+          });
+        }
+      )
+      .catch((err) => {
+        handleErrors(err);
+        updateTxnProcessing(false);
+      });
   };
 
   return {
@@ -697,6 +790,8 @@ const useGenesisDao = () => {
     markImplementedTxn,
     makeSetProposalMetadataTxn,
     doChallenge,
+    createAProposal,
+    setProposalMetadata,
   };
 };
 

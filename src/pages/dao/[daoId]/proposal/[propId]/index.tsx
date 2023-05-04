@@ -16,7 +16,6 @@ import { getProposalEndTime } from '@/utils/index';
 const Proposal = () => {
   const router = useRouter();
   const { daoId } = router.query;
-  // const [curBlockNum, setCurBlockNum] = useState(42056)
   const currentBlockNumber = 7200;
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
@@ -34,7 +33,7 @@ const Proposal = () => {
   );
 
   const dhm = getProposalEndTime(currentBlockNumber, p.birthBlock, 14400);
-  const fetchBlockNumber = useGenesisStore((s) => s.fetchBlockNumber);
+  // const fetchBlockNumber = useGenesisStore((s) => s.fetchBlockNumber);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
@@ -56,7 +55,6 @@ const Proposal = () => {
   };
 
   const handleVoteSelection = (e: any) => {
-    console.log(e.target.textContent === 'In Favor');
     if (e.target.textContent === 'In Favor') {
       setVoteSelection('In Favor');
     } else if (e.target.textContent === 'Against') {
@@ -79,9 +77,9 @@ const Proposal = () => {
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
-  useEffect(() => {
-    console.log('current block', currentBlockNumber);
-  });
+  // useEffect(() => {
+  //   console.log('current block', currentBlockNumber);
+  // });
 
   return (
     <MainLayout
@@ -213,7 +211,7 @@ const Proposal = () => {
               )}
             </div>
           </div>
-          <div className='justify-content container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
+          <div className='container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
             <p className='text-xl'>Voting Progress</p>
             <div className='flex w-[100%] flex-col pr-6'>
               <div className='relative mb-2 flex w-full justify-between'>
@@ -236,7 +234,7 @@ const Proposal = () => {
               </div>
             </div>
           </div>
-          <div className='justify-content container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
+          <div className='container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
             <p className='text-xl'>Report</p>
             <p className='text-sm'>
               {`If you find this proposal does not align with the organization's

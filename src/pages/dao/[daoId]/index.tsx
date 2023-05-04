@@ -1,12 +1,13 @@
 import { BN, formatBalance } from '@polkadot/util';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import DaoDashboard from '@/components/DaoDashboard';
 import Proposals from '@/components/Proposals';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
+import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import about from '@/svg/about.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
@@ -21,7 +22,8 @@ import MainLayout from '@/templates/MainLayout';
 const ProposalsPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
-  const [page, setPage] = useState('dashboard');
+  // const [page, setPage] = useState('dashboard');
+  const daoPage = useGenesisStore((s) => s.daoPage);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
@@ -30,12 +32,13 @@ const ProposalsPage = () => {
   const fetchDaoTokenBalanceFromDB = useGenesisStore(
     (s) => s.fetchDaoTokenBalanceFromDB
   );
+  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
 
   formatBalance.setDefaults({ decimals: 0, unit: `${currentDao?.daoId}` });
 
-  const handleChangePage = (pageParam: string) => {
+  const handleChangePage = (pageParam: DaoPage) => {
     console.log('change page');
-    setPage(pageParam);
+    updateDaoPage(pageParam);
   };
 
   useEffect(() => {
@@ -90,8 +93,8 @@ const ProposalsPage = () => {
   };
 
   const displayPage = () => {
-    if (page === 'proposals') {
-      return <Proposals />;
+    if (daoPage === 'proposals') {
+      return <Proposals daoId={daoId as string} />;
     }
     return <DaoDashboard />;
   };
@@ -161,7 +164,7 @@ const ProposalsPage = () => {
           <div className='w-full'>
             <div
               className={`${
-                page === 'dashboard' ? 'selected-tab' : 'brightness-75'
+                daoPage === 'dashboard' ? 'selected-tab' : 'brightness-75'
               } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
               onClick={() => handleChangePage('dashboard')}>
               <Image
@@ -175,7 +178,7 @@ const ProposalsPage = () => {
             </div>
             <div
               className={`${
-                page === 'proposals' ? 'selected-tab' : 'brightness-75'
+                daoPage === 'proposals' ? 'selected-tab' : 'brightness-75'
               } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
               onClick={() => handleChangePage('proposals')}>
               <Image
