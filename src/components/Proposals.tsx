@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // import useGenesisStore from '@/stores/genesisStore';
-import { fakeProposals } from '@/stores/placeholderValues';
+import Spinner from '@/components/Spinner';
+import useGenesisStore from '@/stores/genesisStore';
 import downArrow from '@/svg/downArrow.svg';
 import plusBlack from '@/svg/plus-black.svg';
 
@@ -11,10 +12,12 @@ import ProposalCard from './ProposalCard';
 
 const Proposals = (props: { daoId: string }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredProposals = fakeProposals?.filter((prop) => {
+  const currentProposals = useGenesisStore((s) => s.currentProposals);
+  const fetchProposalsFromDB = useGenesisStore((s) => s.fetchProposalsFromDB);
+  const filteredProposals = currentProposals?.filter((prop) => {
     return (
       prop.proposalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prop.proposalName.toLowerCase().includes(searchTerm.toLowerCase())
+      prop.proposalName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -23,19 +26,40 @@ const Proposals = (props: { daoId: string }) => {
       return <div>Sorry no proposals found</div>;
     }
     return (
-      <>
-        <div className='flex flex-col gap-y-4'>
-          {filteredProposals.map((prop) => {
-            return <ProposalCard key={prop.proposalId} p={prop} />;
-          })}
-        </div>
-      </>
+      <div className='flex flex-col gap-y-4'>
+        {filteredProposals.map((prop) => {
+          return (
+            <Link
+              href={`/dao/${encodeURIComponent(
+                prop.daoId
+              )}/proposal/${encodeURIComponent(prop.proposalId)}`}
+              key={prop.proposalId}>
+              <ProposalCard p={prop} />
+            </Link>
+          );
+        })}
+      </div>
     );
   };
+
+  useEffect(() => {
+    if (!props.daoId) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      fetchProposalsFromDB(props.daoId);
+    }, 500);
+    // eslint-disable-next-line
+    return () => clearTimeout(timer);
+  }, [props.daoId]);
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
+
+  useEffect(() => {
+    console.log('proposals', currentProposals);
+  });
 
   return (
     <div className='flex flex-col gap-y-4'>
@@ -75,7 +99,15 @@ const Proposals = (props: { daoId: string }) => {
           </div>
         </div>
       </div>
-      <div>{displayProposal()}</div>
+      <div>
+        {!currentProposals ? (
+          <div className='mt-10'>
+            <Spinner />
+          </div>
+        ) : (
+          displayProposal()
+        )}
+      </div>
     </div>
   );
 };

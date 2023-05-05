@@ -4,51 +4,56 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import { statusColors } from '@/components/ProposalCard';
+import Spinner from '@/components/Spinner';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
-import type { ProposalDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
-import { fakeProposals } from '@/stores/placeholderValues';
 import arrowLeft from '@/svg/arrow-left.svg';
 import MainLayout from '@/templates/MainLayout';
 import { getProposalEndTime } from '@/utils/index';
 
 const Proposal = () => {
   const router = useRouter();
-  const { daoId } = router.query;
-  const currentBlockNumber = 7200;
+  const { daoId, propId } = router.query;
+  const currentBlockNumber = 44900;
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
   >(null);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
-  // const currentBlockNumber = useGenesisStore((s) =>
-  //   s.currentBlockNumber
-  // )
-  const p = fakeProposals[0] as ProposalDetail;
+  const currentProposal = useGenesisStore((s) => s.currentProposal);
+
+  const fetchOneProposalDB = useGenesisStore((s) => s.fetchOneProposalDB);
+  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  const fetchDaoTokenBalanceFromDB = useGenesisStore(
+    (s) => s.fetchDaoTokenBalanceFromDB
+  );
+  const p = currentProposal;
 
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
 
-  const dhm = getProposalEndTime(currentBlockNumber, p.birthBlock, 14400);
+  const dhm = p?.birthBlock
+    ? getProposalEndTime(currentBlockNumber, p.birthBlock, 14400)
+    : { d: 0, h: 0, m: 0 };
   // const fetchBlockNumber = useGenesisStore((s) => s.fetchBlockNumber);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
   };
 
-  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
-  const fetchDaoTokenBalanceFromDB = useGenesisStore(
-    (s) => s.fetchDaoTokenBalanceFromDB
-  );
-  formatBalance.setDefaults({ decimals: 0, unit: `${currentDao?.daoId}` });
-  const inFavorVotes = p.inFavor;
-  const againstVotes = p.against;
+  formatBalance.setDefaults({ decimals: 0, unit: `${daoId}` });
+  const inFavorVotes = p?.inFavor || new BN(0);
+  const againstVotes = p?.against || new BN(0);
   const totalVotes = inFavorVotes.add(againstVotes);
-  const inFavorPercentage = inFavorVotes.mul(new BN(100)).div(totalVotes);
-  const againstPercentage = againstVotes.mul(new BN(100)).div(totalVotes);
+  const inFavorPercentage = inFavorVotes.isZero()
+    ? 0
+    : inFavorVotes.mul(new BN(100)).div(totalVotes);
+  const againstPercentage = againstVotes.isZero()
+    ? 0
+    : againstVotes.mul(new BN(100)).div(totalVotes);
 
   const handleReturnToDashboard = () => {
     router.push(`/dao/${daoId as string}/`);
@@ -63,10 +68,15 @@ const Proposal = () => {
   };
 
   useEffect(() => {
-    if (daoId) {
-      fetchDaoFromDB(daoId as string);
+    if (daoId && propId) {
+      const timer = setTimeout(() => {
+        fetchOneProposalDB(daoId as string, propId as string);
+        fetchDaoFromDB(daoId as string);
+        // eslint-disable-next-line
+        return () => clearTimeout(timer);
+      }, 500);
     }
-  }, [daoId, fetchDaoFromDB]);
+  }, [daoId, propId]);
 
   useEffect(() => {
     if (currentDao?.daoAssetId && currentWalletAccount) {
@@ -77,9 +87,11 @@ const Proposal = () => {
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
-  // useEffect(() => {
-  //   console.log('current block', currentBlockNumber);
-  // });
+  useEffect(() => {
+    // console.log('current block', currentBlockNumber);
+    console.log('prop id', propId);
+    console.log('proposal', currentProposal);
+  });
 
   return (
     <MainLayout
@@ -92,45 +104,52 @@ const Proposal = () => {
         <div>Back</div>
       </div>
       <div className='mt-5 flex min-h-[500px] justify-between gap-x-4'>
-        <div className='container flex min-h-[640px] basis-3/4 p-4'>
-          <div className='flex flex-col gap-y-3'>
-            <div className='flex justify-between'>
-              <div className='mr-4'>
-                <p className='text-sm'>{p?.proposalId}</p>
-                <h3 className='text-lg'>{p?.proposalName}</h3>
-              </div>
-              <div className='flex'>
-                <div className='mr-4 flex gap-2'>
-                  Ends
-                  <div className='flex gap-2'>
-                    <div className='h-6 bg-base-card px-2'>{dhm.d}d</div>:
-                    <div className='h-6 bg-base-card px-2'>{dhm.h}h</div>:
-                    <div className='h-6 bg-base-card px-2'>{dhm.m}m</div>
+        <div className='container flex min-h-[640px] basis-3/4 justify-center p-4'>
+          {!currentProposal ? (
+            <div className='mt-10'>
+              {' '}
+              <Spinner />
+            </div>
+          ) : (
+            <div className='flex flex-col gap-y-3'>
+              <div className='flex justify-between'>
+                <div className='mr-4'>
+                  <p className='text-sm'>{p?.proposalId}</p>
+                  <h3 className='text-lg'>{p?.proposalName}</h3>
+                </div>
+                <div className='flex'>
+                  <div className='mr-4 flex gap-2'>
+                    Ends
+                    <div className='flex gap-2'>
+                      <div className='h-6 bg-base-card px-2'>{dhm.d}d</div>:
+                      <div className='h-6 bg-base-card px-2'>{dhm.h}h</div>:
+                      <div className='h-6 bg-base-card px-2'>{dhm.m}m</div>
+                    </div>
+                  </div>
+                  <div
+                    className={`rounded-lg ${
+                      !p?.status ? '' : statusColors[`${p?.status}`]
+                    } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
+                    {p?.status}
                   </div>
                 </div>
-                <div
-                  className={`rounded-lg ${
-                    statusColors[`${p?.status}`]
-                  } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
-                  {p?.status}
-                </div>
               </div>
+              <div>
+                <p className='max-w-[600px] truncate break-words rounded-xl border-[0.3px] border-neutral-focus p-4'>
+                  <span className='font-semibold '>Discussion Link:</span>
+                  <span className='ml-2 text-sm underline'>
+                    <a
+                      href={p?.link || ''}
+                      target='_blank'
+                      rel='external nofollow noreferrer'>
+                      {p?.link || ''}
+                    </a>
+                  </span>
+                </p>
+              </div>
+              <div className='break-words text-sm'>{p?.description}</div>
             </div>
-            <div>
-              <p className='max-w-[600px] truncate break-words rounded-xl border-[0.3px] border-neutral-focus p-4'>
-                <span className='font-semibold '>Discussion Link:</span>
-                <span className='ml-2 text-sm underline'>
-                  <a
-                    href={p.link}
-                    target='_blank'
-                    rel='external nofollow noreferrer'>
-                    {p.link}
-                  </a>
-                </span>
-              </p>
-            </div>
-            <div className='break-words text-sm'>{p?.description}</div>
-          </div>
+          )}
         </div>
         <div className='flex min-h-[640px] min-w-[300px] basis-1/4 flex-col items-center gap-y-4'>
           <div className='container flex flex-col items-center justify-center gap-y-2 p-4'>
