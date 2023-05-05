@@ -22,6 +22,18 @@ export enum ProposalStatus {
   Faulty = 'Faulty',
 }
 
+type ProposalStatusNames = {
+  [key: string]: ProposalStatus;
+};
+
+const proposalStatusNames: ProposalStatusNames = {
+  RUNNING: ProposalStatus.Active,
+  PENDING: ProposalStatus.Counting,
+  REJECTED: ProposalStatus.Rejected,
+  IMPLEMENTED: ProposalStatus.Accepted,
+  FAULTED: ProposalStatus.Faulty,
+};
+
 export interface ProposalOnChain {
   id: string;
   daoId: string;
@@ -41,19 +53,41 @@ export interface CreateProposalInfo {
   hash: string;
 }
 
+export interface IncomingProposal {
+  id: string;
+  dao_id: string;
+  creator_id: string;
+  status: string;
+  fault: string | null;
+  votes: {
+    pro: number;
+    contra: number;
+    abstained: number;
+    total: number;
+  };
+  metadata: null | {
+    url: string | null;
+    title: string | null;
+    description: string | null;
+  };
+  metadata_url: null | string;
+  metadata_hash: null | string;
+  birth_block_number: number;
+}
+
 export interface ProposalDetail {
   proposalId: string;
   daoId: string;
   creator: string;
   birthBlock: number;
-  meta: string;
-  metaHash: string;
-  status: ProposalStatus;
+  metadataUrl: string | null;
+  metadataHash: string | null;
+  status: ProposalStatus | null;
   inFavor: BN;
   against: BN;
-  proposalName: string;
-  description: string;
-  link: string;
+  proposalName: string | null;
+  description: string | null;
+  link: string | null;
 }
 
 export interface DaoDetail {
@@ -244,6 +278,7 @@ export interface GenesisState {
   currentWalletAccount: WalletAccount | undefined;
   currentAssetId: number | null;
   currentDao: DaoDetail | null;
+  currentProposals: ProposalDetail[] | null;
   currentProposal: ProposalDetail | null;
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
@@ -282,7 +317,10 @@ export interface GenesisActions {
   fetchNativeTokenBalance: (address: string) => void;
   fetchCurrentAssetId: () => void;
   fetchDaoFromDB: (daoId: string) => void;
-
+  fetchBlockNumber: () => void;
+  fetchDaoTokenBalanceFromDB: (assetId: number, accountId: string) => void;
+  fetchProposalsFromDB: (daoId: string) => void;
+  fetchOneProposalDB: (daoId: string, proposalId: string) => void;
   updateCurrentWalletAccount: (
     currentWalletAccount: WalletAccount | undefined
   ) => void;
@@ -308,9 +346,7 @@ export interface GenesisActions {
   updateShowCongrats: (showCongrats: boolean) => void;
 
   updateCurrentProposal: (proposal: ProposalDetail) => void;
-  fetchDaoTokenBalanceFromDB: (assetId: number, accountId: string) => void;
   updateBlockNumber: (currentBlockNumber: number) => void;
-  fetchBlockNumber: () => void;
   updateProposalValues: (proposalValues: ProposalCreationValues) => void;
   updateDaoPage: (daoPage: DaoPage) => void;
 }
@@ -347,6 +383,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   currentBlockNumber: null,
   proposalValues: null,
   daoPage: 'dashboard',
+  currentProposals: null,
   createApiConnection: async () => {
     const { rpcEndpoint } = get();
     const createApi = async (): Promise<ApiPromise> => {
@@ -601,6 +638,62 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         get().updateCurrentAssetId(Number(data.toHuman()));
       });
   },
+
+  fetchProposalsFromDB: async (daoId) => {
+    try {
+      const response = await fetch(`${SERVICE_URL}/proposals/?dao_id=${daoId}`);
+      const { results } = await response.json();
+      const newProposals = results.map((p: IncomingProposal) => {
+        return {
+          proposalId: p.id,
+          daoId: p.dao_id,
+          creator: p.creator_id,
+          birthBlock: p.birth_block_number,
+          metadataUrl: p.metadata_url || null,
+          metadataHash: p.metadata_hash || null,
+          status: proposalStatusNames[p.status as keyof ProposalStatusNames],
+          inFavor: new BN(p.votes?.pro || 0),
+          against: new BN(p.votes?.contra || 0),
+          proposalName: !p.metadata?.title || null,
+          description: !p.metadata?.description || null,
+          link: !p.metadata?.url || null,
+        };
+      });
+
+      set({ currentProposals: newProposals });
+    } catch (err) {
+      get().handleErrors(err);
+    }
+  },
+  fetchOneProposalDB: async (daoId, proposalId) => {
+    console.log('fetch proposal');
+    try {
+      const response = await fetch(
+        `${SERVICE_URL}/proposals/?dao_id=${daoId}&id=${proposalId}`
+      );
+      const { results } = await response.json();
+      const p: IncomingProposal = results[0];
+      const newProp = {
+        proposalId: p.id,
+        daoId: p.dao_id,
+        creator: p.creator_id,
+        birthBlock: p.birth_block_number,
+        metadataUrl: p.metadata_url || null,
+        metadataHash: p.metadata_hash || null,
+        status:
+          proposalStatusNames[p.status as keyof ProposalStatusNames] || null,
+        inFavor: new BN(p.votes?.pro || 0),
+        against: new BN(p.votes?.contra || 0),
+        proposalName: p.metadata?.title || null,
+        description: p.metadata?.description || null,
+        link: p.metadata?.url || null,
+      };
+      set({ currentProposal: newProp });
+    } catch (err) {
+      get().handleErrors(err);
+    }
+  },
+
   updateDaosOwnedByWallet: async () => {
     await get().fetchDaos();
     const { daos } = get();

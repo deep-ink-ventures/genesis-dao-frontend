@@ -8,6 +8,7 @@ export const statusColors = {
   Accepted: 'bg-accent text-base-100',
   Rejected: 'bg-error',
   Faulty: 'bg-error',
+  undefined: 'bg-neutral text-base-100',
 };
 
 const ProposalCard = (props: { p: ProposalDetail }) => {
@@ -15,8 +16,12 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
   const inFavorVotes = props.p.inFavor;
   const againstVotes = props.p.against;
   const totalVotes = inFavorVotes.add(againstVotes);
-  const inFavorPercentage = inFavorVotes.mul(new BN(100)).div(totalVotes);
-  const againstPercentage = againstVotes.mul(new BN(100)).div(totalVotes);
+  const inFavorPercentage = inFavorVotes.isZero()
+    ? 0
+    : inFavorVotes.mul(new BN(100)).div(totalVotes);
+  const againstPercentage = againstVotes.isZero()
+    ? 0
+    : againstVotes.mul(new BN(100)).div(totalVotes);
 
   return (
     <div
@@ -32,7 +37,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
           </div>
           <div
             className={`rounded-lg ${
-              statusColors[`${props.p.status}`]
+              !props.p.status ? '' : statusColors[`${props.p.status}`]
             } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
             {props.p.status}
           </div>

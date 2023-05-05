@@ -19,7 +19,7 @@ import proposal from '@/svg/proposal.svg';
 import settings from '@/svg/settings.svg';
 import MainLayout from '@/templates/MainLayout';
 
-const ProposalsPage = () => {
+const MainDaoPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
   // const [page, setPage] = useState('dashboard');
@@ -218,4 +218,4 @@ const ProposalsPage = () => {
   );
 };
 
-export default ProposalsPage;
+export default MainDaoPage;
