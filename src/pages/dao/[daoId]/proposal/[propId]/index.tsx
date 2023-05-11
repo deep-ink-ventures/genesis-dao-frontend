@@ -7,6 +7,7 @@ import { statusColors } from '@/components/ProposalCard';
 import Spinner from '@/components/Spinner';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
+import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
 import arrowLeft from '@/svg/arrow-left.svg';
 import MainLayout from '@/templates/MainLayout';
@@ -19,6 +20,7 @@ const Proposal = () => {
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
   >(null);
+
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
@@ -29,6 +31,8 @@ const Proposal = () => {
   const fetchDaoTokenBalanceFromDB = useGenesisStore(
     (s) => s.fetchDaoTokenBalanceFromDB
   );
+
+  const { makeVoteTxn, sendBatchTxns } = useGenesisDao();
   const p = currentProposal;
 
   const updateIsStartModalOpen = useGenesisStore(
@@ -44,15 +48,32 @@ const Proposal = () => {
     updateIsStartModalOpen(true);
   };
 
+  const handleVote = () => {
+    if (!p?.proposalId) {
+      return;
+    }
+    let txns = [];
+    if (voteSelection === 'In Favor') {
+      txns = makeVoteTxn([], p?.proposalId, true);
+    } else if (voteSelection === 'Against') {
+      txns = makeVoteTxn([], p?.proposalId, false);
+    }
+
+    sendBatchTxns(txns, 'Voted Successfully', 'Vote Transaction Failed', () => {
+      setVoteSelection(null);
+      fetchOneProposalDB(daoId as string, propId as string);
+    });
+  };
+
   formatBalance.setDefaults({ decimals: 0, unit: `${daoId}` });
   const inFavorVotes = p?.inFavor || new BN(0);
   const againstVotes = p?.against || new BN(0);
   const totalVotes = inFavorVotes.add(againstVotes);
   const inFavorPercentage = inFavorVotes.isZero()
-    ? 0
+    ? new BN(0)
     : inFavorVotes.mul(new BN(100)).div(totalVotes);
   const againstPercentage = againstVotes.isZero()
-    ? 0
+    ? new BN(0)
     : againstVotes.mul(new BN(100)).div(totalVotes);
 
   const handleReturnToDashboard = () => {
@@ -86,12 +107,6 @@ const Proposal = () => {
       );
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
-
-  useEffect(() => {
-    // console.log('current block', currentBlockNumber);
-    console.log('prop id', propId);
-    console.log('proposal', currentProposal);
-  });
 
   return (
     <MainLayout
@@ -154,7 +169,7 @@ const Proposal = () => {
         <div className='flex min-h-[640px] min-w-[300px] basis-1/4 flex-col items-center gap-y-4'>
           <div className='container flex flex-col items-center justify-center gap-y-2 p-4'>
             <p className='mb-1 text-center text-xl'>Your Voting Power</p>
-            <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
+            <div className='flex h-[80px] w-[240px] items-center justify-center rounded-xl bg-base-50 px-4'>
               <div className='px-5 text-center text-sm'>
                 {!currentWalletAccount?.address ? (
                   <p className='text-primary'>Connect Wallet To View Tokens</p>
@@ -221,7 +236,11 @@ const Proposal = () => {
             ) : null}
             <div>
               {currentWalletAccount ? (
-                <button className='btn-primary btn min-w-[250px]'>Vote</button>
+                <button
+                  className='btn-primary btn min-w-[250px]'
+                  onClick={handleVote}>
+                  Vote
+                </button>
               ) : (
                 <WalletConnect
                   text={'Connect To Vote'}
@@ -239,7 +258,7 @@ const Proposal = () => {
                   style={{ width: `${inFavorPercentage.toString()}%` }}>
                   <div className='absolute p-1 text-sm'>In Favor</div>
                 </div>
-                <p>{`${inFavorPercentage.toString()}% `}</p>
+                <p className='ml-1'>{`${inFavorPercentage.toString()}% `}</p>
               </div>
               <div className='relative mb-2 flex w-full justify-between'>
                 <div
@@ -249,7 +268,7 @@ const Proposal = () => {
                     <p className=''>Against</p>
                   </div>
                 </div>
-                <p>{`${againstPercentage.toString()}%`}</p>
+                <p className='ml-1'>{`${againstPercentage.toString()}%`}</p>
               </div>
             </div>
           </div>

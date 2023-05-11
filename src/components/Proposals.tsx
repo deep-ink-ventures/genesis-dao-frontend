@@ -28,6 +28,7 @@ const Proposals = (props: { daoId: string }) => {
     return (
       <div className='flex flex-col gap-y-4'>
         {filteredProposals.map((prop) => {
+          console.log('prop', prop);
           return (
             <Link
               href={`/dao/${encodeURIComponent(

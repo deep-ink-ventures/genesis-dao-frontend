@@ -1,16 +1,33 @@
+import 'react-quill/dist/quill.snow.css';
+
 import { ErrorMessage } from '@hookform/error-message';
 import { BN } from '@polkadot/util';
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import type { DaoDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+
+import Spinner from './Spinner';
+
+const Quill = dynamic(
+  import('react-quill').then((mod) => mod),
+  {
+    ssr: false,
+    loading: () => <Spinner />,
+  }
+);
 
 interface ProposalValues {
   proposalName: string;
   proposalDescription: string;
   discussionLink: string;
 }
+
+// interface Desc extends ProposalValues {
+//   description: string;
+// }
 
 const CreateProposal = (props: {
   dao: DaoDetail | null;
@@ -20,6 +37,7 @@ const CreateProposal = (props: {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm<ProposalValues>();
 
@@ -35,6 +53,7 @@ const CreateProposal = (props: {
   const updateProposalValues = useGenesisStore((s) => s.updateProposalValues);
 
   const onSubmit = (data: ProposalValues) => {
+    console.log(data);
     updateProposalValues({
       title: data.proposalName,
       description: data.proposalDescription,
@@ -166,18 +185,28 @@ const CreateProposal = (props: {
                 </p>
               </div>
             </div>
-            <div className='min-w-full'>
+            <div className='mb-10 min-w-full'>
               <p className='mb-1 ml-2'>
                 Proposal Description (2000 characters or less)
               </p>
-              <textarea
-                className='textarea h-64'
-                {...register('proposalDescription', {
-                  required: 'Required',
-                  min: { value: 1, message: 'Minimum character count is 1' },
-                  max: { value: 2000, message: 'Max character count is 2000' },
-                })}
-              />
+              <div>
+                <Controller
+                  control={control}
+                  name='proposalDescription'
+                  rules={{
+                    validate: (value) =>
+                      value.length >= 10 ||
+                      'Enter at least 10 words in the description',
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <Quill
+                      theme='snow'
+                      onChange={(description) => onChange(description)}
+                      value={value || ''}
+                    />
+                  )}
+                />
+              </div>
               <ErrorMessage
                 errors={errors}
                 name='proposalDescription'

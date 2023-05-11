@@ -60,7 +60,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
                   )
                 </div>
               </div>
-              <p>{`${inFavorPercentage.toString()}% `}</p>
+              <p className='ml-1'>{`${inFavorPercentage.toString()}% `}</p>
             </div>
             <div className='relative mb-2 flex w-full justify-between'>
               <div
@@ -77,7 +77,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
                   </p>
                 </div>
               </div>
-              <p>{`${againstPercentage.toString()}%`}</p>
+              <p className='ml-1'>{`${againstPercentage.toString()}%`}</p>
             </div>
           </div>
           <div>

@@ -49,7 +49,7 @@ html {
 
 h1 {
   /* font-size: 96px; */
-  @apply text-3xl md:text-5xl font-semibold;
+  @apply text-3xl md:text-4xl font-semibold;
 }
 
 h2 {
@@ -240,7 +240,23 @@ h4 {
   
 }
 
+.quill {
+  @apply w-full h-80;
+}
 
+.ql-toolbar {
+  @apply bg-neutral border-[0.3px] border-neutral-focus rounded-t-lg;
+}
+
+.ql-container {
+  @apply bg-base-50 border-[0.3px] border-neutral-focus rounded-b-lg;
+}
+.ql-formats {
+  @apply bg-neutral;
+}
+.ql-editor {
+  @apply text-lg
+}
 
 /* Hide arrows in number input */
 /* Chrome, Safari, Edge, Opera */
@@ -259,6 +275,29 @@ input[type=number] {
   pointer-events: none;
 }
 
+
 a {
-  cursor:pointer;
+  @apply hover:cursor-pointer
+}
+
+.description-display a {
+  @apply underline hover:cursor-pointer text-blue-400 hover:text-blue-300
+}
+
+.description-display ol li {
+  list-style: decimal;
+  list-style-position: inside;
+  display: list-item;
+  @apply mb-2
+}
+
+.description-display ul li {
+  list-style: disc;
+  list-style-position: inside;
+  display: list-item;
+  @apply mb-2
+}
+
+.description-display h1, h2 {
+  @apply text-3xl
 }

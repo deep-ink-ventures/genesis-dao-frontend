@@ -414,7 +414,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       type: TxnResponse.Error,
       timestamp: Date.now(),
     };
-
+    // eslint-disable-next-line
+    console.error(err)
     set({ txnProcessing: false });
     get().addTxnNotification(newNoti);
   },
@@ -564,7 +565,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         `${SERVICE_URL}/daos/?order_by=id&limit=50`
       );
       const daosRes = await getDaosResponse.json();
-      console.log('response', daosRes);
       const daosArr = daosRes.results;
       const newDaos: DaoDetail[] = daosArr?.map((dao: any) => {
         return {
@@ -654,9 +654,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           status: proposalStatusNames[p.status as keyof ProposalStatusNames],
           inFavor: new BN(p.votes?.pro || 0),
           against: new BN(p.votes?.contra || 0),
-          proposalName: !p.metadata?.title || null,
-          description: !p.metadata?.description || null,
-          link: !p.metadata?.url || null,
+          proposalName: p.metadata?.title || null,
+          description: p.metadata?.description || null,
+          link: p.metadata?.url || null,
         };
       });
 
@@ -666,7 +666,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     }
   },
   fetchOneProposalDB: async (daoId, proposalId) => {
-    console.log('fetch proposal');
     try {
       const response = await fetch(
         `${SERVICE_URL}/proposals/?dao_id=${daoId}&id=${proposalId}`

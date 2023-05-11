@@ -751,6 +751,7 @@ const useGenesisDao = () => {
           let proposalId = '';
           result.events.forEach(({ event: { data, method } }) => {
             if (method === 'ProposalCreated' && !proposalSuccess) {
+              // so we only run setProposalMetadata once
               proposalSuccess = true;
               setTimeout(() => {
                 setProposalMetadata(daoId, proposalId, proposalValues);
