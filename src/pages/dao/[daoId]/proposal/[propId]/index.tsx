@@ -1,7 +1,8 @@
 import { BN, formatBalance } from '@polkadot/util';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import ReactHtmlParser from 'react-html-parser';
 
 import { statusColors } from '@/components/ProposalCard';
 import Spinner from '@/components/Spinner';
@@ -16,7 +17,7 @@ import { getProposalEndTime } from '@/utils/index';
 const Proposal = () => {
   const router = useRouter();
   const { daoId, propId } = router.query;
-  const currentBlockNumber = 44900;
+
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
   >(null);
@@ -25,24 +26,47 @@ const Proposal = () => {
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const currentProposal = useGenesisStore((s) => s.currentProposal);
+  const currentBlockNumber = useGenesisStore((s) => s.currentBlockNumber);
+  const p = currentProposal;
 
   const fetchOneProposalDB = useGenesisStore((s) => s.fetchOneProposalDB);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDaoTokenBalanceFromDB = useGenesisStore(
     (s) => s.fetchDaoTokenBalanceFromDB
   );
+  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
+  const dhmMemo = useMemo(() => {
+    return p?.birthBlock && currentBlockNumber
+      ? getProposalEndTime(currentBlockNumber, p.birthBlock, 14400)
+      : { d: 0, h: 0, m: 0 };
+  }, [p, currentBlockNumber]);
+
+  const inFavorPercentageMemo = useMemo(() => {
+    const inFavorVotes = p?.inFavor || new BN(0);
+    const againstVotes = p?.against || new BN(0);
+    const totalVotes = inFavorVotes.add(againstVotes);
+    const inFavorPercentage = inFavorVotes.isZero()
+      ? new BN(0)
+      : inFavorVotes.mul(new BN(100)).div(totalVotes);
+
+    return inFavorPercentage.toString();
+  }, [p]);
+
+  const againstPercentageMemo = useMemo(() => {
+    const inFavorVotes = p?.inFavor || new BN(0);
+    const againstVotes = p?.against || new BN(0);
+    const totalVotes = inFavorVotes.add(againstVotes);
+    const againstPercentage = againstVotes.isZero()
+      ? new BN(0)
+      : againstVotes.mul(new BN(100)).div(totalVotes);
+    return againstPercentage.toString();
+  }, [p]);
 
   const { makeVoteTxn, sendBatchTxns } = useGenesisDao();
-  const p = currentProposal;
 
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
-
-  const dhm = p?.birthBlock
-    ? getProposalEndTime(currentBlockNumber, p.birthBlock, 14400)
-    : { d: 0, h: 0, m: 0 };
-  // const fetchBlockNumber = useGenesisStore((s) => s.fetchBlockNumber);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
@@ -61,22 +85,14 @@ const Proposal = () => {
 
     sendBatchTxns(txns, 'Voted Successfully', 'Vote Transaction Failed', () => {
       setVoteSelection(null);
-      fetchOneProposalDB(daoId as string, propId as string);
+      setTimeout(() => {
+        fetchOneProposalDB(daoId as string, propId as string);
+      }, 2000);
     });
   };
 
-  formatBalance.setDefaults({ decimals: 0, unit: `${daoId}` });
-  const inFavorVotes = p?.inFavor || new BN(0);
-  const againstVotes = p?.against || new BN(0);
-  const totalVotes = inFavorVotes.add(againstVotes);
-  const inFavorPercentage = inFavorVotes.isZero()
-    ? new BN(0)
-    : inFavorVotes.mul(new BN(100)).div(totalVotes);
-  const againstPercentage = againstVotes.isZero()
-    ? new BN(0)
-    : againstVotes.mul(new BN(100)).div(totalVotes);
-
   const handleReturnToDashboard = () => {
+    updateDaoPage('proposals');
     router.push(`/dao/${daoId as string}/`);
   };
 
@@ -119,26 +135,26 @@ const Proposal = () => {
         <div>Back</div>
       </div>
       <div className='mt-5 flex min-h-[500px] justify-between gap-x-4'>
-        <div className='container flex min-h-[640px] basis-3/4 justify-center p-4'>
+        <div className='container flex min-h-[640px] basis-3/4 justify-center p-6'>
           {!currentProposal ? (
             <div className='mt-10'>
               {' '}
               <Spinner />
             </div>
           ) : (
-            <div className='flex flex-col gap-y-3'>
+            <div className='flex w-full flex-col gap-y-3'>
               <div className='flex justify-between'>
                 <div className='mr-4'>
                   <p className='text-sm'>{p?.proposalId}</p>
-                  <h3 className='text-lg'>{p?.proposalName}</h3>
+                  <h3 className='text-2xl'>{p?.proposalName}</h3>
                 </div>
                 <div className='flex'>
                   <div className='mr-4 flex gap-2'>
                     Ends
                     <div className='flex gap-2'>
-                      <div className='h-6 bg-base-card px-2'>{dhm.d}d</div>:
-                      <div className='h-6 bg-base-card px-2'>{dhm.h}h</div>:
-                      <div className='h-6 bg-base-card px-2'>{dhm.m}m</div>
+                      <div className='h-6 bg-base-card px-2'>{dhmMemo.d}d</div>:
+                      <div className='h-6 bg-base-card px-2'>{dhmMemo.h}h</div>:
+                      <div className='h-6 bg-base-card px-2'>{dhmMemo.m}m</div>
                     </div>
                   </div>
                   <div
@@ -150,7 +166,7 @@ const Proposal = () => {
                 </div>
               </div>
               <div>
-                <p className='max-w-[600px] truncate break-words rounded-xl border-[0.3px] border-neutral-focus p-4'>
+                <p className='w-full truncate break-words rounded-xl border-[0.3px] border-neutral-focus p-4'>
                   <span className='font-semibold '>Discussion Link:</span>
                   <span className='ml-2 text-sm underline'>
                     <a
@@ -162,7 +178,9 @@ const Proposal = () => {
                   </span>
                 </p>
               </div>
-              <div className='break-words text-sm'>{p?.description}</div>
+              <div className='description-display'>
+                {ReactHtmlParser(p?.description || '')}
+              </div>
             </div>
           )}
         </div>
@@ -172,7 +190,7 @@ const Proposal = () => {
             <div className='flex h-[80px] w-[240px] items-center justify-center rounded-xl bg-base-50 px-4'>
               <div className='px-5 text-center text-sm'>
                 {!currentWalletAccount?.address ? (
-                  <p className='text-primary'>Connect Wallet To View Tokens</p>
+                  <p className=''>Connect Wallet To View Tokens</p>
                 ) : (
                   <div className='flex flex-col'>
                     <p>You have</p>
@@ -255,20 +273,32 @@ const Proposal = () => {
               <div className='relative mb-2 flex w-full justify-between'>
                 <div
                   className={`h-7 bg-[#403945]`}
-                  style={{ width: `${inFavorPercentage.toString()}%` }}>
-                  <div className='absolute p-1 text-sm'>In Favor</div>
+                  style={{ width: `${inFavorPercentageMemo}%` }}>
+                  <div className='absolute p-1 text-sm'>
+                    In Favor (
+                    {p?.inFavor
+                      ? p.inFavor.div(new BN(DAO_UNITS)).toString()
+                      : new BN(0).toString()}
+                    )
+                  </div>
                 </div>
-                <p className='ml-1'>{`${inFavorPercentage.toString()}% `}</p>
+                <p className='ml-1'>{`${inFavorPercentageMemo}% `}</p>
               </div>
               <div className='relative mb-2 flex w-full justify-between'>
                 <div
                   className={`h-7 bg-[#403945]`}
-                  style={{ width: `${againstPercentage.toString()}%` }}>
+                  style={{ width: `${againstPercentageMemo}%` }}>
                   <div className='absolute p-1 text-sm'>
-                    <p className=''>Against</p>
+                    <p className=''>
+                      Against (
+                      {p?.against
+                        ? p.against.div(new BN(DAO_UNITS)).toString()
+                        : new BN(0).toString()}
+                      )
+                    </p>
                   </div>
                 </div>
-                <p className='ml-1'>{`${againstPercentage.toString()}%`}</p>
+                <p className='ml-1'>{`${againstPercentageMemo}%`}</p>
               </div>
             </div>
           </div>
@@ -279,7 +309,9 @@ const Proposal = () => {
               goals and priorities, you can report the proposal as faulty and
               council members will investigate this proposal`}
             </p>
-            <button className='btn'>Report This Proposal As Faulty</button>
+            <button className='btn-disabled btn'>
+              Report This Proposal As Faulty
+            </button>
           </div>
         </div>
       </div>

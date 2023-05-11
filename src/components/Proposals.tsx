@@ -28,7 +28,6 @@ const Proposals = (props: { daoId: string }) => {
     return (
       <div className='flex flex-col gap-y-4'>
         {filteredProposals.map((prop) => {
-          console.log('prop', prop);
           return (
             <Link
               href={`/dao/${encodeURIComponent(
@@ -47,8 +46,10 @@ const Proposals = (props: { daoId: string }) => {
     if (!props.daoId) {
       return;
     }
+
     const timer = setTimeout(() => {
       fetchProposalsFromDB(props.daoId);
+      console.log('fetch proposal');
     }, 500);
     // eslint-disable-next-line
     return () => clearTimeout(timer);
@@ -57,10 +58,6 @@ const Proposals = (props: { daoId: string }) => {
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
-
-  useEffect(() => {
-    console.log('proposals', currentProposals);
-  });
 
   return (
     <div className='flex flex-col gap-y-4'>

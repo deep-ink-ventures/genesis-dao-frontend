@@ -1,10 +1,12 @@
-import Link from 'next/link';
 import ReactHtmlParser from 'react-html-parser';
 
 import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
 
-const ReviewProposal = (props: { daoId: string }) => {
+const ReviewProposal = (props: {
+  daoId: string;
+  handleChangePage: Function;
+}) => {
   const { createAProposal } = useGenesisDao();
   const proposalValues = useGenesisStore((s) => s.proposalValues);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
@@ -38,8 +40,10 @@ const ReviewProposal = (props: { daoId: string }) => {
           <p>{proposalValues?.title}</p>
         </div>
         <div className='flex flex-col'>
-          <p className='text-neutral-focus'>Description</p>
-          <p>{ReactHtmlParser(proposalValues?.description || '')}</p>
+          <div className='text-neutral-focus'>Description</div>
+          <div className='description-display'>
+            {ReactHtmlParser(proposalValues?.description || '')}
+          </div>
         </div>
         <div className='flex flex-col'>
           <p className='text-neutral-focus'>Discussion Link</p>
@@ -47,11 +51,13 @@ const ReviewProposal = (props: { daoId: string }) => {
         </div>
       </div>
       <div className='flex justify-end'>
-        <Link href={`/dao/${encodeURIComponent(props.daoId)}/create-proposal/`}>
-          <button className={`btn mr-4 w-48 ${txnProcessing ? 'loading' : ''}`}>
-            Back
-          </button>
-        </Link>
+        <button
+          className={`btn mr-4 w-48 ${txnProcessing ? 'loading' : ''}`}
+          onClick={() => {
+            props.handleChangePage('');
+          }}>
+          Back
+        </button>
         <button
           className={`btn-primary btn mr-4 w-48 ${
             txnProcessing ? 'loading' : ''
@@ -62,7 +68,7 @@ const ReviewProposal = (props: { daoId: string }) => {
       </div>
     </div>
   );
-  // fix me: need to add majority vote and add
+  // fix me: need to add majority vote
 };
 
 export default ReviewProposal;

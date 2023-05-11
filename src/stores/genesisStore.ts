@@ -280,6 +280,7 @@ export interface GenesisState {
   currentDao: DaoDetail | null;
   currentProposals: ProposalDetail[] | null;
   currentProposal: ProposalDetail | null;
+  currentBlockNumber: number | null;
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
   currentDaoFromChain: BasicDaoInfo | null;
@@ -299,7 +300,6 @@ export interface GenesisState {
   isStartModalOpen: boolean;
   daoCreationValues: DaoCreationValues | null;
   showCongrats: boolean;
-  currentBlockNumber: number | null;
   proposalValues: ProposalCreationValues | null;
   daoPage: DaoPage;
 }
@@ -347,7 +347,7 @@ export interface GenesisActions {
 
   updateCurrentProposal: (proposal: ProposalDetail) => void;
   updateBlockNumber: (currentBlockNumber: number) => void;
-  updateProposalValues: (proposalValues: ProposalCreationValues) => void;
+  updateProposalValues: (proposalValues: ProposalCreationValues | null) => void;
   updateDaoPage: (daoPage: DaoPage) => void;
 }
 
@@ -642,8 +642,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   fetchProposalsFromDB: async (daoId) => {
     try {
       const response = await fetch(`${SERVICE_URL}/proposals/?dao_id=${daoId}`);
-      const { results } = await response.json();
-      const newProposals = results.map((p: IncomingProposal) => {
+      const json = await response.json();
+      console.log(response.headers.get('block-number'));
+      const newProposals = json.results.map((p: IncomingProposal) => {
         return {
           proposalId: p.id,
           daoId: p.dao_id,
@@ -659,8 +660,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           link: p.metadata?.url || null,
         };
       });
-
       set({ currentProposals: newProposals });
+      set({ currentBlockNumber: Number(response.headers.get('block-number')) });
     } catch (err) {
       get().handleErrors(err);
     }
@@ -688,6 +689,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         link: p.metadata?.url || null,
       };
       set({ currentProposal: newProp });
+      set({ currentBlockNumber: Number(response.headers.get('block-number')) });
     } catch (err) {
       get().handleErrors(err);
     }

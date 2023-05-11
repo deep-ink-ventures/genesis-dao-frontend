@@ -16,10 +16,6 @@ const CreateProposalPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
 
-  // const handleReturnToDashboard = () => {
-  //   router.push(`/dao/${encodeURIComponent(daoId as string)}`);
-  // };
-
   const handleChangePage = (pg: string) => {
     setPage(pg);
   };
@@ -49,7 +45,12 @@ const CreateProposalPage = () => {
     }
 
     if (page === 'review') {
-      return <ReviewProposal daoId={daoId as string} />;
+      return (
+        <ReviewProposal
+          daoId={daoId as string}
+          handleChangePage={handleChangePage}
+        />
+      );
     }
     // need to validate whether this account has dao tokens
 

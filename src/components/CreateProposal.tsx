@@ -25,18 +25,34 @@ interface ProposalValues {
   discussionLink: string;
 }
 
-// interface Desc extends ProposalValues {
-//   description: string;
-// }
-
 const CreateProposal = (props: {
   dao: DaoDetail | null;
   handleChangePage: Function;
 }) => {
+  const modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+      ['clean'],
+    ],
+  };
+
+  const formats = [
+    'bold',
+    'italic',
+    'underline',
+    'blockquote',
+    'list',
+    'bullet',
+    'link',
+  ];
+
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     control,
     formState: { errors },
   } = useForm<ProposalValues>();
@@ -51,6 +67,7 @@ const CreateProposal = (props: {
     (s) => s.fetchDaoTokenBalanceFromDB
   );
   const updateProposalValues = useGenesisStore((s) => s.updateProposalValues);
+  const proposalValues = useGenesisStore((s) => s.proposalValues);
 
   const onSubmit = (data: ProposalValues) => {
     console.log(data);
@@ -70,6 +87,15 @@ const CreateProposal = (props: {
       );
     }
   }, [props?.dao?.daoAssetId, currentWalletAccount?.address]);
+
+  useEffect(() => {
+    if (proposalValues) {
+      setValue('proposalName', proposalValues.title);
+      setValue('proposalDescription', proposalValues.description);
+
+      setValue('discussionLink', proposalValues.url);
+    }
+  }, [proposalValues]);
 
   const watchName = watch('proposalName', '');
   const watchLink = watch('discussionLink', '');
@@ -93,8 +119,8 @@ const CreateProposal = (props: {
             </svg>
             <p>
               <span className='font-bold'>{`10 ${props.dao?.daoId} Tokens `}</span>
-              will be reserved upon creation of a proposal. The reserved tokens
-              will be refunded when the proposal is finalized.
+              {`will be reserved upon creation of a proposal. The reserved tokens
+              will be refunded when the proposal is finalized .`}
             </p>
           </div>
         </div>
@@ -162,7 +188,7 @@ const CreateProposal = (props: {
                       : 'input-primary'
                   }`}
                   type='text'
-                  placeholder='e.g. Deploy Uniswap V3 on Avalanche'
+                  placeholder={'e.g. Deploy Uniswap V3 on Avalanche'}
                   disabled={!hasProposalDeposit}
                   {...register('proposalName', {
                     required: 'Required',
@@ -203,6 +229,8 @@ const CreateProposal = (props: {
                       theme='snow'
                       onChange={(description) => onChange(description)}
                       value={value || ''}
+                      modules={modules}
+                      formats={formats}
                     />
                   )}
                 />

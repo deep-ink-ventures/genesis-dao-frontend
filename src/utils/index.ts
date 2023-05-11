@@ -1,6 +1,8 @@
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
-import { hexToU8a, isHex } from '@polkadot/util';
+import { BN, formatBalance, hexToU8a, isHex } from '@polkadot/util';
 import { createKeyMulti } from '@polkadot/util-crypto';
+
+import { DAO_UNITS, NATIVE_UNITS } from '@/config';
 
 // @ts-ignore
 export const truncateMiddle = (str?, start = 4, end = 4) => {
@@ -81,4 +83,17 @@ export const getProposalEndTime = (currentNumber: number, startNumber: number, d
     h,
     m
   }
+}
+
+
+export const uiTokens = (rawAmount: BN | null, tokenType: 'native' | 'dao', unitName?: string) => {
+
+  const units = tokenType === 'native' ? NATIVE_UNITS : DAO_UNITS
+
+  formatBalance.setDefaults({ decimals: 0, unit: unitName || 'tokens'});
+
+  return formatBalance(rawAmount?.div(new BN(units) || new BN(0)).toString(),{
+    forceUnit: unitName,
+    withZero: false,
+  } )
 }

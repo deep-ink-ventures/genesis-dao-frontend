@@ -37,7 +37,6 @@ const MainDaoPage = () => {
   formatBalance.setDefaults({ decimals: 0, unit: `${currentDao?.daoId}` });
 
   const handleChangePage = (pageParam: DaoPage) => {
-    console.log('change page');
     updateDaoPage(pageParam);
   };
 

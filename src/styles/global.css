@@ -281,6 +281,7 @@ a {
 }
 
 .description-display a {
+  tab-size:4;
   @apply underline hover:cursor-pointer text-blue-400 hover:text-blue-300
 }
 
@@ -288,6 +289,8 @@ a {
   list-style: decimal;
   list-style-position: inside;
   display: list-item;
+  margin-left: 1em;
+  tab-size:4;
   @apply mb-2
 }
 
@@ -295,6 +298,8 @@ a {
   list-style: disc;
   list-style-position: inside;
   display: list-item;
+  margin-left: 1em;
+  tab-size:4;
   @apply mb-2
 }
 
