@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useEffect } from 'react';
 
 import CreateDaoModal from '@/components/CreateDaoModal';
 import ExploreDaos from '@/components/ExploreDaos';
@@ -10,7 +11,6 @@ import justice from '@/svg/justice.svg';
 import scale from '@/svg/scale.svg';
 import sticker from '@/svg/sticker.svg';
 import MainLayout from '@/templates/MainLayout';
-import { useEffect } from 'react';
 
 const Index = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);

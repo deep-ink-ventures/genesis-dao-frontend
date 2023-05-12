@@ -1,8 +1,10 @@
 import { BN } from '@polkadot/util';
+import { useMemo } from 'react';
 
+import { DAO_UNITS } from '@/config';
 import type { ProposalDetail } from '@/stores/genesisStore';
-
-import { uiTokens } from '../utils/index';
+import useGenesisStore from '@/stores/genesisStore';
+import { getProposalEndTime } from '@/utils';
 
 export const statusColors = {
   Active: 'bg-neutral text-base-100',
@@ -14,15 +16,50 @@ export const statusColors = {
 };
 
 const ProposalCard = (props: { p: ProposalDetail }) => {
-  const inFavorVotes = props.p.inFavor;
-  const againstVotes = props.p.against;
-  const totalVotes = inFavorVotes.add(againstVotes);
-  const inFavorPercentage = inFavorVotes.isZero()
-    ? 0
-    : inFavorVotes.mul(new BN(100)).div(totalVotes);
-  const againstPercentage = againstVotes.isZero()
-    ? 0
-    : againstVotes.mul(new BN(100)).div(totalVotes);
+  const currentDao = useGenesisStore((s) => s.currentDao);
+  const currentBlockNumber = useGenesisStore((s) => s.currentBlockNumber);
+
+  const dhmMemo = useMemo(() => {
+    return props.p?.birthBlock &&
+      currentBlockNumber &&
+      currentDao?.proposalDuration
+      ? getProposalEndTime(
+          currentBlockNumber,
+          props.p?.birthBlock,
+          currentDao?.proposalDuration
+        )
+      : { d: 0, h: 0, m: 0 };
+  }, [props.p, currentBlockNumber]);
+
+  const inFavorPercentageMemo = useMemo(() => {
+    const inFavorVotes = props.p?.inFavor || new BN(0);
+    const againstVotes = props.p?.against || new BN(0);
+    const totalVotes = inFavorVotes.add(againstVotes);
+    const inFavorPercentage = inFavorVotes.isZero()
+      ? new BN(0)
+      : inFavorVotes.mul(new BN(100)).div(totalVotes);
+    return inFavorPercentage.toString();
+  }, [props.p]);
+
+  const againstPercentageMemo = useMemo(() => {
+    const inFavorVotes = props.p?.inFavor || new BN(0);
+    const againstVotes = props.p?.against || new BN(0);
+    const totalVotes = inFavorVotes.add(againstVotes);
+    const againstPercentage = againstVotes.isZero()
+      ? new BN(0)
+      : againstVotes.mul(new BN(100)).div(totalVotes);
+    return againstPercentage.toString();
+  }, [props.p]);
+
+  const proposalIsRunning = useMemo(() => {
+    if (
+      (props.p?.birthBlock || 0) + (currentDao?.proposalDuration || 14400) >
+      (currentBlockNumber || 0)
+    ) {
+      return true;
+    }
+    return false;
+  }, [props.p, currentDao, currentBlockNumber]);
 
   return (
     <div
@@ -36,43 +73,64 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
             <p className='mb-1 text-sm'>Proposal ID: {props.p.proposalId}</p>
             <h3 className='text-2xl'>{props.p.proposalName}</h3>
           </div>
-          <div
-            className={`rounded-lg ${
-              !props.p.status ? '' : statusColors[`${props.p.status}`]
-            } mb h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
-            {props.p.status}
+          <div className='flex'>
+            {proposalIsRunning ? (
+              <div className='mr-4 flex gap-2'>
+                Ends in
+                <div className='flex gap-2'>
+                  <div className='h-6 bg-base-card px-2'>{dhmMemo.d}d</div>:
+                  <div className='h-6 bg-base-card px-2'>{dhmMemo.h}h</div>:
+                  <div className='h-6 bg-base-card px-2'>{dhmMemo.m}m</div>
+                </div>
+              </div>
+            ) : (
+              <div className='mr-4 flex flex-col'>
+                <p>Ended </p>
+              </div>
+            )}
+            <div
+              className={`rounded-lg ${
+                !props.p?.status ? '' : statusColors[`${props.p?.status}`]
+              } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
+              {props.p?.status}
+            </div>
           </div>
         </div>
-        {/* <div className='max-w-[680px] truncate break-words text-sm'>
-          {props.p.description}
-        </div> */}
         <div className='flex justify-between'>
           <div className='flex w-[100%] flex-col pr-6'>
             <div className='relative mb-2 flex w-full justify-between'>
               <div
                 className={`h-7 bg-[#403945]`}
-                style={{ width: `${inFavorPercentage.toString()}%` }}>
+                style={{ width: `${inFavorPercentageMemo.toString()}%` }}>
                 <div className='absolute p-1 text-sm'>
-                  In Favor ({uiTokens(inFavorVotes, 'dao', props.p.daoId)})
+                  In Favor ({' '}
+                  {props.p?.inFavor
+                    ? props.p.inFavor.div(new BN(DAO_UNITS)).toString()
+                    : new BN(0).toString()}
+                  )
                 </div>
               </div>
-              <p className='ml-1'>{`${inFavorPercentage.toString()}% `}</p>
+              <p className='ml-1'>{`${inFavorPercentageMemo.toString()}% `}</p>
             </div>
             <div className='relative mb-2 flex w-full justify-between'>
               <div
                 className={`h-7 bg-[#403945]`}
-                style={{ width: `${againstPercentage.toString()}%` }}>
+                style={{ width: `${againstPercentageMemo.toString()}%` }}>
                 <div className='absolute p-1 text-sm'>
                   <p className=''>
-                    Against ({uiTokens(againstVotes, 'dao', props.p.daoId)})
+                    Against (
+                    {props.p?.against
+                      ? props.p.against.div(new BN(DAO_UNITS)).toString()
+                      : new BN(0).toString()}
+                    )
                   </p>
                 </div>
               </div>
-              <p className='ml-1'>{`${againstPercentage.toString()}%`}</p>
+              <p className='ml-1'>{`${againstPercentageMemo.toString()}%`}</p>
             </div>
           </div>
           <div>
-            {props.p.status === 'Active' ? (
+            {props.p.status === 'Active' && proposalIsRunning ? (
               <button className='btn-primary btn w-28'>Vote</button>
             ) : null}
           </div>

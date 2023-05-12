@@ -608,7 +608,7 @@ const useGenesisDao = () => {
   };
 
   const makeCreateProposalTxn = (txns: any[], daoId: string) => {
-    return [...txns, apiConnection.tx?.votes?.createProposal?.(daoId)];
+    return [...txns, apiConnection?.tx?.votes?.createProposal?.(daoId)];
   };
 
   const makeSetProposalMetadataTxn = (
@@ -619,7 +619,7 @@ const useGenesisDao = () => {
   ) => {
     return [
       ...txns,
-      apiConnection.tx?.votes?.setMetadata?.(
+      apiConnection?.tx?.votes?.setMetadata?.(
         proposalId,
         metadataUrl,
         metadataHash
@@ -628,11 +628,11 @@ const useGenesisDao = () => {
   };
 
   const makeVoteTxn = (txns: any[], proposalId: string, inFavor: boolean) => {
-    return [...txns, apiConnection.tx?.votes?.vote?.(proposalId, inFavor)];
+    return [...txns, apiConnection?.tx?.votes?.vote?.(proposalId, inFavor)];
   };
 
   const finalizeProposalTxn = (txns: any[], proposalId: string) => {
-    return [...txns, apiConnection.tx?.votes?.finalizeProposal?.(proposalId)];
+    return [...txns, apiConnection?.tx?.votes?.finalizeProposal?.(proposalId)];
   };
 
   const faultProposalTxn = (
@@ -642,12 +642,12 @@ const useGenesisDao = () => {
   ) => {
     return [
       ...txns,
-      apiConnection.tx?.votes?.faultProposal?.(proposalId, reason),
+      apiConnection?.tx?.votes?.faultProposal?.(proposalId, reason),
     ];
   };
 
   const markImplementedTxn = (txns: any[], proposalId: string) => {
-    return [...txns, apiConnection.tx?.votes?.markImplemented?.(proposalId)];
+    return [...txns, apiConnection?.tx?.votes?.markImplemented?.(proposalId)];
   };
 
   const doChallenge = async (daoId: string) => {

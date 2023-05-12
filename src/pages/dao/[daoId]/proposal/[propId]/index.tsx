@@ -197,7 +197,7 @@ const Proposal = () => {
                     </div>
                   ) : (
                     <div className='mr-4 flex flex-col'>
-                      <p>Proposal Ended </p>
+                      <p>Ended </p>
                     </div>
                   )}
                   <div
