@@ -29,7 +29,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
           currentDao?.proposalDuration
         )
       : { d: 0, h: 0, m: 0 };
-  }, [props.p, currentBlockNumber]);
+  }, [props.p, currentBlockNumber, currentDao?.proposalDuration]);
 
   const inFavorPercentageMemo = useMemo(() => {
     const inFavorVotes = props.p?.inFavor || new BN(0);

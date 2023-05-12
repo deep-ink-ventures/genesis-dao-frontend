@@ -134,7 +134,6 @@ const useGenesisDao = () => {
             };
             // add txn to our store - first index
             addTxnNotification(successNoti);
-            console.log('tx success');
             successCB?.();
             updateTxnProcessing(false);
             return;
@@ -750,7 +749,6 @@ const useGenesisDao = () => {
         currentWalletAccount.address,
         { signer: currentWalletAccount.signer },
         (result) => {
-          console.log('response result', result);
           let proposalId = '';
           result.events.forEach(({ event: { data, method } }) => {
             if (method === 'ProposalCreated' && !proposalSuccess) {
