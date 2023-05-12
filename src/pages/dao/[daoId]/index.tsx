@@ -1,4 +1,3 @@
-import { BN, formatBalance } from '@polkadot/util';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -6,7 +5,6 @@ import { useEffect } from 'react';
 import DaoDashboard from '@/components/DaoDashboard';
 import Proposals from '@/components/Proposals';
 import WalletConnect from '@/components/WalletConnect';
-import { DAO_UNITS } from '@/config';
 import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import about from '@/svg/about.svg';
@@ -18,6 +16,7 @@ import placeholderImage from '@/svg/placeholderImage.svg';
 import proposal from '@/svg/proposal.svg';
 import settings from '@/svg/settings.svg';
 import MainLayout from '@/templates/MainLayout';
+import { uiTokens } from '@/utils';
 
 const MainDaoPage = () => {
   const router = useRouter();
@@ -33,8 +32,6 @@ const MainDaoPage = () => {
     (s) => s.fetchDaoTokenBalanceFromDB
   );
   const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
-
-  formatBalance.setDefaults({ decimals: 0, unit: `${currentDao?.daoId}` });
 
   const handleChangePage = (pageParam: DaoPage) => {
     updateDaoPage(pageParam);
@@ -137,14 +134,11 @@ const MainDaoPage = () => {
                       <p>You have</p>
                       <p>
                         {' '}
-                        {formatBalance(
-                          daoTokenBalance?.div(new BN(DAO_UNITS)) || new BN(0),
-                          {
-                            withZero: false,
-                            forceUnit: `${daoId}`,
-                          }
+                        {uiTokens(
+                          daoTokenBalance,
+                          'dao',
+                          currentDao?.daoId
                         )}{' '}
-                        tokens
                       </p>
                     </div>
                   )}

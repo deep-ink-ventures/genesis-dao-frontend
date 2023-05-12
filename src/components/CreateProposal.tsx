@@ -68,9 +68,9 @@ const CreateProposal = (props: {
   );
   const updateProposalValues = useGenesisStore((s) => s.updateProposalValues);
   const proposalValues = useGenesisStore((s) => s.proposalValues);
+  const currentDao = useGenesisStore((s) => s.currentDao);
 
   const onSubmit = (data: ProposalValues) => {
-    console.log(data);
     updateProposalValues({
       title: data.proposalName,
       description: data.proposalDescription,
@@ -100,6 +100,10 @@ const CreateProposal = (props: {
   const watchName = watch('proposalName', '');
   const watchLink = watch('discussionLink', '');
 
+  useEffect(() => {
+    console.log(currentDao?.proposalTokenDeposit);
+  });
+
   const alert = () => {
     // fixme needs to get proposal token deposit amount
     if (daoTokenBalance?.gte(new BN(1))) {
@@ -118,7 +122,7 @@ const CreateProposal = (props: {
                 d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'></path>
             </svg>
             <p>
-              <span className='font-bold'>{`10 ${props.dao?.daoId} Tokens `}</span>
+              <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} Native Tokens `}</span>
               {`will be reserved upon creation of a proposal. The reserved tokens
               will be refunded when the proposal is finalized .`}
             </p>
@@ -143,7 +147,7 @@ const CreateProposal = (props: {
           </svg>
           <p>
             Sorry you need at least{' '}
-            <span className='font-bold'>{`10 ${props.dao?.daoId} Tokens `}</span>{' '}
+            <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} Native Tokens `}</span>{' '}
             to create a DAO. You will get them back if you destroy the DAO.
           </p>
         </div>

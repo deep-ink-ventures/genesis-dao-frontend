@@ -97,6 +97,9 @@ export interface DaoDetail {
   daoCreatorAddress: string;
   setupComplete: boolean;
   daoAssetId: number | null;
+  proposalDuration: number | null;
+  proposalTokenDeposit: number | null;
+  minimumMajority: number | null;
   metadataUrl: string | null;
   metadataHash: string | null;
   descriptionShort: string | null;
@@ -515,6 +518,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         daoOwnerAddress: '{N/A}',
         daoCreatorAddress: '{N/A}',
         setupComplete: false,
+        proposalDuration: null,
+        proposalTokenDeposit: null,
+        minimumMajority: null,
         daoAssetId: null,
         metadataUrl: null,
         metadataHash: null,
@@ -540,6 +546,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       daoDetail.daoAssetId = d.asset_id;
       daoDetail.daoOwnerAddress = d.owner_id;
       daoDetail.daoCreatorAddress = d.creator_id;
+      daoDetail.proposalDuration = d.proposal_duration;
+      daoDetail.proposalTokenDeposit = d.proposal_token_deposit;
+      daoDetail.minimumMajority = d.minimum_majority_per_1024;
       daoDetail.metadataUrl = d.metadata_url;
       daoDetail.metadataHash = d.metadata_hash;
       daoDetail.setupComplete = d.setup_complete;
@@ -641,9 +650,10 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
 
   fetchProposalsFromDB: async (daoId) => {
     try {
-      const response = await fetch(`${SERVICE_URL}/proposals/?dao_id=${daoId}`);
+      const response = await fetch(
+        `${SERVICE_URL}/proposals/?dao_id=${daoId}&limit=50`
+      );
       const json = await response.json();
-      console.log(response.headers.get('block-number'));
       const newProposals = json.results.map((p: IncomingProposal) => {
         return {
           proposalId: p.id,
@@ -671,6 +681,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       const response = await fetch(
         `${SERVICE_URL}/proposals/?dao_id=${daoId}&id=${proposalId}`
       );
+      console.log('fetch one proposal');
       const { results } = await response.json();
       const p: IncomingProposal = results[0];
       const newProp = {
@@ -690,6 +701,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       };
       set({ currentProposal: newProp });
       set({ currentBlockNumber: Number(response.headers.get('block-number')) });
+      console.log('set new one proposal');
     } catch (err) {
       get().handleErrors(err);
     }

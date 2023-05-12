@@ -134,6 +134,7 @@ const useGenesisDao = () => {
             };
             // add txn to our store - first index
             addTxnNotification(successNoti);
+            console.log('tx success');
             successCB?.();
             updateTxnProcessing(false);
             return;
