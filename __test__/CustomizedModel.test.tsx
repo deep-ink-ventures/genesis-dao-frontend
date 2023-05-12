@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import CustomizedModel from '../src/components/CustomizedModel.tsx';
+
+import CustomizedModel from '../src/components/CustomizedModel';
 
 // eslint-disable-next-line
 jest.mock('next/router', () => ({

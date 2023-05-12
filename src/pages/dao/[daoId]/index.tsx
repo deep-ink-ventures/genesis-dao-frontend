@@ -51,7 +51,7 @@ const MainDaoPage = () => {
         currentWalletAccount.address
       );
     }
-  }, [currentDao, currentWalletAccount, daoId]);
+  }, [currentDao, currentWalletAccount, daoId, fetchDaoTokenBalanceFromDB]);
 
   const handleReturnToDashboard = () => {
     router.push(`/dao/${encodeURIComponent(daoId as string)}`);

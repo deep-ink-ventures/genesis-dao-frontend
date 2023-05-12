@@ -619,8 +619,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       });
   },
   fetchDaoTokenBalanceFromDB: async (assetId: number, accountId: string) => {
-    console.log('fetch dao tokens');
-
     try {
       const response = await fetch(
         `${SERVICE_URL}/asset-holdings/?asset_id=${assetId}&owner_id=${accountId}`
