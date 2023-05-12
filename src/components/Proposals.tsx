@@ -52,7 +52,7 @@ const Proposals = (props: { daoId: string }) => {
     }, 500);
     // eslint-disable-next-line
     return () => clearTimeout(timer);
-  }, [props.daoId]);
+  }, [props.daoId, fetchProposalsFromDB]);
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);

@@ -43,7 +43,7 @@ const Proposal = () => {
           currentDao?.proposalDuration
         )
       : { d: 0, h: 0, m: 0 };
-  }, [p, currentBlockNumber]);
+  }, [p, currentBlockNumber, currentDao?.proposalDuration]);
 
   const inFavorPercentageMemo = useMemo(() => {
     const inFavorVotes = p?.inFavor || new BN(0);
@@ -53,7 +53,7 @@ const Proposal = () => {
       ? new BN(0)
       : inFavorVotes.mul(new BN(100)).div(totalVotes);
     return inFavorPercentage.toString();
-  }, [p, fetchOneProposalDB]);
+  }, [p]);
 
   const againstPercentageMemo = useMemo(() => {
     const inFavorVotes = p?.inFavor || new BN(0);
@@ -63,7 +63,7 @@ const Proposal = () => {
       ? new BN(0)
       : againstVotes.mul(new BN(100)).div(totalVotes);
     return againstPercentage.toString();
-  }, [p, fetchOneProposalDB]);
+  }, [p]);
 
   const proposalIsRunning = useMemo(() => {
     if (
@@ -131,7 +131,7 @@ const Proposal = () => {
         return () => clearTimeout(timer);
       }, 200);
     }
-  }, [daoId, propId]);
+  }, [daoId, propId, fetchOneProposalDB, fetchDaoFromDB]);
 
   useEffect(() => {
     if (currentDao?.daoAssetId && currentWalletAccount) {
