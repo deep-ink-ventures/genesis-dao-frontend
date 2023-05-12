@@ -100,10 +100,6 @@ const CreateProposal = (props: {
   const watchName = watch('proposalName', '');
   const watchLink = watch('discussionLink', '');
 
-  useEffect(() => {
-    console.log(currentDao?.proposalTokenDeposit);
-  });
-
   const alert = () => {
     // fixme needs to get proposal token deposit amount
     if (daoTokenBalance?.gte(new BN(1))) {

@@ -297,7 +297,7 @@ export interface GenesisState {
   txnNotifications: TxnNotification[];
   loading: boolean;
   txnProcessing: boolean;
-  apiConnection: ApiPromise;
+  apiConnection: ApiPromise | null;
   createDaoSteps: number | null;
   newCreatedDao: DaoInfo | null;
   isStartModalOpen: boolean;
@@ -370,7 +370,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   txnNotifications: [],
   loading: false,
   txnProcessing: false,
-  apiConnection: new ApiPromise({ provider: new WsProvider(NODE_URL) }),
+  apiConnection: null,
   currentAssetBalance: null,
   createDaoSteps: 1,
   newCreatedDao: null,
@@ -436,7 +436,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   fetchBlockNumber: () => {
     const apiCon = get().apiConnection;
-    apiCon.query?.system
+    apiCon?.query?.system
       ?.number?.()
       .then((data) => {
         const blockNumber = Number(data);
@@ -450,7 +450,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
   fetchDaos: () => {
     const apiCon = get().apiConnection;
-    apiCon.query?.daoCore?.daos
+    apiCon?.query?.daoCore?.daos
       ?.entries()
       .then((daoEntries) => {
         const daos: AllDaos = {};
@@ -492,7 +492,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   fetchDao: (daoId) => {
     const apiCon = get().apiConnection;
-    apiCon.query?.daoCore
+    apiCon?.query?.daoCore
       ?.daos?.(daoId)
       .then((data) => {
         const d = data.toHuman() as unknown as IncomingDaoInfo;
@@ -603,7 +603,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   },
   fetchDaoTokenBalance: (assetId: number, accountId: string) => {
     get()
-      .apiConnection.query?.assets?.account?.(assetId, accountId)
+      .apiConnection?.query?.assets?.account?.(assetId, accountId)
       .then((data) => {
         const assetData = data.toHuman() as unknown as IncomingTokenBalanceData;
         if (assetData === null) {
@@ -633,16 +633,23 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   fetchNativeTokenBalance: async (address: string) => {
     try {
       const response = await fetch(`${SERVICE_URL}/accounts/${address}/`);
+      if (response.status === 404) {
+        return;
+      }
       const account = await response.json();
-      const freeBalance = new BN(account.balance.free);
-      set({ nativeTokenBalance: freeBalance });
+      if (account.balance?.free) {
+        const freeBalance = new BN(account.balance.free);
+        set({ nativeTokenBalance: freeBalance });
+      } else {
+        set({ nativeTokenBalance: new BN(0) });
+      }
     } catch (err) {
       get().handleErrors(err);
     }
   },
   fetchCurrentAssetId: () => {
     get()
-      .apiConnection.query.daoCore?.currentAssetId?.()
+      .apiConnection?.query.daoCore?.currentAssetId?.()
       .then((data) => {
         get().updateCurrentAssetId(Number(data.toHuman()));
       });
@@ -681,7 +688,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       const response = await fetch(
         `${SERVICE_URL}/proposals/?dao_id=${daoId}&id=${proposalId}`
       );
-      console.log('fetch one proposal');
       const { results } = await response.json();
       const p: IncomingProposal = results[0];
       const newProp = {
@@ -701,7 +707,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       };
       set({ currentProposal: newProp });
       set({ currentBlockNumber: Number(response.headers.get('block-number')) });
-      console.log('set new one proposal');
     } catch (err) {
       get().handleErrors(err);
     }

@@ -142,29 +142,17 @@ const Proposal = () => {
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      console.log(
-        'proposal info',
-        'against',
-        p?.against.toString(),
-        'in favor',
-        p?.inFavor.toString()
-      );
-    }, 2500);
-  }, [p]);
-
-  useEffect(() => {
-    console.log(
-      'birth',
-      p?.birthBlock,
-      'duration',
-      currentDao?.proposalDuration,
-      'current block',
-      currentBlockNumber
-    );
-  });
-
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     console.log(
+  //       'proposal info',
+  //       'against',
+  //       p?.against.toString(),
+  //       'in favor',
+  //       p?.inFavor.toString()
+  //     );
+  //   }, 2500);
+  // }, [p]);
   return (
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'

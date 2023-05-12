@@ -10,17 +10,25 @@ import justice from '@/svg/justice.svg';
 import scale from '@/svg/scale.svg';
 import sticker from '@/svg/sticker.svg';
 import MainLayout from '@/templates/MainLayout';
+import { useEffect } from 'react';
 
 const Index = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
+  const apiConnection = useGenesisStore((s) => s.apiConnection);
+  const createApiConnection = useGenesisStore((s) => s.createApiConnection);
 
   const handleStartModal = () => {
     updateIsStartModalOpen(true);
   };
+
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+  });
 
   return (
     <MainLayout

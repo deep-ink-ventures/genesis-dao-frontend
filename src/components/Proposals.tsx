@@ -49,7 +49,6 @@ const Proposals = (props: { daoId: string }) => {
 
     const timer = setTimeout(() => {
       fetchProposalsFromDB(props.daoId);
-      console.log('fetch proposal');
     }, 500);
     // eslint-disable-next-line
     return () => clearTimeout(timer);
