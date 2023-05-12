@@ -86,7 +86,11 @@ const CreateProposal = (props: {
         currentWalletAccount?.address
       );
     }
-  }, [props?.dao?.daoAssetId, currentWalletAccount?.address]);
+  }, [
+    props?.dao?.daoAssetId,
+    currentWalletAccount?.address,
+    fetchDaoTokenBalanceFromDB,
+  ]);
 
   useEffect(() => {
     if (proposalValues) {
@@ -95,7 +99,7 @@ const CreateProposal = (props: {
 
       setValue('discussionLink', proposalValues.url);
     }
-  }, [proposalValues]);
+  }, [proposalValues, setValue]);
 
   const watchName = watch('proposalName', '');
   const watchLink = watch('discussionLink', '');

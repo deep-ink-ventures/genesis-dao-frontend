@@ -418,7 +418,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       timestamp: Date.now(),
     };
     // eslint-disable-next-line
-    console.error(err)
+    console.error(err.toString())
     set({ txnProcessing: false });
     get().addTxnNotification(newNoti);
   },
@@ -610,7 +610,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           get().updateDaoTokenBalance(new BN(0));
           return;
         }
-        const balanceStr = assetData?.balance.replaceAll(',', '');
+        const balanceStr = assetData?.balance?.replaceAll(',', '');
         const daoTokenBalance = new BN(balanceStr);
         set({ daoTokenBalance });
       })
@@ -619,13 +619,19 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       });
   },
   fetchDaoTokenBalanceFromDB: async (assetId: number, accountId: string) => {
+    console.log('fetch dao tokens');
+
     try {
       const response = await fetch(
         `${SERVICE_URL}/asset-holdings/?asset_id=${assetId}&owner_id=${accountId}`
       );
       const daoAsset = await response.json();
-      const daoTokenBalance = new BN(daoAsset.results[0].balance);
-      set({ daoTokenBalance });
+      if (daoAsset?.results[0]?.balance) {
+        const daoTokenBalance = new BN(daoAsset?.results[0]?.balance);
+        set({ daoTokenBalance });
+      } else {
+        set({ daoTokenBalance: new BN(0) });
+      }
     } catch (err) {
       get().handleErrors(err);
     }

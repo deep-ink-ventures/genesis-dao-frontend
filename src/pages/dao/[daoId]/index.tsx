@@ -21,7 +21,6 @@ import { uiTokens } from '@/utils';
 const MainDaoPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
-  // const [page, setPage] = useState('dashboard');
   const daoPage = useGenesisStore((s) => s.daoPage);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const currentDao = useGenesisStore((s) => s.currentDao);
