@@ -1,5 +1,6 @@
-import { render, screen, act } from '@testing-library/react';
-import MajorityModel from '../src/components/MajorityModel.tsx';
+import { act, render, screen } from '@testing-library/react';
+
+import MajorityModel from '../src/components/MajorityModel';
 
 // eslint-disable-next-line
 jest.mock('next/router', () => ({
@@ -16,7 +17,7 @@ jest.mock('next/router', () => ({
 beforeEach(() => {
   jest.spyOn(global, 'fetch').mockResolvedValue({
     json: jest.fn().mockResolvedValue({}),
-  });
+  } as any);
 });
 
 describe('MajorityModel', () => {

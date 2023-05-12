@@ -94,7 +94,7 @@ export const uiTokens = (rawAmount: BN | null, tokenType: 'native' | 'dao', unit
 
   const units = tokenType === 'native' ? NATIVE_UNITS : DAO_UNITS
 
-  formatBalance.setDefaults({ decimals: 0, unit: unitName || 'tokens'});
+  formatBalance.setDefaults({ decimals: 0, unit: unitName || 'UNITS'});
 
   return formatBalance(rawAmount?.div(new BN(units) || new BN(0)).toString(),{
     forceUnit: unitName,

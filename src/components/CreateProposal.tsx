@@ -56,7 +56,7 @@ const CreateProposal = (props: {
     control,
     formState: { errors },
   } = useForm<ProposalValues>();
-
+  // eslint-disable-next-line
   const [hasProposalDeposit, _setHasProposalDeposit] = useState<boolean | null>(
     true
   );

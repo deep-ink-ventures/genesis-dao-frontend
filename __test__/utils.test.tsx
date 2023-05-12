@@ -1,8 +1,11 @@
+import { BN } from '@polkadot/util';
+
 import {
   getMultisigAddress,
   hexToBase64,
   isValidPolkadotAddress,
   truncateMiddle,
+  uiTokens,
 } from '../src/utils';
 
 describe('Utils', () => {
@@ -50,6 +53,14 @@ describe('Utils', () => {
 
     test('correct address', () => {
       expect(hexToBase64(hexString) === base64String).toBeTruthy();
+    });
+  });
+
+  describe('uiTokens should format tokens properly', () => {
+    const raw = new BN(2000000000000);
+
+    test('correct uiTokens output', () => {
+      expect(uiTokens(raw, 'dao', 'MANGO') === '200 MANGO').toBeTruthy();
     });
   });
 });

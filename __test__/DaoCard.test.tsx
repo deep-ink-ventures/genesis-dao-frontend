@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import DaoCard from '../src/components/DaoCard.tsx';
+
+import DaoCard from '../src/components/DaoCard';
 
 describe('DaoCard', () => {
   test('renders dao card with correct content', () => {
@@ -7,14 +8,14 @@ describe('DaoCard', () => {
     const daoName = 'Test DAO';
     const owner = 'test-owner';
     const assetId = 123;
-    const owned = true;
     render(
       <DaoCard
         daoId={daoId}
         daoName={daoName}
-        owner={owner}
-        assetId={assetId}
-        owned={owned}
+        daoOwnerAddress={owner}
+        daoAssetId={assetId}
+        imageUrl={'https://google.com'}
+        setupComplete={false}
       />
     );
 
