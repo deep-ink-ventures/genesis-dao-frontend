@@ -2,7 +2,7 @@
 // import { hexToU8a, isHex, BN } from '@polkadot/util';
 
 import { ErrorMessage } from '@hookform/error-message';
-import { BN, formatBalance } from '@polkadot/util';
+import { BN } from '@polkadot/util';
 import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
@@ -11,7 +11,7 @@ import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
-import { isValidPolkadotAddress } from '@/utils';
+import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
 const TransferForm = (props: { assetId: number; daoId: string }) => {
   const { transfer } = useGenesisDao();
@@ -84,7 +84,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
         <div>
           {`Your current ${props.daoId} token balance is ${
             daoTokenBalance
-              ? formatBalance(daoTokenBalance, { decimals: 10 })
+              ? uiTokens(daoTokenBalance, 'dao', props.daoId)
               : '0'
           }`}
         </div>

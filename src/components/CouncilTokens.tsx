@@ -1,5 +1,5 @@
 import { ErrorMessage } from '@hookform/error-message';
-import { BN, formatBalance } from '@polkadot/util';
+import { BN } from '@polkadot/util';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
@@ -13,6 +13,7 @@ import {
   getMultisigAddress,
   isValidPolkadotAddress,
   truncateMiddle,
+  uiTokens,
 } from '@/utils';
 
 import useGenesisDao from '../hooks/useGenesisDao';
@@ -32,7 +33,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
 
-  formatBalance.setDefaults({ decimals: 0, unit: `${currentDao?.daoId}` });
   const {
     register,
     handleSubmit,
@@ -535,10 +535,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <p>Distribute</p>
               <p>
                 <span className='mx-3 w-[70px] text-center text-primary'>
-                  {formatBalance(remain?.div(new BN(DAO_UNITS)).toString(), {
-                    forceUnit: currentDao?.daoId,
-                    withZero: false,
-                  })}
+                  {uiTokens(remain, 'dao', currentDao?.daoId)}
                   {' Tokens'}
                 </span>
               </p>

@@ -1,11 +1,11 @@
 import type { SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
-import { formatBalance, stringToHex } from '@polkadot/util';
+import { stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
 import { DAO_UNITS, SERVICE_URL } from '@/config';
-import { hexToBase64 } from '@/utils';
+import { hexToBase64, uiTokens } from '@/utils';
 
 import type {
   AssetDetails,
@@ -31,6 +31,7 @@ const useGenesisDao = () => {
     (s) => s.updateIsStartModalOpen
   );
   const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
+  const updateProposalValue = useGenesisStore((s) => s.updateProposalValues);
 
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -133,6 +134,7 @@ const useGenesisDao = () => {
             };
             // add txn to our store - first index
             addTxnNotification(successNoti);
+            console.log('tx success');
             successCB?.();
             updateTxnProcessing(false);
             return;
@@ -455,7 +457,7 @@ const useGenesisDao = () => {
           (result) => {
             txResponseCallback(
               result,
-              `Transferred ${formatBalance(amount, { decimals: 10 })}`,
+              `Transferred ${uiTokens(amount, 'dao')}`,
               'Something went wrong. Please try again. '
             );
           }
@@ -722,6 +724,7 @@ const useGenesisDao = () => {
         () => {
           updateTxnProcessing(false);
           updateDaoPage('proposals');
+          updateProposalValue(null);
           router.push(`/dao/${daoId}`);
         }
       );
@@ -751,6 +754,7 @@ const useGenesisDao = () => {
           let proposalId = '';
           result.events.forEach(({ event: { data, method } }) => {
             if (method === 'ProposalCreated' && !proposalSuccess) {
+              // so we only run setProposalMetadata once
               proposalSuccess = true;
               setTimeout(() => {
                 setProposalMetadata(daoId, proposalId, proposalValues);

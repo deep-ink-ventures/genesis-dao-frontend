@@ -97,6 +97,9 @@ export interface DaoDetail {
   daoCreatorAddress: string;
   setupComplete: boolean;
   daoAssetId: number | null;
+  proposalDuration: number | null;
+  proposalTokenDeposit: number | null;
+  minimumMajority: number | null;
   metadataUrl: string | null;
   metadataHash: string | null;
   descriptionShort: string | null;
@@ -280,6 +283,7 @@ export interface GenesisState {
   currentDao: DaoDetail | null;
   currentProposals: ProposalDetail[] | null;
   currentProposal: ProposalDetail | null;
+  currentBlockNumber: number | null;
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
   currentDaoFromChain: BasicDaoInfo | null;
@@ -299,7 +303,6 @@ export interface GenesisState {
   isStartModalOpen: boolean;
   daoCreationValues: DaoCreationValues | null;
   showCongrats: boolean;
-  currentBlockNumber: number | null;
   proposalValues: ProposalCreationValues | null;
   daoPage: DaoPage;
 }
@@ -347,7 +350,7 @@ export interface GenesisActions {
 
   updateCurrentProposal: (proposal: ProposalDetail) => void;
   updateBlockNumber: (currentBlockNumber: number) => void;
-  updateProposalValues: (proposalValues: ProposalCreationValues) => void;
+  updateProposalValues: (proposalValues: ProposalCreationValues | null) => void;
   updateDaoPage: (daoPage: DaoPage) => void;
 }
 
@@ -414,7 +417,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       type: TxnResponse.Error,
       timestamp: Date.now(),
     };
-
+    // eslint-disable-next-line
+    console.error(err)
     set({ txnProcessing: false });
     get().addTxnNotification(newNoti);
   },
@@ -514,6 +518,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         daoOwnerAddress: '{N/A}',
         daoCreatorAddress: '{N/A}',
         setupComplete: false,
+        proposalDuration: null,
+        proposalTokenDeposit: null,
+        minimumMajority: null,
         daoAssetId: null,
         metadataUrl: null,
         metadataHash: null,
@@ -539,6 +546,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       daoDetail.daoAssetId = d.asset_id;
       daoDetail.daoOwnerAddress = d.owner_id;
       daoDetail.daoCreatorAddress = d.creator_id;
+      daoDetail.proposalDuration = d.proposal_duration;
+      daoDetail.proposalTokenDeposit = d.proposal_token_deposit;
+      daoDetail.minimumMajority = d.minimum_majority_per_1024;
       daoDetail.metadataUrl = d.metadata_url;
       daoDetail.metadataHash = d.metadata_hash;
       daoDetail.setupComplete = d.setup_complete;
@@ -564,7 +574,6 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         `${SERVICE_URL}/daos/?order_by=id&limit=50`
       );
       const daosRes = await getDaosResponse.json();
-      console.log('response', daosRes);
       const daosArr = daosRes.results;
       const newDaos: DaoDetail[] = daosArr?.map((dao: any) => {
         return {
@@ -641,9 +650,11 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
 
   fetchProposalsFromDB: async (daoId) => {
     try {
-      const response = await fetch(`${SERVICE_URL}/proposals/?dao_id=${daoId}`);
-      const { results } = await response.json();
-      const newProposals = results.map((p: IncomingProposal) => {
+      const response = await fetch(
+        `${SERVICE_URL}/proposals/?dao_id=${daoId}&limit=50`
+      );
+      const json = await response.json();
+      const newProposals = json.results.map((p: IncomingProposal) => {
         return {
           proposalId: p.id,
           daoId: p.dao_id,
@@ -654,23 +665,23 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
           status: proposalStatusNames[p.status as keyof ProposalStatusNames],
           inFavor: new BN(p.votes?.pro || 0),
           against: new BN(p.votes?.contra || 0),
-          proposalName: !p.metadata?.title || null,
-          description: !p.metadata?.description || null,
-          link: !p.metadata?.url || null,
+          proposalName: p.metadata?.title || null,
+          description: p.metadata?.description || null,
+          link: p.metadata?.url || null,
         };
       });
-
       set({ currentProposals: newProposals });
+      set({ currentBlockNumber: Number(response.headers.get('block-number')) });
     } catch (err) {
       get().handleErrors(err);
     }
   },
   fetchOneProposalDB: async (daoId, proposalId) => {
-    console.log('fetch proposal');
     try {
       const response = await fetch(
         `${SERVICE_URL}/proposals/?dao_id=${daoId}&id=${proposalId}`
       );
+      console.log('fetch one proposal');
       const { results } = await response.json();
       const p: IncomingProposal = results[0];
       const newProp = {
@@ -689,6 +700,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         link: p.metadata?.url || null,
       };
       set({ currentProposal: newProp });
+      set({ currentBlockNumber: Number(response.headers.get('block-number')) });
+      console.log('set new one proposal');
     } catch (err) {
       get().handleErrors(err);
     }

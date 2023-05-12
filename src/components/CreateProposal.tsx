@@ -1,10 +1,23 @@
+import 'react-quill/dist/quill.snow.css';
+
 import { ErrorMessage } from '@hookform/error-message';
 import { BN } from '@polkadot/util';
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import type { DaoDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+
+import Spinner from './Spinner';
+
+const Quill = dynamic(
+  import('react-quill').then((mod) => mod),
+  {
+    ssr: false,
+    loading: () => <Spinner />,
+  }
+);
 
 interface ProposalValues {
   proposalName: string;
@@ -16,10 +29,31 @@ const CreateProposal = (props: {
   dao: DaoDetail | null;
   handleChangePage: Function;
 }) => {
+  const modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link'],
+      ['clean'],
+    ],
+  };
+
+  const formats = [
+    'bold',
+    'italic',
+    'underline',
+    'blockquote',
+    'list',
+    'bullet',
+    'link',
+  ];
+
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<ProposalValues>();
 
@@ -33,6 +67,8 @@ const CreateProposal = (props: {
     (s) => s.fetchDaoTokenBalanceFromDB
   );
   const updateProposalValues = useGenesisStore((s) => s.updateProposalValues);
+  const proposalValues = useGenesisStore((s) => s.proposalValues);
+  const currentDao = useGenesisStore((s) => s.currentDao);
 
   const onSubmit = (data: ProposalValues) => {
     updateProposalValues({
@@ -52,8 +88,21 @@ const CreateProposal = (props: {
     }
   }, [props?.dao?.daoAssetId, currentWalletAccount?.address]);
 
+  useEffect(() => {
+    if (proposalValues) {
+      setValue('proposalName', proposalValues.title);
+      setValue('proposalDescription', proposalValues.description);
+
+      setValue('discussionLink', proposalValues.url);
+    }
+  }, [proposalValues]);
+
   const watchName = watch('proposalName', '');
   const watchLink = watch('discussionLink', '');
+
+  useEffect(() => {
+    console.log(currentDao?.proposalTokenDeposit);
+  });
 
   const alert = () => {
     // fixme needs to get proposal token deposit amount
@@ -73,9 +122,9 @@ const CreateProposal = (props: {
                 d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'></path>
             </svg>
             <p>
-              <span className='font-bold'>{`10 ${props.dao?.daoId} Tokens `}</span>
-              will be reserved upon creation of a proposal. The reserved tokens
-              will be refunded when the proposal is finalized.
+              <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} Native Tokens `}</span>
+              {`will be reserved upon creation of a proposal. The reserved tokens
+              will be refunded when the proposal is finalized .`}
             </p>
           </div>
         </div>
@@ -98,7 +147,7 @@ const CreateProposal = (props: {
           </svg>
           <p>
             Sorry you need at least{' '}
-            <span className='font-bold'>{`10 ${props.dao?.daoId} Tokens `}</span>{' '}
+            <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} Native Tokens `}</span>{' '}
             to create a DAO. You will get them back if you destroy the DAO.
           </p>
         </div>
@@ -143,7 +192,7 @@ const CreateProposal = (props: {
                       : 'input-primary'
                   }`}
                   type='text'
-                  placeholder='e.g. Deploy Uniswap V3 on Avalanche'
+                  placeholder={'e.g. Deploy Uniswap V3 on Avalanche'}
                   disabled={!hasProposalDeposit}
                   {...register('proposalName', {
                     required: 'Required',
@@ -166,18 +215,30 @@ const CreateProposal = (props: {
                 </p>
               </div>
             </div>
-            <div className='min-w-full'>
+            <div className='mb-10 min-w-full'>
               <p className='mb-1 ml-2'>
                 Proposal Description (2000 characters or less)
               </p>
-              <textarea
-                className='textarea h-64'
-                {...register('proposalDescription', {
-                  required: 'Required',
-                  min: { value: 1, message: 'Minimum character count is 1' },
-                  max: { value: 2000, message: 'Max character count is 2000' },
-                })}
-              />
+              <div>
+                <Controller
+                  control={control}
+                  name='proposalDescription'
+                  rules={{
+                    validate: (value) =>
+                      value.length >= 10 ||
+                      'Enter at least 10 words in the description',
+                  }}
+                  render={({ field: { onChange, value } }) => (
+                    <Quill
+                      theme='snow'
+                      onChange={(description) => onChange(description)}
+                      value={value || ''}
+                      modules={modules}
+                      formats={formats}
+                    />
+                  )}
+                />
+              </div>
               <ErrorMessage
                 errors={errors}
                 name='proposalDescription'
