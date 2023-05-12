@@ -49,7 +49,7 @@ html {
 
 h1 {
   /* font-size: 96px; */
-  @apply text-3xl md:text-5xl font-semibold;
+  @apply text-3xl md:text-4xl font-semibold;
 }
 
 h2 {
@@ -86,6 +86,20 @@ h4 {
 .btn-primary {
   @apply text-primary-content font-medium;
 }
+.btn-vote {
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation: button-pop var(--animation-btn, 0.25s) ease-out;
+  height: 3rem/* 48px */;
+  padding-left: 1rem/* 16px */;
+  padding-right: 1rem/* 16px */;
+  font-size: 0.875rem/* 14px */;
+  line-height: 1.25rem/* 20px */;
+  line-height: 1em;
+  min-height: 3rem/* 48px */;
+  text-align: center;
+
+}
 .card {
   @apply rounded-[10px] z-0 bg-[#403945] hover:outline-1 hover:outline hover:outline-neutral hover:brightness-[1.15];
 } 
@@ -105,6 +119,12 @@ h4 {
 
 .input-primary {
   @apply border-neutral-focus focus:outline-neutral-focus border-[0.3px]
+}
+
+.selected-tab { 
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 2.79%, rgba(255, 255, 255, 0) 83.46%);
+  backdrop-filter: blur(2px);
+  @apply border-r-4 border-primary;
 }
 
 #search-input {
@@ -203,8 +223,40 @@ h4 {
   color: #FAFAFA;
 }
 
+.vote-up:hover {
+  stroke: #1E1B21 !important
+}
 
+.vote-down:hover {
+  stroke: #1E1B21 !important
+}
 
+.vote-up path {
+  stroke: #1E1B21 !important
+}
+
+.vote-up path {
+  stroke: #1E1B21 !important
+  
+}
+
+.quill {
+  @apply w-full h-80;
+}
+
+.ql-toolbar {
+  @apply bg-neutral border-[0.3px] border-neutral-focus rounded-t-lg;
+}
+
+.ql-container {
+  @apply bg-base-50 border-[0.3px] border-neutral-focus rounded-b-lg;
+}
+.ql-formats {
+  @apply bg-neutral;
+}
+.ql-editor {
+  @apply text-lg
+}
 
 /* Hide arrows in number input */
 /* Chrome, Safari, Edge, Opera */
@@ -223,6 +275,34 @@ input[type=number] {
   pointer-events: none;
 }
 
+
 a {
-  cursor:pointer;
+  @apply hover:cursor-pointer
+}
+
+.description-display a {
+  tab-size:4;
+  @apply underline hover:cursor-pointer text-blue-400 hover:text-blue-300
+}
+
+.description-display ol li {
+  list-style: decimal;
+  list-style-position: inside;
+  display: list-item;
+  margin-left: 1em;
+  tab-size:4;
+  @apply mb-2
+}
+
+.description-display ul li {
+  list-style: disc;
+  list-style-position: inside;
+  display: list-item;
+  margin-left: 1em;
+  tab-size:4;
+  @apply mb-2
+}
+
+.description-display h1, h2 {
+  @apply text-3xl
 }

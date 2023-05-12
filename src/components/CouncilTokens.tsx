@@ -1,5 +1,5 @@
 import { ErrorMessage } from '@hookform/error-message';
-import { BN, formatBalance } from '@polkadot/util';
+import { BN } from '@polkadot/util';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
@@ -13,6 +13,7 @@ import {
   getMultisigAddress,
   isValidPolkadotAddress,
   truncateMiddle,
+  uiTokens,
 } from '@/utils';
 
 import useGenesisDao from '../hooks/useGenesisDao';
@@ -28,7 +29,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const { makeBatchTransferTxn, sendBatchTxns, makeChangeOwnerTxns } =
+  const { makeBatchTransferTxn, sendBatchTxns, makeChangeOwnerTxn } =
     useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
 
@@ -146,7 +147,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       Number(currentDaoFromChain?.daoAssetId)
     );
 
-    const withChangeOwner = makeChangeOwnerTxns(
+    const withChangeOwner = makeChangeOwnerTxn(
       withRecipients,
       props.daoId,
       multisigAddress
@@ -534,10 +535,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <p>Distribute</p>
               <p>
                 <span className='mx-3 w-[70px] text-center text-primary'>
-                  {formatBalance(remain?.div(new BN(DAO_UNITS)).toString(), {
-                    decimals: 10,
-                    withUnit: currentDao?.daoId,
-                  })}
+                  {uiTokens(remain, 'dao', currentDao?.daoId)}
                   {' Tokens'}
                 </span>
               </p>

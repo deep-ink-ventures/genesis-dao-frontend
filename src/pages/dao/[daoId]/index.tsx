@@ -1,27 +1,41 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-import DestroyDao from '@/components/DestroyDao';
+import DaoDashboard from '@/components/DaoDashboard';
+import Proposals from '@/components/Proposals';
+import WalletConnect from '@/components/WalletConnect';
+import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+import about from '@/svg/about.svg';
+import arrowLeft from '@/svg/arrow-left.svg';
+import arrowRight from '@/svg/arrow-right.svg';
+import dashboard from '@/svg/dashboard.svg';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
+import proposal from '@/svg/proposal.svg';
+import settings from '@/svg/settings.svg';
 import MainLayout from '@/templates/MainLayout';
-import { truncateMiddle } from '@/utils';
+import { uiTokens } from '@/utils';
 
-const DaoHome = () => {
+const MainDaoPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
+  // const [page, setPage] = useState('dashboard');
+  const daoPage = useGenesisStore((s) => s.daoPage);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const currentDao = useGenesisStore((s) => s.currentDao);
+  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDao = useGenesisStore((s) => s.fetchDao);
+  const fetchDaoTokenBalanceFromDB = useGenesisStore(
+    (s) => s.fetchDaoTokenBalanceFromDB
+  );
+  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
 
-  const currentDao = useGenesisStore((s) => s.currentDao);
-  const isOwner =
-    currentDao &&
-    currentWalletAccount &&
-    currentDao.daoOwnerAddress === currentWalletAccount.address;
+  const handleChangePage = (pageParam: DaoPage) => {
+    updateDaoPage(pageParam);
+  };
 
   useEffect(() => {
     if (!daoId) {
@@ -29,7 +43,20 @@ const DaoHome = () => {
     }
     fetchDaoFromDB(daoId as string);
     fetchDao(daoId as string);
-  }, [daoId, fetchDaoFromDB, fetchDao]);
+  }, [daoId, fetchDaoFromDB, fetchDao, currentWalletAccount]);
+
+  useEffect(() => {
+    if (currentDao?.daoAssetId && currentWalletAccount) {
+      fetchDaoTokenBalanceFromDB(
+        currentDao?.daoAssetId,
+        currentWalletAccount.address
+      );
+    }
+  }, [currentDao, currentWalletAccount, daoId]);
+
+  const handleReturnToDashboard = () => {
+    router.push(`/dao/${encodeURIComponent(daoId as string)}`);
+  };
 
   const displayImage = () => {
     if (!currentDao || !currentDao.images.medium) {
@@ -55,86 +82,133 @@ const DaoHome = () => {
           alt={`${currentDao.daoName} logo image`}
           height={120}
           width={120}
+          className='rounded-full'
         />
       </div>
     );
   };
 
+  const displayPage = () => {
+    if (daoPage === 'proposals') {
+      return <Proposals daoId={daoId as string} />;
+    }
+    return <DaoDashboard />;
+  };
+
   return (
     <MainLayout
-      title='GenesisDAO - DAO Platform On Polkadot'
-      description='GenesisDAO Description'>
-      <div className='mt-12 flex justify-center'>
-        <div className='container mx-auto mt-5 flex min-w-[600px] max-w-[820px] justify-between px-12 py-5'>
-          <div className='flex flex-col rounded-xl p-5'>
-            <div className=''>{displayImage()}</div>
-            <h1 className='mb-2 max-w-[300px] break-words text-center'>
-              {currentDao?.daoName}
-            </h1>
-            <p className='mb-2'>
-              <span className='font-bold'>DAO ID : </span> {currentDao?.daoId}
-            </p>
-            <p className='mb-2'>
-              <span className='font-bold'>Setup Complete? </span>
-              <span>{currentDao?.setupComplete ? 'Yes' : 'No'}</span>
-            </p>
-            <p className='mb-2'>
-              <span className='font-bold'>Asset ID: </span>{' '}
-              {currentDao?.daoAssetId
-                ? currentDao?.daoAssetId
-                : 'Tokens not issued yet'}{' '}
-            </p>
-            <p className='mb-2'>
-              <span className='font-bold'>Asset Symbol: </span>{' '}
-              {currentDao?.daoId}
-            </p>
-            <p className='mb-2'>
-              <span className='font-bold'>DAO Owner: </span>{' '}
-              {truncateMiddle(currentDao?.daoOwnerAddress)}
-            </p>
-            <div className='mb-2 max-w-[300px] break-words'>
-              <p className='font-bold'>DAO Overview: </p>
-              <p>{currentDao?.descriptionShort}</p>
-            </div>
-            <div className='mb-2 max-w-[300px] break-words'>
-              <p className='font-bold'>DAO Details: </p>
-              <p>{currentDao?.descriptionLong}</p>
+      title={`${currentDao?.daoName} - GenesisDAO - DAO Platform On Polkadot'`}
+      description={`${currentDao?.daoName} - Create a DAO`}>
+      <div
+        className='mt-5 flex w-[65px] items-center justify-between hover:cursor-pointer hover:underline'
+        onClick={handleReturnToDashboard}>
+        <Image src={arrowLeft} width={13} height={7} alt='arrow-left' />
+        <div>Back</div>
+      </div>
+      <div className='mt-5 flex min-h-[500px] justify-between gap-x-4'>
+        <div className='container flex h-[640px] basis-1/4 flex-col items-center justify-evenly gap-y-4 py-4'>
+          <div className='flex flex-col items-center justify-center'>
+            <div>{displayImage()}</div>
+            <div className='mt-3 flex flex-col items-center md:overflow-visible'>
+              <h4
+                className={`z-10 inline-block w-[150px] truncate text-center text-lg text-base-content mix-blend-normal ${
+                  currentDao && currentDao?.daoName?.length > 20
+                    ? 'text-base'
+                    : ''
+                }`}>
+                {currentDao?.daoName}
+              </h4>
+              <p className='text-center text-accent'>{`DAO ID: ${currentDao?.daoId}`}</p>
             </div>
           </div>
-          <div className='flex flex-col gap-y-3'>
-            {currentDao?.setupComplete ||
-            currentWalletAccount?.address !==
-              currentDao?.daoOwnerAddress ? null : (
-              <Link
-                href={`/dao/${encodeURIComponent(daoId as string)}/customize`}
-                className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
-                <button
-                  className={`btn-primary btn w-[180px]`}
-                  disabled={!currentWalletAccount}>
-                  Customize DAO
-                </button>
-              </Link>
+          <div className='flex justify-center py-3 '>
+            {!currentWalletAccount?.address ? (
+              <WalletConnect text='Connect To View Tokens' />
+            ) : (
+              <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
+                <div className='px-5 text-center text-sm'>
+                  {!currentWalletAccount?.address ? (
+                    <p className=''>Connect Wallet To View Tokens</p>
+                  ) : (
+                    <div className='flex flex-col'>
+                      <p>You have</p>
+                      <p>
+                        {' '}
+                        {uiTokens(
+                          daoTokenBalance,
+                          'dao',
+                          currentDao?.daoId
+                        )}{' '}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <Image
+                    src={arrowRight}
+                    width={12}
+                    height={6}
+                    alt='arrow-right'
+                  />
+                </div>
+              </div>
             )}
-            <Link
-              href={`/dao/${encodeURIComponent(daoId as string)}/tokens`}
-              className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
-              <button
-                className={`btn-primary btn w-[180px]`}
-                disabled={!currentWalletAccount}>
-                Manage Tokens
-              </button>
-            </Link>
-            {currentDao && isOwner && (
-              <DestroyDao
-                daoId={currentDao?.daoId}
-                assetId={currentDao.daoAssetId}
+          </div>
+          <div className='w-full'>
+            <div
+              className={`${
+                daoPage === 'dashboard' ? 'selected-tab' : 'brightness-75'
+              } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
+              onClick={() => handleChangePage('dashboard')}>
+              <Image
+                src={dashboard}
+                height={15}
+                width={15}
+                alt='dashboard'
+                className='mr-4'
               />
-            )}
+              <p>Dashboard</p>
+            </div>
+            <div
+              className={`${
+                daoPage === 'proposals' ? 'selected-tab' : 'brightness-75'
+              } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
+              onClick={() => handleChangePage('proposals')}>
+              <Image
+                src={proposal}
+                height={15}
+                width={15}
+                alt='dashboard'
+                className='mr-4'
+              />
+              <p>Proposals</p>
+            </div>
+            <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
+              <Image
+                src={about}
+                height={15}
+                width={15}
+                alt='dashboard'
+                className='mr-4'
+              />
+              <p>About</p>
+            </div>
+            <div className='flex h-[55px] py-4 px-7 brightness-75'>
+              <Image
+                src={settings}
+                height={15}
+                width={15}
+                alt='dashboard'
+                className='mr-4'
+              />
+              <p>Settings</p>
+            </div>
           </div>
         </div>
+        <div className='container basis-3/4 p-5'>{displayPage()}</div>
       </div>
     </MainLayout>
   );
 };
 
-export default DaoHome;
+export default MainDaoPage;

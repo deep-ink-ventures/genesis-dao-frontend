@@ -1,14 +1,16 @@
 import type { SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
-import { formatBalance } from '@polkadot/util';
+import { stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
-import { DAO_UNITS } from '@/config';
+import { DAO_UNITS, SERVICE_URL } from '@/config';
+import { hexToBase64, uiTokens } from '@/utils';
 
 import type {
   AssetDetails,
   CreateDaoData,
+  ProposalCreationValues,
   TokenRecipient,
   WalletAccount,
 } from '../stores/genesisStore';
@@ -17,17 +19,19 @@ import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 // fixme open one connection and reuse that connection
 const useGenesisDao = () => {
   const router = useRouter();
+  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const apiConnection = useGenesisStore((s) => s.apiConnection);
   const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDaos = useGenesisStore((s) => s.fetchDaos);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const apiConnection = useGenesisStore((s) => s.apiConnection);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
   );
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
+  const updateProposalValue = useGenesisStore((s) => s.updateProposalValues);
 
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -46,7 +50,8 @@ const useGenesisDao = () => {
         timestamp: Date.now(),
       };
     }
-
+    // eslint-disable-next-line
+    console.error(err)
     updateTxnProcessing(false);
     addTxnNotification(newNoti);
   };
@@ -129,6 +134,7 @@ const useGenesisDao = () => {
             };
             // add txn to our store - first index
             addTxnNotification(successNoti);
+            console.log('tx success');
             successCB?.();
             updateTxnProcessing(false);
             return;
@@ -451,7 +457,7 @@ const useGenesisDao = () => {
           (result) => {
             txResponseCallback(
               result,
-              `Transferred ${formatBalance(amount, { decimals: 10 })}`,
+              `Transferred ${uiTokens(amount, 'dao')}`,
               'Something went wrong. Please try again. '
             );
           }
@@ -590,7 +596,7 @@ const useGenesisDao = () => {
     ];
   };
 
-  const makeChangeOwnerTxns = (
+  const makeChangeOwnerTxn = (
     txns: any[],
     daoId: string,
     newOwnerAddress: string
@@ -599,6 +605,169 @@ const useGenesisDao = () => {
       ...txns,
       apiConnection?.tx?.daoCore?.changeOwner?.(daoId, newOwnerAddress),
     ];
+  };
+
+  const makeCreateProposalTxn = (txns: any[], daoId: string) => {
+    return [...txns, apiConnection?.tx?.votes?.createProposal?.(daoId)];
+  };
+
+  const makeSetProposalMetadataTxn = (
+    txns: any[],
+    proposalId: string,
+    metadataUrl: string,
+    metadataHash: string
+  ) => {
+    return [
+      ...txns,
+      apiConnection?.tx?.votes?.setMetadata?.(
+        proposalId,
+        metadataUrl,
+        metadataHash
+      ),
+    ];
+  };
+
+  const makeVoteTxn = (txns: any[], proposalId: string, inFavor: boolean) => {
+    return [...txns, apiConnection?.tx?.votes?.vote?.(proposalId, inFavor)];
+  };
+
+  const finalizeProposalTxn = (txns: any[], proposalId: string) => {
+    return [...txns, apiConnection?.tx?.votes?.finalizeProposal?.(proposalId)];
+  };
+
+  const faultProposalTxn = (
+    txns: any[],
+    proposalId: string,
+    reason: string
+  ) => {
+    return [
+      ...txns,
+      apiConnection?.tx?.votes?.faultProposal?.(proposalId, reason),
+    ];
+  };
+
+  const markImplementedTxn = (txns: any[], proposalId: string) => {
+    return [...txns, apiConnection?.tx?.votes?.markImplemented?.(proposalId)];
+  };
+
+  const doChallenge = async (daoId: string) => {
+    try {
+      const challengeRes = await fetch(
+        `${SERVICE_URL}/daos/${daoId}/challenge/`
+      );
+      const challengeString = await challengeRes.json();
+      if (!challengeString.challenge) {
+        handleErrors('Error in retrieving ownership-validation challenge');
+        return null;
+      }
+      const signerResult = await currentWalletAccount?.signer?.signRaw?.({
+        address: currentWalletAccount.address,
+        data: stringToHex(challengeString.challenge),
+        type: 'bytes',
+      });
+
+      if (!signerResult) {
+        handleErrors('Not able to validate ownership');
+        return null;
+      }
+
+      return hexToBase64(signerResult.signature.substring(2));
+    } catch (err) {
+      handleErrors(err);
+      return null;
+    }
+  };
+  const setProposalMetadata = async (
+    daoId: string,
+    proposalId: string,
+    proposalValues: ProposalCreationValues
+  ) => {
+    try {
+      const jsonData = JSON.stringify({
+        title: proposalValues?.title,
+        description: proposalValues?.description,
+        url: proposalValues?.url,
+      });
+      const sig = await doChallenge(daoId);
+      if (!sig) {
+        handleErrors('Verification Challenge failed');
+        return;
+      }
+
+      const metadataResponse = await fetch(
+        `${SERVICE_URL}/proposals/${proposalId}/metadata/`,
+        {
+          method: 'POST',
+          body: jsonData,
+          headers: {
+            'Content-Type': 'application/json',
+            Signature: sig,
+          },
+        }
+      );
+      const metadata = await metadataResponse.json();
+      if (!metadata.metadata_url) {
+        handleErrors(`Not able to upload metadata Status:${metadata.status}`);
+        return;
+      }
+      const txns = makeSetProposalMetadataTxn(
+        [],
+        proposalId,
+        metadata.metadata_url,
+        metadata.metadata_hash
+      );
+
+      await sendBatchTxns(
+        txns,
+        'Proposal Created!',
+        'Transaction failed',
+        () => {
+          updateTxnProcessing(false);
+          updateDaoPage('proposals');
+          updateProposalValue(null);
+          router.push(`/dao/${daoId}`);
+        }
+      );
+    } catch (err) {
+      handleErrors(err);
+      updateTxnProcessing(false);
+    }
+  };
+
+  const createAProposal = (
+    daoId: string,
+    proposalValues: ProposalCreationValues
+  ) => {
+    let proposalSuccess = false;
+    updateTxnProcessing(true);
+    if (!currentWalletAccount) {
+      handleErrors('Wallet not connected');
+      return;
+    }
+    apiConnection?.tx?.votes
+      ?.createProposal?.(daoId)
+      .signAndSend?.(
+        currentWalletAccount.address,
+        { signer: currentWalletAccount.signer },
+        (result) => {
+          console.log('response result', result);
+          let proposalId = '';
+          result.events.forEach(({ event: { data, method } }) => {
+            if (method === 'ProposalCreated' && !proposalSuccess) {
+              // so we only run setProposalMetadata once
+              proposalSuccess = true;
+              setTimeout(() => {
+                setProposalMetadata(daoId, proposalId, proposalValues);
+              }, 2500);
+              proposalId = data[2]?.toHuman() as string;
+            }
+          });
+        }
+      )
+      .catch((err) => {
+        handleErrors(err);
+        updateTxnProcessing(false);
+      });
   };
 
   return {
@@ -617,7 +786,16 @@ const useGenesisDao = () => {
     makeBatchTransferTxn,
     makeMajorityVoteTxn,
     makeSetMetadataTxn,
-    makeChangeOwnerTxns,
+    makeChangeOwnerTxn,
+    makeCreateProposalTxn,
+    makeVoteTxn,
+    finalizeProposalTxn,
+    faultProposalTxn,
+    markImplementedTxn,
+    makeSetProposalMetadataTxn,
+    doChallenge,
+    createAProposal,
+    setProposalMetadata,
   };
 };
 

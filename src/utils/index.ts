@@ -1,6 +1,8 @@
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
-import { hexToU8a, isHex } from '@polkadot/util';
+import { BN, formatBalance, hexToU8a, isHex } from '@polkadot/util';
 import { createKeyMulti } from '@polkadot/util-crypto';
+
+import { DAO_UNITS, NATIVE_UNITS } from '@/config';
 
 // @ts-ignore
 export const truncateMiddle = (str?, start = 4, end = 4) => {
@@ -66,4 +68,36 @@ export function hexToBase64(hexStr:string) {
     base64 += !(i - 1 & 1) ? String.fromCharCode(parseInt(hexStr.substring(i - 1, i + 1), 16)) : ""
   }
   return window.btoa(base64);
+}
+
+export const getProposalEndTime = (currentNumber: number, startNumber: number, durationNumber: number) => {
+  const leftOverNumber = durationNumber - (currentNumber - startNumber);
+  
+  const seconds = leftOverNumber * 6;
+  const day = Math.floor(seconds / (3600*24));
+  const hour = Math.floor(seconds % (3600*24) / 3600);
+  const minute = Math.floor(seconds % 3600 / 60);
+
+  const d = day > 0 ? day : 0
+  const h = hour > 0 ? hour : 0
+  const m = minute > 0 ? minute : 0
+  
+  return {
+    d,
+    h,
+    m
+  }
+}
+
+
+export const uiTokens = (rawAmount: BN | null, tokenType: 'native' | 'dao', unitName?: string) => {
+
+  const units = tokenType === 'native' ? NATIVE_UNITS : DAO_UNITS
+
+  formatBalance.setDefaults({ decimals: 0, unit: unitName || 'tokens'});
+
+  return formatBalance(rawAmount?.div(new BN(units) || new BN(0)).toString(),{
+    forceUnit: unitName,
+    withZero: false,
+  } )
 }
