@@ -2,7 +2,7 @@
 
 ## About
 
-This is the frontend UI for GenesisDAO. Users can use this interface to explore and create DAOs, set up a DAO voting structure, issues DAO tokens, and create a multisig treasury.   
+This is the frontend UI for GenesisDAO. Users can use this interface to create DAOs and vote on proposals.  
 
 
 ## Status
