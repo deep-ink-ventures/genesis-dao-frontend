@@ -48,7 +48,7 @@ const DaoDashboard = () => {
               className={`btn-primary btn w-[180px]`}
               disabled={
                 !currentWalletAccount ||
-                !currentDao?.setupComplete ||
+                daoTokenBalance?.isZero() ||
                 !currentDao?.setupComplete
               }>
               Create Proposal
