@@ -10,7 +10,10 @@ import MainLayout from '@/templates/MainLayout';
 const CreateProposalPage = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const currentDao = useGenesisStore((s) => s.currentDao);
+  const apiConnection = useGenesisStore((s) => s.apiConnection);
+
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
+  const createApiConnection = useGenesisStore((s) => s.createApiConnection);
 
   const [page, setPage] = useState('create');
   const router = useRouter();
@@ -30,6 +33,13 @@ const CreateProposalPage = () => {
     // eslint-disable-next-line
     return () => clearTimeout(TO);
   }, [daoId, fetchDaoFromDB]);
+
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+    // eslint-disable-next-line
+  }, []);
 
   const display = () => {
     if (!currentWalletAccount?.address) {
@@ -52,7 +62,6 @@ const CreateProposalPage = () => {
         />
       );
     }
-    // need to validate whether this account has dao tokens
 
     return (
       <CreateProposal dao={currentDao} handleChangePage={handleChangePage} />

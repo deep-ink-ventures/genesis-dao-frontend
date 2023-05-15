@@ -1,3 +1,4 @@
+import { BN } from '@polkadot/util';
 import Link from 'next/link';
 
 import DestroyDao from '@/components/DestroyDao';
@@ -7,7 +8,6 @@ const DaoDashboard = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
-
   return (
     <div className='flex flex-col gap-y-4'>
       <div>
@@ -38,13 +38,19 @@ const DaoDashboard = () => {
               currentDao?.daoId as string
             )}/create-proposal`}
             className={`${
-              !currentWalletAccount || daoTokenBalance?.isZero()
+              !currentWalletAccount ||
+              daoTokenBalance?.isZero() ||
+              !currentDao?.setupComplete
                 ? 'disable-link'
                 : ''
             }`}>
             <button
               className={`btn-primary btn w-[180px]`}
-              disabled={!currentWalletAccount}>
+              disabled={
+                !currentWalletAccount ||
+                !currentDao?.setupComplete ||
+                !currentDao?.setupComplete
+              }>
               Create Proposal
             </button>
           </Link>
@@ -53,13 +59,19 @@ const DaoDashboard = () => {
               currentDao?.daoId as string
             )}/tokens`}
             className={`${
-              !currentWalletAccount || daoTokenBalance?.isZero()
+              !currentWalletAccount ||
+              daoTokenBalance?.isZero() ||
+              !daoTokenBalance?.lt(new BN(0))
                 ? 'disable-link'
                 : ''
             }`}>
             <button
               className={`btn-primary btn w-[180px]`}
-              disabled={!currentWalletAccount}>
+              disabled={
+                !currentWalletAccount ||
+                daoTokenBalance?.isZero() ||
+                !daoTokenBalance?.lt(new BN(0))
+              }>
               Send Tokens
             </button>
           </Link>
