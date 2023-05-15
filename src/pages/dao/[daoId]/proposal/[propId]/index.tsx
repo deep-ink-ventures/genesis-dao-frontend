@@ -20,19 +20,22 @@ const Proposal = () => {
   const [voteSelection, setVoteSelection] = useState<
     'In Favor' | 'Against' | null
   >(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const p = useGenesisStore((s) => s.currentProposal);
   const currentBlockNumber = useGenesisStore((s) => s.currentBlockNumber);
-
+  const apiConnection = useGenesisStore((s) => s.apiConnection);
+  const createApiConnection = useGenesisStore((s) => s.createApiConnection);
   const fetchOneProposalDB = useGenesisStore((s) => s.fetchOneProposalDB);
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const fetchDaoTokenBalanceFromDB = useGenesisStore(
     (s) => s.fetchDaoTokenBalanceFromDB
   );
   const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
+  const updateBlockNumber = useGenesisStore((s) => s.updateBlockNumber);
   // const updateCurrentProposal = useGenesisStore((s) => s.updateCurrentProposal);
 
   const dhmMemo = useMemo(() => {
@@ -102,14 +105,18 @@ const Proposal = () => {
       'Vote Transaction Failed',
       () => {
         setVoteSelection(null);
+        setIsRefreshing(true);
         setTimeout(() => {
           fetchOneProposalDB(daoId as string, propId as string);
-        }, 1000);
+        }, 6000);
+        setTimeout(() => {
+          setIsRefreshing(false);
+        }, 6500);
       }
     );
   };
 
-  const handleReturnToDashboard = () => {
+  const handleBack = () => {
     updateDaoPage('proposals');
     router.push(`/dao/${daoId as string}/`);
   };
@@ -142,24 +149,31 @@ const Proposal = () => {
     }
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     console.log(
-  //       'proposal info',
-  //       'against',
-  //       p?.against.toString(),
-  //       'in favor',
-  //       p?.inFavor.toString()
-  //     );
-  //   }, 2500);
-  // }, [p]);
+  useEffect(() => {
+    if (!currentBlockNumber) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      updateBlockNumber(currentBlockNumber + 1);
+    }, 6000);
+    // eslint-disable-next-line
+    return () => clearTimeout(timeout);
+  }, [currentBlockNumber, updateBlockNumber]);
+
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
       description='GenesisDAO - Create a DAO'>
       <div
         className='mt-5 flex w-[65px] items-center justify-between hover:cursor-pointer hover:underline'
-        onClick={handleReturnToDashboard}>
+        onClick={handleBack}>
         <Image src={arrowLeft} width={13} height={7} alt='arrow-left' />
         <div>Back</div>
       </div>
@@ -321,38 +335,42 @@ const Proposal = () => {
                 ? 'Progress'
                 : 'Result'}
             </p>
-            <div className='flex w-[100%] flex-col pr-6'>
-              <div className='relative mb-2 flex w-full justify-between'>
-                <div
-                  className={`h-7 bg-[#403945]`}
-                  style={{ width: `${inFavorPercentageMemo}%` }}>
-                  <div className='absolute p-1 text-sm'>
-                    In Favor (
-                    {p?.inFavor
-                      ? p.inFavor.div(new BN(DAO_UNITS)).toString()
-                      : new BN(0).toString()}
-                    )
-                  </div>
-                </div>
-                <p className='ml-1'>{`${inFavorPercentageMemo}% `}</p>
-              </div>
-              <div className='relative mb-2 flex w-full justify-between'>
-                <div
-                  className={`h-7 bg-[#403945]`}
-                  style={{ width: `${againstPercentageMemo}%` }}>
-                  <div className='absolute p-1 text-sm'>
-                    <p className=''>
-                      Against (
-                      {p?.against
-                        ? p.against.div(new BN(DAO_UNITS)).toString()
+            {isRefreshing ? (
+              <Spinner />
+            ) : (
+              <div className='flex w-[100%] flex-col pr-6'>
+                <div className='relative mb-2 flex w-full justify-between'>
+                  <div
+                    className={`h-7 bg-[#403945]`}
+                    style={{ width: `${inFavorPercentageMemo}%` }}>
+                    <div className='absolute p-1 text-sm'>
+                      In Favor (
+                      {p?.inFavor
+                        ? p.inFavor.div(new BN(DAO_UNITS)).toString()
                         : new BN(0).toString()}
                       )
-                    </p>
+                    </div>
                   </div>
+                  <p className='ml-1'>{`${inFavorPercentageMemo}% `}</p>
                 </div>
-                <p className='ml-1'>{`${againstPercentageMemo}%`}</p>
+                <div className='relative mb-2 flex w-full justify-between'>
+                  <div
+                    className={`h-7 bg-[#403945]`}
+                    style={{ width: `${againstPercentageMemo}%` }}>
+                    <div className='absolute p-1 text-sm'>
+                      <p className=''>
+                        Against (
+                        {p?.against
+                          ? p.against.div(new BN(DAO_UNITS)).toString()
+                          : new BN(0).toString()}
+                        )
+                      </p>
+                    </div>
+                  </div>
+                  <p className='ml-1'>{`${againstPercentageMemo}%`}</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {p?.status === 'Active' ? (

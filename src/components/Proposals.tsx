@@ -5,15 +5,23 @@ import { useEffect, useState } from 'react';
 // import useGenesisStore from '@/stores/genesisStore';
 import Spinner from '@/components/Spinner';
 import useGenesisStore from '@/stores/genesisStore';
-import downArrow from '@/svg/downArrow.svg';
 import plusBlack from '@/svg/plus-black.svg';
 
 import ProposalCard from './ProposalCard';
 
 const Proposals = (props: { daoId: string }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const currentProposals = useGenesisStore((s) => s.currentProposals);
-  const fetchProposalsFromDB = useGenesisStore((s) => s.fetchProposalsFromDB);
+  const [
+    currentProposals,
+    fetchProposalsFromDB,
+    currentBlockNumber,
+    updateBlockNumber,
+  ] = useGenesisStore((s) => [
+    s.currentProposals,
+    s.fetchProposalsFromDB,
+    s.currentBlockNumber,
+    s.updateBlockNumber,
+  ]);
   const filteredProposals = currentProposals?.filter((prop) => {
     return (
       prop.proposalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -58,6 +66,17 @@ const Proposals = (props: { daoId: string }) => {
     setSearchTerm(e.target.value);
   };
 
+  useEffect(() => {
+    if (!currentBlockNumber) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      updateBlockNumber(currentBlockNumber + 1);
+    }, 6000);
+    // eslint-disable-next-line
+    return () => clearTimeout(timeout);
+  }, [currentBlockNumber, updateBlockNumber]);
+
   return (
     <div className='flex flex-col gap-y-4'>
       <div className='flex justify-between'>
@@ -73,7 +92,7 @@ const Proposals = (props: { daoId: string }) => {
               onChange={handleSearch}
             />
           </div>
-          <div className='flex items-center justify-center'>
+          {/* <div className='flex items-center justify-center'>
             <div className='flex h-12 min-w-[76px] items-center justify-center rounded-full border'>
               <p>All</p>
               <Image
@@ -84,7 +103,7 @@ const Proposals = (props: { daoId: string }) => {
                 className='ml-2'
               />
             </div>
-          </div>
+          </div> */}
           <div>
             <Link
               href={`/dao/${encodeURIComponent(props.daoId)}/create-proposal`}>

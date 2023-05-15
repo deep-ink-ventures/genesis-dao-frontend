@@ -305,6 +305,7 @@ export interface GenesisState {
   showCongrats: boolean;
   proposalValues: ProposalCreationValues | null;
   daoPage: DaoPage;
+  inFavorVotes: BN;
 }
 
 export interface GenesisActions {
@@ -387,6 +388,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   proposalValues: null,
   daoPage: 'dashboard',
   currentProposals: null,
+  inFavorVotes: new BN(0),
   createApiConnection: async () => {
     const { rpcEndpoint } = get();
     const createApi = async (): Promise<ApiPromise> => {
@@ -418,7 +420,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       timestamp: Date.now(),
     };
     // eslint-disable-next-line
-    console.error(err.toString())
+    console.error(err)
     set({ txnProcessing: false });
     get().addTxnNotification(newNoti);
   },
@@ -692,8 +694,12 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       const response = await fetch(
         `${SERVICE_URL}/proposals/?dao_id=${daoId}&id=${proposalId}`
       );
+
       const { results } = await response.json();
-      const p: IncomingProposal = results[0];
+      if (!results) {
+        return;
+      }
+      const p: IncomingProposal = results?.[0];
       const newProp = {
         proposalId: p.id,
         daoId: p.dao_id,
@@ -711,6 +717,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       };
       set({ currentProposal: newProp });
       set({ currentBlockNumber: Number(response.headers.get('block-number')) });
+      set({ inFavorVotes: new BN(p.votes?.pro || 0) });
     } catch (err) {
       get().handleErrors(err);
     }

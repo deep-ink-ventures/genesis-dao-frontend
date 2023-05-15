@@ -1,3 +1,4 @@
+import { BN } from '@polkadot/util';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -30,6 +31,8 @@ const MainDaoPage = () => {
   const fetchDaoTokenBalanceFromDB = useGenesisStore(
     (s) => s.fetchDaoTokenBalanceFromDB
   );
+  const updateDaoTokenBalance = useGenesisStore((s) => s.updateDaoTokenBalance);
+
   const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
 
   const handleChangePage = (pageParam: DaoPage) => {
@@ -42,7 +45,7 @@ const MainDaoPage = () => {
     }
     fetchDaoFromDB(daoId as string);
     fetchDao(daoId as string);
-  }, [daoId, fetchDaoFromDB, fetchDao, currentWalletAccount]);
+  }, [daoId, fetchDaoFromDB, fetchDao]);
 
   useEffect(() => {
     if (currentDao?.daoAssetId && currentWalletAccount) {
@@ -50,12 +53,15 @@ const MainDaoPage = () => {
         currentDao?.daoAssetId,
         currentWalletAccount.address
       );
+    } else {
+      updateDaoTokenBalance(new BN(0));
     }
-  }, [currentDao, currentWalletAccount, daoId, fetchDaoTokenBalanceFromDB]);
-
-  const handleReturnToDashboard = () => {
-    router.push(`/dao/${encodeURIComponent(daoId as string)}`);
-  };
+  }, [
+    currentDao,
+    currentWalletAccount,
+    fetchDaoTokenBalanceFromDB,
+    updateDaoTokenBalance,
+  ]);
 
   const displayImage = () => {
     if (!currentDao || !currentDao.images.medium) {
@@ -94,13 +100,17 @@ const MainDaoPage = () => {
     return <DaoDashboard />;
   };
 
+  const handleBack = () => {
+    router.push(`/#explorer`);
+  };
+
   return (
     <MainLayout
       title={`${currentDao?.daoName} - GenesisDAO - DAO Platform On Polkadot'`}
       description={`${currentDao?.daoName} - Create a DAO`}>
       <div
         className='mt-5 flex w-[65px] items-center justify-between hover:cursor-pointer hover:underline'
-        onClick={handleReturnToDashboard}>
+        onClick={handleBack}>
         <Image src={arrowLeft} width={13} height={7} alt='arrow-left' />
         <div>Back</div>
       </div>

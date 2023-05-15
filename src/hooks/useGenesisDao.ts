@@ -733,7 +733,7 @@ const useGenesisDao = () => {
     }
   };
 
-  const createAProposal = (
+  const createAProposal = async (
     daoId: string,
     proposalValues: ProposalCreationValues
   ) => {
