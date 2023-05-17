@@ -23,8 +23,8 @@ const LogoForm = (props: { daoId: string | null }) => {
   } = useForm<LogoFormValues>({
     defaultValues: {
       email: '',
-      shortOverview: 'N/A',
-      longDescription: 'N/A',
+      shortOverview: '',
+      longDescription: '',
       imageString: '',
     },
   });

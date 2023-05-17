@@ -704,9 +704,10 @@ const useGenesisDao = () => {
           },
         }
       );
+
       const metadata = await metadataResponse.json();
-      if (!metadata.metadata_url) {
-        handleErrors(`Not able to upload metadata Status:${metadata.status}`);
+      if (!metadata?.metadata_url) {
+        handleErrors(`Not able to upload metadata Status:${metadata?.status}`);
         return;
       }
       const txns = makeSetProposalMetadataTxn(

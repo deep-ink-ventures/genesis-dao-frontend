@@ -317,11 +317,11 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const membersFields = () => {
     return councilMembersFields.map((item, index) => {
       return (
-        <div className='flex' key={item.id} data-k={item.id}>
+        <div className='flex px-4' key={item.id} data-k={item.id}>
           <div className='flex'>
             <div className='mr-3 flex flex-col'>
               <p className='pl-8'>Name</p>
-              <div className='flex'>
+              <div className='flex '>
                 <div className='mr-4 flex flex-col justify-center'>
                   {index + 2}
                 </div>
@@ -418,7 +418,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               account
             </p>
           </div>
-          <div className='flex'>
+          <div className='flex px-4'>
             <div className='mr-3 flex flex-col'>
               <p className='pl-8'>Your Name</p>
               <div className='flex'>

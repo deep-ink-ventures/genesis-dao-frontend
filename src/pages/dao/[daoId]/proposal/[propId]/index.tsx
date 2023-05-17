@@ -167,6 +167,28 @@ const Proposal = () => {
     // eslint-disable-next-line
   }, []);
 
+  const displayVoteButton = () => {
+    if (!currentWalletAccount) {
+      return (
+        <WalletConnect text={'Connect To Vote'} onClose={handleStartModal} />
+      );
+    }
+
+    if (!daoTokenBalance || !daoTokenBalance.gt(new BN(0))) {
+      return (
+        <button className='btn' disabled>
+          {`You Can't Vote. No Tokens`}
+        </button>
+      );
+    }
+
+    return (
+      <button className='btn-primary btn min-w-[250px]' onClick={handleVote}>
+        Vote
+      </button>
+    );
+  };
+
   return (
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
@@ -311,20 +333,7 @@ const Proposal = () => {
                   </div>
                 </div>
               ) : null}
-              <div>
-                {currentWalletAccount ? (
-                  <button
-                    className='btn-primary btn min-w-[250px]'
-                    onClick={handleVote}>
-                    Vote
-                  </button>
-                ) : (
-                  <WalletConnect
-                    text={'Connect To Vote'}
-                    onClose={handleStartModal}
-                  />
-                )}
-              </div>
+              <div>{displayVoteButton()}</div>
             </div>
           ) : null}
 

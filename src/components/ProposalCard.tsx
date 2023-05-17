@@ -62,11 +62,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
   }, [props.p, currentDao, currentBlockNumber]);
 
   return (
-    <div
-      className='min-h-[180px] rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer hover:outline'
-      onClick={() => {
-        // router.push(`/dao/${props.p.daoId}/proposal/${props.p.proposalId}`) fixme
-      }}>
+    <div className='min-h-[180px] rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer hover:outline'>
       <div className='flex flex-col gap-y-3'>
         <div className='mb-3 flex justify-between'>
           <div>

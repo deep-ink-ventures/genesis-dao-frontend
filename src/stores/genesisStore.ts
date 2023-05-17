@@ -98,7 +98,7 @@ export interface DaoDetail {
   setupComplete: boolean;
   daoAssetId: number | null;
   proposalDuration: number | null;
-  proposalTokenDeposit: number | null;
+  proposalTokenDeposit: number;
   minimumMajority: number | null;
   metadataUrl: string | null;
   metadataHash: string | null;
@@ -521,7 +521,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         daoCreatorAddress: '{N/A}',
         setupComplete: false,
         proposalDuration: null,
-        proposalTokenDeposit: null,
+        proposalTokenDeposit: 0,
         minimumMajority: null,
         daoAssetId: null,
         metadataUrl: null,

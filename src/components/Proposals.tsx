@@ -33,6 +33,10 @@ const Proposals = (props: { daoId: string }) => {
     if (!filteredProposals || filteredProposals?.length === 0) {
       return <div>Sorry no proposals found</div>;
     }
+
+    if (props.daoId !== filteredProposals[0]?.daoId) {
+      return <Spinner />;
+    }
     return (
       <div className='flex flex-col gap-y-4'>
         {filteredProposals.map((prop) => {

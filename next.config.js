@@ -27,7 +27,14 @@ module.exports = {
   // So, the source code is "basePath-ready".
   // You can remove `basePath` if you don't need it.
   reactStrictMode: true,
-  images: {
-    domains: ['https://div-gen-backend-storage.s3.eu-central-1.amazonaws.com'],
-  },
+  // images: {
+  //   remotePatterns: [
+  //     {
+  //       protocol: 'https',
+  //       hostname: 'div-gen-backend-storage.s3.eu-central-1.amazonaws.com',
+  //       port: '',
+  //       pathname: '/public/**'
+  //     }
+  //   ]
+  // },
 };

@@ -3,9 +3,10 @@ import 'react-quill/dist/quill.snow.css';
 import { ErrorMessage } from '@hookform/error-message';
 import { BN } from '@polkadot/util';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { DAO_UNITS } from '@/config';
 import type { DaoDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 
@@ -56,10 +57,6 @@ const CreateProposal = (props: {
     control,
     formState: { errors },
   } = useForm<ProposalValues>();
-  // eslint-disable-next-line
-  const [hasProposalDeposit, _setHasProposalDeposit] = useState<boolean | null>(
-    true
-  );
 
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
@@ -69,6 +66,18 @@ const CreateProposal = (props: {
   const updateProposalValues = useGenesisStore((s) => s.updateProposalValues);
   const proposalValues = useGenesisStore((s) => s.proposalValues);
   const currentDao = useGenesisStore((s) => s.currentDao);
+
+  const hasProposalDeposit = useMemo(() => {
+    if (
+      !currentDao?.proposalTokenDeposit ||
+      currentDao?.proposalTokenDeposit === 0
+    ) {
+      return false;
+    }
+    return daoTokenBalance?.gte(
+      new BN(currentDao?.proposalTokenDeposit).mul(new BN(DAO_UNITS))
+    );
+  }, [currentDao, daoTokenBalance]);
 
   const onSubmit = (data: ProposalValues) => {
     updateProposalValues({
@@ -105,8 +114,35 @@ const CreateProposal = (props: {
   const watchLink = watch('discussionLink', '');
 
   const alert = () => {
+    if (
+      !currentDao?.proposalTokenDeposit ||
+      currentDao.proposalTokenDeposit === 0
+    ) {
+      return (
+        <div className='alert alert-error shadow-lg'>
+          <div>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              className='h-6 w-6 shrink-0 stroke-current'
+              fill='none'
+              viewBox='0 0 24 24'>
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth='2'
+                d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+              />
+            </svg>
+            <p>
+              Token deposit requirement is not configured correctly. Please
+              contact the DAO owner.
+            </p>
+          </div>
+        </div>
+      );
+    }
     // fixme needs to get proposal token deposit amount
-    if (daoTokenBalance?.gte(new BN(1))) {
+    if (hasProposalDeposit) {
       return (
         <div className='alert alert-info shadow-lg'>
           <div>
@@ -122,7 +158,7 @@ const CreateProposal = (props: {
                 d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'></path>
             </svg>
             <p>
-              <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} Native Tokens `}</span>
+              <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} DAO Tokens `}</span>
               {`will be reserved upon creation of a proposal. The reserved tokens
               will be refunded when the proposal is finalized .`}
             </p>
@@ -147,8 +183,8 @@ const CreateProposal = (props: {
           </svg>
           <p>
             Sorry you need at least{' '}
-            <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} Native Tokens `}</span>{' '}
-            to create a DAO. You will get them back if you destroy the DAO.
+            <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} DAO Tokens `}</span>{' '}
+            to create a Proposal
           </p>
         </div>
       </div>
@@ -196,7 +232,7 @@ const CreateProposal = (props: {
                   disabled={!hasProposalDeposit}
                   {...register('proposalName', {
                     required: 'Required',
-                    maxLength: { value: 64, message: 'Max length is 50' },
+                    maxLength: { value: 128, message: 'Max length is 128' },
                     minLength: { value: 5, message: 'Minimum length is 5' },
                   })}
                 />
@@ -208,10 +244,10 @@ const CreateProposal = (props: {
                   )}
                 />
                 <p
-                  className={`absolute top-2 right-2 opacity-60 ${
-                    watchName.length > 50 ? 'text-error' : null
+                  className={`absolute top-3 right-2 opacity-60 ${
+                    watchName.length > 128 ? 'text-error' : null
                   }`}>
-                  {watchName.length}/50
+                  {watchName.length}/128
                 </p>
               </div>
             </div>
@@ -220,32 +256,33 @@ const CreateProposal = (props: {
                 Proposal Description (2000 characters or less)
               </p>
               <div>
-                <Controller
-                  control={control}
-                  name='proposalDescription'
-                  rules={{
-                    validate: (value) =>
-                      value.length >= 10 ||
-                      'Enter at least 10 words in the description',
-                  }}
-                  render={({ field: { onChange, value } }) => (
-                    <Quill
-                      theme='snow'
-                      onChange={(description) => onChange(description)}
-                      value={value || ''}
-                      modules={modules}
-                      formats={formats}
-                    />
-                  )}
-                />
-              </div>
-              <ErrorMessage
-                errors={errors}
-                name='proposalDescription'
-                render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                {!hasProposalDeposit ? (
+                  <input className='textarea h-48' disabled></input>
+                ) : (
+                  <Controller
+                    control={control}
+                    name='proposalDescription'
+                    rules={{
+                      required: 'Required',
+                      maxLength: { value: 2000, message: 'Max length is 2000' },
+                    }}
+                    render={({ field: { onChange, value } }) => (
+                      <Quill
+                        theme='snow'
+                        onChange={(description) => onChange(description)}
+                        value={value || ''}
+                        modules={modules}
+                        formats={formats}
+                      />
+                    )}
+                  />
                 )}
-              />
+              </div>
+              {errors.proposalDescription && (
+                <p className='mt-12 ml-2 text-error'>
+                  {errors.proposalDescription.message}
+                </p>
+              )}
             </div>
             <div className='min-w-full'>
               <div className='flex items-end justify-between'>

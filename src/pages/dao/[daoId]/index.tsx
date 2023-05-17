@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 
 import DaoDashboard from '@/components/DaoDashboard';
 import Proposals from '@/components/Proposals';
+import Spinner from '@/components/Spinner';
 import WalletConnect from '@/components/WalletConnect';
 import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -114,108 +115,119 @@ const MainDaoPage = () => {
         <Image src={arrowLeft} width={13} height={7} alt='arrow-left' />
         <div>Back</div>
       </div>
-      <div className='mt-5 flex min-h-[500px] justify-between gap-x-4'>
-        <div className='container flex h-[640px] basis-1/4 flex-col items-center justify-evenly gap-y-4 py-4'>
-          <div className='flex flex-col items-center justify-center'>
-            <div>{displayImage()}</div>
-            <div className='mt-3 flex flex-col items-center md:overflow-visible'>
-              <h4
-                className={`z-10 inline-block w-[150px] truncate text-center text-lg text-base-content mix-blend-normal ${
-                  currentDao && currentDao?.daoName?.length > 20
-                    ? 'text-base'
-                    : ''
-                }`}>
-                {currentDao?.daoName}
-              </h4>
-              <p className='text-center text-accent'>{`DAO ID: ${currentDao?.daoId}`}</p>
+
+      {!currentDao || currentDao.daoId !== daoId ? (
+        <Spinner />
+      ) : (
+        <div className='mt-5 flex min-h-[500px] justify-between gap-x-4'>
+          <div className='container flex h-[640px] basis-1/4 flex-col items-center justify-evenly gap-y-4 py-4'>
+            <div className='flex flex-col items-center justify-center'>
+              <div>{displayImage()}</div>
+              <div className='mt-3 flex flex-col items-center md:overflow-visible'>
+                <h4
+                  className={`z-10 inline-block w-[150px] truncate text-center text-lg text-base-content mix-blend-normal ${
+                    currentDao && currentDao?.daoName?.length > 20
+                      ? 'text-base'
+                      : ''
+                  }`}>
+                  {currentDao?.daoName}
+                </h4>
+                <p className='text-center text-accent'>{`DAO ID: ${currentDao?.daoId}`}</p>
+              </div>
+            </div>
+            <div className='flex justify-center py-3 '>
+              {!currentWalletAccount?.address ? (
+                <WalletConnect text='Connect To View Tokens' />
+              ) : (
+                <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
+                  <div className='px-5 text-center text-sm'>
+                    {!currentWalletAccount?.address ? (
+                      <p className=''>Connect Wallet To View Tokens</p>
+                    ) : (
+                      <div className='flex flex-col'>
+                        <p>You have</p>
+                        <p>
+                          {' '}
+                          {uiTokens(
+                            daoTokenBalance,
+                            'dao',
+                            currentDao?.daoId
+                          )}{' '}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Image
+                      src={arrowRight}
+                      width={12}
+                      height={6}
+                      alt='arrow-right'
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className='w-full'>
+              <div
+                className={`${
+                  daoPage === 'dashboard' ? 'selected-tab' : 'brightness-75'
+                } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
+                onClick={() => handleChangePage('dashboard')}>
+                <Image
+                  src={dashboard}
+                  height={15}
+                  width={15}
+                  alt='dashboard'
+                  className='mr-4'
+                />
+                <p>Dashboard</p>
+              </div>
+              <div
+                className={`${
+                  daoPage === 'proposals' ? 'selected-tab' : 'brightness-75'
+                } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
+                onClick={() => handleChangePage('proposals')}>
+                <Image
+                  src={proposal}
+                  height={15}
+                  width={15}
+                  alt='dashboard'
+                  className='mr-4'
+                />
+                <p>Proposals</p>
+              </div>
+              <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
+                <Image
+                  src={about}
+                  height={15}
+                  width={15}
+                  alt='dashboard'
+                  className='mr-4'
+                />
+                <p>About</p>
+              </div>
+              <div className='flex h-[55px] py-4 px-7 brightness-75'>
+                <Image
+                  src={settings}
+                  height={15}
+                  width={15}
+                  alt='dashboard'
+                  className='mr-4'
+                />
+                <p>Settings</p>
+              </div>
             </div>
           </div>
-          <div className='flex justify-center py-3 '>
-            {!currentWalletAccount?.address ? (
-              <WalletConnect text='Connect To View Tokens' />
+          <div className='container basis-3/4 p-5'>
+            {!currentDao || currentDao.daoId !== daoId ? (
+              <Spinner />
             ) : (
-              <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
-                <div className='px-5 text-center text-sm'>
-                  {!currentWalletAccount?.address ? (
-                    <p className=''>Connect Wallet To View Tokens</p>
-                  ) : (
-                    <div className='flex flex-col'>
-                      <p>You have</p>
-                      <p>
-                        {' '}
-                        {uiTokens(
-                          daoTokenBalance,
-                          'dao',
-                          currentDao?.daoId
-                        )}{' '}
-                      </p>
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <Image
-                    src={arrowRight}
-                    width={12}
-                    height={6}
-                    alt='arrow-right'
-                  />
-                </div>
-              </div>
+              displayPage()
             )}
           </div>
-          <div className='w-full'>
-            <div
-              className={`${
-                daoPage === 'dashboard' ? 'selected-tab' : 'brightness-75'
-              } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
-              onClick={() => handleChangePage('dashboard')}>
-              <Image
-                src={dashboard}
-                height={15}
-                width={15}
-                alt='dashboard'
-                className='mr-4'
-              />
-              <p>Dashboard</p>
-            </div>
-            <div
-              className={`${
-                daoPage === 'proposals' ? 'selected-tab' : 'brightness-75'
-              } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
-              onClick={() => handleChangePage('proposals')}>
-              <Image
-                src={proposal}
-                height={15}
-                width={15}
-                alt='dashboard'
-                className='mr-4'
-              />
-              <p>Proposals</p>
-            </div>
-            <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
-              <Image
-                src={about}
-                height={15}
-                width={15}
-                alt='dashboard'
-                className='mr-4'
-              />
-              <p>About</p>
-            </div>
-            <div className='flex h-[55px] py-4 px-7 brightness-75'>
-              <Image
-                src={settings}
-                height={15}
-                width={15}
-                alt='dashboard'
-                className='mr-4'
-              />
-              <p>Settings</p>
-            </div>
-          </div>
         </div>
-        <div className='container basis-3/4 p-5'>{displayPage()}</div>
-      </div>
+      )}
     </MainLayout>
   );
 };
