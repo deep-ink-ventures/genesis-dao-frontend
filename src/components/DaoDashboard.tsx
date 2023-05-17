@@ -61,7 +61,7 @@ const DaoDashboard = () => {
             className={`${
               !currentWalletAccount ||
               daoTokenBalance?.isZero() ||
-              !daoTokenBalance?.lt(new BN(0))
+              !daoTokenBalance?.gt(new BN(0))
                 ? 'disable-link'
                 : ''
             }`}>
@@ -70,7 +70,7 @@ const DaoDashboard = () => {
               disabled={
                 !currentWalletAccount ||
                 daoTokenBalance?.isZero() ||
-                !daoTokenBalance?.lt(new BN(0))
+                !daoTokenBalance?.gt(new BN(0))
               }>
               Send Tokens
             </button>

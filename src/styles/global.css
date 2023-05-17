@@ -306,3 +306,10 @@ a {
 .description-display h1, h2 {
   @apply text-3xl
 }
+
+blockquote {
+  border-left: 4px solid #ccc;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding-left: 16px;
+}
