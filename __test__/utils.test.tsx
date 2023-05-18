@@ -2,6 +2,7 @@ import { BN } from '@polkadot/util';
 
 import {
   getMultisigAddress,
+  getProposalEndTime,
   hexToBase64,
   isValidPolkadotAddress,
   truncateMiddle,
@@ -62,5 +63,19 @@ describe('Utils', () => {
     test('correct uiTokens output', () => {
       expect(uiTokens(raw, 'dao', 'MANGO') === '200 MANGO').toBeTruthy();
     });
+  });
+});
+
+describe('getProposalEndTime', () => {
+  const curBlock = 30000;
+  const startBlock = 22000;
+  const duration = 14400;
+
+  test('getProposalEndTime should output the correct time', () => {
+    const dhm = getProposalEndTime(curBlock, startBlock, duration);
+
+    expect(dhm.d).toEqual(0);
+    expect(dhm.h).toEqual(10);
+    expect(dhm.m).toEqual(40);
   });
 });
