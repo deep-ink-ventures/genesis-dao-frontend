@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect } from 'react';
 
 import CreateDaoModal from '@/components/CreateDaoModal';
@@ -34,7 +35,7 @@ const Index = () => {
     <MainLayout
       title='GenesisDAO - DAO Platform On Polkadot'
       description='Create a DAO. No code required'>
-      <div className='flex-col'>
+      <div className='mb-20 flex-col'>
         <div className='mb-8 flex-col items-center justify-center border-b-2 border-dashed border-content-primary/50 pt-2'>
           <div className='md:my-4 md:py-5'>
             <h1 className='text-center'>
@@ -140,6 +141,13 @@ const Index = () => {
           </div>
         </div>
         <ExploreDaos />
+        <div className='flex justify-center'>
+          <Link href='/faq'>
+            <div className='text-xl underline hover:brightness-75'>
+              Genesis DAO FAQ
+            </div>
+          </Link>
+        </div>
       </div>
     </MainLayout>
   );

@@ -9,14 +9,12 @@ import Spinner from '@/components/Spinner';
 import WalletConnect from '@/components/WalletConnect';
 import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
-import about from '@/svg/about.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
 import arrowRight from '@/svg/arrow-right.svg';
 import dashboard from '@/svg/dashboard.svg';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
 import proposal from '@/svg/proposal.svg';
-import settings from '@/svg/settings.svg';
 import MainLayout from '@/templates/MainLayout';
 import { uiTokens } from '@/utils';
 
@@ -197,7 +195,7 @@ const MainDaoPage = () => {
                 />
                 <p>Proposals</p>
               </div>
-              <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
+              {/* <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
                 <Image
                   src={about}
                   height={15}
@@ -216,7 +214,7 @@ const MainDaoPage = () => {
                   className='mr-4'
                 />
                 <p>Settings</p>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className='container basis-3/4 p-5'>

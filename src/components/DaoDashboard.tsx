@@ -84,6 +84,12 @@ const DaoDashboard = () => {
             )}
         </div>
       </div>
+      <div className='flex flex-col justify-end border-t-2 border-dashed'>
+        <div className='mt-3 flex flex-col '>
+          <p className='text-neutral-focus'>{`Council's multisignature address:`}</p>
+          <p className='w-fit bg-[#403945]'>{currentDao?.daoOwnerAddress}</p>
+        </div>
+      </div>
     </div>
   );
 };
