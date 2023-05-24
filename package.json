@@ -2,6 +2,7 @@
   "name": "genesis-dao",
   "homepage": "https://github.com/deep-ink-ventures/genesis-dao-frontend",
   "private": true,
+  "license": "Apache License",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
