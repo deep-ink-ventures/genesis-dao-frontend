@@ -22,7 +22,9 @@ const Index = () => {
   const createApiConnection = useGenesisStore((s) => s.createApiConnection);
 
   const handleStartModal = () => {
-    updateIsStartModalOpen(true);
+    if (currentWalletAccount?.address) {
+      updateIsStartModalOpen(true);
+    }
   };
 
   useEffect(() => {

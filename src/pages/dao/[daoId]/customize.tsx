@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import Congratulations from '@/components/Congratulations';
 import CouncilTokens from '@/components/CouncilTokens';
 import GovernanceForm from '@/components/GovernanceForm';
+import Loading from '@/components/Loading';
 import LogoForm from '@/components/LogoForm';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
@@ -19,6 +20,7 @@ const Customize = () => {
   const router = useRouter();
   const { daoId } = router.query;
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
+  const [showPage, setShowPage] = useState(false);
 
   const handleReturnToDashboard = () => {
     router.push(`/dao/${encodeURIComponent(daoId as string)}`);
@@ -35,6 +37,12 @@ const Customize = () => {
     // eslint-disable-next-line
     return () => clearTimeout(TO);
   }, [daoId, fetchDaoFromDB, fetchDao, txnProcessing]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      return setShowPage(true);
+    }, 1000);
+  }, []);
 
   const display = () => {
     if (!currentWalletAccount?.address) {
@@ -100,7 +108,8 @@ const Customize = () => {
       title='Create a DAO - GenesisDAO'
       description='Create a DAO - GenesisDAO'>
       <div className='container mx-auto mt-5 min-w-[600px] max-w-[820px] px-12 py-5'>
-        {display()}
+        {showPage && display()}
+        {!showPage && <Loading />}
       </div>
     </MainLayout>
   );
