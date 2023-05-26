@@ -626,12 +626,8 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         `${SERVICE_URL}/asset-holdings/?asset_id=${assetId}&owner_id=${accountId}`
       );
       const daoAsset = await response.json();
-      if (daoAsset?.results[0]?.balance) {
-        const daoTokenBalance = new BN(daoAsset?.results[0]?.balance);
-        set({ daoTokenBalance });
-      } else {
-        set({ daoTokenBalance: new BN(0) });
-      }
+      const daoTokenBalance = new BN(daoAsset?.results[0]?.balance || 0);
+      set({ daoTokenBalance });
     } catch (err) {
       get().handleErrors(err);
     }
