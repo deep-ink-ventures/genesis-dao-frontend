@@ -21,7 +21,7 @@ const Proposal = () => {
     'In Favor' | 'Against' | null
   >(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
+  const [isStatusRefreshing, setIsStatusRefreshing] = useState(false);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentDao = useGenesisStore((s) => s.currentDao);
@@ -37,6 +37,8 @@ const Proposal = () => {
   const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
   const updateBlockNumber = useGenesisStore((s) => s.updateBlockNumber);
   // const updateCurrentProposal = useGenesisStore((s) => s.updateCurrentProposal);
+  const { makeVoteTxn, sendBatchTxns, makeFinalizeProposalTxn } =
+    useGenesisDao();
 
   const dhmMemo = useMemo(() => {
     return p?.birthBlock && currentBlockNumber && currentDao?.proposalDuration
@@ -77,8 +79,6 @@ const Proposal = () => {
     }
     return false;
   }, [p, currentDao, currentBlockNumber]);
-
-  const { makeVoteTxn, sendBatchTxns } = useGenesisDao();
 
   const updateIsStartModalOpen = useGenesisStore(
     (s) => s.updateIsStartModalOpen
@@ -127,6 +127,28 @@ const Proposal = () => {
     } else if (e.target.textContent === 'Against') {
       setVoteSelection('Against');
     }
+  };
+
+  const handleFinalize = () => {
+    if (!p?.proposalId) {
+      return;
+    }
+    const txn = makeFinalizeProposalTxn([], p?.proposalId);
+
+    sendBatchTxns(
+      txn,
+      'Finalized Proposal Successfully',
+      'Transaction Failed',
+      () => {
+        setIsStatusRefreshing(true);
+        setTimeout(() => {
+          fetchOneProposalDB(daoId as string, propId as string);
+        }, 6000);
+        setTimeout(() => {
+          setIsStatusRefreshing(false);
+        }, 6500);
+      }
+    );
   };
 
   useEffect(() => {
@@ -236,12 +258,16 @@ const Proposal = () => {
                       <p>Ended </p>
                     </div>
                   )}
-                  <div
-                    className={`rounded-lg ${
-                      !p?.status ? '' : statusColors[`${p?.status}`]
-                    } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
-                    {p?.status}
-                  </div>
+                  {isStatusRefreshing ? (
+                    <Spinner size='20' />
+                  ) : (
+                    <div
+                      className={`rounded-lg ${
+                        !p?.status ? '' : statusColors[`${p?.status}`]
+                      } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
+                      {p?.status}
+                    </div>
+                  )}
                 </div>
               </div>
               <div>
@@ -267,6 +293,9 @@ const Proposal = () => {
           {p?.status === ProposalStatus.Active && !proposalIsRunning ? (
             <div className='container flex min-h-[100px] flex-col items-center justify-center p-4 text-center'>
               <p>Please finalize proposal to update its status</p>
+              <button className='btn-primary btn my-3' onClick={handleFinalize}>
+                Finalize
+              </button>
             </div>
           ) : null}
 
@@ -390,9 +419,7 @@ const Proposal = () => {
               goals and priorities, you can report the proposal as faulty and
               council members will investigate this proposal`}
               </p>
-              <button className='btn-disabled btn'>
-                Report This Proposal As Faulty
-              </button>
+              <button className='btn'>Report This Proposal As Faulty</button>
             </div>
           ) : null}
         </div>

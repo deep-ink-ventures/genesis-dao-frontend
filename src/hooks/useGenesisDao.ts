@@ -630,11 +630,11 @@ const useGenesisDao = () => {
     return [...txns, apiConnection?.tx?.votes?.vote?.(proposalId, inFavor)];
   };
 
-  const finalizeProposalTxn = (txns: any[], proposalId: string) => {
+  const makeFinalizeProposalTxn = (txns: any[], proposalId: string) => {
     return [...txns, apiConnection?.tx?.votes?.finalizeProposal?.(proposalId)];
   };
 
-  const faultProposalTxn = (
+  const makeFaultProposalTxn = (
     txns: any[],
     proposalId: string,
     reason: string
@@ -788,8 +788,8 @@ const useGenesisDao = () => {
     makeChangeOwnerTxn,
     makeCreateProposalTxn,
     makeVoteTxn,
-    finalizeProposalTxn,
-    faultProposalTxn,
+    makeFinalizeProposalTxn,
+    makeFaultProposalTxn,
     markImplementedTxn,
     makeSetProposalMetadataTxn,
     doChallenge,
