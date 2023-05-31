@@ -1,4 +1,5 @@
 import Modal from 'antd/lib/modal';
+import { v4 as uuidv4 } from 'uuid';
 
 import useGenesisStore from '@/stores/genesisStore';
 
@@ -33,9 +34,9 @@ const FaultyReportsModal = (props: { proposalId: string }) => {
               </tr>
             </thead>
             <tbody>
-              {reports?.map((report, i) => {
+              {reports?.map((report) => {
                 return (
-                  <tr key={report.reason + i + Date.now()}>
+                  <tr key={uuidv4()}>
                     <th>{report.reason}</th>
                   </tr>
                 );

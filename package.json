@@ -44,6 +44,7 @@
     "react-hook-form": "^7.42.1",
     "react-html-parser": "^2.0.2",
     "react-quill": "^2.0.0",
+    "uuid": "^9.0.0",
     "zustand": "^4.3.2"
   },
   "devDependencies": {
@@ -62,6 +63,7 @@
     "@types/react-draft-wysiwyg": "^1.13.4",
     "@types/react-html-parser": "^2.0.2",
     "@types/retry": "^0.12.2",
+    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.47.1",
     "@typescript-eslint/parser": "^5.47.1",
     "autoprefixer": "^10.4.13",
