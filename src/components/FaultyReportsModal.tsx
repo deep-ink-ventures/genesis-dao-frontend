@@ -33,9 +33,9 @@ const FaultyReportsModal = (props: { proposalId: string }) => {
               </tr>
             </thead>
             <tbody>
-              {reports?.map((report) => {
+              {reports?.map((report, i) => {
                 return (
-                  <tr key={report.reason + Math.random().toString()}>
+                  <tr key={report.reason + i + Date.now()}>
                     <th>{report.reason}</th>
                   </tr>
                 );
