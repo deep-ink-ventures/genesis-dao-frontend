@@ -19,20 +19,33 @@ import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
 // fixme open one connection and reuse that connection
 const useGenesisDao = () => {
   const router = useRouter();
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const apiConnection = useGenesisStore((s) => s.apiConnection);
-  const addTxnNotification = useGenesisStore((s) => s.addTxnNotification);
-  const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
-  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
-  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
-  const handleErrors = useGenesisStore((s) => s.handleErrors);
-  const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
-  const updateIsStartModalOpen = useGenesisStore(
-    (s) => s.updateIsStartModalOpen
-  );
-  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
-  const updateProposalValue = useGenesisStore((s) => s.updateProposalValues);
-
+  const [
+    currentWalletAccount,
+    apiConnection,
+    addTxnNotification,
+    updateTxnProcessing,
+    fetchDaoFromDB,
+    fetchDaos,
+    handleErrors,
+    updateCreateDaoSteps,
+    updateIsStartModalOpen,
+    updateDaoPage,
+    updateProposalValue,
+    updateIsFaultyModalOpen,
+  ] = useGenesisStore((s) => [
+    s.currentWalletAccount,
+    s.apiConnection,
+    s.addTxnNotification,
+    s.updateTxnProcessing,
+    s.fetchDaoFromDB,
+    s.fetchDaos,
+    s.handleErrors,
+    s.updateCreateDaoSteps,
+    s.updateIsStartModalOpen,
+    s.updateDaoPage,
+    s.updateProposalValues,
+    s.updateIsFaultyModalOpen,
+  ]);
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
     let newNoti = {
@@ -630,11 +643,11 @@ const useGenesisDao = () => {
     return [...txns, apiConnection?.tx?.votes?.vote?.(proposalId, inFavor)];
   };
 
-  const finalizeProposalTxn = (txns: any[], proposalId: string) => {
+  const makeFinalizeProposalTxn = (txns: any[], proposalId: string) => {
     return [...txns, apiConnection?.tx?.votes?.finalizeProposal?.(proposalId)];
   };
 
-  const faultProposalTxn = (
+  const makeFaultProposalTxn = (
     txns: any[],
     proposalId: string,
     reason: string
@@ -769,6 +782,64 @@ const useGenesisDao = () => {
       });
   };
 
+  const reportFaultyProposal = async (
+    daoId: string,
+    proposalId: string,
+    reason: string
+  ) => {
+    updateTxnProcessing(true);
+
+    try {
+      const jsonData = JSON.stringify({
+        proposal_id: proposalId,
+        reason,
+      });
+      const sig = await doChallenge(daoId);
+      if (!sig) {
+        handleErrors('Verification Challenge failed');
+        return;
+      }
+
+      const faultyProposalResponse = await fetch(
+        `${SERVICE_URL}/proposals/${proposalId}/report-faulted/`,
+        {
+          method: 'POST',
+          body: jsonData,
+          headers: {
+            'Content-Type': 'application/json',
+            Signature: sig,
+          },
+        }
+      );
+
+      const res = await faultyProposalResponse.json();
+      if (!res?.reason) {
+        handleErrors('Not able to report faulty proposal');
+        return;
+      }
+      updateIsFaultyModalOpen(false);
+      updateTxnProcessing(false);
+      const successNoti = {
+        title: `${TxnResponse.Success}`,
+        message: 'Your faulty proposal report has been submitted. Thank you!',
+        type: TxnResponse.Success,
+        timestamp: Date.now(),
+      };
+      addTxnNotification(successNoti);
+    } catch (err) {
+      handleErrors(err);
+      updateIsFaultyModalOpen(false);
+      updateTxnProcessing(false);
+      const errNoti = {
+        title: `${TxnResponse.Error}`,
+        message: 'There was an issue submitted the report. Please try again. ',
+        type: TxnResponse.Error,
+        timestamp: Date.now(),
+      };
+      addTxnNotification(errNoti);
+    }
+  };
+
   return {
     createDao,
     destroyDao,
@@ -788,13 +859,14 @@ const useGenesisDao = () => {
     makeChangeOwnerTxn,
     makeCreateProposalTxn,
     makeVoteTxn,
-    finalizeProposalTxn,
-    faultProposalTxn,
+    makeFinalizeProposalTxn,
+    makeFaultProposalTxn,
     markImplementedTxn,
     makeSetProposalMetadataTxn,
     doChallenge,
     createAProposal,
     setProposalMetadata,
+    reportFaultyProposal,
   };
 };
 

@@ -129,6 +129,9 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
             {props.p.status === 'Active' && proposalIsRunning ? (
               <button className='btn-primary btn w-28'>Vote</button>
             ) : null}
+            {props.p.status === 'Active' && !proposalIsRunning ? (
+              <button className='btn-primary btn w-28'>Finalize</button>
+            ) : null}
           </div>
         </div>
       </div>

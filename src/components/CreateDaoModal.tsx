@@ -194,7 +194,7 @@ const CreateDaoModal = () => {
                       )}
                     />
                     <p
-                      className={`absolute top-2 right-2 opacity-60 ${
+                      className={`absolute top-3 right-2 opacity-60 ${
                         watchName.length > 32 ? 'text-error' : null
                       }`}>
                       {watchName.length}/32
@@ -242,7 +242,7 @@ const CreateDaoModal = () => {
                       )}
                     />
                     <p
-                      className={`absolute top-2 right-2 opacity-60 ${
+                      className={`absolute top-3 right-2 opacity-60 ${
                         watchId.length > 8 ? 'text-error' : null
                       }`}>
                       {watchId.length}/8

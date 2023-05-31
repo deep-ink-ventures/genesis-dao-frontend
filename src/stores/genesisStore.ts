@@ -8,6 +8,11 @@ import { NODE_URL, SERVICE_URL } from '@/config';
 
 // ALL TYPES and INTERFACES...
 
+export interface FaultyReport {
+  proposalId: string;
+  reason: string;
+}
+
 export interface ProposalCreationValues {
   title: string;
   description: string;
@@ -283,6 +288,7 @@ export interface GenesisState {
   currentDao: DaoDetail | null;
   currentProposals: ProposalDetail[] | null;
   currentProposal: ProposalDetail | null;
+  currentProposalFaultyReports: FaultyReport[] | null;
   currentBlockNumber: number | null;
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
@@ -306,6 +312,8 @@ export interface GenesisState {
   proposalValues: ProposalCreationValues | null;
   daoPage: DaoPage;
   inFavorVotes: BN;
+  isFaultyModalOpen: boolean;
+  isFaultyReportsOpen: boolean;
 }
 
 export interface GenesisActions {
@@ -325,6 +333,7 @@ export interface GenesisActions {
   fetchDaoTokenBalanceFromDB: (assetId: number, accountId: string) => void;
   fetchProposalsFromDB: (daoId: string) => void;
   fetchOneProposalDB: (daoId: string, proposalId: string) => void;
+  fetchProposalFaultyReports: (proposalId: string) => void;
   updateCurrentWalletAccount: (
     currentWalletAccount: WalletAccount | undefined
   ) => void;
@@ -353,6 +362,8 @@ export interface GenesisActions {
   updateBlockNumber: (currentBlockNumber: number) => void;
   updateProposalValues: (proposalValues: ProposalCreationValues | null) => void;
   updateDaoPage: (daoPage: DaoPage) => void;
+  updateIsFaultyModalOpen: (isFaultyModalOpen: boolean) => void;
+  updateIsFaultyReportsOpen: (isFaultyReportsOpen: boolean) => void;
 }
 
 export interface GenesisStore extends GenesisState, GenesisActions {}
@@ -389,6 +400,9 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
   daoPage: 'dashboard',
   currentProposals: null,
   inFavorVotes: new BN(0),
+  isFaultyModalOpen: false,
+  currentProposalFaultyReports: null,
+  isFaultyReportsOpen: false,
   createApiConnection: async () => {
     const { rpcEndpoint } = get();
     const createApi = async (): Promise<ApiPromise> => {
@@ -420,7 +434,7 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       timestamp: Date.now(),
     };
     // eslint-disable-next-line
-    console.error(err)
+    // console.error(err)
     set({ txnProcessing: false });
     get().addTxnNotification(newNoti);
   },
@@ -718,6 +732,32 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
       get().handleErrors(err);
     }
   },
+  fetchProposalFaultyReports: async (proposalId) => {
+    try {
+      const response = await fetch(
+        `${SERVICE_URL}/proposals/${proposalId}/reports/`
+      );
+
+      const reportsRes = await response.json();
+
+      if (!reportsRes || reportsRes.length < 1) {
+        return;
+      }
+
+      const reports = reportsRes?.map(
+        (item: { proposal_id: string; reason: string }) => {
+          return {
+            proposalId: item.proposal_id,
+            reason: item.reason,
+          };
+        }
+      );
+
+      set({ currentProposalFaultyReports: reports });
+    } catch (err) {
+      get().handleErrors(err);
+    }
+  },
 
   updateDaosOwnedByWallet: async () => {
     await get().fetchDaos();
@@ -771,6 +811,10 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
     set(() => ({ currentBlockNumber })),
   updateProposalValues: (proposalValues) => set(() => ({ proposalValues })),
   updateDaoPage: (daoPage) => set(() => ({ daoPage })),
+  updateIsFaultyModalOpen: (isFaultyModalOpen) =>
+    set(() => ({ isFaultyModalOpen })),
+  updateIsFaultyReportsOpen: (isFaultyReportsOpen) =>
+    set({ isFaultyReportsOpen }),
 }));
 
 export default useGenesisStore;
