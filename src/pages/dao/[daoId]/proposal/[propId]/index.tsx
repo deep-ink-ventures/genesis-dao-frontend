@@ -4,12 +4,15 @@ import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 
+import FaultyModal from '@/components/FaultyModal';
+import FaultyReportsModal from '@/components/FaultyReportsModal';
 import { statusColors } from '@/components/ProposalCard';
 import Spinner from '@/components/Spinner';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore, { ProposalStatus } from '@/stores/genesisStore';
+import alert from '@/svg/alert.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
 import MainLayout from '@/templates/MainLayout';
 import { getProposalEndTime, uiTokens } from '@/utils';
@@ -22,20 +25,43 @@ const Proposal = () => {
   >(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isStatusRefreshing, setIsStatusRefreshing] = useState(false);
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
-  const currentDao = useGenesisStore((s) => s.currentDao);
-  const p = useGenesisStore((s) => s.currentProposal);
-  const currentBlockNumber = useGenesisStore((s) => s.currentBlockNumber);
-  const apiConnection = useGenesisStore((s) => s.apiConnection);
-  const createApiConnection = useGenesisStore((s) => s.createApiConnection);
-  const fetchOneProposalDB = useGenesisStore((s) => s.fetchOneProposalDB);
-  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
-  const fetchDaoTokenBalanceFromDB = useGenesisStore(
-    (s) => s.fetchDaoTokenBalanceFromDB
-  );
-  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
-  const updateBlockNumber = useGenesisStore((s) => s.updateBlockNumber);
+  const [
+    currentWalletAccount,
+    daoTokenBalance,
+    currentDao,
+    p,
+    currentBlockNumber,
+    apiConnection,
+    isFaultyModalOpen,
+    currentProposalFaultyReports,
+    createApiConnection,
+    fetchOneProposalDB,
+    fetchDaoFromDB,
+    fetchDaoTokenBalanceFromDB,
+    updateDaoPage,
+    updateBlockNumber,
+    updateIsFaultyModalOpen,
+    fetchProposalFaultyReports,
+    updateIsFaultyReportsOpen,
+  ] = useGenesisStore((s) => [
+    s.currentWalletAccount,
+    s.daoTokenBalance,
+    s.currentDao,
+    s.currentProposal,
+    s.currentBlockNumber,
+    s.apiConnection,
+    s.isFaultyModalOpen,
+    s.currentProposalFaultyReports,
+    s.createApiConnection,
+    s.fetchOneProposalDB,
+    s.fetchDaoFromDB,
+    s.fetchDaoTokenBalanceFromDB,
+    s.updateDaoPage,
+    s.updateBlockNumber,
+    s.updateIsFaultyModalOpen,
+    s.fetchProposalFaultyReports,
+    s.updateIsFaultyReportsOpen,
+  ]);
   // const updateCurrentProposal = useGenesisStore((s) => s.updateCurrentProposal);
   const { makeVoteTxn, sendBatchTxns, makeFinalizeProposalTxn } =
     useGenesisDao();
@@ -156,11 +182,18 @@ const Proposal = () => {
       const timer = setTimeout(() => {
         fetchOneProposalDB(daoId as string, propId as string);
         fetchDaoFromDB(daoId as string);
+        fetchProposalFaultyReports(propId as string);
         // eslint-disable-next-line
         return () => clearTimeout(timer);
       }, 200);
     }
-  }, [daoId, propId, fetchOneProposalDB, fetchDaoFromDB]);
+  }, [
+    daoId,
+    propId,
+    fetchOneProposalDB,
+    fetchDaoFromDB,
+    fetchProposalFaultyReports,
+  ]);
 
   useEffect(() => {
     if (currentDao?.daoAssetId && currentWalletAccount) {
@@ -290,6 +323,36 @@ const Proposal = () => {
           )}
         </div>
         <div className='flex min-h-[640px] min-w-[300px] basis-1/4 flex-col items-center gap-y-4'>
+          {currentProposalFaultyReports &&
+          currentProposalFaultyReports?.length > 0 ? (
+            <div className='container flex min-h-[100px] flex-col items-center justify-center p-3 text-center'>
+              <div className='mb-4 flex items-center'>
+                <div className='mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-warning'>
+                  <Image src={alert} height={24} width={24} alt='alert' />
+                </div>
+                <div className='w-[200px] text-left text-sm'>
+                  This proposal has been reported as faulty by one or more DAO
+                  members
+                </div>
+              </div>
+              {currentWalletAccount &&
+              (currentDao?.daoCreatorAddress === currentWalletAccount.address ||
+                currentDao?.daoOwnerAddress ===
+                  currentWalletAccount.address) ? (
+                <div>
+                  <button
+                    className='btn-primary btn mb-2'
+                    onClick={() => {
+                      updateIsFaultyReportsOpen(true);
+                    }}>
+                    See Reports
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+          <FaultyReportsModal proposalId={propId as string} />
+
           {p?.status === ProposalStatus.Active && !proposalIsRunning ? (
             <div className='container flex min-h-[100px] flex-col items-center justify-center p-4 text-center'>
               <p>Please finalize proposal to update its status</p>
@@ -410,7 +473,6 @@ const Proposal = () => {
               </div>
             )}
           </div>
-
           {p?.status === 'Active' ? (
             <div className='container flex min-w-[250px] flex-col items-center gap-y-3 p-4'>
               <p className='text-xl'>Report</p>
@@ -419,9 +481,16 @@ const Proposal = () => {
               goals and priorities, you can report the proposal as faulty and
               council members will investigate this proposal`}
               </p>
-              <button className='btn'>Report This Proposal As Faulty</button>
+              <button
+                className={`btn ${!currentWalletAccount ? 'btn-disabled' : ''}`}
+                onClick={() => {
+                  updateIsFaultyModalOpen(!isFaultyModalOpen);
+                }}>
+                Report This Proposal As Faulty
+              </button>
             </div>
           ) : null}
+          <FaultyModal propId={propId as string} daoId={daoId as string} />
         </div>
       </div>
     </MainLayout>
