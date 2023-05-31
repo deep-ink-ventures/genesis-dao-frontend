@@ -481,13 +481,23 @@ const Proposal = () => {
               goals and priorities, you can report the proposal as faulty and
               council members will investigate this proposal`}
               </p>
-              <button
-                className={`btn ${!currentWalletAccount ? 'btn-disabled' : ''}`}
-                onClick={() => {
-                  updateIsFaultyModalOpen(!isFaultyModalOpen);
-                }}>
-                Report This Proposal As Faulty
-              </button>
+              {currentProposalFaultyReports &&
+              currentProposalFaultyReports?.length >= 3 ? (
+                <div className='rounded-xl bg-base-50 p-4 text-center text-sm'>
+                  Faulty reports maximum has been reached. Council members will
+                  review this proposal shortly.
+                </div>
+              ) : (
+                <button
+                  className={`btn ${
+                    !currentWalletAccount ? 'btn-disabled' : ''
+                  }`}
+                  onClick={() => {
+                    updateIsFaultyModalOpen(!isFaultyModalOpen);
+                  }}>
+                  Report This Proposal As Faulty
+                </button>
+              )}
             </div>
           ) : null}
           <FaultyModal propId={propId as string} daoId={daoId as string} />

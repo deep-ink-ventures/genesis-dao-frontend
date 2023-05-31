@@ -813,8 +813,12 @@ const useGenesisDao = () => {
       );
 
       const res = await faultyProposalResponse.json();
+      if (res?.reason?.detail?.includes('report maximum has already been')) {
+        handleErrors(res.reason.detail);
+      }
+
       if (!res?.reason) {
-        handleErrors('Not able to report faulty proposal');
+        handleErrors(`Not able to report faulty proposal: ${res?.detail}`);
         return;
       }
       updateIsFaultyModalOpen(false);
