@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import useGenesisStore from '@/stores/genesisStore';
 
 import NotificationToast from './NotificationToast';
@@ -8,11 +10,11 @@ const TransactionNotification = () => {
   return (
     <div className='flex justify-center'>
       <div className='fixed top-[20px] z-[1000]'>
-        {txnNotifications.map((noti, i) => {
+        {txnNotifications.map((noti) => {
           // we can use timestamp as stable keys here because they don't change once stored
           return (
             <NotificationToast
-              key={noti.timestamp.toString() + noti.message + i.toString()}
+              key={uuidv4()}
               type={noti.type}
               title={noti.title}
               message={noti.message}

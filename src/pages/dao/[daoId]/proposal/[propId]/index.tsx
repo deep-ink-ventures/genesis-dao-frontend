@@ -34,6 +34,7 @@ const Proposal = () => {
     apiConnection,
     isFaultyModalOpen,
     currentProposalFaultyReports,
+    txnProcessing,
     createApiConnection,
     fetchOneProposalDB,
     fetchDaoFromDB,
@@ -52,6 +53,7 @@ const Proposal = () => {
     s.apiConnection,
     s.isFaultyModalOpen,
     s.currentProposalFaultyReports,
+    s.txnProcessing,
     s.createApiConnection,
     s.fetchOneProposalDB,
     s.fetchDaoFromDB,
@@ -356,7 +358,11 @@ const Proposal = () => {
           {p?.status === ProposalStatus.Active && !proposalIsRunning ? (
             <div className='container flex min-h-[100px] flex-col items-center justify-center p-4 text-center'>
               <p>Please finalize proposal to update its status</p>
-              <button className='btn-primary btn my-3' onClick={handleFinalize}>
+              <button
+                className={`btn-primary btn my-3 ${
+                  txnProcessing ? 'loading' : ''
+                } ${currentWalletAccount ? '' : 'btn-disabled'}`}
+                onClick={handleFinalize}>
                 Finalize
               </button>
             </div>
