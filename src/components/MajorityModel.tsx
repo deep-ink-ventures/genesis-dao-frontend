@@ -192,7 +192,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
               <span className='text-lg font-medium text-red-600'>*</span>
             </h4>
             <p className='mb-2 ml-1 text-sm'>
-              Number of days the proposal will be up for voting.
+              Number of (5 minutes) the proposal will be up for voting.
             </p>
             <div className='relative w-[175px] flex-col'>
               <input
