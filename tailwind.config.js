@@ -36,7 +36,7 @@ module.exports = {
     },
   },
   // add daisyUI plugin
-  // disable esline because it will give Error: Unexpected require()
+  // disable eslint because it will give Error: Unexpected require()
   /* eslint-disable */
   plugins: [require('daisyui')],
 

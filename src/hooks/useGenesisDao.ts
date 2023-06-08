@@ -770,7 +770,7 @@ const useGenesisDao = () => {
               proposalSuccess = true;
               setTimeout(() => {
                 setProposalMetadata(daoId, proposalId, proposalValues);
-              }, 2500);
+              }, 3000);
               proposalId = data[2]?.toHuman() as string;
             }
           });

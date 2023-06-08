@@ -141,7 +141,6 @@ const CreateProposal = (props: {
         </div>
       );
     }
-    // fixme needs to get proposal token deposit amount
     if (hasProposalDeposit) {
       return (
         <div className='alert alert-info shadow-lg'>
