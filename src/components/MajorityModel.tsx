@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import { DAO_UNITS } from '@/config';
+import { DAO_UNITS, VOTING_DURATION_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { MajorityModelValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -48,7 +48,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
       data.tokensToIssue
     );
 
-    const blocks = data.votingDays * 14400;
+    const blocks = data.votingDays * VOTING_DURATION_UNITS;
 
     const withMajorityVoteTxn = makeMajorityVoteTxn(
       withIssueTokensTxn,
