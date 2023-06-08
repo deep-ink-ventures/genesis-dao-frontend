@@ -7,4 +7,4 @@ export const SERVICE_URL: Readonly<string> =
 export const NATIVE_UNITS: Readonly<number> = 10000000000; // same as polkadot 10 decimals
 export const DAO_UNITS: Readonly<number> = 10000000000;
 export const BLOCK_TIME: Readonly<number> = 6; // seconds
-export const VOTING_DURATION_UNITS: Readonly<number> = 50; // 14400 blocks in a day 
+export const VOTING_DURATION_UNITS: Readonly<number> = 50; // 14400 blocks in a day
