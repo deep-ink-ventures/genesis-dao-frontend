@@ -99,7 +99,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
                 className={`h-7 bg-[#403945]`}
                 style={{ width: `${inFavorPercentageMemo.toString()}%` }}>
                 <div className='absolute p-1 text-sm'>
-                  In Favor ({' '}
+                  In Favor (
                   {props.p?.inFavor
                     ? props.p.inFavor.div(new BN(DAO_UNITS)).toString()
                     : new BN(0).toString()}

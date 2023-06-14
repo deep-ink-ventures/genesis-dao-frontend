@@ -133,7 +133,7 @@ const MainDaoPage = () => {
                 <p className='text-center text-accent'>{`DAO ID: ${currentDao?.daoId}`}</p>
               </div>
             </div>
-            <div className='flex justify-center py-3 '>
+            <div className='flex justify-center py-3'>
               {!currentWalletAccount?.address ? (
                 <WalletConnect text='Connect To View Tokens' />
               ) : (
