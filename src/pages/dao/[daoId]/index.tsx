@@ -21,18 +21,7 @@ import { uiTokens } from '@/utils';
 const MainDaoPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
-  const daoPage = useGenesisStore((s) => s.daoPage);
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const currentDao = useGenesisStore((s) => s.currentDao);
-  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
-  const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
-  const fetchDao = useGenesisStore((s) => s.fetchDao);
-  const fetchDaoTokenBalanceFromDB = useGenesisStore(
-    (s) => s.fetchDaoTokenBalanceFromDB
-  );
-  const updateDaoTokenBalance = useGenesisStore((s) => s.updateDaoTokenBalance);
-
-  const updateDaoPage = useGenesisStore((s) => s.updateDaoPage);
+  const [ txnProcessing, daoPage,currentWalletAccount, currentDao, daoTokenBalance, fetchDaoFromDB, fetchDao, fetchDaoTokenBalanceFromDB, updateDaoTokenBalance, updateDaoPage ] = useGenesisStore((s) => [s.txnProcessing, s.daoPage, s.currentWalletAccount, s.currentDao, s.daoTokenBalance, s.fetchDaoFromDB, s.fetchDao, s.fetchDaoTokenBalanceFromDB, s.updateDaoTokenBalance, s.updateDaoPage])
 
   const handleChangePage = (pageParam: DaoPage) => {
     updateDaoPage(pageParam);
@@ -135,13 +124,10 @@ const MainDaoPage = () => {
             </div>
             <div className='flex justify-center py-3'>
               {!currentWalletAccount?.address ? (
-                <WalletConnect text='Connect To View Tokens' />
+                <WalletConnect text='Connect to view tokens'/>
               ) : (
                 <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
                   <div className='px-5 text-center text-sm'>
-                    {!currentWalletAccount?.address ? (
-                      <p className=''>Connect Wallet To View Tokens</p>
-                    ) : (
                       <div className='flex flex-col'>
                         <p>You have</p>
                         <p>
@@ -153,7 +139,6 @@ const MainDaoPage = () => {
                           )}{' '}
                         </p>
                       </div>
-                    )}
                   </div>
                   <div>
                     <Image

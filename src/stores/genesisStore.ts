@@ -677,22 +677,27 @@ const useGenesisStore = create<GenesisStore>()((set, get) => ({
         `${SERVICE_URL}/proposals/?dao_id=${daoId}&limit=50`
       );
       const json = await response.json();
-      const newProposals = json.results.map((p: IncomingProposal) => {
-        return {
-          proposalId: p.id,
-          daoId: p.dao_id,
-          creator: p.creator_id,
-          birthBlock: p.birth_block_number,
-          metadataUrl: p.metadata_url || null,
-          metadataHash: p.metadata_hash || null,
-          status: proposalStatusNames[p.status as keyof ProposalStatusNames],
-          inFavor: new BN(p.votes?.pro || 0),
-          against: new BN(p.votes?.contra || 0),
-          proposalName: p.metadata?.title || null,
-          description: p.metadata?.description || null,
-          link: p.metadata?.url || null,
-        };
-      });
+      const newProposals = json.results
+        .filter((p: IncomingProposal) => {
+          return !!p.metadata_url === true;
+        })
+        .map((p: IncomingProposal) => {
+          return {
+            proposalId: p.id,
+            daoId: p.dao_id,
+            creator: p.creator_id,
+            birthBlock: p.birth_block_number,
+            metadataUrl: p.metadata_url || null,
+            metadataHash: p.metadata_hash || null,
+            status: proposalStatusNames[p.status as keyof ProposalStatusNames],
+            inFavor: new BN(p.votes?.pro || 0),
+            against: new BN(p.votes?.contra || 0),
+            proposalName: p.metadata?.title || null,
+            description: p.metadata?.description || null,
+            link: p.metadata?.url || null,
+          };
+        });
+
       set({ currentProposals: newProposals });
       set({ currentBlockNumber: Number(response.headers.get('block-number')) });
     } catch (err) {
