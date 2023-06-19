@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import TransferForm from '@/components/TransferForm';
 import useGenesisStore from '@/stores/genesisStore';
@@ -7,7 +8,18 @@ import MainLayout from '@/templates/MainLayout';
 const Tokens = () => {
   const router = useRouter();
   const { daoId } = router.query;
-  const currentDao = useGenesisStore((s) => s.currentDao);
+  const [currentDao, fetchDaoFromDB] = useGenesisStore((s) => [
+    s.currentDao,
+    s.fetchDaoFromDB,
+  ]);
+
+  useEffect(() => {
+    if (!daoId) {
+      return;
+    }
+    fetchDaoFromDB(daoId as string);
+  }, [daoId, fetchDaoFromDB]);
+
   if (!currentDao) {
     <MainLayout title='Tokens page for DAOS' description='Tokens page for DAOS'>
       <div>something is wrong</div>

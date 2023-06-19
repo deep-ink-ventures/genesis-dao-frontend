@@ -211,7 +211,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                   <p className='mt-1 ml-2 text-error'>{message}</p>
                 )}
               />
-              <div className='absolute top-3 left-[7.4em] opacity-70'>Days</div>
+              <div className='absolute top-3 left-[7.4em] opacity-70'>5min</div>
             </div>
           </div>
         </div>

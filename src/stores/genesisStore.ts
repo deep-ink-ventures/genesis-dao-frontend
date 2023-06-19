@@ -220,7 +220,7 @@ export interface AssetDetails {
 export interface TransferFormValues {
   assetId: number;
   toAddress: string;
-  amount: BN;
+  amount: number;
 }
 
 export interface TxnNotification {

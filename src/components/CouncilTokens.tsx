@@ -270,6 +270,11 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
+                  max: {
+                    value: remain.toNumber(),
+                    message: 'Not enough tokens',
+                  },
+                  validate: { onRemainingTokens: () => remain.gt(new BN(0)) },
                   setValueAs: (tokens) => {
                     const bnTokens = new BN(tokens);
                     return bnTokens.mul(new BN(DAO_UNITS));
@@ -282,6 +287,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 render={({ message }) => (
                   <p className='mt-1 ml-2 text-error'>{message}</p>
                 )}
+                // {errors?.tokenRecipients?.[index]?.tokens && <p>error</p>}
               />
             </div>
             <div className='flex w-[65px] items-center justify-center pt-5'>

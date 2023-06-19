@@ -5,7 +5,7 @@ import { stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
 import { DAO_UNITS, SERVICE_URL } from '@/config';
-import { hexToBase64, uiTokens } from '@/utils';
+import { hexToBase64 } from '@/utils';
 
 import type {
   AssetDetails,
@@ -32,6 +32,7 @@ const useGenesisDao = () => {
     updateDaoPage,
     updateProposalValue,
     updateIsFaultyModalOpen,
+    fetchDaoTokenBalance,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.apiConnection,
@@ -45,6 +46,7 @@ const useGenesisDao = () => {
     s.updateDaoPage,
     s.updateProposalValues,
     s.updateIsFaultyModalOpen,
+    s.fetchDaoTokenBalance,
   ]);
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -194,7 +196,7 @@ const useGenesisDao = () => {
                   updateIsStartModalOpen(false);
                   fetchDaos();
                   router.push(`/dao/${daoId}/customize`);
-                });
+                }, 3000);
               }
             );
           }
@@ -469,8 +471,13 @@ const useGenesisDao = () => {
           (result) => {
             txResponseCallback(
               result,
-              `Transferred ${uiTokens(amount, 'dao')}`,
-              'Something went wrong. Please try again. '
+              `Transferred Successfully`,
+              'Something went wrong. Please try again. ',
+              () => {
+                setTimeout(() => {
+                  fetchDaoTokenBalance(assetId, walletAccount.address);
+                }, 2000);
+              }
             );
           }
         )

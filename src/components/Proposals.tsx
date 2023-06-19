@@ -31,7 +31,7 @@ const Proposals = (props: { daoId: string }) => {
 
   const displayProposal = () => {
     if (!filteredProposals || filteredProposals?.length === 0) {
-      return <div>Sorry no proposals found</div>;
+      return <div>Sorry, no proposals found</div>;
     }
 
     if (props.daoId !== filteredProposals[0]?.daoId) {

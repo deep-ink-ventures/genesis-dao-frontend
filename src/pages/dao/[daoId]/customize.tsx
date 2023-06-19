@@ -56,7 +56,7 @@ const Customize = () => {
       );
     }
     if (
-      currentWalletAccount.address !== currentDaoFromChain?.daoOwnerAddress &&
+      currentWalletAccount.address !== currentDao?.daoOwnerAddress &&
       !showCongrats
     ) {
       return (
