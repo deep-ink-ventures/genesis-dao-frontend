@@ -54,6 +54,17 @@ const WalletConnect = (props: WalletConnectProps) => {
     }
   };
 
+  const displayButtonText = () => {
+    if (txnProcessing || modalIsOpen) {
+      return 'Processing';
+    }
+
+    if (!currentWalletAccount) {
+      return props.text;
+    }
+    return `${truncateMiddle(currentWalletAccount?.address, 5, 4)}`;
+  };
+
   return (
     <div>
       <div className='relative flex flex-col'>
@@ -77,11 +88,7 @@ const WalletConnect = (props: WalletConnectProps) => {
               <Image src={wallet} alt='wallet' height='15' width='15'></Image>
             </div>
           )}
-          <span className='align-middle'>
-            {!currentWalletAccount
-              ? props.text
-              : `${truncateMiddle(currentWalletAccount?.address, 5, 4)}`}
-          </span>
+          <span className='align-middle'>{displayButtonText()}</span>
           {currentWalletAccount ? (
             <span className='ml-2'>
               <svg

@@ -20,8 +20,10 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
   const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const fetchDaoTokenBalance = useGenesisStore((s) => s.fetchDaoTokenBalance);
+  const fetchDaoTokenBalanceFromDB = useGenesisStore(
+    (s) => s.fetchDaoTokenBalanceFromDB
+  );
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
-
   const {
     register,
     handleSubmit,
@@ -33,6 +35,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
   const onSubmit: SubmitHandler<TransferFormValues> = async (
     data: TransferFormValues
   ) => {
+    const bnAmount = new BN(data.amount * DAO_UNITS);
     updateTxnProcessing(true);
     if (currentWalletAccount) {
       try {
@@ -40,7 +43,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
           currentWalletAccount,
           props.assetId,
           data.toAddress,
-          data.amount
+          bnAmount
         );
       } catch (err) {
         handleErrors(new Error(err));
@@ -65,7 +68,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
         {
           assetId: props.assetId,
           toAddress: '',
-          amount: new BN(0),
+          amount: 0,
         },
         { keepErrors: true }
       );
@@ -75,8 +78,14 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
   useEffect(() => {
     if (currentWalletAccount) {
       fetchDaoTokenBalance(props.assetId, currentWalletAccount.address);
+      fetchDaoTokenBalanceFromDB(props.assetId, currentWalletAccount.address);
     }
-  });
+  }, [
+    currentWalletAccount,
+    fetchDaoTokenBalance,
+    fetchDaoTokenBalanceFromDB,
+    props.assetId,
+  ]);
 
   return (
     <div>
@@ -121,8 +130,9 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
                 value: 0.000001,
                 message: 'The Amount is zero or too small',
               },
-              setValueAs: (tokens) => {
-                return new BN(tokens * DAO_UNITS);
+              max: {
+                value: daoTokenBalance?.toNumber() || 0,
+                message: 'You do not have enough',
               },
             })}
           />
