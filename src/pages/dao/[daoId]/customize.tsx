@@ -41,7 +41,7 @@ const Customize = () => {
   useEffect(() => {
     setTimeout(() => {
       return setShowPage(true);
-    }, 1000);
+    }, 1500);
   }, []);
 
   const display = () => {
@@ -64,6 +64,10 @@ const Customize = () => {
           <div className='flex flex-col items-center'>
             <p className='my-2'>
               Sorry, you are not the admin of {currentDao?.daoName}
+            </p>
+            <p className='my-2'>
+              If you have recently created a new DAO. Please check back in a few
+              moments.
             </p>
             <button
               className='btn-primary btn'

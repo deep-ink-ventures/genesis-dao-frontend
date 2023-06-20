@@ -25,7 +25,6 @@ const useGenesisDao = () => {
     addTxnNotification,
     updateTxnProcessing,
     fetchDaoFromDB,
-    fetchDaos,
     handleErrors,
     updateCreateDaoSteps,
     updateIsStartModalOpen,
@@ -39,7 +38,6 @@ const useGenesisDao = () => {
     s.addTxnNotification,
     s.updateTxnProcessing,
     s.fetchDaoFromDB,
-    s.fetchDaos,
     s.handleErrors,
     s.updateCreateDaoSteps,
     s.updateIsStartModalOpen,
@@ -139,6 +137,14 @@ const useGenesisDao = () => {
             }
           }
 
+          if (method === 'DaoCreated') {
+            setTimeout(() => {
+              successCB?.();
+              updateTxnProcessing(false);
+            }, 4000);
+            return;
+          }
+
           if (method === 'ExtrinsicSuccess') {
             const successNoti = {
               title: `${TxnResponse.Success}`,
@@ -148,9 +154,12 @@ const useGenesisDao = () => {
               timestamp: Date.now(),
             };
             // add txn to our store - first index
-            addTxnNotification(successNoti);
-            successCB?.();
-            updateTxnProcessing(false);
+            setTimeout(() => {
+              addTxnNotification(successNoti);
+              successCB?.();
+              updateTxnProcessing(false);
+            }, 3000);
+
             return;
           }
 
@@ -194,9 +203,8 @@ const useGenesisDao = () => {
                   fetchDaoFromDB(daoId as string);
                   updateCreateDaoSteps(1);
                   updateIsStartModalOpen(false);
-                  fetchDaos();
                   router.push(`/dao/${daoId}/customize`);
-                }, 3000);
+                }, 1000);
               }
             );
           }

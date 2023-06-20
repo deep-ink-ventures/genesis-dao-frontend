@@ -73,6 +73,7 @@ const NotificationToast = (props: ToastProps) => {
   const removeTxnNotification = useGenesisStore((s) => s.removeTxnNotification);
   const handleClose = () => {
     setShow(false);
+    removeTxnNotification();
   };
 
   const makeExplorerLink = (hash: string) => {
@@ -85,9 +86,9 @@ const NotificationToast = (props: ToastProps) => {
   // make noti disappear after x seconds
   useEffect(() => {
     const timeId = setTimeout(() => {
-      setShow(!show);
+      setShow(false);
       removeTxnNotification();
-    }, 8000);
+    }, 6000);
 
     return () => {
       clearTimeout(timeId);
