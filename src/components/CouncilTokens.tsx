@@ -270,10 +270,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
-                  max: {
-                    value: remain.toNumber(),
-                    message: 'Not enough tokens',
-                  },
                   validate: { onRemainingTokens: () => remain.gt(new BN(0)) },
                   setValueAs: (tokens) => {
                     const bnTokens = new BN(tokens);

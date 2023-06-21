@@ -130,10 +130,6 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
                 value: 0.000001,
                 message: 'The Amount is zero or too small',
               },
-              max: {
-                value: daoTokenBalance?.toNumber() || 0,
-                message: 'You do not have enough',
-              },
             })}
           />
           <ErrorMessage
