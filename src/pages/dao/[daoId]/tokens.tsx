@@ -32,7 +32,7 @@ const Tokens = () => {
         title='Tokens page for DAOS'
         description='Tokens page for DAOS'>
         <div className='mt-2 flex justify-center'>
-          <h2>Please Issues Tokens first</h2>
+          <h2>Please issue tokens first</h2>
         </div>
       </MainLayout>
     );
