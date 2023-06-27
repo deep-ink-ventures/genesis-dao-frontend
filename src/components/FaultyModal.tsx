@@ -124,7 +124,7 @@ const FaultyModal = (props: { propId: string; daoId: string }) => {
                   {...register('description', {
                     required: 'Required',
                     min: { value: 1, message: 'Too short' },
-                    max: {
+                    maxLength: {
                       value: 1000,
                       message: 'Max character count is 1000',
                     },
