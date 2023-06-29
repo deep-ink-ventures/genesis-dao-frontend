@@ -10,6 +10,7 @@ const Congratulations = (props: { daoId: string | null }) => {
   const daos = useGenesisStore((s) => s.daos);
   const updateCreateDaoSteps = useGenesisStore((s) => s.updateCreateDaoSteps);
   const updateShowCongrats = useGenesisStore((s) => s.updateShowCongrats);
+  const fetchDaos = useGenesisStore((s) => s.fetchDaos);
 
   const dao = daos?.[props.daoId as string];
 
@@ -18,6 +19,7 @@ const Congratulations = (props: { daoId: string | null }) => {
   };
 
   useEffect(() => {
+    fetchDaos();
     const timer = setTimeout(() => {
       updateCreateDaoSteps(1);
       router.push(`/dao/${props.daoId}`);
