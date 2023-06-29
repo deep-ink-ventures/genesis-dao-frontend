@@ -245,7 +245,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 <input
                   type='text'
                   placeholder='Wallet Address'
-                  className='input-primary input text-xs'
+                  className='input-primary input'
                   {...register(`tokenRecipients.${index}.walletAddress`, {
                     required: 'Required',
                     validate: (add) =>
@@ -319,9 +319,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const membersFields = () => {
     return councilMembersFields.map((item, index) => {
       return (
-        <div className='flex px-4' key={item.id} data-k={item.id}>
-          <div className='flex'>
-            <div className='mr-3 flex flex-col'>
+        <div className='flex w-full px-4' key={item.id} data-k={item.id}>
+          <div className='flex w-full'>
+            <div className='mr-3 flex w-1/4 shrink-0 flex-col'>
               <p className='pl-8'>Name</p>
               <div className='flex '>
                 <div className='mr-4 flex flex-col justify-center'>
@@ -346,12 +346,12 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 )}
               />
             </div>
-            <div className='w-[370px] flex-col'>
+            <div className='flex flex-auto flex-col'>
               <p className='ml-1'>Wallet Address</p>
               <input
                 type='text'
                 placeholder='Wallet Address'
-                className='input-primary input text-xs'
+                className='input-primary input'
                 {...register(`councilMembers.${index}.walletAddress`, {
                   required: 'Required',
                   validate: (add) =>
@@ -420,8 +420,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               account
             </p>
           </div>
-          <div className='flex px-4'>
-            <div className='mr-3 flex flex-col'>
+          <div className='flex w-full px-4'>
+            <div className='mr-3 flex w-1/4 flex-col'>
               <p className='pl-8'>Your Name</p>
               <div className='flex'>
                 <div className='mr-4 flex flex-col justify-center'>1</div>
@@ -444,10 +444,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 )}
               />
             </div>
-            <div className='flex-col'>
+            <div className='flex flex-auto flex-col'>
               <p className='ml-1 opacity-40'>Wallet Address</p>
               <input type='text' hidden {...register('creatorWallet')} />
-              <div className='flex h-12 w-[400px] items-center rounded-[10px] border-[0.3px] bg-base-50 px-2 opacity-40'>
+              <div className='flex h-12 items-center rounded-[10px] border-[0.3px] bg-base-50 px-2 opacity-40'>
                 {truncateMiddle(currentWalletAccount?.address)}
               </div>
             </div>
