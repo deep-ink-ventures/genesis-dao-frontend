@@ -8,6 +8,7 @@ import FaultyModal from '@/components/FaultyModal';
 import FaultyReportsModal from '@/components/FaultyReportsModal';
 import { statusColors } from '@/components/ProposalCard';
 import Spinner from '@/components/Spinner';
+import Tooltip from '@/components/Tooltip';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
@@ -240,9 +241,13 @@ const Proposal = () => {
     }
 
     return (
-      <button className='btn-primary btn min-w-[250px]' onClick={handleVote}>
-        Vote
-      </button>
+      <Tooltip
+        placement='top'
+        content={`Please note, that creating a proposal requires a one-time deposit of ${currentDao?.proposalTokenDeposit} tokens`}>
+        <button className='btn-primary btn min-w-[250px]' onClick={handleVote}>
+          Vote
+        </button>
+      </Tooltip>
     );
   };
 
