@@ -25,7 +25,7 @@ describe('ProposalCard', () => {
 
     render(<ProposalCard p={proposal} />);
 
-    const proposalName = screen.getByText(/proposal/);
+    const proposalName = screen.getByText(/This is a proposal/);
     expect(proposalName).toBeInTheDocument();
 
     const proposalId = screen.getByText(/1/);
