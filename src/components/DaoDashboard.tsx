@@ -1,57 +1,73 @@
 import { BN } from '@polkadot/util';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 
 import type { BadgeVariant } from '@/components/Badge';
 import Badge from '@/components/Badge';
 import DestroyDao from '@/components/DestroyDao';
 import StatusCard from '@/components/StatusCard';
-import useGenesisStore from '@/stores/genesisStore';
+import { ProposalsService } from '@/services/proposals';
+import type { ProposalDetail } from '@/stores/genesisStore';
+import useGenesisStore, { ProposalStatus } from '@/stores/genesisStore';
 import TrendingUp from '@/svg/trending-up.svg';
-
-type ProposalStatus = 'running' | 'rejected' | 'pending' | 'finished';
+import { getProposalEndTime } from '@/utils';
 
 const ProposalStatusBadgeMap: Record<ProposalStatus, BadgeVariant> = {
-  running: 'none',
-  rejected: 'danger',
-  pending: 'warning',
-  finished: 'success',
+  Active: 'none',
+  Counting: 'warning',
+  Accepted: 'success',
+  Rejected: 'danger',
+  Faulty: 'danger',
 };
 
-const ProposalRow = ({
-  title,
-  time,
-  status = 'running',
-}: {
-  title?: string;
-  time?: { d: number; h: number; m: number };
-  status?: ProposalStatus;
-}) => {
+const ProposalRow = ({ proposal }: { proposal: ProposalDetail }) => {
+  const currentDao = useGenesisStore((s) => s.currentDao);
+  const currentBlockNumber = useGenesisStore((s) => s.currentBlockNumber);
+
+  const dhmMemo = useMemo(() => {
+    return proposal?.birthBlock &&
+      currentBlockNumber &&
+      currentDao?.proposalDuration
+      ? getProposalEndTime(
+          currentBlockNumber,
+          proposal?.birthBlock,
+          currentDao?.proposalDuration
+        )
+      : { d: 0, h: 0, m: 0 };
+  }, [proposal, currentBlockNumber, currentDao?.proposalDuration]);
+
   return (
     <div className='flex min-w-0 items-center gap-4'>
-      <p className='truncate'>{title}</p>
+      <p className='truncate'>{proposal.proposalName}</p>
       <div className='ml-auto flex items-center text-xs'>
-        <div className='mr-4 flex items-center gap-2'>
-          Ends
-          <div className='flex gap-2'>
-            <div className='flex h-6 items-center bg-base-card px-2'>
-              {time?.d}d
-            </div>
-            :
-            <div className='flex h-6 items-center bg-base-card px-2'>
-              {time?.h}h
-            </div>
-            :
-            <div className='flex h-6 items-center bg-base-card px-2'>
-              {time?.m}m
+        {proposal.status === ProposalStatus.Active && (
+          <div className='mr-4 flex items-center gap-2'>
+            Ends
+            <div className='flex gap-2'>
+              <div className='flex h-6 items-center bg-base-card px-2'>
+                {dhmMemo?.d}d
+              </div>
+              :
+              <div className='flex h-6 items-center bg-base-card px-2'>
+                {dhmMemo?.h}h
+              </div>
+              :
+              <div className='flex h-6 items-center bg-base-card px-2'>
+                {dhmMemo?.m}m
+              </div>
             </div>
           </div>
+        )}
+        <div className='w-16'>
+          {proposal.status != null && (
+            <Badge
+              variant={ProposalStatusBadgeMap[proposal.status]}
+              className='ml-auto w-fit text-xs capitalize'>
+              {proposal.status}
+            </Badge>
+          )}
         </div>
-        <Badge
-          variant={ProposalStatusBadgeMap[status]}
-          className='text-xs capitalize'>
-          {status}
-        </Badge>
       </div>
     </div>
   );
@@ -61,6 +77,22 @@ const DaoDashboard = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
+
+  const [latestProposals, setLatestProposals] = useState<
+    ProposalDetail[] | null
+  >();
+
+  useEffect(() => {
+    if (currentDao?.daoId) {
+      ProposalsService.listProposals({
+        daoId: currentDao.daoId,
+        limit: 5,
+        orderBy: '-id',
+      }).then((result) => {
+        setLatestProposals(result.mappedData);
+      });
+    }
+  }, [currentDao?.daoId]);
 
   return (
     <>
@@ -175,24 +207,20 @@ const DaoDashboard = () => {
             }
           />
         </div>
-        <div className='container min-w-0 space-y-2 p-8'>
-          <div className='flex'>
+        <div className='container min-w-0 p-8'>
+          <div className='mb-8 flex'>
             <span className='text-sm font-bold uppercase'>
               Latest Proposals
             </span>
             <span className='ml-auto font-medium'>See All</span>
           </div>
           <div className='space-y-4'>
-            {Array(5)
-              .fill(null)
-              .map((i, index) => (
-                <ProposalRow
-                  key={index}
-                  title='Proposal Title Lorem ipsum dolor sit amet Proposal Title Lorem ipsum
-                dolor sit ame...'
-                  status='finished'
-                />
-              ))}
+            {latestProposals?.map((proposal, index) => (
+              <ProposalRow
+                key={`${index}-${proposal.proposalId}`}
+                proposal={proposal}
+              />
+            ))}
           </div>
         </div>
       </div>

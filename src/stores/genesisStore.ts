@@ -28,11 +28,11 @@ export enum ProposalStatus {
   Faulty = 'Faulty',
 }
 
-type ProposalStatusNames = {
+export type ProposalStatusNames = {
   [key: string]: ProposalStatus;
 };
 
-const proposalStatusNames: ProposalStatusNames = {
+export const proposalStatusNames: ProposalStatusNames = {
   RUNNING: ProposalStatus.Active,
   PENDING: ProposalStatus.Counting,
   REJECTED: ProposalStatus.Rejected,
