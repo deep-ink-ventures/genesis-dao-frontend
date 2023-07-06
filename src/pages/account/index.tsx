@@ -54,7 +54,7 @@ const AccountPage = () => {
   };
 
   return (
-    <MainLayout title={`Account'`} description={`Account`}>
+    <MainLayout title={`Account`} description={`Account`}>
       <div
         className='mt-5 flex w-[65px] items-center justify-between hover:cursor-pointer hover:underline'
         onClick={handleBack}>
