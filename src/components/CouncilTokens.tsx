@@ -281,7 +281,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 errors={errors}
                 name={`tokenRecipients.${index}.tokens`}
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
                 // {errors?.tokenRecipients?.[index]?.tokens && <p>error</p>}
               />
@@ -363,7 +363,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 errors={errors}
                 name={`councilMembers.${index}.walletAddress`}
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
             </div>
@@ -493,7 +493,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               errors={errors}
               name='councilThreshold'
               render={({ message }) => (
-                <p className='mt-1 ml-2 text-error'>{message}</p>
+                <p className='ml-2 mt-1 text-error'>{message}</p>
               )}
             />
           </div>

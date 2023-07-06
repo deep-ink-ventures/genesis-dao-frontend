@@ -283,7 +283,7 @@ export interface AllDaos {
 }
 
 export interface GenesisState {
-  currentWalletAccount: WalletAccount | undefined;
+  currentWalletAccount: WalletAccount | null;
   currentAssetId: number | null;
   currentDao: DaoDetail | null;
   currentProposals: ProposalDetail[] | null;
@@ -294,7 +294,7 @@ export interface GenesisState {
   daoTokenBalance: BN | null;
   currentDaoFromChain: BasicDaoInfo | null;
   daosFromDB: DaoDetail[] | null;
-  walletAccounts: WalletAccount[] | undefined;
+  walletAccounts: WalletAccount[] | null;
   walletConnected: boolean;
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
@@ -321,7 +321,6 @@ export interface GenesisActions {
   handleErrors: (err: Error | string) => void;
   removeTxnNotification: () => void;
   addTxnNotification: (notification: TxnNotification) => void;
-
   fetchDaos: () => void;
   fetchDaosFromDB: () => void;
   fetchDao: (daoId: string) => void;
@@ -335,9 +334,9 @@ export interface GenesisActions {
   fetchOneProposalDB: (daoId: string, proposalId: string) => void;
   fetchProposalFaultyReports: (proposalId: string) => void;
   updateCurrentWalletAccount: (
-    currentWalletAccount: WalletAccount | undefined
+    currentWalletAccount: WalletAccount | null
   ) => void;
-  updateWalletAccounts: (walletAccounts: WalletAccount[] | undefined) => void;
+  updateWalletAccounts: (walletAccounts: WalletAccount[] | null) => void;
   updateWalletConnected: (walletConnected: boolean) => void;
   updateCreateDaoData: (createDaoData: CreateDaoData) => void;
   updateRpcEndpoint: (rpcEndPoint: string) => void;
@@ -371,9 +370,9 @@ export interface GenesisStore extends GenesisState, GenesisActions {}
 // STORE...
 
 const useGenesisStore = create<GenesisStore>()((set, get) => ({
-  currentWalletAccount: undefined,
+  currentWalletAccount: null,
   currentProposal: null,
-  walletAccounts: undefined,
+  walletAccounts: null,
   walletConnected: false,
   createDaoData: null,
   rpcEndpoint: NODE_URL,

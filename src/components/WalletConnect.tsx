@@ -19,16 +19,13 @@ const WalletConnect = (props: WalletConnectProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
-  const walletConnected = useGenesisStore((s) => s.walletConnected);
   const updateCurrentWalletAccount = useGenesisStore(
     (s) => s.updateCurrentWalletAccount
   );
   const updateWalletConnected = useGenesisStore((s) => s.updateWalletConnected);
-  const updateDaosOwnedByWallet = useGenesisStore(
-    (s) => s.updateDaosOwnedByWallet
-  );
+  const updateWalletAccounts = useGenesisStore((s) => s.updateWalletAccounts);
 
-  const handleOpen = () => {
+  const handleDropdownOpen = () => {
     if (!currentWalletAccount) {
       setDropdownOpen(false);
       return;
@@ -37,7 +34,7 @@ const WalletConnect = (props: WalletConnectProps) => {
   };
 
   const handleDisconnect = () => {
-    updateCurrentWalletAccount(undefined);
+    updateCurrentWalletAccount(null);
     updateWalletConnected(false);
     setDropdownOpen(false);
   };
@@ -48,10 +45,20 @@ const WalletConnect = (props: WalletConnectProps) => {
 
   const handleUpdateAccounts = (accounts: WalletAccount[] | undefined) => {
     if (accounts && accounts?.length > 0) {
-      updateCurrentWalletAccount(accounts[0]);
-      updateWalletConnected(true);
-      updateDaosOwnedByWallet();
+      // we all store all accounts. This can be useful for users to send tokens to their own accounts
+      updateWalletAccounts(accounts);
     }
+  };
+
+  const handleUpdateAccount = (account: WalletAccount | undefined) => {
+    if (account) {
+      updateCurrentWalletAccount(account);
+    }
+  };
+
+  const handleSwitchAccount = () => {
+    handleModal();
+    setDropdownOpen(false);
   };
 
   const displayButtonText = () => {
@@ -78,7 +85,7 @@ const WalletConnect = (props: WalletConnectProps) => {
             ${modalIsOpen && 'loading'} 
             ${txnProcessing && 'loading'}
             `}
-          onClick={!walletConnected ? handleModal : handleOpen}>
+          onClick={!currentWalletAccount ? handleModal : handleDropdownOpen}>
           {currentWalletAccount ? (
             <div className='mr-2'>
               <Image src={avatar} alt='avatar' height='18' width='18'></Image>
@@ -108,7 +115,14 @@ const WalletConnect = (props: WalletConnectProps) => {
         <div
           className={`${
             !dropdownOpen ? 'hidden' : ''
-          } btn-secondary btn absolute top-[50px] left-[12px] m-2 w-[160px] text-center`}
+          } btn-secondary btn absolute left-[12px] top-[50px] m-2 w-[160px] text-center`}
+          onClick={handleSwitchAccount}>
+          Switch Account
+        </div>
+        <div
+          className={`${
+            !dropdownOpen ? 'hidden' : ''
+          } btn-secondary btn absolute left-[12px] top-[100px] m-2 w-[160px] text-center`}
           onClick={handleDisconnect}>
           Disconnect
         </div>
@@ -117,7 +131,7 @@ const WalletConnect = (props: WalletConnectProps) => {
       <WalletSelect
         dappName='genesis'
         open={modalIsOpen}
-        showAccountsList={false}
+        showAccountsList={true}
         header={<h3>Select a wallet to connect</h3>}
         onWalletConnectOpen={() => {
           setModalIsOpen(true);
@@ -128,6 +142,9 @@ const WalletConnect = (props: WalletConnectProps) => {
         }}
         onUpdatedAccounts={(accounts) => {
           handleUpdateAccounts(accounts as WalletAccount[]);
+        }}
+        onAccountSelected={(account) => {
+          handleUpdateAccount(account as WalletAccount);
         }}
         onError={(error) => {
           if (error) {

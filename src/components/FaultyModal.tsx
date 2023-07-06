@@ -134,7 +134,7 @@ const FaultyModal = (props: { propId: string; daoId: string }) => {
                   errors={errors}
                   name='description'
                   render={({ message }) => (
-                    <p className='mt-1 ml-2 text-error'>{message}</p>
+                    <p className='ml-2 mt-1 text-error'>{message}</p>
                   )}
                 />
               </div>

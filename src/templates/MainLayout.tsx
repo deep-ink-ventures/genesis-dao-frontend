@@ -56,7 +56,7 @@ const MainLayout = (props: IMainProps) => (
         </div>
       </div>
       <div
-        className={`absolute top-[-15px] left-[18%] z-[-100] mx-auto hidden h-[60%] w-[64%] bg-[url('../../public/images/background-texture.png')] mix-blend-screen md:block`}></div>
+        className={`absolute left-[18%] top-[-15px] z-[-100] mx-auto hidden h-[60%] w-[64%] bg-[url('../../public/images/background-texture.png')] mix-blend-screen md:block`}></div>
       <div className='blur0'></div>
       <div className='blur1'></div>
       <div className='blur2'></div>

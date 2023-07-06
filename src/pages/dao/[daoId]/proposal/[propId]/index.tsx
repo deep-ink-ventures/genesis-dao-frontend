@@ -299,7 +299,7 @@ const Proposal = () => {
                     <div
                       className={`rounded-lg ${
                         !p?.status ? '' : statusColors[`${p?.status}`]
-                      } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
+                      } h-7 rounded-3xl px-3 py-1 text-center text-sm`}>
                       {p?.status}
                     </div>
                   )}

@@ -77,28 +77,28 @@ const Index = () => {
             </div>
             <div>
               <ul className='relative ml-16 border-l text-left'>
-                <li className='ml-5 mb-6'>
+                <li className='mb-6 ml-5'>
                   <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
                     <Image src={justice} height={28} width={28} alt='justice' />
                   </span>
                   <p className='ml-4 pt-1 text-xs'>Step 1</p>
                   <p className='ml-4'>Find or create a DAO</p>
                 </li>
-                <li className='ml-5 mb-6'>
+                <li className='mb-6 ml-5'>
                   <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
                     <Image src={scale} height={28} width={28} alt='justice' />
                   </span>
                   <p className='ml-4 pt-1 text-xs'>Step 2</p>
                   <p className='ml-4'>Create or vote on Proposals</p>
                 </li>
-                <li className='ml-5 mb-6'>
+                <li className='mb-6 ml-5'>
                   <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
                     <Image src={sticker} height={25} width={25} alt='justice' />
                   </span>
                   <p className='ml-4 pt-1 text-xs'>Step 3</p>
                   <p className='ml-4'>Monitor and maintain the goals</p>
                 </li>
-                <li className='ml-5 mb-6'>
+                <li className='mb-6 ml-5'>
                   <span className='absolute -left-6 flex h-12 w-12 items-center justify-center rounded-full border bg-white'>
                     <Image
                       src={handAndBalls}
