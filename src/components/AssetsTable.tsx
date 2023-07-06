@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import coinsTransfer from '@/svg/coinsTransfer.svg';
 import mountain from '@/svg/mountain.svg';
-import openLink from '@/svg/openLink.svg';
+import openLink from '@/svg/openlink.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
 
 const AssetsTable = () => {
