@@ -1,7 +1,9 @@
+/* eslint-disable no-param-reassign */
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
 import { BN } from '@polkadot/util';
 import type { Wallet } from '@talismn/connect-wallets';
+import { produce } from 'immer';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
@@ -315,6 +317,18 @@ export interface GenesisState {
   inFavorVotes: BN;
   isFaultyModalOpen: boolean;
   isFaultyReportsOpen: boolean;
+  pages: {
+    account: {
+      assets: {
+        loading: boolean;
+        data: any[];
+      };
+      tabs: {
+        activeTab?: string;
+        setActiveTab: (tab: string) => void;
+      };
+    };
+  };
 }
 
 export interface GenesisActions {
@@ -831,6 +845,22 @@ const useGenesisStore = create<GenesisStore>()(
       set(() => ({ isFaultyModalOpen })),
     updateIsFaultyReportsOpen: (isFaultyReportsOpen) =>
       set({ isFaultyReportsOpen }),
+    pages: {
+      account: {
+        assets: {
+          loading: false,
+          data: [],
+        },
+        tabs: {
+          setActiveTab: (tab) =>
+            set(
+              produce((state: GenesisState) => {
+                state.pages.account.tabs.activeTab = tab;
+              })
+            ),
+        },
+      },
+    },
   }))
 );
 
