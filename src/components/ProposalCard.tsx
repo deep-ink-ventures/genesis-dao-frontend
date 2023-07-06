@@ -1,6 +1,7 @@
 import { BN } from '@polkadot/util';
 import { useMemo } from 'react';
 
+import Tooltip from '@/components/Tooltip';
 import { DAO_UNITS } from '@/config';
 import type { ProposalDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -127,7 +128,11 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
           </div>
           <div>
             {props.p.status === 'Active' && proposalIsRunning ? (
-              <button className='btn-primary btn w-28'>Vote</button>
+              <Tooltip
+                placement='top'
+                content={`Please note, that creating a proposal requires a one-time deposit of ${currentDao?.proposalTokenDeposit} tokens`}>
+                <button className='btn-primary btn w-28'>Vote</button>
+              </Tooltip>
             ) : null}
             {props.p.status === 'Active' && !proposalIsRunning ? (
               <button className='btn-primary btn w-28'>Finalize</button>

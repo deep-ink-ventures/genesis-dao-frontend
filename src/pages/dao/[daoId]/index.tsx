@@ -222,7 +222,7 @@ const MainDaoPage = () => {
               </div> */}
             </div>
           </div>
-          <div className='container basis-3/4 p-5'>
+          <div className='min-w-0 basis-3/4 p-5 pt-0'>
             {!currentDao || currentDao.daoId !== daoId ? (
               <Spinner />
             ) : (
