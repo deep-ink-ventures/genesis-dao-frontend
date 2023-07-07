@@ -101,7 +101,7 @@ const AccountPage = () => {
                 !account.tabs.activeTab || account.tabs.activeTab === 'assets'
                   ? 'selected-tab'
                   : 'brightness-75'
-              } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
+              } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
               onClick={() => handleChangePage('assets')}>
               <Image
                 src={coins}
