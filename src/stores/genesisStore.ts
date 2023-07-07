@@ -8,6 +8,9 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 import { NODE_URL, SERVICE_URL } from '@/config';
+import { type Asset, AssetsHoldingsService } from '@/services/assets';
+import type { Dao } from '@/services/daos';
+import { DaoService } from '@/services/daos';
 
 // ALL TYPES and INTERFACES...
 
@@ -321,7 +324,8 @@ export interface GenesisState {
     account: {
       assets: {
         loading: boolean;
-        data: any[];
+        data: Array<Asset & { dao?: Dao }>;
+        fetchAssets: () => void;
       };
       tabs: {
         activeTab?: string;
@@ -849,6 +853,42 @@ const useGenesisStore = create<GenesisStore>()(
         assets: {
           loading: false,
           data: [],
+          fetchAssets: () => {
+            set(
+              produce((state: GenesisState) => {
+                state.pages.account.assets.loading = true;
+              })
+            );
+            AssetsHoldingsService.listAssets({
+              owner_id: get().currentWalletAccount?.address,
+            })
+              .then(async (response) => {
+                let newData: Array<Asset & { dao?: Dao }> = [];
+                if (response.results?.length) {
+                  const daoDetails = await Promise.all(
+                    response.results.map((asset) =>
+                      DaoService.get(asset.dao_id)
+                    )
+                  );
+                  newData = response.results.map((asset) => ({
+                    ...asset,
+                    dao: daoDetails.find((dao) => dao.asset_id === asset.id),
+                  }));
+                }
+                set(
+                  produce((state: GenesisState) => {
+                    state.pages.account.assets.data = newData;
+                  })
+                );
+              })
+              .finally(() => {
+                set(
+                  produce((state: GenesisState) => {
+                    state.pages.account.assets.loading = false;
+                  })
+                );
+              });
+          },
         },
         tabs: {
           setActiveTab: (tab) =>
