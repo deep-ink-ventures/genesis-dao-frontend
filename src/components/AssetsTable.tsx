@@ -17,7 +17,6 @@ const AssetsHoldingsTable = ({
   assetHoldings?: Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>;
   currentWallet?: string;
 }) => {
-
   const displayImage = (image?: string, alt?: string) => {
     if (!image) {
       return (
