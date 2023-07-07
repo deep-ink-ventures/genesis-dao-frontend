@@ -1,19 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import type { Asset, AssetHolding } from '@/services/assets';
+import { AssetsHoldingsService } from '@/services/assets';
+import type { Dao } from '@/services/daos';
 import useGenesisStore from '@/stores/genesisStore';
 
-import AssetsTable from './AssetsTable';
+import AssetsHoldingsTable from './AssetsTable';
 
 const Assets = () => {
-  const [currentWalletAccount] = useGenesisStore((s) => [
+  const [currentWalletAccount, account] = useGenesisStore((s) => [
     s.currentWalletAccount,
+    s.pages.account,
   ]);
 
   const [, setSearchTerm] = useState('');
+  const [assetHoldings, setAssetHoldings] = useState<
+    Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>
+  >([]);
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
+
+  useEffect(() => {
+    if (account.assets.data) {
+      AssetsHoldingsService.listAssetHoldings().then((res) => {
+        setAssetHoldings(
+          res.results.map((assetHolding) => ({
+            ...assetHolding,
+            asset: account.assets.data.find(
+              (asset) => asset.id === assetHolding.asset_id
+            ),
+          }))
+        );
+      });
+    }
+  }, [account.assets.data]);
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -62,7 +84,12 @@ const Assets = () => {
             Connect to view Assets
           </div>
         )}
-        {currentWalletAccount && <AssetsTable />}
+        {currentWalletAccount && (
+          <AssetsHoldingsTable
+            assetHoldings={assetHoldings}
+            currentWallet={currentWalletAccount?.address}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import cn from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import Assets from '@/components/Assets';
 import WalletConnect from '@/components/WalletConnect';
@@ -52,6 +53,11 @@ const AccountPage = () => {
   const handleBack = () => {
     router.push(`/#explorer`);
   };
+
+  useEffect(() => {
+    account.assets.fetchAssets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentWalletAccount]);
 
   return (
     <MainLayout title={`Account`} description={`Account`}>
