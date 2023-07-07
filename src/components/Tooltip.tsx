@@ -23,7 +23,7 @@ const Tooltip = ({ content, placement, children }: TooltipProps) => {
     <div className='group relative inline-block'>
       <div className='group'>{children}</div>
       <div
-        className={`absolute z-10 hidden w-full rounded-xl bg-base-50 py-1 px-2 text-sm text-white group-hover:block ${getPlacementStyles()}`}>
+        className={`absolute z-10 hidden w-full rounded-xl bg-base-50 px-2 py-1 text-sm text-white group-hover:block ${getPlacementStyles()}`}>
         {content}
       </div>
     </div>

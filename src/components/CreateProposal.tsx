@@ -239,11 +239,11 @@ const CreateProposal = (props: {
                   errors={errors}
                   name='proposalName'
                   render={({ message }) => (
-                    <p className='mt-1 ml-2 text-error'>{message}</p>
+                    <p className='ml-2 mt-1 text-error'>{message}</p>
                   )}
                 />
                 <p
-                  className={`absolute top-3 right-2 opacity-60 ${
+                  className={`absolute right-2 top-3 opacity-60 ${
                     watchName.length > 128 ? 'text-error' : null
                   }`}>
                   {watchName.length}/128
@@ -278,7 +278,7 @@ const CreateProposal = (props: {
                 )}
               </div>
               {errors.proposalDescription && (
-                <p className='mt-12 ml-2 text-error'>
+                <p className='ml-2 mt-12 text-error'>
                   {errors.proposalDescription.message}
                 </p>
               )}
@@ -318,7 +318,7 @@ const CreateProposal = (props: {
                 errors={errors}
                 name='discussionLink'
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
             </div>

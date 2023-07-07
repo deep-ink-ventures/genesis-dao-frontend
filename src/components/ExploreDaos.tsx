@@ -40,7 +40,7 @@ const ExploreDaos = () => {
 
   return (
     <div
-      className='container mb-6 flex min-h-[600px] flex-col py-5 px-6'
+      className='container mb-6 flex min-h-[600px] flex-col px-6 py-5'
       id='explorer'>
       <div className='mb-5 flex h-16 flex-col items-center justify-center px-2 md:mb-0 md:flex-row md:justify-between'>
         <div className='my-3 flex items-center md:mb-0'>

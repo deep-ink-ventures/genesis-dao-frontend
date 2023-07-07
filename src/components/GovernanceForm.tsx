@@ -47,7 +47,7 @@ const GovernanceForm = (props: { daoId: string | null }) => {
           Majority Vote
         </div>
         <div className='relative'>
-          <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
+          <div className='absolute left-[80px] top-[-8px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
             Coming Soon!
           </div>
           <div className='card flex h-[110px] w-[170px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'>
@@ -55,7 +55,7 @@ const GovernanceForm = (props: { daoId: string | null }) => {
           </div>
         </div>
         <div className='relative'>
-          <div className='absolute top-[-8px] left-[80px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
+          <div className='absolute left-[80px] top-[-8px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
             Coming Soon!
           </div>
           <div className='card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'>

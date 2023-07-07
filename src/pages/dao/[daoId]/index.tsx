@@ -175,7 +175,7 @@ const MainDaoPage = () => {
               <div
                 className={`${
                   daoPage === 'dashboard' ? 'selected-tab' : 'brightness-75'
-                } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
+                } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
                 onClick={() => handleChangePage('dashboard')}>
                 <Image
                   src={dashboard}
@@ -189,7 +189,7 @@ const MainDaoPage = () => {
               <div
                 className={`${
                   daoPage === 'proposals' ? 'selected-tab' : 'brightness-75'
-                } flex h-[55px] py-4 px-7 hover:cursor-pointer`}
+                } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
                 onClick={() => handleChangePage('proposals')}>
                 <Image
                   src={proposal}

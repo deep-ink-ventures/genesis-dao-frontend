@@ -88,7 +88,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
             <div
               className={`rounded-lg ${
                 !props.p?.status ? '' : statusColors[`${props.p?.status}`]
-              } h-7 rounded-3xl py-1 px-3 text-center text-sm`}>
+              } h-7 rounded-3xl px-3 py-1 text-center text-sm`}>
               {props.p?.status}
             </div>
           </div>

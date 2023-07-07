@@ -120,10 +120,10 @@ const MajorityModel = (props: { daoId: string | null }) => {
                   errors={errors}
                   name='tokensToIssue'
                   render={({ message }) => (
-                    <p className='mt-1 ml-2 text-error'>{message}</p>
+                    <p className='ml-2 mt-1 text-error'>{message}</p>
                   )}
                 />
-                <div className='absolute top-3 left-[252px] opacity-70'>
+                <div className='absolute left-[252px] top-3 opacity-70'>
                   Tokens
                 </div>
               </div>
@@ -154,10 +154,10 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 errors={errors}
                 name='proposalTokensCost'
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
-              <div className='absolute top-3 left-[6.5em] opacity-70'>
+              <div className='absolute left-[6.5em] top-3 opacity-70'>
                 Tokens
               </div>
             </div>
@@ -208,10 +208,10 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 errors={errors}
                 name='votingDays'
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
-              <div className='absolute top-3 left-[7.4em] opacity-70'>5min</div>
+              <div className='absolute left-[7.4em] top-3 opacity-70'>5min</div>
             </div>
           </div>
         </div>

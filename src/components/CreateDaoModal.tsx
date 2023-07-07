@@ -190,11 +190,11 @@ const CreateDaoModal = () => {
                       errors={errors}
                       name='daoName'
                       render={({ message }) => (
-                        <p className='mt-1 ml-2 text-error'>{message}</p>
+                        <p className='ml-2 mt-1 text-error'>{message}</p>
                       )}
                     />
                     <p
-                      className={`absolute top-3 right-2 opacity-60 ${
+                      className={`absolute right-2 top-3 opacity-60 ${
                         watchName.length > 32 ? 'text-error' : null
                       }`}>
                       {watchName.length}/32
@@ -238,11 +238,11 @@ const CreateDaoModal = () => {
                       errors={errors}
                       name='daoId'
                       render={({ message }) => (
-                        <p className='mt-1 ml-2 text-error'>{message}</p>
+                        <p className='ml-2 mt-1 text-error'>{message}</p>
                       )}
                     />
                     <p
-                      className={`absolute top-3 right-2 opacity-60 ${
+                      className={`absolute right-2 top-3 opacity-60 ${
                         watchId.length > 8 ? 'text-error' : null
                       }`}>
                       {watchId.length}/8

@@ -154,7 +154,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                 errors={errors}
                 name='email'
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
             </div>
@@ -225,7 +225,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                 errors={errors}
                 name='logoImage'
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
             </div>
@@ -245,7 +245,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                 errors={errors}
                 name='shortOverview'
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
             </div>
@@ -265,7 +265,7 @@ const LogoForm = (props: { daoId: string | null }) => {
                 errors={errors}
                 name='longDescription'
                 render={({ message }) => (
-                  <p className='mt-1 ml-2 text-error'>{message}</p>
+                  <p className='ml-2 mt-1 text-error'>{message}</p>
                 )}
               />
             </div>

@@ -14,7 +14,7 @@ const FAQPage = () => {
           <div>Back</div>
         </div>
       </Link>
-      <div className='container mx-auto mt-5 mb-12 min-w-[600px] max-w-[900px] px-12 py-5'>
+      <div className='container mx-auto mb-12 mt-5 min-w-[600px] max-w-[900px] px-12 py-5'>
         <div className='mb-3'>
           <div>
             <h1 className='text-3xl'>

@@ -22,7 +22,7 @@ const AssetsTable = () => {
             <div
               key={index}
               className='grid grid-cols-[50%_10%_10%_15%_15%] gap-2 space-x-2 rounded-lg border-[0.3px] border-solid
-              border-neutral-focus py-3 px-4 text-sm font-normal text-neutral-focus
+              border-neutral-focus px-4 py-3 text-sm font-normal text-neutral-focus
               '>
               <span className='flex items-center gap-2'>
                 <div className='relative flex items-center justify-center'>
