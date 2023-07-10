@@ -6,9 +6,9 @@ import ReactHtmlParser from 'react-html-parser';
 
 import FaultyModal from '@/components/FaultyModal';
 import FaultyReportsModal from '@/components/FaultyReportsModal';
-import { statusColors } from '@/components/ProposalCard';
 import Spinner from '@/components/Spinner';
 import Tooltip from '@/components/Tooltip';
+import { statusColors } from '@/components/TransactionBadge';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
