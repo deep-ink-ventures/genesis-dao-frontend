@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import Assets from '@/components/Assets';
+import Transactions from '@/components/Transactions';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
 import arrowLeft from '@/svg/arrow-left.svg';
@@ -11,7 +12,35 @@ import coins from '@/svg/coins.svg';
 import copy from '@/svg/copy.svg';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
+import switchIcon from '@/svg/switch.svg';
 import MainLayout from '@/templates/MainLayout';
+
+enum AccountTabs {
+  ASSETS = 'assets',
+  TRANSACTIONS = 'transactions',
+}
+
+const TabButton = ({
+  activeTab,
+  name,
+  children,
+  onClick,
+}: {
+  activeTab?: string;
+  name: string;
+  children: React.ReactNode;
+  onClick: (tab?: string) => void;
+}) => {
+  return (
+    <div
+      className={`${
+        activeTab === name ? 'selected-tab' : 'brightness-75'
+      } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
+      onClick={() => onClick(name)}>
+      {children}
+    </div>
+  );
+};
 
 const AccountPage = () => {
   const router = useRouter();
@@ -20,8 +49,10 @@ const AccountPage = () => {
     s.pages.account,
   ]);
 
-  const handleChangePage = (pageParam: 'assets') => {
-    account.tabs.setActiveTab(pageParam);
+  const handleChangePage = (pageParam?: string) => {
+    if (pageParam) {
+      account.tabs.setActiveTab(pageParam);
+    }
   };
 
   const displayImage = () => {
@@ -43,7 +74,10 @@ const AccountPage = () => {
   const displayPage = () => {
     let tab;
     switch (account.tabs.activeTab) {
-      case 'asset':
+      case AccountTabs.TRANSACTIONS:
+        tab = <Transactions />;
+        break;
+      case AccountTabs.ASSETS:
       default:
         tab = <Assets />;
     }
@@ -102,13 +136,10 @@ const AccountPage = () => {
             </div>
           </div>
           <div className='w-full'>
-            <div
-              className={`${
-                !account.tabs.activeTab || account.tabs.activeTab === 'assets'
-                  ? 'selected-tab'
-                  : 'brightness-75'
-              } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
-              onClick={() => handleChangePage('assets')}>
+            <TabButton
+              name={AccountTabs.ASSETS}
+              activeTab={account.tabs.activeTab || AccountTabs.ASSETS}
+              onClick={(tab) => handleChangePage(tab)}>
               <Image
                 src={coins}
                 height={15}
@@ -117,7 +148,20 @@ const AccountPage = () => {
                 className='mr-4'
               />
               <p>My Assets</p>
-            </div>
+            </TabButton>
+            <TabButton
+              name={AccountTabs.TRANSACTIONS}
+              activeTab={account.tabs.activeTab}
+              onClick={(tab) => handleChangePage(tab)}>
+              <Image
+                src={switchIcon}
+                height={15}
+                width={15}
+                alt='dashboard'
+                className='mr-4'
+              />
+              <p>Transactions</p>
+            </TabButton>
           </div>
         </div>
         <div className='min-w-0 basis-3/4 p-5 pt-0'>{displayPage()}</div>
