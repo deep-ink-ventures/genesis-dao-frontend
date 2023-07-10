@@ -7,14 +7,7 @@ import type { ProposalDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { getProposalEndTime } from '@/utils';
 
-export const statusColors = {
-  Active: 'bg-neutral text-base-100',
-  Counting: 'bg-secondary text-base-100',
-  Accepted: 'bg-accent text-base-100',
-  Rejected: 'bg-error',
-  Faulty: 'bg-error',
-  undefined: 'bg-neutral text-base-100',
-};
+import { TransactionBadge } from './TransactionBadge';
 
 const ProposalCard = (props: { p: ProposalDetail }) => {
   const currentDao = useGenesisStore((s) => s.currentDao);
@@ -85,12 +78,9 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
                 <p>Ended </p>
               </div>
             )}
-            <div
-              className={`rounded-lg ${
-                !props.p?.status ? '' : statusColors[`${props.p?.status}`]
-              } h-7 rounded-3xl px-3 py-1 text-center text-sm`}>
-              {props.p?.status}
-            </div>
+            {props.p?.status != null && (
+              <TransactionBadge status={props.p?.status} />
+            )}
           </div>
         </div>
         <div className='flex justify-between'>
