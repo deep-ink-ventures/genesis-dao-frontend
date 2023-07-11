@@ -52,8 +52,8 @@ const CreateProposalPage = () => {
     if (!currentWalletAccount?.address) {
       return (
         <div className='flex flex-col items-center justify-center'>
-          <p className='text-center'>
-            Please connect wallet to continue creating a new Proposal{' '}
+          <p className='mb-4 text-center'>
+            Please connect wallet to continue creating a new proposal for{' '}
             {currentDao?.daoName}
           </p>
           <WalletConnect text='Connect Wallet To Continue' />
