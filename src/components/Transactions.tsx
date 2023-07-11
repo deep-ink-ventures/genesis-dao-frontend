@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import useGenesisStore from '@/stores/genesisStore';
 
 import TransactionAccordion from './TransactionAccordion';
 
 const Transactions = () => {
-  const [currentWalletAccount] = useGenesisStore((s) => [
+  const [currentWalletAccount, account] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.pages.account,
   ]);
@@ -14,6 +14,11 @@ const Transactions = () => {
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
+
+  useEffect(() => {
+    account.transactions.fetchTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -39,9 +44,12 @@ const Transactions = () => {
           </div>
         )}
         {currentWalletAccount &&
-          Array(5)
-            .fill(null)
-            .map((i, index) => <TransactionAccordion key={index} />)}
+          account.transactions.data?.map((proposal) => (
+            <TransactionAccordion
+              key={proposal.proposalId}
+              proposal={proposal}
+            />
+          ))}
       </div>
     </div>
   );
