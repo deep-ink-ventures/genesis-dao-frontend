@@ -7,14 +7,12 @@ export const statusColors = {
   undefined: 'bg-neutral text-base-100',
 };
 
-export const TransactionBadge = (props: {
-  status?: keyof typeof statusColors;
-}) => {
+export const TransactionBadge = (props: { status?: string }) => {
   const { status } = props;
   return (
     <div
       className={`rounded-lg ${
-        !status ? '' : statusColors[status]
+        !status ? '' : statusColors[status as keyof typeof statusColors]
       } h-7 rounded-3xl px-3 text-center text-[0.625rem] leading-7`}>
       {status}
     </div>
