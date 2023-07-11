@@ -6,6 +6,7 @@ import type { Dao } from '@/services/daos';
 import useGenesisStore from '@/stores/genesisStore';
 
 import AssetsHoldingsTable from './AssetsTable';
+import Pagination from './Pagination';
 
 const Assets = () => {
   const [currentWalletAccount, account] = useGenesisStore((s) => [
@@ -13,29 +14,52 @@ const Assets = () => {
     s.pages.account,
   ]);
 
-  const [, setSearchTerm] = useState('');
-  const [assetHoldings, setAssetHoldings] = useState<
-    Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>
-  >([]);
+  // const [totalAssetsHoldingCount, settotalAssetsHoldingCount=
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [assetHoldingsResponse, setAssetHoldingsResponse] = useState<{
+    totalCount: number;
+    assetHoldings: Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>;
+  }>();
+
+  const [pagination, setPagination] = useState<{
+    offset?: number;
+    limit?: number;
+  }>({
+    offset: 1,
+    limit: 5,
+  });
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
 
-  useEffect(() => {
+  const filteredAssetHoldings = assetHoldingsResponse?.assetHoldings.filter(
+    (assetHolding) => {
+      return assetHolding.asset?.dao?.name?.indexOf(searchTerm) !== -1;
+    }
+  );
+
+  const fetchAssetHoldings = async () => {
     if (account.assets.data) {
-      AssetsHoldingsService.listAssetHoldings().then((res) => {
-        setAssetHoldings(
-          res.results.map((assetHolding) => ({
+      AssetsHoldingsService.listAssetHoldings(pagination).then((res) => {
+        setAssetHoldingsResponse({
+          totalCount: res.count,
+          assetHoldings: res.results?.map((assetHolding) => ({
             ...assetHolding,
             asset: account.assets.data.find(
               (asset) => asset.id === assetHolding.asset_id
             ),
-          }))
-        );
+          })),
+        });
       });
     }
-  }, [account.assets.data]);
+  };
+
+  useEffect(() => {
+    fetchAssetHoldings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account.assets.data, pagination]);
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -49,6 +73,7 @@ const Assets = () => {
               id='search-input'
               className='input-primary input w-72 text-sm'
               placeholder='Search Assets'
+              value={searchTerm}
               onChange={handleSearch}
             />
           </div>
@@ -86,10 +111,19 @@ const Assets = () => {
         )}
         {currentWalletAccount && (
           <AssetsHoldingsTable
-            assetHoldings={assetHoldings}
+            assetHoldings={filteredAssetHoldings}
             currentWallet={currentWalletAccount?.address}
           />
         )}
+      </div>
+      <div>
+        <Pagination
+          pageSize={5}
+          totalCount={assetHoldingsResponse?.totalCount}
+          onPageChange={(offset) =>
+            setPagination((prevValue) => ({ ...prevValue, offset }))
+          }
+        />
       </div>
     </div>
   );

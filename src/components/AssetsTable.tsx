@@ -10,8 +10,6 @@ import openLink from '@/svg/openlink.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
 import { uiTokens } from '@/utils';
 
-import Pagination from './Pagination';
-
 const AssetsHoldingsTable = ({
   assetHoldings = [],
   currentWallet,
@@ -118,9 +116,6 @@ const AssetsHoldingsTable = ({
             </span>
           </div>
         ))}
-        <div>
-          <Pagination />
-        </div>
       </div>
     </div>
   );
