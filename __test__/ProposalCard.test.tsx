@@ -1,8 +1,8 @@
 import { BN } from '@polkadot/util';
 import { render, screen } from '@testing-library/react';
 
-import type { ProposalDetail } from '@/stores/genesisStore';
-import { ProposalStatus } from '@/stores/genesisStore';
+import type { ProposalDetail } from '@/services/proposals';
+import { ProposalStatus } from '@/services/proposals';
 
 import ProposalCard from '../src/components/ProposalCard';
 
@@ -18,6 +18,7 @@ describe('ProposalCard', () => {
       status: ProposalStatus.Active,
       inFavor: new BN(1000),
       against: new BN(300),
+      voterCount: new BN(1500),
       proposalName: 'This is a proposal',
       description: 'proposal description',
       link: 'https://google.com',

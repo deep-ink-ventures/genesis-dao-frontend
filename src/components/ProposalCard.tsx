@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import Tooltip from '@/components/Tooltip';
 import { DAO_UNITS } from '@/config';
-import type { ProposalDetail } from '@/stores/genesisStore';
+import type { ProposalDetail } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
 import { getProposalEndTime } from '@/utils';
 

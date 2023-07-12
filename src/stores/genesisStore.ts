@@ -11,6 +11,12 @@ import { NODE_URL, SERVICE_URL } from '@/config';
 import { type Asset, AssetsHoldingsService } from '@/services/assets';
 import type { Dao } from '@/services/daos';
 import { DaoService } from '@/services/daos';
+import type {
+  IncomingProposal,
+  ProposalDetail,
+  ProposalStatusNames,
+} from '@/services/proposals';
+import { ProposalsService, ProposalStatus } from '@/services/proposals';
 
 // ALL TYPES and INTERFACES...
 
@@ -24,18 +30,6 @@ export interface ProposalCreationValues {
   description: string;
   url: string;
 }
-
-export enum ProposalStatus {
-  Active = 'Active',
-  Counting = 'Counting',
-  Accepted = 'Accepted',
-  Rejected = 'Rejected',
-  Faulty = 'Faulty',
-}
-
-export type ProposalStatusNames = {
-  [key: string]: ProposalStatus;
-};
 
 export const proposalStatusNames: ProposalStatusNames = {
   RUNNING: ProposalStatus.Active,
@@ -62,43 +56,6 @@ export interface CreateProposalInfo {
   proposalId: string;
   meta: string;
   hash: string;
-}
-
-export interface IncomingProposal {
-  id: string;
-  dao_id: string;
-  creator_id: string;
-  status: string;
-  fault: string | null;
-  votes: {
-    pro: number;
-    contra: number;
-    abstained: number;
-    total: number;
-  };
-  metadata: null | {
-    url: string | null;
-    title: string | null;
-    description: string | null;
-  };
-  metadata_url: null | string;
-  metadata_hash: null | string;
-  birth_block_number: number;
-}
-
-export interface ProposalDetail {
-  proposalId: string;
-  daoId: string;
-  creator: string;
-  birthBlock: number;
-  metadataUrl: string | null;
-  metadataHash: string | null;
-  status: ProposalStatus | null;
-  inFavor: BN;
-  against: BN;
-  proposalName: string | null;
-  description: string | null;
-  link: string | null;
 }
 
 export interface DaoDetail {
@@ -200,7 +157,7 @@ export enum TxnResponse {
   Cancelled = 'CANCELLED',
 }
 
-export type DaoPage = 'dashboard' | 'proposals';
+export type DaoPage = 'dashboard' | 'proposals' | 'transactions';
 
 export interface IncomingTokenBalanceData {
   balance: string;
@@ -321,6 +278,17 @@ export interface GenesisState {
   isFaultyModalOpen: boolean;
   isFaultyReportsOpen: boolean;
   pages: {
+    dao: {
+      transactions: {
+        loading: boolean;
+        data: Array<ProposalDetail>;
+        fetchTransactions: (params?: {
+          dao_id?: string;
+          limit?: number;
+          order_by?: string;
+        }) => Promise<void>;
+      };
+    };
     account: {
       assets: {
         loading: boolean;
@@ -749,6 +717,7 @@ const useGenesisStore = create<GenesisStore>()(
             proposalStatusNames[p.status as keyof ProposalStatusNames] || null,
           inFavor: new BN(p.votes?.pro || 0),
           against: new BN(p.votes?.contra || 0),
+          voterCount: new BN(p.votes?.total || 0),
           proposalName: p.metadata?.title || null,
           description: p.metadata?.description || null,
           link: p.metadata?.url || null,
@@ -849,6 +818,27 @@ const useGenesisStore = create<GenesisStore>()(
     updateIsFaultyReportsOpen: (isFaultyReportsOpen) =>
       set({ isFaultyReportsOpen }),
     pages: {
+      dao: {
+        transactions: {
+          loading: false,
+          data: [],
+          fetchTransactions: async (params) => {
+            ProposalsService.listProposals(params);
+            set(
+              produce((state: GenesisState) => {
+                state.pages.dao.transactions.loading = true;
+              })
+            );
+            const response = await ProposalsService.listProposals(params);
+            set(
+              produce((state: GenesisState) => {
+                state.pages.dao.transactions.data = response.mappedData;
+                state.pages.dao.transactions.loading = false;
+              })
+            );
+          },
+        },
+      },
       account: {
         assets: {
           loading: false,

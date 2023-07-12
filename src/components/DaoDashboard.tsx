@@ -7,9 +7,9 @@ import type { BadgeVariant } from '@/components/Badge';
 import Badge from '@/components/Badge';
 import DestroyDao from '@/components/DestroyDao';
 import StatusCard from '@/components/StatusCard';
-import { ProposalsService } from '@/services/proposals';
-import type { ProposalDetail } from '@/stores/genesisStore';
-import useGenesisStore, { ProposalStatus } from '@/stores/genesisStore';
+import type { ProposalDetail } from '@/services/proposals';
+import { ProposalsService, ProposalStatus } from '@/services/proposals';
+import useGenesisStore from '@/stores/genesisStore';
 import TrendingUp from '@/svg/trending-up.svg';
 import { getProposalEndTime } from '@/utils';
 

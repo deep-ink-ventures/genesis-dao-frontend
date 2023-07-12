@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import DaoDashboard from '@/components/DaoDashboard';
 import Proposals from '@/components/Proposals';
 import Spinner from '@/components/Spinner';
+import Transactions from '@/components/Transactions';
 import WalletConnect from '@/components/WalletConnect';
 import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
@@ -15,8 +16,37 @@ import dashboard from '@/svg/dashboard.svg';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
 import proposal from '@/svg/proposal.svg';
+import switchIcon from '@/svg/switch.svg';
 import MainLayout from '@/templates/MainLayout';
 import { uiTokens } from '@/utils';
+
+enum DashboardTabs {
+  DASHBOARD = 'dashboard',
+  PROPOSALS = 'proposals',
+  TRANSACTIONS = 'transactions',
+}
+
+const TabButton = ({
+  activeTab,
+  name,
+  children,
+  onClick,
+}: {
+  activeTab?: string;
+  name: string;
+  children: React.ReactNode;
+  onClick: (tab?: string) => void;
+}) => {
+  return (
+    <div
+      className={`${
+        activeTab === name ? 'selected-tab' : 'brightness-75'
+      } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
+      onClick={() => onClick(name)}>
+      {children}
+    </div>
+  );
+};
 
 const MainDaoPage = () => {
   const router = useRouter();
@@ -102,10 +132,14 @@ const MainDaoPage = () => {
   };
 
   const displayPage = () => {
-    if (daoPage === 'proposals') {
-      return <Proposals daoId={daoId as string} />;
+    switch (daoPage) {
+      case DashboardTabs.PROPOSALS:
+        return <Proposals daoId={daoId as string} />;
+      case DashboardTabs.TRANSACTIONS:
+        return <Transactions daoId={daoId as string} />;
+      default:
+        return <DaoDashboard />;
     }
-    return <DaoDashboard />;
   };
 
   const handleBack = () => {
@@ -172,10 +206,9 @@ const MainDaoPage = () => {
               )}
             </div>
             <div className='w-full'>
-              <div
-                className={`${
-                  daoPage === 'dashboard' ? 'selected-tab' : 'brightness-75'
-                } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
+              <TabButton
+                name={DashboardTabs.DASHBOARD}
+                activeTab={daoPage || DashboardTabs.DASHBOARD}
                 onClick={() => handleChangePage('dashboard')}>
                 <Image
                   src={dashboard}
@@ -185,11 +218,10 @@ const MainDaoPage = () => {
                   className='mr-4'
                 />
                 <p>Dashboard</p>
-              </div>
-              <div
-                className={`${
-                  daoPage === 'proposals' ? 'selected-tab' : 'brightness-75'
-                } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
+              </TabButton>
+              <TabButton
+                name={DashboardTabs.PROPOSALS}
+                activeTab={daoPage}
                 onClick={() => handleChangePage('proposals')}>
                 <Image
                   src={proposal}
@@ -199,7 +231,20 @@ const MainDaoPage = () => {
                   className='mr-4'
                 />
                 <p>Proposals</p>
-              </div>
+              </TabButton>
+              <TabButton
+                name={DashboardTabs.TRANSACTIONS}
+                activeTab={daoPage}
+                onClick={() => handleChangePage('transactions')}>
+                <Image
+                  src={switchIcon}
+                  height={15}
+                  width={15}
+                  alt='dashboard'
+                  className='mr-4'
+                />
+                <p>Transactions</p>
+              </TabButton>
               {/* <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
                 <Image
                   src={about}
