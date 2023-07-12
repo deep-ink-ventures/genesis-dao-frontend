@@ -15,21 +15,18 @@ import { TransactionBadge } from './TransactionBadge';
 interface TransactionAccordionProps {
   proposal: ProposalDetail;
   collapsed?: boolean;
+  onClick?: () => void;
 }
 
 const TransactionAccordion = ({
   proposal,
   collapsed,
+  onClick,
 }: TransactionAccordionProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(collapsed);
   const [currentDao, currentBlockNumber] = useGenesisStore((s) => [
     s.currentDao,
     s.currentBlockNumber,
   ]);
-
-  useEffect(() => {
-    setIsCollapsed(collapsed);
-  }, [collapsed]);
 
   const dhmMemo = useMemo(() => {
     return proposal?.birthBlock &&
@@ -46,16 +43,16 @@ const TransactionAccordion = ({
   return (
     <div
       className={cn('rounded-lg border-[0.02rem] border-neutral-focus p-4', {
-        'space-y-3': !isCollapsed,
+        'space-y-3': !collapsed,
       })}>
       <div
         className={cn(
           'flex w-full cursor-pointer items-center gap-2 border-neutral-focus',
           {
-            'border-b-[0.02rem] pb-2': !isCollapsed,
+            'border-b-[0.02rem] pb-2': !collapsed,
           }
         )}
-        onClick={() => setIsCollapsed(!isCollapsed)}>
+        onClick={onClick}>
         {false && (
           <div className='badge-error badge h-[0.5rem] w-[0.5rem] p-0' />
         )}
@@ -82,7 +79,7 @@ const TransactionAccordion = ({
             className={cn(
               'duration-5000 transform transition-all ease-in-out',
               {
-                'rotate-180': isCollapsed,
+                'rotate-180': collapsed,
               }
             )}
             alt='Collapse'
@@ -95,7 +92,7 @@ const TransactionAccordion = ({
         className={cn(
           'opacity-1 duration-5000 flex min-h-[100px] gap-4 transition-all ease-in-out',
           {
-            '!h-[0px] min-h-[0px] overflow-hidden opacity-0': isCollapsed,
+            '!h-[0px] min-h-[0px] overflow-hidden opacity-0': collapsed,
           }
         )}>
         <div className='flex-1 space-y-2'>

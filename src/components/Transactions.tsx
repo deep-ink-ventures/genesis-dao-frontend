@@ -4,21 +4,25 @@ import useGenesisStore from '@/stores/genesisStore';
 
 import TransactionAccordion from './TransactionAccordion';
 
-const Transactions = () => {
-  const [currentWalletAccount, account] = useGenesisStore((s) => [
+const Transactions = (props: { daoId: string }) => {
+  const { daoId } = props;
+  const [currentWalletAccount, dao] = useGenesisStore((s) => [
     s.currentWalletAccount,
-    s.pages.account,
+    s.pages.dao,
   ]);
 
   const [, setSearchTerm] = useState('');
+  const [activeAccordion, setActiveAccordion] = useState<string>();
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
 
   useEffect(() => {
-    account.transactions.fetchTransactions();
+    dao.transactions.fetchTransactions({
+      dao_id: daoId,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [daoId]);
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -44,10 +48,14 @@ const Transactions = () => {
           </div>
         )}
         {currentWalletAccount &&
-          account.transactions.data?.map((proposal) => (
+          dao.transactions.data?.map((proposal) => (
             <TransactionAccordion
               key={proposal.proposalId}
               proposal={proposal}
+              collapsed={
+                proposal.proposalId !== activeAccordion || !activeAccordion
+              }
+              onClick={() => setActiveAccordion(proposal.proposalId)}
             />
           ))}
       </div>
