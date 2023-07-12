@@ -1,7 +1,7 @@
 import { BN } from '@polkadot/util';
 import cn from 'classnames';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { DAO_UNITS } from '@/config';
 import type { ProposalDetail } from '@/services/proposals';
