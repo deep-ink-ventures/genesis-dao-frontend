@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import Assets from '@/components/Assets';
-import Transactions from '@/components/Transactions';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
 import arrowLeft from '@/svg/arrow-left.svg';
@@ -12,12 +11,10 @@ import coins from '@/svg/coins.svg';
 import copy from '@/svg/copy.svg';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
-import switchIcon from '@/svg/switch.svg';
 import MainLayout from '@/templates/MainLayout';
 
 enum AccountTabs {
   ASSETS = 'assets',
-  TRANSACTIONS = 'transactions',
 }
 
 const TabButton = ({
@@ -72,16 +69,7 @@ const AccountPage = () => {
   };
 
   const displayPage = () => {
-    let tab;
-    switch (account.tabs.activeTab) {
-      case AccountTabs.TRANSACTIONS:
-        tab = <Transactions />;
-        break;
-      case AccountTabs.ASSETS:
-      default:
-        tab = <Assets />;
-    }
-    return tab;
+    return <Assets />;
   };
 
   const handleBack = () => {
@@ -148,19 +136,6 @@ const AccountPage = () => {
                 className='mr-4'
               />
               <p>My Assets</p>
-            </TabButton>
-            <TabButton
-              name={AccountTabs.TRANSACTIONS}
-              activeTab={account.tabs.activeTab}
-              onClick={(tab) => handleChangePage(tab)}>
-              <Image
-                src={switchIcon}
-                height={15}
-                width={15}
-                alt='dashboard'
-                className='mr-4'
-              />
-              <p>Transactions</p>
             </TabButton>
           </div>
         </div>

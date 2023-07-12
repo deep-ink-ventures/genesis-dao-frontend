@@ -157,7 +157,7 @@ export enum TxnResponse {
   Cancelled = 'CANCELLED',
 }
 
-export type DaoPage = 'dashboard' | 'proposals';
+export type DaoPage = 'dashboard' | 'proposals' | 'transactions';
 
 export interface IncomingTokenBalanceData {
   balance: string;
@@ -278,12 +278,7 @@ export interface GenesisState {
   isFaultyModalOpen: boolean;
   isFaultyReportsOpen: boolean;
   pages: {
-    account: {
-      assets: {
-        loading: boolean;
-        data: Array<Asset & { dao?: Dao }>;
-        fetchAssets: () => void;
-      };
+    dao: {
       transactions: {
         loading: boolean;
         data: Array<ProposalDetail>;
@@ -292,6 +287,13 @@ export interface GenesisState {
           limit?: number;
           order_by?: string;
         }) => Promise<void>;
+      };
+    };
+    account: {
+      assets: {
+        loading: boolean;
+        data: Array<Asset & { dao?: Dao }>;
+        fetchAssets: () => void;
       };
       tabs: {
         activeTab?: string;
@@ -816,6 +818,27 @@ const useGenesisStore = create<GenesisStore>()(
     updateIsFaultyReportsOpen: (isFaultyReportsOpen) =>
       set({ isFaultyReportsOpen }),
     pages: {
+      dao: {
+        transactions: {
+          loading: false,
+          data: [],
+          fetchTransactions: async (params) => {
+            ProposalsService.listProposals(params);
+            set(
+              produce((state: GenesisState) => {
+                state.pages.dao.transactions.loading = true;
+              })
+            );
+            const response = await ProposalsService.listProposals(params);
+            set(
+              produce((state: GenesisState) => {
+                state.pages.dao.transactions.data = response.mappedData;
+                state.pages.dao.transactions.loading = false;
+              })
+            );
+          },
+        },
+      },
       account: {
         assets: {
           loading: false,
@@ -855,25 +878,6 @@ const useGenesisStore = create<GenesisStore>()(
                   })
                 );
               });
-          },
-        },
-        transactions: {
-          loading: false,
-          data: [],
-          fetchTransactions: async (params) => {
-            ProposalsService.listProposals(params);
-            set(
-              produce((state: GenesisState) => {
-                state.pages.account.transactions.loading = true;
-              })
-            );
-            const response = await ProposalsService.listProposals(params);
-            set(
-              produce((state: GenesisState) => {
-                state.pages.account.transactions.data = response.mappedData;
-                state.pages.account.transactions.loading = false;
-              })
-            );
           },
         },
         tabs: {
