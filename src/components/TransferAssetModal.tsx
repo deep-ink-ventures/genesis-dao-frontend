@@ -30,10 +30,10 @@ const TransferAssetModal = (props: {
       width={615}
       zIndex={99}>
       <div className='px-12'>
-        <h2 className='text-center text-3xl font-semibold text-primary'>
+        <h2 className='mb-4 text-center text-3xl font-semibold text-primary'>
           Transfer Asset
         </h2>
-        <div className='mt-4 mb-10 w-full space-y-8'>
+        <div className='w-full space-y-8'>
           <div className='flex w-full items-center'>
             <p className='w-1/4'>Transfer to</p>
             <div className='grow'>
@@ -89,7 +89,7 @@ const TransferAssetModal = (props: {
             </div>
           </div>
         </div>
-        <div className='flex w-full gap-2'>
+        <div className='mt-10 flex w-full gap-2'>
           <button className={cn('btn mr-3 w-1/2 bg-white')} onClick={onClose}>
             Cancel
           </button>
