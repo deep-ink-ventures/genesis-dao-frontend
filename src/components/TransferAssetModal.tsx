@@ -19,6 +19,7 @@ const TransferAssetModal = (props: {
     register,
     formState: { errors },
   } = useForm();
+
   return (
     <Modal
       open={open}
