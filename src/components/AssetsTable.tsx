@@ -5,47 +5,24 @@ import Image from 'next/image';
 import type { Asset, AssetHolding } from '@/services/assets';
 import type { Dao } from '@/services/daos';
 import coinsTransfer from '@/svg/coinsTransfer.svg';
-import mountain from '@/svg/mountain.svg';
 import openLink from '@/svg/openlink.svg';
-import placeholderImage from '@/svg/placeholderImage.svg';
 import { uiTokens } from '@/utils';
+
+import DaoImage from './DaoImage';
+
+type AssetHoldingsTableItem = AssetHolding & { asset?: Asset & { dao?: Dao } };
 
 const AssetsHoldingsTable = ({
   assetHoldings = [],
   currentWallet,
+  onTransferClick,
+  onOpenLinkClick,
 }: {
-  assetHoldings?: Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>;
+  assetHoldings?: Array<AssetHoldingsTableItem>;
   currentWallet?: string;
+  onTransferClick?: (assetHolding?: AssetHoldingsTableItem) => void;
+  onOpenLinkClick?: (assetHolding?: AssetHoldingsTableItem) => void;
 }) => {
-  const displayImage = (image?: string, alt?: string) => {
-    if (!image) {
-      return (
-        <>
-          <Image
-            src={placeholderImage}
-            alt='placeholder'
-            height={60}
-            width={60}
-          />
-          <div className='absolute'>
-            <Image src={mountain} alt='mountain' width={30} height={17}></Image>
-          </div>
-        </>
-      );
-    }
-    return (
-      <>
-        <img
-          src={image}
-          alt={`${alt} logo image`}
-          height={60}
-          width={60}
-          className='rounded-full'
-        />
-      </>
-    );
-  };
-
   return (
     <div className='w-full'>
       <div className='grid grid-cols-[auto_10%_15%_15%_15%] gap-2 space-x-2 px-4 py-3 text-sm font-normal text-neutral-focus'>
@@ -64,9 +41,13 @@ const AssetsHoldingsTable = ({
               '>
             <span className='flex items-center gap-2'>
               <div className='relative flex items-center justify-center'>
-                {displayImage(
-                  assetHolding?.asset?.dao?.metadata?.images?.logo?.small?.url
-                )}
+                <DaoImage
+                  image={
+                    assetHolding?.asset?.dao?.metadata?.images?.logo?.small?.url
+                  }
+                  width={60}
+                  height={60}
+                />
               </div>
               {assetHolding.asset?.dao?.name}
             </span>
@@ -95,7 +76,11 @@ const AssetsHoldingsTable = ({
               )}
             </span>
             <span className='my-auto flex gap-2'>
-              <span className='rounded-full border border-solid border-neutral-focus p-2'>
+              <span
+                className='rounded-full border border-solid border-neutral-focus p-2 hover:border-primary'
+                onClick={() =>
+                  onTransferClick && onTransferClick(assetHolding)
+                }>
                 <Image
                   src={coinsTransfer}
                   alt='transfer'
@@ -104,7 +89,11 @@ const AssetsHoldingsTable = ({
                   className='m-auto cursor-pointer'
                 />
               </span>
-              <span className='rounded-full border border-solid border-neutral-focus p-2'>
+              <span
+                className='rounded-full border border-solid border-neutral-focus p-2 hover:border-primary'
+                onClick={() =>
+                  onOpenLinkClick && onOpenLinkClick(assetHolding)
+                }>
                 <Image
                   src={openLink}
                   alt='open link'

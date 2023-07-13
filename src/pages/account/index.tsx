@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import Assets from '@/components/Assets';
+import TransferAssetModal from '@/components/TransferAssetModal';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
 import arrowLeft from '@/svg/arrow-left.svg';
@@ -125,9 +126,9 @@ const AccountPage = () => {
           </div>
           <div className='w-full'>
             <TabButton
-              name={AccountTabs.ASSETS}
               activeTab={account.tabs.activeTab || AccountTabs.ASSETS}
-              onClick={(tab) => handleChangePage(tab)}>
+              name={AccountTabs.ASSETS}
+              onClick={() => handleChangePage('assets')}>
               <Image
                 src={coins}
                 height={15}
@@ -141,6 +142,13 @@ const AccountPage = () => {
         </div>
         <div className='min-w-0 basis-3/4 p-5 pt-0'>{displayPage()}</div>
       </div>
+      {account.assets.selectedAssetHolding != null && (
+        <TransferAssetModal
+          assetHolding={account.assets.selectedAssetHolding}
+          open={account.modals.transferAssets.visible}
+          onClose={() => account.modals.transferAssets.setVisibility(false)}
+        />
+      )}
     </MainLayout>
   );
 };
