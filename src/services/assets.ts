@@ -31,7 +31,9 @@ const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
 
   const queryString = new URLSearchParams(query);
 
-  const response = await fetch(`${SERVICE_URL}/asset-holdings/${queryString}`);
+  const response = await fetch(
+    `${SERVICE_URL}/asset-holdings/?${queryString.toString()}`
+  );
 
   const objResponse = await response.json();
 
