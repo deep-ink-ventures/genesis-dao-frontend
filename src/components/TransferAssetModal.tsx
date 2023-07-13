@@ -33,7 +33,7 @@ const TransferAssetModal = (props: {
         <h2 className='text-center text-3xl font-semibold text-primary'>
           Transfer Asset
         </h2>
-        <div className='w-full space-y-8'>
+        <div className='mt-4 mb-10 w-full space-y-8'>
           <div className='flex w-full items-center'>
             <p className='w-1/4'>Transfer to</p>
             <div className='grow'>
