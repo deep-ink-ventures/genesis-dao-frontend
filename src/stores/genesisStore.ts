@@ -17,7 +17,9 @@ import type {
   ProposalDetail,
   ProposalStatusNames,
 } from '@/services/proposals';
-import { ProposalsService, ProposalStatus } from '@/services/proposals';
+import { ProposalStatus } from '@/services/proposals';
+
+import { createDaoSlice } from './dao';
 
 // ALL TYPES and INTERFACES...
 
@@ -247,7 +249,7 @@ export interface AllDaos {
 }
 
 export interface GenesisState {
-  currentWalletAccount: WalletAccount | null;
+  currentWalletAccount?: WalletAccount | null;
   currentAssetId: number | null;
   currentDao: DaoDetail | null;
   currentProposals: ProposalDetail[] | null;
@@ -372,7 +374,7 @@ export interface GenesisStore extends GenesisState, GenesisActions {}
 // STORE...
 
 const useGenesisStore = create<GenesisStore>()(
-  devtools((set, get) => ({
+  devtools((set, get, store) => ({
     currentWalletAccount: null,
     currentProposal: null,
     walletAccounts: null,
@@ -833,27 +835,7 @@ const useGenesisStore = create<GenesisStore>()(
     updateIsFaultyReportsOpen: (isFaultyReportsOpen) =>
       set({ isFaultyReportsOpen }),
     pages: {
-      dao: {
-        transactions: {
-          loading: false,
-          data: [],
-          fetchTransactions: async (params) => {
-            ProposalsService.listProposals(params);
-            set(
-              produce((state: GenesisState) => {
-                state.pages.dao.transactions.loading = true;
-              })
-            );
-            const response = await ProposalsService.listProposals(params);
-            set(
-              produce((state: GenesisState) => {
-                state.pages.dao.transactions.data = response.mappedData;
-                state.pages.dao.transactions.loading = false;
-              })
-            );
-          },
-        },
-      },
+      ...createDaoSlice(set, get, store),
       account: {
         assets: {
           loading: false,
