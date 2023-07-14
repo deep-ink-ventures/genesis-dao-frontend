@@ -1,4 +1,5 @@
 import { BN } from '@polkadot/util';
+import cn from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
@@ -410,7 +411,13 @@ const Proposal = () => {
                     onClick={(e) => {
                       handleVoteSelection(e);
                     }}>
-                    <ThumbUp className='mr-2 [&_path]:group-hover:stroke-primary-content' />
+                    <ThumbUp
+                      className={cn('mr-2', {
+                        '[&_path]:stroke-success': voteSelection === 'In Favor',
+                        '[&_path]:group-hover:stroke-primary-content':
+                          voteSelection !== 'In Favor',
+                      })}
+                    />
                     In Favor
                   </div>
                   <div
@@ -422,7 +429,14 @@ const Proposal = () => {
                     onClick={(e) => {
                       handleVoteSelection(e);
                     }}>
-                    <ThumbDown className='mr-2 [&_path]:group-hover:stroke-primary-content' />
+                    <ThumbDown
+                      className={cn('mr-2', {
+                        '[&_path]:stroke-secondary':
+                          voteSelection === 'Against',
+                        '[&_path]:group-hover:stroke-primary-content':
+                          voteSelection !== 'Against',
+                      })}
+                    />
                     Against
                   </div>
                 </div>
