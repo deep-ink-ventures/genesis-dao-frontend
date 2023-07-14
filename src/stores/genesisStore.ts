@@ -8,7 +8,8 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 import { NODE_URL, SERVICE_URL } from '@/config';
-import { type Asset, AssetsHoldingsService } from '@/services/assets';
+import type { Asset, AssetHolding } from '@/services/assets';
+import { AssetsHoldingsService } from '@/services/assets';
 import type { Dao } from '@/services/daos';
 import { DaoService } from '@/services/daos';
 import type {
@@ -294,10 +295,24 @@ export interface GenesisState {
         loading: boolean;
         data: Array<Asset & { dao?: Dao }>;
         fetchAssets: () => void;
+        selectedAssetHolding:
+          | (AssetHolding & { asset?: Asset & { dao?: Dao } })
+          | null;
+        selectAssetHolding: (
+          assetHolding?:
+            | (AssetHolding & { asset?: Asset & { dao?: Dao } })
+            | null
+        ) => void;
       };
       tabs: {
         activeTab?: string;
         setActiveTab: (tab: string) => void;
+      };
+      modals: {
+        transferAssets: {
+          visible: boolean;
+          setVisibility: (open: boolean) => void;
+        };
       };
     };
   };
@@ -879,6 +894,14 @@ const useGenesisStore = create<GenesisStore>()(
                 );
               });
           },
+          selectedAssetHolding: null,
+          selectAssetHolding: (asset) => {
+            set(
+              produce((state: GenesisState) => {
+                state.pages.account.assets.selectedAssetHolding = asset || null;
+              })
+            );
+          },
         },
         tabs: {
           setActiveTab: (tab) =>
@@ -887,6 +910,21 @@ const useGenesisStore = create<GenesisStore>()(
                 state.pages.account.tabs.activeTab = tab;
               })
             ),
+        },
+        modals: {
+          transferAssets: {
+            visible: false,
+            setVisibility: (open: boolean) => {
+              set(
+                produce((state: GenesisState) => {
+                  state.pages.account.modals.transferAssets.visible = open;
+                })
+              );
+              if (!open) {
+                get().pages.account.assets.selectAssetHolding(null);
+              }
+            },
+          },
         },
       },
     },

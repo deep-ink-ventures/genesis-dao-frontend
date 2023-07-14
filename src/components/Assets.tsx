@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import type { Asset, AssetHolding } from '@/services/assets';
@@ -13,8 +14,7 @@ const Assets = () => {
     s.currentWalletAccount,
     s.pages.account,
   ]);
-
-  // const [totalAssetsHoldingCount, settotalAssetsHoldingCount=
+  const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [assetHoldingsResponse, setAssetHoldingsResponse] = useState<{
@@ -113,6 +113,13 @@ const Assets = () => {
           <AssetsHoldingsTable
             assetHoldings={filteredAssetHoldings}
             currentWallet={currentWalletAccount?.address}
+            onTransferClick={(asset) => {
+              account.assets.selectAssetHolding(asset);
+              account.modals.transferAssets.setVisibility(true);
+            }}
+            onOpenLinkClick={(assetHolding) => {
+              router.push(`/dao/${assetHolding?.asset?.dao_id}`);
+            }}
           />
         )}
       </div>
