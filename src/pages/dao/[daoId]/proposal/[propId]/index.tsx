@@ -1,4 +1,5 @@
 import { BN } from '@polkadot/util';
+import cn from 'classnames';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
@@ -16,6 +17,8 @@ import { ProposalStatus } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
 import alert from '@/svg/alert.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
+import ThumbDown from '@/svg/components/thumbdown';
+import ThumbUp from '@/svg/components/thumbup';
 import MainLayout from '@/templates/MainLayout';
 import { getProposalEndTime, uiTokens } from '@/utils';
 
@@ -400,7 +403,7 @@ const Proposal = () => {
               {currentWalletAccount ? (
                 <div className='flex flex-col gap-y-2'>
                   <div
-                    className={`btn-vote flex min-w-[250px] items-center justify-center rounded-3xl border-2 border-neutral-focus bg-transparent hover:cursor-pointer hover:bg-neutral-focus hover:text-primary-content ${
+                    className={`btn-vote group flex min-w-[250px] items-center justify-center rounded-3xl border-2 border-neutral-focus bg-transparent hover:cursor-pointer hover:bg-neutral-focus hover:text-primary-content ${
                       voteSelection === 'In Favor'
                         ? ' border-success font-semibold text-success outline  hover:bg-transparent hover:text-success'
                         : 'text-white'
@@ -408,17 +411,17 @@ const Proposal = () => {
                     onClick={(e) => {
                       handleVoteSelection(e);
                     }}>
-                    {/* <Image
-                    src={thumbUp}
-                    height={16}
-                    width={16}
-                    alt='thumb-up'
-                    className='mr-2'
-                  /> */}
+                    <ThumbUp
+                      className={cn('mr-2', {
+                        '[&_path]:stroke-success': voteSelection === 'In Favor',
+                        '[&_path]:group-hover:stroke-primary-content':
+                          voteSelection !== 'In Favor',
+                      })}
+                    />
                     In Favor
                   </div>
                   <div
-                    className={`btn-vote flex min-w-[250px] items-center justify-center rounded-3xl border-2 border-neutral-focus bg-transparent hover:cursor-pointer hover:bg-neutral-focus hover:text-primary-content ${
+                    className={`btn-vote group flex min-w-[250px] items-center justify-center rounded-3xl border-2 border-neutral-focus bg-transparent hover:cursor-pointer hover:bg-neutral-focus hover:text-primary-content ${
                       voteSelection === 'Against'
                         ? 'border-secondary text-secondary outline hover:bg-transparent hover:text-secondary'
                         : 'text-white '
@@ -426,13 +429,14 @@ const Proposal = () => {
                     onClick={(e) => {
                       handleVoteSelection(e);
                     }}>
-                    {/* <Image
-                    src={thumbDown}
-                    height={16}
-                    width={16}
-                    alt='thumb-down'
-                    className={`mr-2 vote-down`}
-                  /> */}
+                    <ThumbDown
+                      className={cn('mr-2', {
+                        '[&_path]:stroke-secondary':
+                          voteSelection === 'Against',
+                        '[&_path]:group-hover:stroke-primary-content':
+                          voteSelection !== 'Against',
+                      })}
+                    />
                     Against
                   </div>
                 </div>
