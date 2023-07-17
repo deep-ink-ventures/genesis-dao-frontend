@@ -278,10 +278,10 @@ export interface GenesisState {
   inFavorVotes: BN;
   isFaultyModalOpen: boolean;
   isFaultyReportsOpen: boolean;
-  pages: Pages;
+  pages: PageSlices;
 }
 
-interface Pages {
+interface PageSlices {
   dao: DaoSlice;
   account: AccountSlice;
 }
