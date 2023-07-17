@@ -2,17 +2,28 @@
 import { produce } from 'immer';
 import type { StateCreator } from 'zustand';
 
+import type { ProposalDetail } from '@/services/proposals';
 import { ProposalsService } from '@/services/proposals';
 
 import type { GenesisState } from './genesisStore';
 
-type DaoSlice = Pick<GenesisState['pages'], 'dao'>;
+export type DaoSlice = {
+  transactions: {
+    loading: boolean;
+    data: Array<ProposalDetail>;
+    fetchTransactions: (params?: {
+      dao_id?: string;
+      limit?: number;
+      order_by?: string;
+    }) => Promise<void>;
+  };
+};
 
 export const createDaoSlice: StateCreator<
-  GenesisState & DaoSlice,
+  GenesisState,
   [],
   [],
-  DaoSlice
+  { dao: DaoSlice }
 > = (set) => ({
   dao: {
     transactions: {
