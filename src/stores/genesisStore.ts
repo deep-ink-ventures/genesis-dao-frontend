@@ -3,21 +3,21 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
 import { BN } from '@polkadot/util';
 import type { Wallet } from '@talismn/connect-wallets';
-import { produce } from 'immer';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 import { NODE_URL, SERVICE_URL } from '@/config';
-import type { Asset, AssetHolding } from '@/services/assets';
-import { AssetsHoldingsService } from '@/services/assets';
-import type { Dao } from '@/services/daos';
-import { DaoService } from '@/services/daos';
 import type {
   IncomingProposal,
   ProposalDetail,
   ProposalStatusNames,
 } from '@/services/proposals';
-import { ProposalsService, ProposalStatus } from '@/services/proposals';
+import { ProposalStatus } from '@/services/proposals';
+
+import type { AccountSlice } from './account';
+import { createAccountSlice } from './account';
+import type { DaoSlice } from './dao';
+import { createDaoSlice } from './dao';
 
 // ALL TYPES and INTERFACES...
 
@@ -247,7 +247,7 @@ export interface AllDaos {
 }
 
 export interface GenesisState {
-  currentWalletAccount: WalletAccount | null;
+  currentWalletAccount?: WalletAccount | null;
   currentAssetId: number | null;
   currentDao: DaoDetail | null;
   currentProposals: ProposalDetail[] | null;
@@ -278,46 +278,13 @@ export interface GenesisState {
   inFavorVotes: BN;
   isFaultyModalOpen: boolean;
   isFaultyReportsOpen: boolean;
-  pages: {
-    dao: {
-      transactions: {
-        loading: boolean;
-        data: Array<ProposalDetail>;
-        fetchTransactions: (params?: {
-          dao_id?: string;
-          limit?: number;
-          order_by?: string;
-        }) => Promise<void>;
-      };
-    };
-    account: {
-      assets: {
-        loading: boolean;
-        data: Array<Asset & { dao?: Dao }>;
-        fetchAssets: () => void;
-        selectedAssetHolding:
-          | (AssetHolding & { asset?: Asset & { dao?: Dao } })
-          | null;
-        selectAssetHolding: (
-          assetHolding?:
-            | (AssetHolding & { asset?: Asset & { dao?: Dao } })
-            | null
-        ) => void;
-      };
-      tabs: {
-        activeTab?: string;
-        setActiveTab: (tab: string) => void;
-      };
-      modals: {
-        transferAssets: {
-          visible: boolean;
-          setVisibility: (open: boolean) => void;
-        };
-      };
-    };
-  };
+  pages: PageSlices;
 }
 
+interface PageSlices {
+  dao: DaoSlice;
+  account: AccountSlice;
+}
 export interface GenesisActions {
   createApiConnection: () => void;
   handleErrors: (err: Error | string) => void;
@@ -372,7 +339,7 @@ export interface GenesisStore extends GenesisState, GenesisActions {}
 // STORE...
 
 const useGenesisStore = create<GenesisStore>()(
-  devtools((set, get) => ({
+  devtools((set, get, store) => ({
     currentWalletAccount: null,
     currentProposal: null,
     walletAccounts: null,
@@ -833,100 +800,8 @@ const useGenesisStore = create<GenesisStore>()(
     updateIsFaultyReportsOpen: (isFaultyReportsOpen) =>
       set({ isFaultyReportsOpen }),
     pages: {
-      dao: {
-        transactions: {
-          loading: false,
-          data: [],
-          fetchTransactions: async (params) => {
-            ProposalsService.listProposals(params);
-            set(
-              produce((state: GenesisState) => {
-                state.pages.dao.transactions.loading = true;
-              })
-            );
-            const response = await ProposalsService.listProposals(params);
-            set(
-              produce((state: GenesisState) => {
-                state.pages.dao.transactions.data = response.mappedData;
-                state.pages.dao.transactions.loading = false;
-              })
-            );
-          },
-        },
-      },
-      account: {
-        assets: {
-          loading: false,
-          data: [],
-          fetchAssets: () => {
-            set(
-              produce((state: GenesisState) => {
-                state.pages.account.assets.loading = true;
-              })
-            );
-            AssetsHoldingsService.listAssets({
-              owner_id: get().currentWalletAccount?.address,
-            })
-              .then(async (response) => {
-                let newData: Array<Asset & { dao?: Dao }> = [];
-                if (response.results?.length) {
-                  const daoDetails = await Promise.all(
-                    response.results.map((asset) =>
-                      DaoService.get(asset.dao_id)
-                    )
-                  );
-                  newData = response.results.map((asset) => ({
-                    ...asset,
-                    dao: daoDetails.find((dao) => dao.asset_id === asset.id),
-                  }));
-                }
-                set(
-                  produce((state: GenesisState) => {
-                    state.pages.account.assets.data = newData;
-                  })
-                );
-              })
-              .finally(() => {
-                set(
-                  produce((state: GenesisState) => {
-                    state.pages.account.assets.loading = false;
-                  })
-                );
-              });
-          },
-          selectedAssetHolding: null,
-          selectAssetHolding: (asset) => {
-            set(
-              produce((state: GenesisState) => {
-                state.pages.account.assets.selectedAssetHolding = asset || null;
-              })
-            );
-          },
-        },
-        tabs: {
-          setActiveTab: (tab) =>
-            set(
-              produce((state: GenesisState) => {
-                state.pages.account.tabs.activeTab = tab;
-              })
-            ),
-        },
-        modals: {
-          transferAssets: {
-            visible: false,
-            setVisibility: (open: boolean) => {
-              set(
-                produce((state: GenesisState) => {
-                  state.pages.account.modals.transferAssets.visible = open;
-                })
-              );
-              if (!open) {
-                get().pages.account.assets.selectAssetHolding(null);
-              }
-            },
-          },
-        },
-      },
+      ...createDaoSlice(set, get, store),
+      ...createAccountSlice(set, get, store),
     },
   }))
 );
