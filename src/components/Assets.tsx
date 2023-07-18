@@ -127,7 +127,7 @@ const Assets = () => {
           />
         )}
       </div>
-      {!account.assets.loading && (
+      {!account.assets.loading && currentWalletAccount && (
         <div>
           <Pagination
             pageSize={5}
