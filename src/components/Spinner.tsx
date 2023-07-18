@@ -1,13 +1,15 @@
 const Spinner = (props: { size?: string }) => {
-  const size = props?.size
-    ? `h-[${props.size}px] w-[${props.size}px]`
-    : `h-[64px] w-[64px]`;
+  const { size = '64' } = props;
 
   return (
     <div role='status'>
       <svg
         aria-hidden='true'
-        className={`m-auto ${size} animate-spin fill-blue-600 text-gray-200 dark:text-gray-600`}
+        style={{
+          height: `${size}px`,
+          width: `${size}px`,
+        }}
+        className={`m-auto  animate-spin fill-blue-600 text-gray-200 dark:text-gray-600`}
         viewBox='0 0 100 101'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'>

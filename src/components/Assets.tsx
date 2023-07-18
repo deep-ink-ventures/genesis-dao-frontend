@@ -1,13 +1,14 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+import Loading from '@/components/Loading';
+import Pagination from '@/components/Pagination';
 import type { Asset, AssetHolding } from '@/services/assets';
 import { AssetsHoldingsService } from '@/services/assets';
 import type { Dao } from '@/services/daos';
 import useGenesisStore from '@/stores/genesisStore';
 
 import AssetsHoldingsTable from './AssetsTable';
-import Pagination from './Pagination';
 
 const Assets = () => {
   const [currentWalletAccount, account] = useGenesisStore((s) => [
@@ -109,7 +110,10 @@ const Assets = () => {
             Connect to view Assets
           </div>
         )}
-        {currentWalletAccount && (
+        {currentWalletAccount && account.assets.loading && (
+          <Loading spinnerSize='32' />
+        )}
+        {currentWalletAccount && !account.assets.loading && (
           <AssetsHoldingsTable
             assetHoldings={filteredAssetHoldings}
             currentWallet={currentWalletAccount?.address}
@@ -123,15 +127,17 @@ const Assets = () => {
           />
         )}
       </div>
-      <div>
-        <Pagination
-          pageSize={5}
-          totalCount={assetHoldingsResponse?.totalCount}
-          onPageChange={(offset) =>
-            setPagination((prevValue) => ({ ...prevValue, offset }))
-          }
-        />
-      </div>
+      {!account.assets.loading && (
+        <div>
+          <Pagination
+            pageSize={5}
+            totalCount={assetHoldingsResponse?.totalCount}
+            onPageChange={(offset) =>
+              setPagination((prevValue) => ({ ...prevValue, offset }))
+            }
+          />
+        </div>
+      )}
     </div>
   );
 };
