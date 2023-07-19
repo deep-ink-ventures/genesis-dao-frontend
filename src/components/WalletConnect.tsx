@@ -1,10 +1,15 @@
 import { WalletSelect } from '@talismn/connect-components';
+import cn from 'classnames';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 import type { WalletAccount } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import avatar from '@/svg/avatar.svg';
+import AccountCircle from '@/svg/components/accountCircle';
+import Logout from '@/svg/components/logout';
+import Switch from '@/svg/components/switch';
 import wallet from '@/svg/wallet.svg';
 
 import { truncateMiddle } from '../utils';
@@ -15,6 +20,8 @@ interface WalletConnectProps {
 }
 
 const WalletConnect = (props: WalletConnectProps) => {
+  const router = useRouter();
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
@@ -61,6 +68,11 @@ const WalletConnect = (props: WalletConnectProps) => {
     setDropdownOpen(false);
   };
 
+  const handleProfileClick = () => {
+    router.push('/account');
+    setDropdownOpen(false);
+  };
+
   const displayButtonText = () => {
     if (txnProcessing || modalIsOpen) {
       return 'Processing';
@@ -74,7 +86,7 @@ const WalletConnect = (props: WalletConnectProps) => {
 
   return (
     <div>
-      <div className='relative flex flex-col'>
+      <div className='relative z-20 flex flex-col'>
         <button
           tabIndex={0}
           className={`btn m-1 ${
@@ -113,18 +125,42 @@ const WalletConnect = (props: WalletConnectProps) => {
           ) : null}
         </button>
         <div
-          className={`${
-            !dropdownOpen ? 'hidden' : ''
-          } btn-secondary btn absolute left-[12px] top-[50px] m-2 w-[160px] text-center`}
-          onClick={handleSwitchAccount}>
-          Switch Account
-        </div>
-        <div
-          className={`${
-            !dropdownOpen ? 'hidden' : ''
-          } btn-secondary btn absolute left-[12px] top-[100px] m-2 w-[160px] text-center`}
-          onClick={handleDisconnect}>
-          Disconnect
+          className={cn(
+            'shadow-[0_0_4px_0_rgba(255, 255, 255, 0.20)] absolute right-0 top-[65px] space-y-2 rounded-2xl bg-primary-content py-1 shadow-sm',
+            {
+              hidden: !dropdownOpen,
+            }
+          )}>
+          <div
+            className={`group flex cursor-pointer items-center gap-2 px-4 py-2 hover:text-primary`}
+            onClick={handleProfileClick}>
+            <AccountCircle
+              width={20}
+              height={20}
+              className='[&_path]:group-hover:fill-primary'
+            />{' '}
+            Profile
+          </div>
+          <div
+            className={`group flex cursor-pointer items-center gap-2 px-4 py-2 hover:text-primary`}
+            onClick={handleSwitchAccount}>
+            <Switch
+              width={20}
+              height={20}
+              className='[&_path]:group-hover:fill-primary'
+            />{' '}
+            Switch Account
+          </div>
+          <div
+            className={`group flex cursor-pointer items-center gap-2 border-t-[0.02rem] border-neutral-focus px-4 py-2 text-error hover:text-primary`}
+            onClick={handleDisconnect}>
+            <Logout
+              width={20}
+              height={20}
+              className='[&_path]:group-hover:stroke-primary'
+            />{' '}
+            Disconnect
+          </div>
         </div>
       </div>
 
@@ -149,7 +185,7 @@ const WalletConnect = (props: WalletConnectProps) => {
         onError={(error) => {
           if (error) {
             // eslint-disable-next-line
-              console.log(error);
+            console.log(error);
           }
         }}
       />
