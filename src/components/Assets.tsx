@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+import Pagination from '@/components/Pagination';
 import type { Asset, AssetHolding } from '@/services/assets';
 import { AssetsHoldingsService } from '@/services/assets';
 import type { Dao } from '@/services/daos';
 import useGenesisStore from '@/stores/genesisStore';
 
 import AssetsHoldingsTable from './AssetsTable';
-import Pagination from './Pagination';
 
 const Assets = () => {
   const [currentWalletAccount, account] = useGenesisStore((s) => [
@@ -22,12 +22,9 @@ const Assets = () => {
     assetHoldings: Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>;
   }>();
 
-  const [pagination, setPagination] = useState<{
-    offset?: number;
-    limit?: number;
-  }>({
-    offset: 1,
-    limit: 5,
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    offset: 0,
   });
 
   const handleSearch = (e: any) => {
@@ -42,7 +39,10 @@ const Assets = () => {
 
   const fetchAssetHoldings = async () => {
     if (account.assets.data) {
-      AssetsHoldingsService.listAssetHoldings(pagination).then((res) => {
+      AssetsHoldingsService.listAssetHoldings({
+        offset: pagination.offset - 1,
+        limit: 5,
+      }).then((res) => {
         setAssetHoldingsResponse({
           totalCount: res.count,
           assetHoldings: res.results?.map((assetHolding) => ({
@@ -59,7 +59,7 @@ const Assets = () => {
   useEffect(() => {
     fetchAssetHoldings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account.assets.data, pagination]);
+  }, [account.assets.data, pagination.currentPage]);
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -125,10 +125,11 @@ const Assets = () => {
       </div>
       <div>
         <Pagination
+          currentPage={pagination.currentPage}
           pageSize={5}
           totalCount={assetHoldingsResponse?.totalCount}
-          onPageChange={(offset) =>
-            setPagination((prevValue) => ({ ...prevValue, offset }))
+          onPageChange={(newPage, newOffset) =>
+            setPagination({ currentPage: newPage, offset: newOffset })
           }
         />
       </div>

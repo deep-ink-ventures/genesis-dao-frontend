@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 
 import arrowLeft from '@/svg/arrow-left.svg';
 import arrowRight from '@/svg/arrow-right.svg';
@@ -7,13 +6,12 @@ import arrowRight from '@/svg/arrow-right.svg';
 interface PaginationProps {
   pageSize: number;
   totalCount?: number;
-  onPageChange?: (offset: number) => void;
+  onPageChange?: (currentPage: number, offset: number) => void;
+  currentPage?: number;
 }
 
 const Pagination = (props: PaginationProps) => {
-  const { pageSize, totalCount = 0, onPageChange } = props;
-
-  const [currentPage, setCurrentPage] = useState(1);
+  const { currentPage = 1, pageSize = 0, totalCount = 0, onPageChange } = props;
 
   const maxPageSize = Math.min(pageSize, totalCount);
   const lastItemIndex = currentPage * maxPageSize;
@@ -22,19 +20,24 @@ const Pagination = (props: PaginationProps) => {
     lastItemIndex
   );
 
-  useEffect(() => {
-    if (onPageChange) {
-      onPageChange(firstItemIndex - 1);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstItemIndex]);
-
   const handleNextClick = () => {
-    setCurrentPage(currentPage + 1);
+    if (onPageChange) {
+      const nextOffset = (currentPage + 1) * maxPageSize;
+      onPageChange(
+        currentPage + 1,
+        Math.min(nextOffset - maxPageSize + 1, nextOffset)
+      );
+    }
   };
 
   const handPreviousClick = () => {
-    setCurrentPage(currentPage - 1);
+    if (onPageChange) {
+      const nextOffset = (currentPage - 1) * maxPageSize;
+      onPageChange(
+        currentPage - 1,
+        Math.min(nextOffset - maxPageSize + 1, nextOffset)
+      );
+    }
   };
 
   return (
