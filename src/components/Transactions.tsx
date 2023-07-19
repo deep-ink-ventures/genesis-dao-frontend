@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import Loading from '@/components/Loading';
+import Pagination from '@/components/Pagination';
+import TransactionAccordion from '@/components/TransactionAccordion';
 import useGenesisStore from '@/stores/genesisStore';
-
-import TransactionAccordion from './TransactionAccordion';
 
 const Transactions = (props: { daoId: string }) => {
   const { daoId } = props;
@@ -13,17 +13,30 @@ const Transactions = (props: { daoId: string }) => {
   ]);
 
   const [, setSearchTerm] = useState('');
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    offset: 0,
+  });
+
   const [activeAccordion, setActiveAccordion] = useState<string>();
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
 
-  useEffect(() => {
+  const fetchTransactions = () => {
     dao.transactions.fetchTransactions({
-      dao_id: daoId,
+      limit: 5,
+      offset: pagination.offset - 1,
+      daoId,
     });
+  };
+
+  useEffect(() => {
+    if (dao.transactions.loading === false && currentWalletAccount) {
+      fetchTransactions();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [daoId]);
+  }, [pagination.currentPage]);
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -63,6 +76,18 @@ const Transactions = (props: { daoId: string }) => {
               onClick={() => setActiveAccordion(proposal.proposalId)}
             />
           ))}
+        {!dao.transactions.loading && currentWalletAccount && (
+          <div>
+            <Pagination
+              currentPage={pagination.currentPage}
+              pageSize={5}
+              totalCount={dao.transactions.totalCount}
+              onPageChange={(newPage, newOffset) =>
+                setPagination({ currentPage: newPage, offset: newOffset })
+              }
+            />
+          </div>
+        )}
       </div>
     </div>
   );

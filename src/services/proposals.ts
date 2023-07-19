@@ -1,6 +1,7 @@
 import { BN } from '@polkadot/util';
 
 import { SERVICE_URL } from '@/config';
+import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
 
 export enum ProposalStatus {
@@ -71,10 +72,11 @@ export interface IncomingProposal {
   birth_block_number: number;
 }
 
-interface ListProposalsQueryParams {
+export interface ListProposalsQueryParams {
   daoId?: string;
   limit?: number;
   orderBy?: string;
+  offset?: number;
 }
 
 const listProposals = async (params?: ListProposalsQueryParams) => {
@@ -118,7 +120,7 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
     });
 
   return {
-    response,
+    data: json as Paginated<IncomingProposal>,
     mappedData: newProposals,
   };
 };

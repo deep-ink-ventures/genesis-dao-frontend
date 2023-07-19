@@ -23,12 +23,9 @@ const Assets = () => {
     assetHoldings: Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>;
   }>();
 
-  const [pagination, setPagination] = useState<{
-    offset?: number;
-    limit?: number;
-  }>({
-    offset: 1,
-    limit: 5,
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    offset: 0,
   });
 
   const handleSearch = (e: any) => {
@@ -43,7 +40,10 @@ const Assets = () => {
 
   const fetchAssetHoldings = async () => {
     if (account.assets.data) {
-      AssetsHoldingsService.listAssetHoldings(pagination).then((res) => {
+      AssetsHoldingsService.listAssetHoldings({
+        offset: pagination.offset - 1,
+        limit: 5,
+      }).then((res) => {
         setAssetHoldingsResponse({
           totalCount: res.count,
           assetHoldings: res.results?.map((assetHolding) => ({
@@ -60,7 +60,7 @@ const Assets = () => {
   useEffect(() => {
     fetchAssetHoldings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account.assets.data, pagination]);
+  }, [account.assets.data, pagination.currentPage]);
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -127,17 +127,16 @@ const Assets = () => {
           />
         )}
       </div>
-      {!account.assets.loading && currentWalletAccount && (
-        <div>
-          <Pagination
-            pageSize={5}
-            totalCount={assetHoldingsResponse?.totalCount}
-            onPageChange={(offset) =>
-              setPagination((prevValue) => ({ ...prevValue, offset }))
-            }
-          />
-        </div>
-      )}
+      <div>
+        <Pagination
+          currentPage={pagination.currentPage}
+          pageSize={5}
+          totalCount={assetHoldingsResponse?.totalCount}
+          onPageChange={(newPage, newOffset) =>
+            setPagination({ currentPage: newPage, offset: newOffset })
+          }
+        />
+      </div>
     </div>
   );
 };
