@@ -68,7 +68,7 @@ const WalletConnect = (props: WalletConnectProps) => {
     setDropdownOpen(false);
   };
 
-  const ProfileClick = () => {
+  const handleProfileClick = () => {
     router.push('/account');
     setDropdownOpen(false);
   };
@@ -133,7 +133,7 @@ const WalletConnect = (props: WalletConnectProps) => {
           )}>
           <div
             className={`group flex cursor-pointer items-center gap-2 py-2 px-4 hover:text-primary`}
-            onClick={ProfileClick}>
+            onClick={handleProfileClick}>
             <AccountCircle
               width={20}
               height={20}
