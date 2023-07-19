@@ -126,13 +126,13 @@ const WalletConnect = (props: WalletConnectProps) => {
         </button>
         <div
           className={cn(
-            'shadow-[0_0_4px_0_rgba(255, 255, 255, 0.20)] absolute top-[65px] right-0 space-y-2 rounded-2xl bg-primary-content py-1 shadow-sm',
+            'shadow-[0_0_4px_0_rgba(255, 255, 255, 0.20)] absolute right-0 top-[65px] space-y-2 rounded-2xl bg-primary-content py-1 shadow-sm',
             {
               hidden: !dropdownOpen,
             }
           )}>
           <div
-            className={`group flex cursor-pointer items-center gap-2 py-2 px-4 hover:text-primary`}
+            className={`group flex cursor-pointer items-center gap-2 px-4 py-2 hover:text-primary`}
             onClick={handleProfileClick}>
             <AccountCircle
               width={20}
@@ -142,7 +142,7 @@ const WalletConnect = (props: WalletConnectProps) => {
             Profile
           </div>
           <div
-            className={`group flex cursor-pointer items-center gap-2 py-2 px-4 hover:text-primary`}
+            className={`group flex cursor-pointer items-center gap-2 px-4 py-2 hover:text-primary`}
             onClick={handleSwitchAccount}>
             <Switch
               width={20}
@@ -152,7 +152,7 @@ const WalletConnect = (props: WalletConnectProps) => {
             Switch Account
           </div>
           <div
-            className={`group flex cursor-pointer items-center gap-2 border-t-[0.02rem] border-neutral-focus py-2 px-4 text-error hover:text-primary`}
+            className={`group flex cursor-pointer items-center gap-2 border-t-[0.02rem] border-neutral-focus px-4 py-2 text-error hover:text-primary`}
             onClick={handleDisconnect}>
             <Logout
               width={20}
