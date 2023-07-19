@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
 import type { Asset, AssetHolding } from '@/services/assets';
 import { AssetsHoldingsService } from '@/services/assets';
@@ -109,7 +110,10 @@ const Assets = () => {
             Connect to view Assets
           </div>
         )}
-        {currentWalletAccount && (
+        {currentWalletAccount && account.assets.loading && (
+          <Loading spinnerSize='32' />
+        )}
+        {currentWalletAccount && !account.assets.loading && (
           <AssetsHoldingsTable
             assetHoldings={filteredAssetHoldings}
             currentWallet={currentWalletAccount?.address}

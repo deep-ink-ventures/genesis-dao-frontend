@@ -1,10 +1,10 @@
 import Spinner from './Spinner';
 
-const Loading = () => {
+const Loading = ({ spinnerSize }: { spinnerSize?: string }) => {
   return (
     <div className='flex flex-col items-center justify-center'>
       <div className='my-4'>
-        <Spinner />
+        <Spinner size={spinnerSize} />
       </div>
       <div>Loading...</div>
     </div>

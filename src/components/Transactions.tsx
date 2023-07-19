@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
 import TransactionAccordion from '@/components/TransactionAccordion';
 import useGenesisStore from '@/stores/genesisStore';
@@ -60,7 +61,11 @@ const Transactions = (props: { daoId: string }) => {
             Connect to view Transactions
           </div>
         )}
+        {currentWalletAccount && dao.transactions.loading && (
+          <Loading spinnerSize='32' />
+        )}
         {currentWalletAccount &&
+          !dao.transactions.loading &&
           dao.transactions.data?.map((proposal) => (
             <TransactionAccordion
               key={proposal.proposalId}
