@@ -91,15 +91,24 @@ export const getProposalEndTime = (currentNumber: number, startNumber: number, d
 
 
 export const uiTokens = (
-  rawAmount: BN | null,
-  tokenType: 'native' | 'dao',
+  rawAmount: BN | null 
+  | undefined,
+  tokenUnit: 'native' | 'dao' | 'none',
   unitName?: string
 ) => {
-  const units = tokenType === 'native' ? NATIVE_UNITS : DAO_UNITS;
+  let units: number = 1;
+  
+  if(tokenUnit === 'native') {
+    units = NATIVE_UNITS
+  } 
+
+  if(tokenUnit === 'dao') {
+    units = DAO_UNITS
+  }
 
   formatBalance.setDefaults({ decimals: 0, unit: unitName || 'UNITS' });
 
-  return formatBalance(rawAmount?.div(new BN(units) || new BN(0)).toString(), {
+  return formatBalance(rawAmount?.div(new BN(units)).toString(), {
     forceUnit: unitName,
     withZero: false,
   });
