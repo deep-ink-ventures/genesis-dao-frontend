@@ -2,6 +2,7 @@ import { BN } from '@polkadot/util';
 import cn from 'classnames';
 import Image from 'next/image';
 import { useMemo } from 'react';
+import ReactHtmlParser from 'react-html-parser';
 
 import { DAO_UNITS } from '@/config';
 import type { ProposalDetail } from '@/services/proposals';
@@ -97,7 +98,7 @@ const TransactionAccordion = ({
         )}>
         <div className='flex-1 space-y-2'>
           <div>{proposal.metadata?.title}</div>
-          <div>{proposal.metadata?.description}</div>
+          <div>{ReactHtmlParser(proposal.metadata?.description ?? '')}</div>
         </div>
         <div className='h-[inherit] border-r-[0.02rem] border-neutral-focus' />
         <div className='flex-1 space-y-4'>
