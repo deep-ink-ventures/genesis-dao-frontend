@@ -18,7 +18,7 @@ const Transactions = (props: { daoId: string }) => {
     offset: 0,
   });
 
-  const [activeAccordion, setActiveAccordion] = useState<string>();
+  const [activeAccordion, setActiveAccordion] = useState<string | null>();
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
@@ -37,6 +37,10 @@ const Transactions = (props: { daoId: string }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.currentPage]);
+
+  const handleAccordionClick = (proposalId?: string) => {
+    setActiveAccordion(activeAccordion === proposalId ? null : proposalId);
+  };
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -73,7 +77,7 @@ const Transactions = (props: { daoId: string }) => {
               collapsed={
                 proposal.proposalId !== activeAccordion || !activeAccordion
               }
-              onClick={() => setActiveAccordion(proposal.proposalId)}
+              onClick={() => handleAccordionClick(proposal.proposalId)}
             />
           ))}
         {!dao.transactions.loading && currentWalletAccount && (
