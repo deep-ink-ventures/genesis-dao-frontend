@@ -22,12 +22,17 @@ const Proposals = (props: { daoId: string }) => {
     s.currentBlockNumber,
     s.updateBlockNumber,
   ]);
-  const filteredProposals = currentProposals?.filter((prop) => {
-    return (
-      prop.proposalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prop.proposalName?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const filteredProposals = currentProposals
+    ?.filter((prop) => {
+      // filter out proposals without metadata onchain here because we can let users search and complete them fixme
+      return prop.setupComplete === true;
+    })
+    .filter((prop) => {
+      return (
+        prop.proposalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prop.proposalName?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
 
   const displayProposal = () => {
     if (!filteredProposals || filteredProposals?.length === 0) {
@@ -96,6 +101,7 @@ const Proposals = (props: { daoId: string }) => {
               onChange={handleSearch}
             />
           </div>
+          {/* fixme proposals filter */}
           {/* <div className='flex items-center justify-center'>
             <div className='flex h-12 min-w-[76px] items-center justify-center rounded-full border'>
               <p>All</p>

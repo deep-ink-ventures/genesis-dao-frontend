@@ -22,6 +22,7 @@ describe('ProposalCard', () => {
       proposalName: 'This is a proposal',
       description: 'proposal description',
       link: 'https://google.com',
+      setupComplete: true,
     };
 
     render(<ProposalCard p={proposal} />);

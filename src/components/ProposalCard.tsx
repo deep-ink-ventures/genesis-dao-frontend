@@ -5,7 +5,7 @@ import Tooltip from '@/components/Tooltip';
 import { DAO_UNITS } from '@/config';
 import type { ProposalDetail } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
-import { getProposalEndTime } from '@/utils';
+import { getProposalEndTime, uiTokens } from '@/utils';
 
 import { TransactionBadge } from './TransactionBadge';
 
@@ -120,7 +120,15 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
             {props.p.status === 'Active' && proposalIsRunning ? (
               <Tooltip
                 placement='top'
-                content={`Please note, that creating a proposal requires a one-time deposit of ${currentDao?.proposalTokenDeposit} tokens`}>
+                content={`Please note, that creating a proposal requires a one-time deposit of ${uiTokens(
+                  currentDao?.proposalTokenDeposit,
+                  'none',
+                  currentDao?.daoId
+                )} ${
+                  currentDao?.proposalTokenDeposit?.gt(new BN(1))
+                    ? 'tokens'
+                    : 'token'
+                }`}>
                 <button className='btn-primary btn w-28'>Vote</button>
               </Tooltip>
             ) : null}

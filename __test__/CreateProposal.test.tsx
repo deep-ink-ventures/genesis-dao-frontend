@@ -1,3 +1,4 @@
+import { BN } from '@polkadot/util';
 import { act, render, screen } from '@testing-library/react';
 
 import CreateProposal from '../src/components/CreateProposal';
@@ -21,7 +22,7 @@ const daoDetail: DaoDetail = {
   daoCreatorAddress: '{N/A}',
   setupComplete: false,
   proposalDuration: null,
-  proposalTokenDeposit: 0,
+  proposalTokenDeposit: new BN(0),
   minimumMajority: null,
   daoAssetId: null,
   metadataUrl: null,

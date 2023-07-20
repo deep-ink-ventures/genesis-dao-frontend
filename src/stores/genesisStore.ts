@@ -67,7 +67,7 @@ export interface DaoDetail {
   setupComplete: boolean;
   daoAssetId: number | null;
   proposalDuration: number | null;
-  proposalTokenDeposit: number;
+  proposalTokenDeposit: BN | null;
   minimumMajority: number | null;
   metadataUrl: string | null;
   metadataHash: string | null;
@@ -116,7 +116,7 @@ export interface LogoFormValues {
 }
 
 export interface MajorityModelValues {
-  tokensToIssue: BN; // fixme BN
+  tokensToIssue: BN;
   proposalTokensCost: number;
   minimumMajority: number; // percentage or decimals
   votingDays: number; // in days
@@ -146,9 +146,9 @@ export interface DaoCreationValues {
   votingDays: number; // in days
   councilMembers: CouncilMember[];
   councilThreshold: number; // number of councils needed
-  tokensToIssue: number; // fixme BN
+  tokensToIssue: number;
   tokensRecipients: TokenRecipient[] | null;
-  treasuryTokens: number; // fixme BN
+  treasuryTokens: number;
 }
 
 export enum TxnResponse {
@@ -247,7 +247,7 @@ export interface AllDaos {
 }
 
 export interface GenesisState {
-  currentWalletAccount?: WalletAccount | null;
+  currentWalletAccount: WalletAccount | null;
   currentAssetId: number | null;
   currentDao: DaoDetail | null;
   currentProposals: ProposalDetail[] | null;
@@ -432,7 +432,6 @@ const useGenesisStore = create<GenesisStore>()(
         });
     },
 
-    // fetch all the daos and if wallet is connected then we will get the owned daos to daosOwnedByWallet
     fetchDaos: () => {
       const apiCon = get().apiConnection;
       apiCon?.query?.daoCore?.daos
@@ -504,7 +503,7 @@ const useGenesisStore = create<GenesisStore>()(
           daoCreatorAddress: '{N/A}',
           setupComplete: false,
           proposalDuration: null,
-          proposalTokenDeposit: 0,
+          proposalTokenDeposit: null,
           minimumMajority: null,
           daoAssetId: null,
           metadataUrl: null,
@@ -532,7 +531,7 @@ const useGenesisStore = create<GenesisStore>()(
         daoDetail.daoOwnerAddress = d.owner_id;
         daoDetail.daoCreatorAddress = d.creator_id;
         daoDetail.proposalDuration = d.proposal_duration;
-        daoDetail.proposalTokenDeposit = d.proposal_token_deposit;
+        daoDetail.proposalTokenDeposit = new BN(d.proposal_token_deposit);
         daoDetail.minimumMajority = d.minimum_majority_per_1024;
         daoDetail.metadataUrl = d.metadata_url;
         daoDetail.metadataHash = d.metadata_hash;
@@ -649,6 +648,7 @@ const useGenesisStore = create<GenesisStore>()(
         const json = await response.json();
         const newProposals = json.results
           .filter((p: IncomingProposal) => {
+            // filter out proposals without offchain metadata
             return !!p.metadata_url === true;
           })
           .map((p: IncomingProposal) => {
@@ -666,6 +666,7 @@ const useGenesisStore = create<GenesisStore>()(
               proposalName: p.metadata?.title || null,
               description: p.metadata?.description || null,
               link: p.metadata?.url || null,
+              setupComplete: p.setup_complete,
             };
           });
 
@@ -703,6 +704,7 @@ const useGenesisStore = create<GenesisStore>()(
           proposalName: p.metadata?.title || null,
           description: p.metadata?.description || null,
           link: p.metadata?.url || null,
+          setupComplete: p.setup_complete,
         };
         set({ currentProposal: newProp });
         set({

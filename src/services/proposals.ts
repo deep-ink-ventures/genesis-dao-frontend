@@ -43,6 +43,7 @@ export interface ProposalDetail {
     title: string | null;
     description: string | null;
   };
+  setupComplete: boolean;
 }
 
 export interface ReportFaultedRequestPayload {
@@ -70,6 +71,7 @@ export interface IncomingProposal {
   metadata_url: null | string;
   metadata_hash: null | string;
   birth_block_number: number;
+  setup_complete: boolean;
 }
 
 export interface ListProposalsQueryParams {
@@ -116,6 +118,7 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
         description: p.metadata?.description || null,
         link: p.metadata?.url || null,
         metadata: p.metadata,
+        setupComplete: p.setup_complete,
       };
     });
 

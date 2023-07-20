@@ -214,8 +214,6 @@ const useGenesisDao = () => {
           updateTxnProcessing(false);
         });
     } else {
-      // fixme
-      // eslint-disable-next-line
       handleErrors('wallet does not have a signer');
     }
   };

@@ -9,6 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { DAO_UNITS } from '@/config';
 import type { DaoDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+import { uiTokens } from '@/utils';
 
 import Spinner from './Spinner';
 
@@ -68,14 +69,11 @@ const CreateProposal = (props: {
   const currentDao = useGenesisStore((s) => s.currentDao);
 
   const hasProposalDeposit = useMemo(() => {
-    if (
-      !currentDao?.proposalTokenDeposit ||
-      currentDao?.proposalTokenDeposit === 0
-    ) {
+    if (!currentDao?.proposalTokenDeposit) {
       return false;
     }
     return daoTokenBalance?.gte(
-      new BN(currentDao?.proposalTokenDeposit).mul(new BN(DAO_UNITS))
+      currentDao?.proposalTokenDeposit.mul(new BN(DAO_UNITS))
     );
   }, [currentDao, daoTokenBalance]);
 
@@ -114,10 +112,7 @@ const CreateProposal = (props: {
   const watchLink = watch('discussionLink', '');
 
   const alert = () => {
-    if (
-      !currentDao?.proposalTokenDeposit ||
-      currentDao.proposalTokenDeposit === 0
-    ) {
+    if (!currentDao?.proposalTokenDeposit) {
       return (
         <div className='alert alert-error shadow-lg'>
           <div>
@@ -157,8 +152,14 @@ const CreateProposal = (props: {
                 d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'></path>
             </svg>
             <p>
-              <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} DAO Tokens `}</span>
-              {`will be reserved upon creation of a proposal. The reserved tokens
+              <span className='font-bold'>
+                {uiTokens(
+                  currentDao?.proposalTokenDeposit,
+                  'none',
+                  currentDao.daoId
+                )}
+              </span>
+              {` will be reserved upon creation of a proposal. The reserved tokens
               will be refunded when the proposal is finalized .`}
             </p>
           </div>
@@ -182,7 +183,13 @@ const CreateProposal = (props: {
           </svg>
           <p>
             Sorry you need at least{' '}
-            <span className='font-bold'>{`${currentDao?.proposalTokenDeposit} DAO Tokens `}</span>{' '}
+            <span className='font-bold'>
+              {uiTokens(
+                currentDao?.proposalTokenDeposit,
+                'none',
+                currentDao.daoId
+              )}
+            </span>{' '}
             to create a Proposal
           </p>
         </div>

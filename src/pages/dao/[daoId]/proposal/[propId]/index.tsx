@@ -69,7 +69,6 @@ const Proposal = () => {
     s.fetchProposalFaultyReports,
     s.updateIsFaultyReportsOpen,
   ]);
-  // const updateCurrentProposal = useGenesisStore((s) => s.updateCurrentProposal);
   const { makeVoteTxn, sendBatchTxns, makeFinalizeProposalTxn } =
     useGenesisDao();
 
