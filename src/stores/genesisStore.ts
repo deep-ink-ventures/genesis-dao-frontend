@@ -80,6 +80,9 @@ export interface DaoDetail {
     medium: string | null;
     large: string | null;
   };
+  numberOfTokenHolders: number | null;
+  numberOfOpenProposals: number | null;
+  mostRecentProposals: string | null;
 }
 
 export interface BasicDaoInfo {
@@ -517,6 +520,9 @@ const useGenesisStore = create<GenesisStore>()(
             medium: null,
             large: null,
           },
+          numberOfTokenHolders: null,
+          numberOfOpenProposals: null,
+          mostRecentProposals: null,
         };
         const response = await fetch(
           `${SERVICE_URL}/daos/${encodeURIComponent(daoId as string)}/`
@@ -536,6 +542,9 @@ const useGenesisStore = create<GenesisStore>()(
         daoDetail.metadataUrl = d.metadata_url;
         daoDetail.metadataHash = d.metadata_hash;
         daoDetail.setupComplete = d.setup_complete;
+        daoDetail.numberOfTokenHolders = d.number_of_token_holders;
+        daoDetail.numberOfOpenProposals = d.number_of_open_proposals;
+        daoDetail.mostRecentProposals = d.most_recent_proposals;
 
         if (d.metadata) {
           daoDetail.descriptionShort = d.metadata.description_short;

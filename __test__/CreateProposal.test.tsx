@@ -30,6 +30,9 @@ const daoDetail: DaoDetail = {
   descriptionShort: null,
   descriptionLong: null,
   email: null,
+  numberOfOpenProposals: null,
+  numberOfTokenHolders: null,
+  mostRecentProposals: null,
   images: {
     contentType: null,
     small: null,
