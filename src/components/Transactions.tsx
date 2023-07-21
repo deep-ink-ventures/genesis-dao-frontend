@@ -36,7 +36,7 @@ const Transactions = (props: { daoId: string }) => {
       fetchTransactions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.currentPage]);
+  }, [pagination.currentPage, currentWalletAccount]);
 
   const handleAccordionClick = (proposalId?: string) => {
     setActiveAccordion(activeAccordion === proposalId ? null : proposalId);

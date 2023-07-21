@@ -91,9 +91,10 @@ const TransactionAccordion = ({
       </div>
       <div
         className={cn(
-          'opacity-1 duration-5000 flex min-h-[100px] gap-4 transition-all ease-in-out',
+          'opacity-1 duration-5000 flex gap-4 transition-all ease-in-out',
           {
             '!h-[0px] min-h-[0px] overflow-hidden opacity-0': collapsed,
+            'min-h-[100px]': !collapsed,
           }
         )}>
         <div className='flex-1 space-y-2'>
