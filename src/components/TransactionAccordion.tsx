@@ -5,10 +5,10 @@ import { useMemo } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 
 import { DAO_UNITS } from '@/config';
-import type { ProposalDetail } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
 import arrowUp from '@/svg/arrow-up.svg';
 import memberSign from '@/svg/memberSign.svg';
+import type { ProposalDetail } from '@/types/proposal';
 import { getProposalEndTime } from '@/utils';
 
 import { TransactionBadge } from './TransactionBadge';

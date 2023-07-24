@@ -2,11 +2,9 @@
 import { produce } from 'immer';
 import type { StateCreator } from 'zustand';
 
-import type {
-  ListProposalsQueryParams,
-  ProposalDetail,
-} from '@/services/proposals';
+import type { ListProposalsQueryParams } from '@/services/proposals';
 import { ProposalsService } from '@/services/proposals';
+import type { ProposalDetail } from '@/types/proposal';
 
 import type { GenesisState } from './genesisStore';
 

@@ -8,107 +8,27 @@ import { devtools } from 'zustand/middleware';
 
 import { NODE_URL, SERVICE_URL } from '@/config';
 import type {
+  BasicDaoInfo,
+  DaoCreationValues,
+  DaoDetail,
+  DaoInfo,
+  IncomingDaoInfo,
+} from '@/types/dao';
+import type {
+  FaultyReport,
   IncomingProposal,
+  ProposalCreationValues,
   ProposalDetail,
   ProposalStatusNames,
-} from '@/services/proposals';
-import { ProposalStatus } from '@/services/proposals';
+} from '@/types/proposal';
+import { proposalStatusNames } from '@/types/proposal';
+import { TxnResponse } from '@/types/response';
+import type { IncomingTokenBalanceData } from '@/types/token';
 
 import type { AccountSlice } from './account';
 import { createAccountSlice } from './account';
 import type { DaoSlice } from './dao';
 import { createDaoSlice } from './dao';
-
-// ALL TYPES and INTERFACES...
-
-export interface FaultyReport {
-  proposalId: string;
-  reason: string;
-}
-
-export interface ProposalCreationValues {
-  title: string;
-  description: string;
-  url: string;
-}
-
-export const proposalStatusNames: ProposalStatusNames = {
-  RUNNING: ProposalStatus.Active,
-  PENDING: ProposalStatus.Counting,
-  REJECTED: ProposalStatus.Rejected,
-  IMPLEMENTED: ProposalStatus.Accepted,
-  FAULTED: ProposalStatus.Faulty,
-};
-
-export interface ProposalOnChain {
-  id: string;
-  daoId: string;
-  creator: string;
-  birthBlock: number;
-  meta: string;
-  metaHash: string;
-  status: ProposalStatus;
-  inFavor: BN;
-  against: BN;
-}
-
-export interface CreateProposalInfo {
-  daoId: string;
-  proposalId: string;
-  meta: string;
-  hash: string;
-}
-
-export interface DaoDetail {
-  daoId: string;
-  daoName: string;
-  daoOwnerAddress: string;
-  daoCreatorAddress: string;
-  setupComplete: boolean;
-  daoAssetId: number | null;
-  proposalDuration: number | null;
-  proposalTokenDeposit: BN | null;
-  minimumMajority: number | null;
-  metadataUrl: string | null;
-  metadataHash: string | null;
-  descriptionShort: string | null;
-  descriptionLong: string | null;
-  email: string | null;
-  images: {
-    contentType: string | null;
-    small: string | null;
-    medium: string | null;
-    large: string | null;
-  };
-  numberOfTokenHolders: number | null;
-  numberOfOpenProposals: number | null;
-  mostRecentProposals: string | null;
-}
-
-export interface BasicDaoInfo {
-  daoId: string;
-  daoName: string;
-  daoAssetId: number;
-  daoOwnerAddress: string;
-  metadataUrl: string;
-  metadataHash: string;
-}
-
-export interface CouncilMember {
-  name: string;
-  walletAddress: string;
-}
-
-export interface TokenRecipient {
-  walletAddress: string;
-  tokens: BN; // this is before adding DAO units
-}
-
-export interface CouncilTokensValues
-  extends CouncilFormValues,
-    IssueTokensValues {
-  isFinished: false;
-}
 
 export interface LogoFormValues {
   email: string;
@@ -125,64 +45,7 @@ export interface MajorityModelValues {
   votingDays: number; // in days
 }
 
-export interface CouncilFormValues {
-  creatorName: string;
-  creatorWallet: string;
-  councilMembers: CouncilMember[];
-  councilThreshold: number; // number of councils needed to approve
-}
-
-export interface IssueTokensValues {
-  tokenRecipients: TokenRecipient[];
-  treasuryTokens: BN;
-}
-
-export interface DaoCreationValues {
-  daoId: string;
-  daoName: string;
-  email: string | null;
-  daoLogo: string | null; // url?
-  shortOverview: string | null;
-  longDescription: string | null;
-  proposalTokensCost: number;
-  approvalThreshold: number; // percentage or decimals
-  votingDays: number; // in days
-  councilMembers: CouncilMember[];
-  councilThreshold: number; // number of councils needed
-  tokensToIssue: number;
-  tokensRecipients: TokenRecipient[] | null;
-  treasuryTokens: number;
-}
-
-export enum TxnResponse {
-  Success = 'SUCCESS',
-  Error = 'ERROR',
-  Warning = 'WARNING',
-  Cancelled = 'CANCELLED',
-}
-
 export type DaoPage = 'dashboard' | 'proposals' | 'transactions';
-
-export interface IncomingTokenBalanceData {
-  balance: string;
-  extra: string | null;
-  reason: string;
-  reserved: string; // number string
-}
-
-export interface AssetDetails {
-  owner: string;
-  issuer: string;
-  admin: string;
-  supply: string;
-  deposit: string;
-  minBalance: string;
-  isSufficient: boolean;
-  accounts: string;
-  sufficients: string;
-  approvals: string;
-  status: string;
-}
 
 export interface TransferFormValues {
   assetId: number;
@@ -197,24 +60,9 @@ export interface TxnNotification {
   timestamp: number;
   txnHash?: string;
 }
-
-export interface IncomingDaoInfo {
-  id: string;
-  name: string;
-  owner: string;
-  assetId: number;
-  meta: string;
-  metaHash: string;
-}
-
 export interface CreateDaoData {
   daoId: string;
   daoName: string;
-}
-
-export interface IssueTokensData {
-  daoId: string;
-  supply: number; // fixme change this to BN
 }
 
 export interface WalletAccount {
@@ -223,26 +71,6 @@ export interface WalletAccount {
   name?: string;
   wallet?: Wallet;
   signer: InjectedSigner;
-}
-
-export interface DaoInfo {
-  assetId: number | null;
-  daoId: string;
-  daoName: string;
-  owner: string;
-  metaUrl: string | null;
-  metaHash: string | null;
-  descriptionShort: string | null;
-  descriptionLong: string | null;
-  email: string | null;
-  images: null | {
-    logo: {
-      contentType: string;
-      small: string;
-      medium: string;
-      large: string;
-    };
-  };
 }
 
 export interface AllDaos {

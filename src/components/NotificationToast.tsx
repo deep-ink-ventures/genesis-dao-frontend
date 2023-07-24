@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { NODE_URL } from '@/config';
+import { TxnResponse } from '@/types/response';
 import { truncateMiddle } from '@/utils';
 
-import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
+import useGenesisStore from '../stores/genesisStore';
 
 interface ToastProps {
   type: TxnResponse;

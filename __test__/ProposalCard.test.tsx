@@ -1,8 +1,8 @@
 import { BN } from '@polkadot/util';
 import { render, screen } from '@testing-library/react';
 
-import type { ProposalDetail } from '@/services/proposals';
-import { ProposalStatus } from '@/services/proposals';
+import type { ProposalDetail } from '@/types/proposal';
+import { ProposalStatus } from '@/types/proposal';
 
 import ProposalCard from '../src/components/ProposalCard';
 

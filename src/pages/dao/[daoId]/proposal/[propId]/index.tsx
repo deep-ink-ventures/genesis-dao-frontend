@@ -13,13 +13,13 @@ import { statusColors } from '@/components/TransactionBadge';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
-import { ProposalStatus } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
 import alert from '@/svg/alert.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
 import ThumbDown from '@/svg/components/thumbdown';
 import ThumbUp from '@/svg/components/thumbup';
 import MainLayout from '@/templates/MainLayout';
+import { ProposalStatus } from '@/types/proposal';
 import { getProposalEndTime, uiTokens } from '@/utils';
 
 const Proposal = () => {

@@ -1,7 +1,7 @@
 import DaoCard from '@/components/DaoCard';
 import Spinner from '@/components/Spinner';
+import type { DaoDetail } from '@/types/dao';
 
-import type { DaoDetail } from '../stores/genesisStore';
 import { truncateMiddle } from '../utils/index';
 
 const DaoCards = ({ daos }: { daos: DaoDetail[] | null }) => {

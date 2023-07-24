@@ -7,8 +7,8 @@ import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { DAO_UNITS } from '@/config';
-import type { DaoDetail } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+import type { DaoDetail } from '@/types/dao';
 import { uiTokens } from '@/utils';
 
 import Spinner from './Spinner';
