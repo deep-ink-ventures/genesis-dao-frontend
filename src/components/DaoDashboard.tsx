@@ -1,5 +1,4 @@
 import { BN } from '@polkadot/util';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -10,7 +9,6 @@ import StatusCard from '@/components/StatusCard';
 import type { ProposalDetail } from '@/services/proposals';
 import { ProposalsService, ProposalStatus } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
-import TrendingUp from '@/svg/trending-up.svg';
 import { getProposalEndTime } from '@/utils';
 
 const ProposalStatusBadgeMap: Record<ProposalStatus, BadgeVariant> = {
@@ -173,42 +171,14 @@ const DaoDashboard = () => {
         </div>
       </div>
       <div className='mt-2 flex w-full gap-2'>
-        <div className='w-72 space-y-2'>
+        <div className='flex w-72 flex-col gap-2'>
           <StatusCard
             header='Token Holders'
             value={currentDao?.numberOfTokenHolders || 0}
-            footer={
-              <>
-                <Image
-                  src={TrendingUp}
-                  width={18}
-                  height={18}
-                  alt='Trending Up'
-                />
-                <div className='text-primary'>
-                  {currentDao?.numberOfTokenHolders || 0}%
-                </div>
-                vs last week
-              </>
-            }
           />
           <StatusCard
             header='Open Proposals'
             value={currentDao?.numberOfOpenProposals || 0}
-            footer={
-              <>
-                <Image
-                  src={TrendingUp}
-                  width={18}
-                  height={18}
-                  alt='Trending Up'
-                />
-                <div className='text-primary'>
-                  {currentDao?.numberOfOpenProposals || 0}%
-                </div>
-                vs last week
-              </>
-            }
           />
         </div>
         <div className='container min-w-0 p-8'>
