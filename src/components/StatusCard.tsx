@@ -8,10 +8,10 @@ const StatusCard = ({
   footer?: React.ReactNode;
 }) => {
   return (
-    <div className='container flex w-full flex-col items-center justify-center py-6'>
+    <div className='container flex w-full grow flex-col items-center justify-center py-6'>
       <span className='text-sm font-bold uppercase'>{header}</span>
       <span className='text-4xl font-semibold'>{value}</span>
-      <div className='flex gap-1 text-sm'>{footer}</div>
+      {footer && <div className='flex gap-1 text-sm'>{footer}</div>}
     </div>
   );
 };
