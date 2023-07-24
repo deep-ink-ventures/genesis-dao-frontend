@@ -1,5 +1,4 @@
 import { BN } from '@polkadot/util';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -10,7 +9,6 @@ import StatusCard from '@/components/StatusCard';
 import type { ProposalDetail } from '@/services/proposals';
 import { ProposalsService, ProposalStatus } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
-import TrendingUp from '@/svg/trending-up.svg';
 import { getProposalEndTime } from '@/utils';
 
 const ProposalStatusBadgeMap: Record<ProposalStatus, BadgeVariant> = {
