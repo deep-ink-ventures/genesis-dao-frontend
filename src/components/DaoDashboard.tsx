@@ -176,7 +176,7 @@ const DaoDashboard = () => {
         <div className='w-72 space-y-2'>
           <StatusCard
             header='Token Holders'
-            value={200}
+            value={currentDao?.numberOfTokenHolders || 0}
             footer={
               <>
                 <Image
@@ -185,14 +185,16 @@ const DaoDashboard = () => {
                   height={18}
                   alt='Trending Up'
                 />
-                <div className='text-primary'>2%</div>
+                <div className='text-primary'>
+                  {currentDao?.numberOfTokenHolders || 0}%
+                </div>
                 vs last week
               </>
             }
           />
           <StatusCard
             header='Open Proposals'
-            value={428}
+            value={currentDao?.numberOfOpenProposals || 0}
             footer={
               <>
                 <Image
@@ -201,7 +203,9 @@ const DaoDashboard = () => {
                   height={18}
                   alt='Trending Up'
                 />
-                <div className='text-primary'>1%</div>
+                <div className='text-primary'>
+                  {currentDao?.numberOfOpenProposals || 0}%
+                </div>
                 vs last week
               </>
             }
