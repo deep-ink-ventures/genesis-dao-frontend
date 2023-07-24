@@ -5,16 +5,14 @@ import { stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
 import { DAO_UNITS, SERVICE_URL } from '@/config';
+import type { AssetDetails } from '@/types/asset';
+import type { TokenRecipient } from '@/types/council';
+import type { ProposalCreationValues } from '@/types/proposal';
+import { TxnResponse } from '@/types/response';
 import { hexToBase64 } from '@/utils';
 
-import type {
-  AssetDetails,
-  CreateDaoData,
-  ProposalCreationValues,
-  TokenRecipient,
-  WalletAccount,
-} from '../stores/genesisStore';
-import useGenesisStore, { TxnResponse } from '../stores/genesisStore';
+import type { CreateDaoData, WalletAccount } from '../stores/genesisStore';
+import useGenesisStore from '../stores/genesisStore';
 
 // fixme open one connection and reuse that connection
 const useGenesisDao = () => {

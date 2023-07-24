@@ -4,3 +4,10 @@ export interface Paginated<T = any> {
   previous: string | null;
   results: T;
 }
+
+export enum TxnResponse {
+  Success = 'SUCCESS',
+  Error = 'ERROR',
+  Warning = 'WARNING',
+  Cancelled = 'CANCELLED',
+}

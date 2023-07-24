@@ -1,8 +1,9 @@
 import { BN } from '@polkadot/util';
 import { act, render, screen } from '@testing-library/react';
 
+import type { DaoDetail } from '@/types/dao';
+
 import CreateProposal from '../src/components/CreateProposal';
-import type { DaoDetail } from '../src/stores/genesisStore';
 
 // eslint-disable-next-line
 jest.mock('next/router', () => ({

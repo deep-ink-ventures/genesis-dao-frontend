@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
 import { DAO_UNITS } from '@/config';
-import type { CouncilTokensValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
+import type { CouncilTokensValues } from '@/types/council';
 import {
   getMultisigAddress,
   isValidPolkadotAddress,

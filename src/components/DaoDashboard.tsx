@@ -6,9 +6,10 @@ import type { BadgeVariant } from '@/components/Badge';
 import Badge from '@/components/Badge';
 import DestroyDao from '@/components/DestroyDao';
 import StatusCard from '@/components/StatusCard';
-import type { ProposalDetail } from '@/services/proposals';
-import { ProposalsService, ProposalStatus } from '@/services/proposals';
+import { ProposalsService } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
+import type { ProposalDetail } from '@/types/proposal';
+import { ProposalStatus } from '@/types/proposal';
 import { getProposalEndTime } from '@/utils';
 
 const ProposalStatusBadgeMap: Record<ProposalStatus, BadgeVariant> = {

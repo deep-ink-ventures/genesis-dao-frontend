@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
 import NotificationToast from '@/components/NotificationToast';
-import { TxnResponse } from '@/stores/genesisStore';
+import { TxnResponse } from '@/types/response';
 
 describe('Notification Toast', () => {
   it('should render the text Successful', () => {
