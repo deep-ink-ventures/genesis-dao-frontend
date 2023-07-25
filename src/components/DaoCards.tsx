@@ -2,8 +2,6 @@ import DaoCard from '@/components/DaoCard';
 import Spinner from '@/components/Spinner';
 import type { DaoDetail } from '@/types/dao';
 
-import { truncateMiddle } from '../utils/index';
-
 const DaoCards = ({ daos }: { daos: DaoDetail[] | null }) => {
   return daos && daos?.length > 0 ? (
     <div className='mx-auto flex flex-wrap justify-center px-2 '>
@@ -14,7 +12,7 @@ const DaoCards = ({ daos }: { daos: DaoDetail[] | null }) => {
             daoId={dao.daoId}
             daoName={dao.daoName}
             daoAssetId={dao.daoAssetId}
-            daoOwnerAddress={truncateMiddle(dao.daoOwnerAddress)}
+            daoOwnerAddress={dao.daoOwnerAddress}
             imageUrl={dao.images.small}
             setupComplete={dao.setupComplete}
           />
