@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 import { NODE_URL, SERVICE_URL } from '@/config';
+import { DaoService } from '@/services/daos';
 import type {
   BasicDaoInfo,
   DaoCreationValues,
@@ -352,13 +353,15 @@ const useGenesisStore = create<GenesisStore>()(
           numberOfOpenProposals: null,
           mostRecentProposals: null,
         };
-        const response = await fetch(
-          `${SERVICE_URL}/daos/${encodeURIComponent(daoId as string)}/`
-        );
+
+        const response = await DaoService.get(daoId);
+
         if (response.status === 404) {
           return;
         }
-        const d = await response.json();
+
+        const d = response.data;
+
         daoDetail.daoId = d.id;
         daoDetail.daoName = d.name;
         daoDetail.daoAssetId = d.asset_id;
@@ -378,10 +381,10 @@ const useGenesisStore = create<GenesisStore>()(
           daoDetail.descriptionShort = d.metadata.description_short;
           daoDetail.descriptionLong = d.metadata.description_long;
           daoDetail.email = d.metadata.email;
-          daoDetail.images.contentType = d.metadata.images.logo.content_type;
-          daoDetail.images.small = d.metadata.images.logo.small.url;
-          daoDetail.images.medium = d.metadata.images.logo.medium.url;
-          daoDetail.images.large = d.metadata.images.logo.large.url;
+          daoDetail.images.contentType = d.metadata.images?.logo?.content_type;
+          daoDetail.images.small = d.metadata.images?.logo?.small.url;
+          daoDetail.images.medium = d.metadata.images?.logo?.medium.url;
+          daoDetail.images.large = d.metadata.images?.logo?.large.url;
         }
 
         get().updateCurrentDao(daoDetail);
@@ -580,7 +583,7 @@ const useGenesisStore = create<GenesisStore>()(
     },
 
     updateDaosOwnedByWallet: async () => {
-      await get().fetchDaos();
+      get().fetchDaos();
       const { daos } = get();
       const address = get().currentWalletAccount?.address;
       if (!daos || typeof address === 'undefined') {

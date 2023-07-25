@@ -1,7 +1,12 @@
 import { BN } from '@polkadot/util';
 
 import { SERVICE_URL } from '@/config';
-import type { IncomingProposal, ProposalDetail } from '@/types/proposal';
+import type {
+  IncomingProposal,
+  PostProposalMetadataResponse,
+  ProposalCreationValues,
+  ProposalDetail,
+} from '@/types/proposal';
 import { proposalStatusNames } from '@/types/proposal';
 import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
@@ -9,6 +14,13 @@ import { camelToSnakeCase } from '@/utils';
 export interface ReportFaultedRequestPayload {
   proposalId: string;
   reason: string;
+}
+
+export interface ReportFaultyResponse {
+  reason?: {
+    detail?: string;
+  };
+  detail?: string;
 }
 
 export interface ListProposalsQueryParams {
@@ -65,28 +77,74 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
   };
 };
 
-const reportFaulted = async (
-  id: string,
-  payload: ReportFaultedRequestPayload
-) => {
+const postMetadata = async (
+  proposalId: string,
+  signature: string,
+  metadata?: ProposalCreationValues
+): Promise<
+  Response & {
+    data: PostProposalMetadataResponse;
+  }
+> => {
   const jsonData = JSON.stringify({
-    proposal_id: payload.proposalId,
-    reason: payload.reason,
+    title: metadata?.title,
+    description: metadata?.description,
+    url: metadata?.url,
   });
   const response = await fetch(
-    `${SERVICE_URL}/proposals/${id}/report-faulted/`,
+    `${SERVICE_URL}/proposals/${proposalId}/metadata/`,
     {
       method: 'POST',
       body: jsonData,
       headers: {
         'Content-Type': 'application/json',
+        Signature: signature,
       },
     }
   );
-  return response;
+  const objectMetadata = await response.json();
+
+  return {
+    ...response,
+    data: objectMetadata,
+  };
+};
+
+const reportFaultyProposal = async (
+  proposalId: string,
+  payload: ReportFaultedRequestPayload,
+  signature?: string
+): Promise<
+  Response & {
+    data: ReportFaultyResponse;
+  }
+> => {
+  const jsonData = JSON.stringify({
+    proposal_id: payload.proposalId,
+    reason: payload.reason,
+  });
+  const response = await fetch(
+    `${SERVICE_URL}/proposals/${proposalId}/report-faulted/`,
+    {
+      method: 'POST',
+      body: jsonData,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(signature && {
+          Signature: signature,
+        }),
+      },
+    }
+  );
+  const objResponse = await response.json();
+  return {
+    ...response,
+    data: objResponse,
+  };
 };
 
 export const ProposalsService = {
   listProposals,
-  reportFaulted,
+  reportFaultyProposal,
+  postMetadata,
 };

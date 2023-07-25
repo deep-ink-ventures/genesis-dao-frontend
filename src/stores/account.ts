@@ -60,7 +60,8 @@ export const createAccountSlice: StateCreator<
               );
               newData = response.results.map((asset) => ({
                 ...asset,
-                dao: daoDetails.find((dao) => dao.asset_id === asset.id),
+                dao: daoDetails.find((dao) => dao.data.asset_id === asset.id)
+                  ?.data,
               }));
             }
             set(

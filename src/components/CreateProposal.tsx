@@ -73,7 +73,7 @@ const CreateProposal = (props: {
       return false;
     }
     return daoTokenBalance?.gte(
-      currentDao?.proposalTokenDeposit.mul(new BN(DAO_UNITS))
+      currentDao?.proposalTokenDeposit?.mul(new BN(DAO_UNITS))
     );
   }, [currentDao, daoTokenBalance]);
 

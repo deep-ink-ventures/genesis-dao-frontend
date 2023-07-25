@@ -4,7 +4,9 @@ import type { BN } from '@polkadot/util';
 import { stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
-import { DAO_UNITS, SERVICE_URL } from '@/config';
+import { DAO_UNITS } from '@/config';
+import { DaoService } from '@/services/daos';
+import { ProposalsService } from '@/services/proposals';
 import type { AssetDetails } from '@/types/asset';
 import type { TokenRecipient } from '@/types/council';
 import type { ProposalCreationValues } from '@/types/proposal';
@@ -675,17 +677,14 @@ const useGenesisDao = () => {
 
   const doChallenge = async (daoId: string) => {
     try {
-      const challengeRes = await fetch(
-        `${SERVICE_URL}/daos/${daoId}/challenge/`
-      );
-      const challengeString = await challengeRes.json();
-      if (!challengeString.challenge) {
+      const response = await DaoService.challenge.get(daoId);
+      if (!response.data.challenge) {
         handleErrors('Error in retrieving ownership-validation challenge');
         return null;
       }
       const signerResult = await currentWalletAccount?.signer?.signRaw?.({
         address: currentWalletAccount.address,
-        data: stringToHex(challengeString.challenge),
+        data: stringToHex(response.data.challenge),
         type: 'bytes',
       });
 
@@ -706,39 +705,26 @@ const useGenesisDao = () => {
     proposalValues: ProposalCreationValues
   ) => {
     try {
-      const jsonData = JSON.stringify({
-        title: proposalValues?.title,
-        description: proposalValues?.description,
-        url: proposalValues?.url,
-      });
       const sig = await doChallenge(daoId);
       if (!sig) {
         handleErrors('Verification Challenge failed');
         return;
       }
-
-      const metadataResponse = await fetch(
-        `${SERVICE_URL}/proposals/${proposalId}/metadata/`,
-        {
-          method: 'POST',
-          body: jsonData,
-          headers: {
-            'Content-Type': 'application/json',
-            Signature: sig,
-          },
-        }
+      const response = await ProposalsService.postMetadata(
+        proposalId,
+        sig,
+        proposalValues
       );
 
-      const metadata = await metadataResponse.json();
-      if (!metadata?.metadata_url) {
-        handleErrors(`Not able to upload metadata Status:${metadata?.status}`);
+      if (!response?.data?.metadata_url) {
+        handleErrors(`Not able to upload metadata Status:${response?.status}`);
         return;
       }
       const txns = makeSetProposalMetadataTxn(
         [],
         proposalId,
-        metadata.metadata_url,
-        metadata.metadata_hash
+        response.data.metadata_url,
+        response.data.metadata_hash
       );
 
       await sendBatchTxns(
@@ -801,35 +787,33 @@ const useGenesisDao = () => {
     updateTxnProcessing(true);
 
     try {
-      const jsonData = JSON.stringify({
-        proposal_id: proposalId,
-        reason,
-      });
       const sig = await doChallenge(daoId);
       if (!sig) {
         handleErrors('Verification Challenge failed');
         return;
       }
 
-      const faultyProposalResponse = await fetch(
-        `${SERVICE_URL}/proposals/${proposalId}/report-faulted/`,
+      const response = await ProposalsService.reportFaultyProposal(
+        proposalId,
         {
-          method: 'POST',
-          body: jsonData,
-          headers: {
-            'Content-Type': 'application/json',
-            Signature: sig,
-          },
-        }
+          proposalId,
+          reason,
+        },
+        sig
       );
 
-      const res = await faultyProposalResponse.json();
-      if (res?.reason?.detail?.includes('report maximum has already been')) {
-        handleErrors(res.reason.detail);
+      if (
+        response?.data.reason?.detail?.includes(
+          'report maximum has already been'
+        )
+      ) {
+        handleErrors(response.data.reason.detail);
       }
 
-      if (!res?.reason) {
-        handleErrors(`Not able to report faulty proposal: ${res?.detail}`);
+      if (!response?.data.reason) {
+        handleErrors(
+          `Not able to report faulty proposal: ${response.data.detail}`
+        );
         return;
       }
       updateIsFaultyModalOpen(false);

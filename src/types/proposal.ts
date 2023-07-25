@@ -18,6 +18,16 @@ export interface ProposalCreationValues {
   url: string;
 }
 
+export interface PostProposalMetadataResponse {
+  metadata: {
+    title: string;
+    description: string;
+    url: string;
+  };
+  metadata_hash: string;
+  metadata_url: string;
+}
+
 export const proposalStatusNames: ProposalStatusNames = {
   RUNNING: ProposalStatus.Active,
   PENDING: ProposalStatus.Counting,

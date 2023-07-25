@@ -25,7 +25,7 @@ export interface DaoDetail {
   };
   numberOfTokenHolders: number | null;
   numberOfOpenProposals: number | null;
-  mostRecentProposals: string | null;
+  mostRecentProposals: string[] | null;
 }
 
 export interface BasicDaoInfo {
@@ -81,4 +81,8 @@ export interface DaoInfo {
       large: string;
     };
   };
+}
+
+export interface Challenge {
+  challenge: string;
 }
