@@ -73,7 +73,10 @@ const ProposalRow = ({ proposal }: { proposal: ProposalDetail }) => {
 };
 
 const DaoDashboard = () => {
-  const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const [currentWalletAccount, updateDaoPage] = useGenesisStore((s) => [
+    s.currentWalletAccount,
+    s.updateDaoPage,
+  ]);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
 
@@ -187,7 +190,11 @@ const DaoDashboard = () => {
             <span className='text-sm font-bold uppercase'>
               Latest Proposals
             </span>
-            <span className='ml-auto font-medium'>See All</span>
+            <span
+              className='ml-auto cursor-pointer font-medium hover:underline'
+              onClick={() => updateDaoPage('proposals')}>
+              See All
+            </span>
           </div>
           <div className='space-y-4'>
             {latestProposals?.map((proposal, index) => (
