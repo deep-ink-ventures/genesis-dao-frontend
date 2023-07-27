@@ -103,8 +103,11 @@ h4 {
 .card {
   @apply rounded-[10px] z-0 bg-[#403945] hover:outline-1 hover:outline hover:outline-neutral hover:brightness-[1.15];
 } 
+.card-compact {
+  @apply rounded-[10px] z-0 bg-[#403945] hover:outline-1 hover:outline hover:outline-neutral hover:brightness-[1.15];
+}
 .card-body {
-  @apply text-base text-content-primary;
+  @apply text-base text-content-primary ;
 }
 .content p {
   @apply my-3;

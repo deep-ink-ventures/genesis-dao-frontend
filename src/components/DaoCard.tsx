@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -49,28 +50,33 @@ const DaoCard = (props: DaoCardProps) => {
 
   return (
     <div
-      className={`card z-0 m-1 h-40 w-36 break-words text-center shadow-xl hover:cursor-pointer md:h-60 md:w-56`}>
+      className={`card-compact relative z-0 m-1 w-64 py-4  shadow-xl hover:cursor-pointer md:w-56 md:pb-10 md:pt-4`}>
       <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
         {currentWalletAccount?.address === props.daoOwnerAddress ? (
-          <div className='absolute left-40 top-3 rounded-[15px] bg-primary px-2 py-1 text-xs'>
+          <div className='absolute left-44 top-3 rounded-[15px] bg-primary px-2 py-1 text-xs md:left-40 md:top-3 md:block'>
             admin
           </div>
         ) : null}
         <div className='card-body text-center'>
-          <div className='mb-2 hidden items-center justify-center md:flex'>
+          <div className='mb-2 flex items-center justify-center'>
             {displayImage()}
           </div>
-          <div className='md:overflow-visible'>
+          <div className='flex flex-col items-center justify-center'>
             <h4
-              className={`z-10 inline-block w-[150px] truncate text-base-content mix-blend-normal ${
-                props.daoName?.length > 20 ? 'text-sm' : ''
-              }`}>
+              className={cn(
+                `z-10 w-[150px] break-words text-base-content mix-blend-normal md:h-12`,
+                {
+                  'text-sm': props.daoName?.length > 26,
+                }
+              )}>
               {props.daoName}
             </h4>
-            <p className='text-sm text-accent'>{`DAO ID: ${props.daoId}`}</p>
           </div>
-          <p className='mt-5 hidden text-sm underline underline-offset-2 md:block'>{`See more >`}</p>
+          <p className='text-sm text-accent'>{`DAO ID: ${props.daoId}`}</p>
         </div>
+      </Link>
+      <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
+        <p className='absolute bottom-[10%] left-[33%] mt-5 hidden text-sm underline underline-offset-2 md:block'>{`See more >`}</p>
       </Link>
     </div>
   );
