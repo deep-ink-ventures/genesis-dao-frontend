@@ -365,7 +365,9 @@ const useGenesisStore = create<GenesisStore>()(
         daoDetail.daoOwnerAddress = d.owner_id;
         daoDetail.daoCreatorAddress = d.creator_id;
         daoDetail.proposalDuration = d.proposal_duration;
-        daoDetail.proposalTokenDeposit = new BN(d.proposal_token_deposit);
+        daoDetail.proposalTokenDeposit = d.proposal_token_deposit
+          ? new BN(d.proposal_token_deposit)
+          : null;
         daoDetail.minimumMajority = d.minimum_majority_per_1024;
         daoDetail.metadataUrl = d.metadata_url;
         daoDetail.metadataHash = d.metadata_hash;
