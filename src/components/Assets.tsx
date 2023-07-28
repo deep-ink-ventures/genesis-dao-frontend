@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -10,11 +11,35 @@ import useGenesisStore from '@/stores/genesisStore';
 
 import AssetsHoldingsTable from './AssetsTable';
 
+enum AssetTableFilter {
+  All = 'All',
+  Admin = 'Admin',
+  TokenHolder = 'TokenHolder',
+}
+
+const AssetFilterList = [
+  {
+    value: AssetTableFilter.All,
+    label: 'All',
+  },
+  {
+    value: AssetTableFilter.Admin,
+    label: 'Admin',
+  },
+  {
+    value: AssetTableFilter.TokenHolder,
+    label: 'Token Holder',
+  },
+];
+
 const Assets = () => {
   const [currentWalletAccount, account] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.pages.account,
   ]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [filter, setFilter] = useState(AssetTableFilter.All);
+
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +59,15 @@ const Assets = () => {
 
   const filteredAssetHoldings = assetHoldingsResponse?.assetHoldings.filter(
     (assetHolding) => {
-      return assetHolding.asset?.dao?.name?.indexOf(searchTerm) !== -1;
+      const isOwner =
+        assetHolding.owner_id.toLowerCase().trim() ===
+        currentWalletAccount?.address?.toLowerCase().trim();
+
+      return (
+        assetHolding.asset?.dao?.name?.indexOf(searchTerm) !== -1 &&
+        (filter === AssetTableFilter.All ||
+          (filter === AssetTableFilter.Admin ? isOwner : !isOwner))
+      );
     }
   );
 
@@ -62,6 +95,15 @@ const Assets = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account.assets.data, pagination.currentPage]);
 
+  const handleDropdownOpen = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleSetFilter = (newFilter: AssetTableFilter) => {
+    setFilter(newFilter);
+    setDropdownOpen(false);
+  };
+
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
       <div className='flex justify-between'>
@@ -79,10 +121,11 @@ const Assets = () => {
             />
           </div>
           <div>
-            <div className='relative flex flex-col'>
+            <div className='flex flex-col'>
               <button
                 tabIndex={0}
-                className={`btn bg-transparent px-6 py-3.5 hover:bg-base-100`}>
+                className={`btn bg-transparent px-6 py-3.5 hover:bg-base-100`}
+                onClick={handleDropdownOpen}>
                 <span className='flex items-center gap-2 text-neutral'>
                   All{' '}
                   <span>
@@ -100,6 +143,29 @@ const Assets = () => {
                   </span>
                 </span>
               </button>
+              <div className='relative'>
+                <div
+                  className={cn(
+                    'shadow-[0_0_4px_0_rgba(255, 255, 255, 0.20)] absolute right-0 top-[5px] w-fit space-y-2 rounded-2xl bg-primary-content py-1 shadow-sm',
+                    {
+                      hidden: !dropdownOpen,
+                    }
+                  )}>
+                  {AssetFilterList.map((assetFilter) => (
+                    <div
+                      key={assetFilter.value}
+                      onClick={() => handleSetFilter(assetFilter.value)}
+                      className={cn(
+                        `group flex cursor-pointer items-center gap-2 whitespace-nowrap px-4 py-2 hover:text-primary`,
+                        {
+                          'text-primary': assetFilter.value === filter,
+                        }
+                      )}>
+                      {assetFilter.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
