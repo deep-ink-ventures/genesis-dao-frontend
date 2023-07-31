@@ -6,7 +6,7 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));
 
-describe('FAQs', () => {
+describe('LoadingModal', () => {
   test('renders FAQs', () => {
     expect(render(<LoadingModal />)).not.toBeNull();
   });

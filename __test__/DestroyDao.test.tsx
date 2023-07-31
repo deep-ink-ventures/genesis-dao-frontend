@@ -6,7 +6,7 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));
 
-describe('Badge', () => {
+describe('DestoryDao', () => {
   test('renders DestoryDao', () => {
     render(<DestroyDao daoId='1' assetId={1} />);
     expect(screen.getByText('Destroy DAO')).toBeInTheDocument();
