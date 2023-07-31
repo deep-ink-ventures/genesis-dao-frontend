@@ -10,7 +10,9 @@ import { uiTokens } from '@/utils';
 
 import DaoImage from './DaoImage';
 
-type AssetHoldingsTableItem = AssetHolding & { asset?: Asset & { dao?: Dao } };
+export type AssetHoldingsTableItem = AssetHolding & {
+  asset?: Asset & { dao?: Dao };
+};
 
 const AssetsHoldingsTable = ({
   assetHoldings = [],
