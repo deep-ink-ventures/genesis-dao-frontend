@@ -192,17 +192,19 @@ const Assets = () => {
         {currentWalletAccount && account.assets.loading && (
           <Loading spinnerSize='32' />
         )}
-        {currentWalletAccount &&
-        !account.assets.loading &&
-        Boolean(filteredAssetHoldings?.length) ? (
-          <AssetsHoldingsTable
-            assetHoldings={filteredAssetHoldings}
-            currentWallet={currentWalletAccount?.address}
-            onTransferClick={handleTransferClick}
-            onOpenLinkClick={handleLinkClick}
-          />
-        ) : (
-          <div>Sorry, no assets found</div>
+        {currentWalletAccount && !account.assets.loading && (
+          <>
+            {filteredAssetHoldings?.length ? (
+              <AssetsHoldingsTable
+                assetHoldings={filteredAssetHoldings}
+                currentWallet={currentWalletAccount?.address}
+                onTransferClick={handleTransferClick}
+                onOpenLinkClick={handleLinkClick}
+              />
+            ) : (
+              <div>Sorry, no assets found</div>
+            )}
+          </>
         )}
       </div>
       {currentWalletAccount &&
