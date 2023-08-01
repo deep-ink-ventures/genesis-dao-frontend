@@ -36,7 +36,7 @@ const Customize = () => {
     }, 700);
     // eslint-disable-next-line
     return () => clearTimeout(TO);
-  }, [daoId, fetchDaoFromDB, fetchDao, txnProcessing]);
+  }, [daoId, txnProcessing]);
 
   useEffect(() => {
     setTimeout(() => {

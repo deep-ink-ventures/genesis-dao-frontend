@@ -38,6 +38,7 @@ const LogoForm = (props: { daoId: string | null }) => {
   const { makeSetMetadataTxn, sendBatchTxns, doChallenge } = useGenesisDao();
 
   const onSubmit = async (data: LogoFormValues) => {
+    console.log(data)
     if (!data.logoImage[0] || !props.daoId) {
       return;
     }
