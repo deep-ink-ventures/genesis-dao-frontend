@@ -3,6 +3,11 @@ import { render } from '@testing-library/react';
 
 import TransferAssetModal from '@/components/TransferAssetModal';
 
+// eslint-disable-next-line
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(),
+}));
+
 const assetHolding = {
   asset: {
     id: 1,

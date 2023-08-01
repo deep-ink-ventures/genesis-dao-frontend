@@ -29,6 +29,8 @@ export type AccountSlice = {
     transferAssets: {
       visible: boolean;
       setVisibility: (open: boolean) => void;
+      txnProcessing?: boolean;
+      setTxnProcessing: (isProcessing?: boolean) => void;
     };
   };
 };
@@ -47,6 +49,7 @@ export const createAccountSlice: StateCreator<
         set(
           produce((state: GenesisState) => {
             state.pages.account.assets.loading = true;
+            state.pages.account.assets.data = [];
           })
         );
         AssetsHoldingsService.listAssets()
@@ -104,6 +107,15 @@ export const createAccountSlice: StateCreator<
           if (!open) {
             get().pages.account.assets.selectAssetHolding(null);
           }
+        },
+        txnProcessing: false,
+        setTxnProcessing: (isProcessing?: boolean) => {
+          set(
+            produce((state: GenesisState) => {
+              state.pages.account.modals.transferAssets.txnProcessing =
+                isProcessing;
+            })
+          );
         },
       },
     },

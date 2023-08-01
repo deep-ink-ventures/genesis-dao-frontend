@@ -147,6 +147,7 @@ const AccountPage = () => {
           assetHolding={account.assets.selectedAssetHolding}
           open={account.modals.transferAssets.visible}
           onClose={() => account.modals.transferAssets.setVisibility(false)}
+          onSuccess={() => account.assets.fetchAssets()}
         />
       )}
     </MainLayout>
