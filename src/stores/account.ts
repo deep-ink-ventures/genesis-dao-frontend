@@ -49,9 +49,7 @@ export const createAccountSlice: StateCreator<
             state.pages.account.assets.loading = true;
           })
         );
-        AssetsHoldingsService.listAssets({
-          owner_id: get().currentWalletAccount?.address,
-        })
+        AssetsHoldingsService.listAssets()
           .then(async (response) => {
             let newData: Array<Asset & { dao?: Dao }> = [];
             if (response.results?.length) {

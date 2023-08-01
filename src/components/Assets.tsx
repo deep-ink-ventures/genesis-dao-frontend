@@ -61,7 +61,7 @@ const Assets = () => {
   const filteredAssetHoldings = assetHoldingsResponse?.assetHoldings.filter(
     (assetHolding) => {
       const isOwner =
-        assetHolding.owner_id.toLowerCase().trim() ===
+        assetHolding.asset?.dao?.creator_id?.toLowerCase().trim() ===
         currentWalletAccount?.address?.toLowerCase().trim();
 
       return (
@@ -86,6 +86,7 @@ const Assets = () => {
       AssetsHoldingsService.listAssetHoldings({
         offset: pagination.offset - 1,
         limit: 5,
+        owner_id: currentWalletAccount?.address,
       }).then((res) => {
         setAssetHoldingsResponse({
           totalCount: res.count,
@@ -137,7 +138,9 @@ const Assets = () => {
                 className={`btn bg-transparent px-6 py-3.5 hover:bg-base-100`}
                 onClick={handleDropdownOpen}>
                 <span className='flex items-center gap-2 text-neutral'>
-                  All{' '}
+                  {AssetFilterList.find(
+                    (assetFilter) => assetFilter.value === filter
+                  )?.label || AssetTableFilter.All}{' '}
                   <span>
                     <svg
                       width='20'
@@ -190,24 +193,34 @@ const Assets = () => {
           <Loading spinnerSize='32' />
         )}
         {currentWalletAccount && !account.assets.loading && (
-          <AssetsHoldingsTable
-            assetHoldings={filteredAssetHoldings}
-            currentWallet={currentWalletAccount?.address}
-            onTransferClick={handleTransferClick}
-            onOpenLinkClick={handleLinkClick}
-          />
+          <>
+            {filteredAssetHoldings?.length ? (
+              <AssetsHoldingsTable
+                assetHoldings={filteredAssetHoldings}
+                currentWallet={currentWalletAccount?.address}
+                onTransferClick={handleTransferClick}
+                onOpenLinkClick={handleLinkClick}
+              />
+            ) : (
+              <div>Sorry, no assets found</div>
+            )}
+          </>
         )}
       </div>
-      <div>
-        <Pagination
-          currentPage={pagination.currentPage}
-          pageSize={5}
-          totalCount={assetHoldingsResponse?.totalCount}
-          onPageChange={(newPage, newOffset) =>
-            setPagination({ currentPage: newPage, offset: newOffset })
-          }
-        />
-      </div>
+      {currentWalletAccount &&
+        !account.assets.loading &&
+        Boolean(filteredAssetHoldings?.length) && (
+          <div>
+            <Pagination
+              currentPage={pagination.currentPage}
+              pageSize={5}
+              totalCount={assetHoldingsResponse?.totalCount}
+              onPageChange={(newPage, newOffset) =>
+                setPagination({ currentPage: newPage, offset: newOffset })
+              }
+            />
+          </div>
+        )}
     </div>
   );
 };

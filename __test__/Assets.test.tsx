@@ -1,11 +1,6 @@
 /* eslint-disable testing-library/render-result-naming-convention */
 /* eslint-disable testing-library/prefer-screen-queries */
-import {
-  fireEvent,
-  queryByAttribute,
-  render,
-  screen,
-} from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import Assets from '@/components/Assets';
 
@@ -21,8 +16,6 @@ beforeEach(() => {
     json: jest.fn().mockResolvedValue({}),
   } as any);
 });
-
-const getById = queryByAttribute.bind(null, 'id');
 
 describe('Assets', () => {
   test('renders Assets', () => {
@@ -43,13 +36,6 @@ describe('Assets', () => {
     fireEvent.change(inputElement, { target: { value: 'Test' } });
 
     expect(inputElement.value).toBe('Test');
-  });
-
-  test('shows the pagination component', () => {
-    const viewAssets = render(<Assets />);
-    const paginationElement = getById(viewAssets.container, 'pagination');
-
-    expect(paginationElement).toBeInTheDocument();
   });
 });
 

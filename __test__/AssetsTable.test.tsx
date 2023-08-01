@@ -24,6 +24,7 @@ describe('AssetsTable', () => {
           dao: {
             id: 'DAOID',
             name: 'Item 1',
+            creator_id: 'Owner 1',
           },
         },
         asset_id: 1,
@@ -39,6 +40,7 @@ describe('AssetsTable', () => {
           dao: {
             id: 'DAOID',
             name: 'Item 2',
+            creator_id: 'Owner 2',
           },
         },
         asset_id: 2,
