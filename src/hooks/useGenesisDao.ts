@@ -464,9 +464,14 @@ const useGenesisDao = () => {
     walletAccount: WalletAccount,
     assetId: number,
     toAddress: string,
-    amount: BN
+    amount: BN,
+    onStart?: () => void,
+    onSuccess?: () => void
   ) => {
     if (walletAccount.signer) {
+      if (onStart) {
+        onStart();
+      }
       apiConnection?.tx?.assets
         ?.transferKeepAlive?.(assetId, toAddress, amount)
         .signAndSend(
@@ -483,6 +488,9 @@ const useGenesisDao = () => {
                 }, 2000);
               }
             );
+            if (onSuccess) {
+              onSuccess();
+            }
           }
         )
         .catch((err) => {
