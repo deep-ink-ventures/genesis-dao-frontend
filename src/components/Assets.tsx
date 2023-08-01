@@ -9,6 +9,7 @@ import { AssetsHoldingsService } from '@/services/assets';
 import type { Dao } from '@/services/daos';
 import useGenesisStore from '@/stores/genesisStore';
 
+import type { AssetHoldingsTableItem } from './AssetsTable';
 import AssetsHoldingsTable from './AssetsTable';
 
 enum AssetTableFilter {
@@ -70,6 +71,15 @@ const Assets = () => {
       );
     }
   );
+
+  const handleTransferClick = (asset?: AssetHoldingsTableItem) => {
+    account.assets.selectAssetHolding(asset);
+    account.modals.transferAssets.setVisibility(true);
+  };
+
+  const handleLinkClick = (assetHolding?: AssetHoldingsTableItem) => {
+    router.push(`/dao/${assetHolding?.asset?.dao_id}`);
+  };
 
   const fetchAssetHoldings = async () => {
     if (account.assets.data) {
@@ -183,13 +193,8 @@ const Assets = () => {
           <AssetsHoldingsTable
             assetHoldings={filteredAssetHoldings}
             currentWallet={currentWalletAccount?.address}
-            onTransferClick={(asset) => {
-              account.assets.selectAssetHolding(asset);
-              account.modals.transferAssets.setVisibility(true);
-            }}
-            onOpenLinkClick={(assetHolding) => {
-              router.push(`/dao/${assetHolding?.asset?.dao_id}`);
-            }}
+            onTransferClick={handleTransferClick}
+            onOpenLinkClick={handleLinkClick}
           />
         )}
       </div>

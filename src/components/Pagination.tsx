@@ -41,7 +41,7 @@ const Pagination = (props: PaginationProps) => {
   };
 
   return (
-    <div className='flex items-center justify-end gap-2'>
+    <div id='pagination' className='flex items-center justify-end gap-2'>
       <span className='text-xs'>{`Showing ${firstItemIndex} to ${Math.min(
         lastItemIndex,
         totalCount

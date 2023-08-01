@@ -18,6 +18,7 @@ const Badge = ({
 }) => {
   return (
     <div
+      id='badge'
       className={`container rounded-2xl px-2 py-1 ${BadgeVariantStyleMap[variant]} ${className}`}>
       {children}
     </div>

@@ -1,4 +1,4 @@
-const faq = [
+export const faq = [
   [
     'What is a DAO?',
     "A DAO, or Decentralized Autonomous Organization, is an organization represented by rules encoded as a computer program that is transparent, controlled by the organization members and not influenced by a central government. A DAO's financial transactions and rules are maintained on a blockchain.",
