@@ -6,7 +6,7 @@ import TransactionNotification from '../components/Notification';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <div>
+    <div className='relative overflow-x-hidden'>
       <TransactionNotification />
       <Component {...pageProps} />
     </div>
