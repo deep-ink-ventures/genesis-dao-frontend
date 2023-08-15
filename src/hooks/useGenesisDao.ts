@@ -30,6 +30,7 @@ const useGenesisDao = () => {
     updateProposalValue,
     updateIsFaultyModalOpen,
     fetchDaoTokenBalance,
+    fetchProposalsFromDB,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.apiConnection,
@@ -43,6 +44,7 @@ const useGenesisDao = () => {
     s.updateProposalValues,
     s.updateIsFaultyModalOpen,
     s.fetchDaoTokenBalance,
+    s.fetchProposalsFromDB,
   ]);
   // fixme currently only handles cancelled error
   const handleTxnError = (err: Error) => {
@@ -757,6 +759,7 @@ const useGenesisDao = () => {
           updateTxnProcessing(false);
           updateDaoPage('proposals');
           updateProposalValue(null);
+          fetchProposalsFromDB(daoId);
           router.push(`/dao/${daoId}`);
         }
       );

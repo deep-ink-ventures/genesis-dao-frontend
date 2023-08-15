@@ -53,8 +53,8 @@ const DaoCard = (props: DaoCardProps) => {
       className={`card-compact relative z-0 m-1 w-64 py-4  shadow-xl hover:cursor-pointer md:w-56 md:pb-10 md:pt-4`}>
       <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
         {currentWalletAccount?.address === props.daoOwnerAddress ? (
-          <div className='absolute left-44 top-3 rounded-[15px] bg-primary px-2 py-1 text-xs md:left-40 md:top-3 md:block'>
-            admin
+          <div className='absolute left-44 top-3 rounded-[15px] bg-primary px-2 py-1 text-xs text-primary-content md:left-40 md:top-3 md:block'>
+            Admin
           </div>
         ) : null}
         <div className='card-body text-center'>
