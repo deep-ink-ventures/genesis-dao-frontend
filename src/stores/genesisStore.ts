@@ -106,7 +106,6 @@ export interface GenesisState {
   showCongrats: boolean;
   proposalValues: ProposalCreationValues | null;
   daoPage: DaoPage;
-  inFavorVotes: BN;
   isFaultyModalOpen: boolean;
   isFaultyReportsOpen: boolean;
   pages: PageSlices;
@@ -143,7 +142,6 @@ export interface GenesisActions {
   updateDaos: (daos: AllDaos | null) => void;
   updateLoading: (loading: boolean) => void;
   updateTxnProcessing: (txnProcessing: boolean) => void;
-  updateApiConnection: (apiConnection: any) => void;
   updateDaosOwnedByWallet: () => void;
   updateCreateDaoSteps: (steps: number) => void;
   updateNewCreatedDao: (dao: DaoInfo) => void;
@@ -199,7 +197,6 @@ const useGenesisStore = create<GenesisStore>()(
     proposalValues: null,
     daoPage: 'dashboard',
     currentProposals: null,
-    inFavorVotes: new BN(0),
     isFaultyModalOpen: false,
     currentProposalFaultyReports: null,
     isFaultyReportsOpen: false,
@@ -549,7 +546,6 @@ const useGenesisStore = create<GenesisStore>()(
         set({
           currentBlockNumber: Number(response.headers.get('block-number')),
         });
-        set({ inFavorVotes: new BN(p.votes?.pro || 0) });
       } catch (err) {
         get().handleErrors(err);
       }
@@ -597,7 +593,6 @@ const useGenesisStore = create<GenesisStore>()(
       set({ daosOwnedByWallet: daosByAddress });
     },
     updateTxnProcessing: (txnProcessing) => set(() => ({ txnProcessing })),
-    updateApiConnection: (apiConnection) => set(() => ({ apiConnection })),
     updateCreateDaoSteps: (createDaoSteps) => set(() => ({ createDaoSteps })),
     updateNewCreatedDao: (newCreatedDao) => set(() => ({ newCreatedDao })),
     updateIsStartModalOpen: (isStartModalOpen) =>

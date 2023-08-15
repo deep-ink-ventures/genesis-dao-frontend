@@ -208,7 +208,7 @@ const Proposal = () => {
         currentWalletAccount.address
       );
     }
-  }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
+  }, [currentDao, currentWalletAccount]);
 
   useEffect(() => {
     if (!currentBlockNumber) {

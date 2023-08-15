@@ -108,7 +108,13 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     const otherAddresses = data.councilMembers.map((el) => {
       return el.walletAddress;
     });
+
+    let noMultisig = false;
     const addresses = [data.creatorWallet, ...otherAddresses];
+    if (addresses.length === 1) {
+      noMultisig = true;
+    }
+
     const multisigAddress = getMultisigAddress(
       addresses,
       data.councilThreshold
@@ -136,7 +142,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     const recipientsWithTreasury = [
       ...recipients,
       {
-        walletAddress: multisigAddress,
+        walletAddress: noMultisig ? data.creatorWallet : multisigAddress,
         tokens: data.treasuryTokens,
       },
     ];
@@ -150,7 +156,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     const withChangeOwner = makeChangeOwnerTxn(
       withRecipients,
       props.daoId,
-      multisigAddress
+      noMultisig ? data.creatorWallet : multisigAddress
     );
 
     try {

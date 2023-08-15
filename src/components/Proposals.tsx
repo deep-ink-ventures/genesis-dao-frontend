@@ -25,9 +25,10 @@ const Proposals = (props: { daoId: string }) => {
   const filteredProposals = currentProposals
     ?.filter((prop) => {
       // filter out proposals without metadata onchain here because we can let users search and complete them fixme
-      return prop.setupComplete === true;
+      // return prop.setupComplete === true;
+      return typeof prop.metadata !== null;
     })
-    .filter((prop) => {
+    ?.filter((prop) => {
       return (
         prop.proposalId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         prop.proposalName?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -69,7 +70,7 @@ const Proposals = (props: { daoId: string }) => {
     }, 500);
     // eslint-disable-next-line
     return () => clearTimeout(timer);
-  }, [props.daoId, fetchProposalsFromDB]);
+  }, [props.daoId]);
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
@@ -84,7 +85,7 @@ const Proposals = (props: { daoId: string }) => {
     }, 6000);
     // eslint-disable-next-line
     return () => clearTimeout(timeout);
-  }, [currentBlockNumber, updateBlockNumber]);
+  }, [currentBlockNumber]);
 
   return (
     <div className='flex flex-col gap-y-4'>
