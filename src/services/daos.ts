@@ -1,4 +1,6 @@
 import { SERVICE_URL } from '@/config';
+import type { Paginated } from '@/types/response';
+import { camelToSnakeCase } from '@/utils';
 
 export interface Dao {
   id: string;
@@ -37,6 +39,16 @@ export interface Image {
   url?: string;
 }
 
+export interface ListDaosQueryParams {
+  limit?: number;
+  offest?: number;
+  orderBy?: string;
+  id?: string;
+  name?: string;
+  creatorId?: string;
+  ownerId?: string;
+}
+
 const get = async (daoId: string) => {
   const response = await fetch(`${SERVICE_URL}/daos/${daoId}`);
 
@@ -45,6 +57,30 @@ const get = async (daoId: string) => {
   return objResponse as Dao;
 };
 
+const list = async (params?: ListDaosQueryParams) => {
+  let queryEntries = Object.entries(params || {}).filter(
+    ([, v]) => v?.toString()?.length
+  );
+
+  queryEntries = queryEntries.map((value) => [
+    camelToSnakeCase(value[0]),
+    value[1],
+  ]);
+
+  const query = Object.fromEntries(queryEntries);
+
+  const queryString = new URLSearchParams(query);
+
+  const response = await fetch(
+    `${SERVICE_URL}/daos/?${queryString.toString()}`
+  );
+
+  const objResponse = await response?.json();
+
+  return objResponse as Paginated<Dao[]>;
+};
+
 export const DaoService = {
   get,
+  list,
 };

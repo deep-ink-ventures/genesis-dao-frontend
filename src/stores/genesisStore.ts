@@ -24,6 +24,7 @@ import type {
 import { proposalStatusNames } from '@/types/proposal';
 import { TxnResponse } from '@/types/response';
 import type { IncomingTokenBalanceData } from '@/types/token';
+import { transformDaoToDaoDetail } from '@/utils/transformer';
 
 import type { AccountSlice } from './account';
 import { createAccountSlice } from './account';
@@ -395,27 +396,9 @@ const useGenesisStore = create<GenesisStore>()(
         );
         const daosRes = await getDaosResponse.json();
         const daosArr = daosRes.results;
-        const newDaos: DaoDetail[] = daosArr?.map((dao: any) => {
-          return {
-            daoId: dao.id,
-            daoName: dao.name,
-            daoAssetId: dao.asset_id,
-            daoOwnerAddress: dao.owner_id,
-            daoCreatorAddress: dao.creator_id,
-            setupComplete: dao.setup_complete,
-            metadataUrl: dao.metadata_url,
-            metadataHash: dao.metadata_hash,
-            email: dao.metadata?.email || null,
-            descriptionShort: dao.metadata?.description_short || null,
-            descriptionLong: dao.metadata?.description_long || null,
-            images: {
-              contentType: dao.metadata?.images.logo.content_type || null,
-              small: dao.metadata?.images.logo.small.url || null,
-              medium: dao.metadata?.images.logo.medium.url || null,
-              large: dao.metadata?.images.logo.medium.url || null,
-            },
-          };
-        });
+        const newDaos: DaoDetail[] = daosArr?.map((dao: any) =>
+          transformDaoToDaoDetail(dao)
+        );
         set({ daosFromDB: newDaos });
       } catch (err) {
         get().handleErrors(err);
