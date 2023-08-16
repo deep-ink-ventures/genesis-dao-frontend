@@ -3,21 +3,25 @@ import { useEffect, useState } from 'react';
 
 import DaoCards from '@/components/DaoCards';
 import Spinner from '@/components/Spinner';
+import { useDebounce } from '@/hooks/useDebounce';
+import { DaoService } from '@/services/daos';
 import useGenesisStore from '@/stores/genesisStore';
 import telescope from '@/svg/telescope.svg';
+import type { DaoDetail } from '@/types/dao';
+import { transformDaoToDaoDetail } from '@/utils/transformer';
 
 const ExploreDaos = () => {
   const daosFromDB = useGenesisStore((s) => s.daosFromDB);
-  const fetchDaosFromDB = useGenesisStore((s) => s.fetchDaosFromDB);
+  const [fetchDaosFromDB, handleErrors] = useGenesisStore((s) => [
+    s.fetchDaosFromDB,
+    s.handleErrors,
+  ]);
+
+  const [daos, setDaos] = useState<DaoDetail[]>();
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredDaos = daosFromDB?.filter((dao) => {
-    return (
-      dao.daoName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dao.daoId.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const debouncedSearchTerm = useDebounce<string>(searchTerm, 300);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,15 +31,38 @@ const ExploreDaos = () => {
     // eslint-disable-next-line
   }, []);
 
+  const fetchDaos = async () => {
+    try {
+      const response = await DaoService.list({
+        limit: 50,
+        orderBy: 'id',
+        name: debouncedSearchTerm,
+      });
+
+      if (response?.results?.length) {
+        setDaos(response.results.map((dao) => transformDaoToDaoDetail(dao)));
+      } else {
+        setDaos(undefined);
+      }
+    } catch (ex) {
+      handleErrors(new Error(ex));
+    }
+  };
+
+  useEffect(() => {
+    fetchDaos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm]);
+
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
 
   const displayDaos = () => {
-    if (!filteredDaos || filteredDaos?.length === 0) {
+    if (!daos || daos?.length === 0) {
       return <div className='mt-5'>Sorry no DAOs found</div>;
     }
-    return <DaoCards daos={filteredDaos} />;
+    return <DaoCards daos={daos} />;
   };
 
   return (
