@@ -547,11 +547,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                   {' Tokens'}
                 </span>
               </p>
-              <p>
-                {' '}
-                {currentDao?.daoId} tokens to treasury controlled by council
-                members
-              </p>
+              <p> to treasury controlled by council members</p>
             </div>
           </div>
         </div>
