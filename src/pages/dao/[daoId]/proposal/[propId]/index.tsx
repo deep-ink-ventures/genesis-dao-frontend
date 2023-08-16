@@ -208,7 +208,7 @@ const Proposal = () => {
         currentWalletAccount.address
       );
     }
-  }, [currentDao, currentWalletAccount]);
+  }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
   useEffect(() => {
     if (!currentBlockNumber) {
@@ -247,7 +247,7 @@ const Proposal = () => {
       <Tooltip
         placement='top'
         content={`Please note, that creating a proposal requires a one-time deposit of ${currentDao?.proposalTokenDeposit} tokens`}>
-        <button className='btn-primary btn min-w-[250px]' onClick={handleVote}>
+        <button className='btn btn-primary min-w-[250px]' onClick={handleVote}>
           Vote
         </button>
       </Tooltip>
@@ -351,7 +351,7 @@ const Proposal = () => {
                   currentWalletAccount.address) ? (
                 <div>
                   <button
-                    className='btn-primary btn mb-2'
+                    className='btn btn-primary mb-2'
                     onClick={() => {
                       updateIsFaultyReportsOpen(true);
                     }}>
@@ -367,7 +367,7 @@ const Proposal = () => {
             <div className='container flex min-h-[100px] flex-col items-center justify-center p-4 text-center'>
               <p>Please finalize proposal to update its status</p>
               <button
-                className={`btn-primary btn my-3 ${
+                className={`btn btn-primary my-3 ${
                   txnProcessing ? 'loading' : ''
                 } ${currentWalletAccount ? '' : 'btn-disabled'}`}
                 onClick={handleFinalize}>
@@ -404,7 +404,7 @@ const Proposal = () => {
                   <div
                     className={`btn-vote group flex min-w-[250px] items-center justify-center rounded-3xl border-2 border-neutral-focus bg-transparent hover:cursor-pointer hover:bg-neutral-focus hover:text-primary-content ${
                       voteSelection === 'In Favor'
-                        ? ' border-success font-semibold text-success outline  hover:bg-transparent hover:text-success'
+                        ? ' outline border-success font-semibold text-success  hover:bg-transparent hover:text-success'
                         : 'text-white'
                     } ${voteSelection === 'Against' ? 'brightness-50' : ''}`}
                     onClick={(e) => {
@@ -422,7 +422,7 @@ const Proposal = () => {
                   <div
                     className={`btn-vote group flex min-w-[250px] items-center justify-center rounded-3xl border-2 border-neutral-focus bg-transparent hover:cursor-pointer hover:bg-neutral-focus hover:text-primary-content ${
                       voteSelection === 'Against'
-                        ? 'border-secondary text-secondary outline hover:bg-transparent hover:text-secondary'
+                        ? 'outline border-secondary text-secondary hover:bg-transparent hover:text-secondary'
                         : 'text-white '
                     } ${voteSelection === 'In Favor' ? 'brightness-50' : ''}`}
                     onClick={(e) => {

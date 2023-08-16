@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import Congratulations from '@/components/Congratulations';
 import CouncilTokens from '@/components/CouncilTokens';
@@ -26,17 +26,21 @@ const Customize = () => {
     router.push(`/dao/${encodeURIComponent(daoId as string)}`);
   };
 
+  const fetchDaoCb = useCallback(() => {
+    fetchDaoFromDB(daoId as string);
+    fetchDao(daoId as string);
+  }, [daoId, fetchDaoFromDB, fetchDao]);
+
   useEffect(() => {
     if (!daoId) {
       return;
     }
     const TO = setTimeout(() => {
-      fetchDaoFromDB(daoId as string);
-      fetchDao(daoId as string);
+      fetchDaoCb();
     }, 700);
     // eslint-disable-next-line
     return () => clearTimeout(TO);
-  }, [daoId, txnProcessing]);
+  }, [fetchDaoCb]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -70,7 +74,7 @@ const Customize = () => {
               moments.
             </p>
             <button
-              className='btn-primary btn'
+              className='btn btn-primary'
               onClick={handleReturnToDashboard}>
               Return to Dashboard
             </button>

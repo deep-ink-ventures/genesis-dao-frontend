@@ -16,8 +16,9 @@ interface DaoCardProps {
 }
 
 const DaoCard = (props: DaoCardProps) => {
-  const [currentWalletAccount] = useGenesisStore((s) => [
+  const [currentWalletAccount, updateDaoPage] = useGenesisStore((s) => [
     s.currentWalletAccount,
+    s.updateDaoPage,
   ]);
   const displayImage = () => {
     if (!props.imageUrl) {
@@ -51,7 +52,11 @@ const DaoCard = (props: DaoCardProps) => {
   return (
     <div
       className={`card-compact relative z-0 m-1 w-64 py-4  shadow-xl hover:cursor-pointer md:w-56 md:pb-10 md:pt-4`}>
-      <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
+      <Link
+        href={`/dao/${encodeURIComponent(props.daoId)}`}
+        onClick={() => {
+          updateDaoPage('dashboard');
+        }}>
         {currentWalletAccount?.address === props.daoOwnerAddress ? (
           <div className='absolute left-44 top-3 rounded-[15px] bg-primary px-2 py-1 text-xs text-primary-content md:left-40 md:top-3 md:block'>
             Admin
@@ -75,7 +80,11 @@ const DaoCard = (props: DaoCardProps) => {
           <p className='text-sm text-accent'>{`DAO ID: ${props.daoId}`}</p>
         </div>
       </Link>
-      <Link href={`/dao/${encodeURIComponent(props.daoId)}`}>
+      <Link
+        href={`/dao/${encodeURIComponent(props.daoId)}`}
+        onClick={() => {
+          updateDaoPage('dashboard');
+        }}>
         <p className='absolute bottom-[10%] left-[33%] mt-5 hidden text-sm underline underline-offset-2 md:block'>{`See more >`}</p>
       </Link>
     </div>

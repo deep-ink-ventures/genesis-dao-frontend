@@ -129,7 +129,7 @@ const Index = () => {
             </div>
             <div className='my-3 md:my-0'>
               {currentWalletAccount ? (
-                <button className='btn-primary btn' onClick={handleStartModal}>
+                <button className='btn btn-primary' onClick={handleStartModal}>
                   Create a New DAO
                 </button>
               ) : (

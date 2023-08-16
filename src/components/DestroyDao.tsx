@@ -18,7 +18,7 @@ const DestroyDao = (props: { daoId: string; assetId: number | null }) => {
   return (
     <div className='flex justify-center'>
       <button
-        className={`btn-primary btn w-[180px] ${
+        className={`btn btn-primary w-[180px] ${
           txnProcessing ? 'loading' : ''
         }`}
         disabled={!currentWalletAccount}

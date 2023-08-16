@@ -55,7 +55,7 @@ const TransactionAccordion = ({
         )}
         onClick={onClick}>
         {false && (
-          <div className='badge-error badge h-[0.5rem] w-[0.5rem] p-0' />
+          <div className='badge badge-error h-[0.5rem] w-[0.5rem] p-0' />
         )}
         {false && <div>Faulty Proposal</div>}
         <div className='grow'>{proposal.proposalName}</div>
