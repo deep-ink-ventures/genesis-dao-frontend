@@ -43,7 +43,7 @@ const CustomizedModel = () => {
             <div className='w-[350px]'>
               <p className='mb-1 ml-1'>Name</p>
               <input
-                className='input input-primary'
+                className='input-primary input'
                 type='text'
                 placeholder='Name'
                 {...register('name', {
@@ -55,7 +55,7 @@ const CustomizedModel = () => {
             <div className='w-[350px]'>
               <p className='mb-1 ml-1'>Email</p>
               <input
-                className='input input-primary'
+                className='input-primary input'
                 type='email'
                 placeholder='Email'
                 {...register('email', {
@@ -67,7 +67,7 @@ const CustomizedModel = () => {
           </div>
         </div>
         <div className='flex justify-center'>
-          <button className='btn btn-primary w-[250px]' type='submit'>
+          <button className='btn-primary btn w-[250px]' type='submit'>
             Submit
           </button>
         </div>

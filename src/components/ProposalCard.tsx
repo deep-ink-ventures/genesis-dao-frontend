@@ -56,7 +56,7 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
   }, [props.p, currentDao, currentBlockNumber]);
 
   return (
-    <div className='min-h-[180px] rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:outline hover:cursor-pointer'>
+    <div className='min-h-[180px] rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer hover:outline'>
       <div className='flex flex-col gap-y-3'>
         <div className='mb-3 flex justify-between'>
           <div>
@@ -129,11 +129,11 @@ const ProposalCard = (props: { p: ProposalDetail }) => {
                     ? 'tokens'
                     : 'token'
                 }`}>
-                <button className='btn btn-primary w-28'>Vote</button>
+                <button className='btn-primary btn w-28'>Vote</button>
               </Tooltip>
             ) : null}
             {props.p.status === 'Active' && !proposalIsRunning ? (
-              <button className='btn btn-primary w-28'>Finalize</button>
+              <button className='btn-primary btn w-28'>Finalize</button>
             ) : null}
           </div>
         </div>

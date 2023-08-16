@@ -59,7 +59,7 @@ const ReviewProposal = (props: {
           Back
         </button>
         <button
-          className={`btn btn-primary mr-4 w-48 ${
+          className={`btn-primary btn mr-4 w-48 ${
             txnProcessing ? 'loading' : ''
           }`}
           onClick={submitProposal}>{`${

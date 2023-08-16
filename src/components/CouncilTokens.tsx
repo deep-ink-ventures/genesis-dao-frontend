@@ -251,7 +251,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 <input
                   type='text'
                   placeholder='Wallet Address'
-                  className='input input-primary'
+                  className='input-primary input'
                   {...register(`tokenRecipients.${index}.walletAddress`, {
                     required: 'Required',
                     validate: (add) =>
@@ -272,7 +272,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <p className='ml-1'>Number of Tokens</p>
               <input
                 type='number'
-                className='input input-primary text-center'
+                className='input-primary input text-center'
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
@@ -336,7 +336,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 <input
                   type='text'
                   placeholder='Name'
-                  className='input input-primary '
+                  className='input-primary input '
                   {...register(`councilMembers.${index}.name`, {
                     required: 'Required',
                     minLength: { value: 1, message: 'Minimum is 1' },
@@ -357,7 +357,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <input
                 type='text'
                 placeholder='Wallet Address'
-                className='input input-primary'
+                className='input-primary input'
                 {...register(`councilMembers.${index}.walletAddress`, {
                   required: 'Required',
                   validate: (add) =>
@@ -434,7 +434,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 <input
                   type='text'
                   placeholder='Your name'
-                  className='input input-primary'
+                  className='input-primary input'
                   {...register('creatorName', {
                     required: 'Required',
                     minLength: { value: 1, message: 'Minimum is 1' },
@@ -483,7 +483,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           </div>
           <div className='w-[100px]'>
             <input
-              className='input input-primary text-center'
+              className='input-primary input text-center'
               type='number'
               placeholder='1'
               {...register('councilThreshold', {
@@ -557,7 +557,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
         </div>
         <div className='mt-6 flex w-full justify-end'>
           <button
-            className={`btn btn-primary mr-3 w-48 ${
+            className={`btn-primary btn mr-3 w-48 ${
               !daoTokenBalance ? 'btn-disabled' : ''
             } ${txnProcessing ? 'loading' : ''}`}
             type='submit'>

@@ -75,7 +75,7 @@ const Customize = () => {
               moments.
             </p>
             <button
-              className='btn btn-primary'
+              className='btn-primary btn'
               onClick={handleReturnToDashboard}>
               Return to Dashboard
             </button>
