@@ -14,6 +14,7 @@ import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
 import polkadotjs from '@/svg/polkadotjs.svg';
 import MainLayout from '@/templates/MainLayout';
+import { TxnResponse } from '@/types/response';
 
 enum AccountTabs {
   ASSETS = 'assets',
@@ -43,10 +44,9 @@ const TabButton = ({
 
 const AccountPage = () => {
   const router = useRouter();
-  const [currentWalletAccount, account] = useGenesisStore((s) => [
-    s.currentWalletAccount,
-    s.pages.account,
-  ]);
+  const [currentWalletAccount, account, addTxnNotification] = useGenesisStore(
+    (s) => [s.currentWalletAccount, s.pages.account, s.addTxnNotification]
+  );
 
   const handleChangePage = (pageParam?: string) => {
     if (pageParam) {
@@ -83,6 +83,18 @@ const AccountPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentWalletAccount]);
 
+  const handleCopy = () => {
+    if (currentWalletAccount?.address) {
+      navigator.clipboard.writeText(currentWalletAccount.address);
+      addTxnNotification({
+        title: 'Clipboard',
+        type: TxnResponse.Success,
+        message: 'Account address copied to clipboard!',
+        timestamp: new Date().valueOf(),
+      });
+    }
+  };
+
   return (
     <MainLayout title={`Account`} description={`Account`}>
       <div
@@ -118,6 +130,7 @@ const AccountPage = () => {
                     width={15}
                     alt='copy'
                     className='ml-4 cursor-pointer'
+                    onClick={handleCopy}
                   />
                 </div>
               ) : (
