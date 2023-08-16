@@ -27,19 +27,20 @@ const Customize = () => {
   };
 
   const fetchDaoCb = useCallback(() => {
-    fetchDaoFromDB(daoId as string);
-    fetchDao(daoId as string);
-  }, [daoId, fetchDaoFromDB, fetchDao]);
-
-  useEffect(() => {
     if (!daoId) {
       return;
     }
     const TO = setTimeout(() => {
-      fetchDaoCb();
+      fetchDaoFromDB(daoId as string);
+      fetchDao(daoId as string);
     }, 700);
     // eslint-disable-next-line
     return () => clearTimeout(TO);
+    // eslint-disable-next-line
+  }, [daoId, txnProcessing, fetchDaoFromDB, fetchDao]);
+
+  useEffect(() => {
+    fetchDaoCb();
   }, [fetchDaoCb]);
 
   useEffect(() => {
