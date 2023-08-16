@@ -332,7 +332,7 @@ const CreateProposal = (props: {
           </div>
           <div className='flex justify-center'>
             <button
-              className={`btn-primary btn w-96`}
+              className={`btn btn-primary w-96`}
               type='submit'
               disabled={!hasProposalDeposit}>
               Submit

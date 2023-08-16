@@ -199,12 +199,13 @@ const useGenesisDao = () => {
               `Congrats! ${daoName} is created.`,
               'Something went wrong. Please try again.',
               () => {
+                updateTxnProcessing(true);
                 setTimeout(() => {
                   fetchDaoFromDB(daoId as string);
-                  updateCreateDaoSteps(1);
+                  updateTxnProcessing(false);
                   updateIsStartModalOpen(false);
                   router.push(`/dao/${daoId}/customize`);
-                }, 1000);
+                }, 3000);
               }
             );
           }

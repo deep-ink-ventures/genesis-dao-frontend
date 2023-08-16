@@ -116,7 +116,7 @@ const DaoDashboard = () => {
                 )}/customize`}
                 className={`${!currentWalletAccount ? 'disable-link' : ''}`}>
                 <button
-                  className={`btn-primary btn w-[180px]`}
+                  className={`btn btn-primary w-[180px]`}
                   disabled={!currentWalletAccount}>
                   Customize DAO
                 </button>
@@ -134,7 +134,7 @@ const DaoDashboard = () => {
                   : ''
               }`}>
               <button
-                className={`btn-primary btn w-[180px]`}
+                className={`btn btn-primary w-[180px]`}
                 disabled={
                   !currentWalletAccount ||
                   daoTokenBalance?.isZero() ||
@@ -155,7 +155,7 @@ const DaoDashboard = () => {
                   : ''
               }`}>
               <button
-                className={`btn-primary btn w-[180px]`}
+                className={`btn btn-primary w-[180px]`}
                 disabled={
                   !currentWalletAccount ||
                   daoTokenBalance?.isZero() ||
