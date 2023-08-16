@@ -12,6 +12,7 @@ import coins from '@/svg/coins.svg';
 import copy from '@/svg/copy.svg';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
+import polkadotjs from '@/svg/polkadotjs.svg';
 import MainLayout from '@/templates/MainLayout';
 
 enum AccountTabs {
@@ -25,7 +26,7 @@ const TabButton = ({
   onClick,
 }: {
   activeTab?: string;
-  name: string;
+  name?: string;
   children: React.ReactNode;
   onClick: (tab?: string) => void;
 }) => {
@@ -33,7 +34,7 @@ const TabButton = ({
     <div
       className={`${
         activeTab === name ? 'selected-tab' : 'brightness-75'
-      } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
+      } flex h-[55px] px-7 py-4 hover:cursor-pointer hover:text-primary`}
       onClick={() => onClick(name)}>
       {children}
     </div>
@@ -137,6 +138,22 @@ const AccountPage = () => {
                 className='mr-4'
               />
               <p>My Assets</p>
+            </TabButton>
+            <TabButton
+              activeTab={account.tabs.activeTab || AccountTabs.ASSETS}
+              onClick={() => handleChangePage('assets')}>
+              <a
+                className='flex'
+                href='https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fnode.genesis-dao.org#/accounts'>
+                <Image
+                  src={polkadotjs}
+                  height={15}
+                  width={15}
+                  alt='polkadotJS'
+                  className='mr-4'
+                />
+                <p>PolkadotJS</p>
+              </a>
             </TabButton>
           </div>
         </div>

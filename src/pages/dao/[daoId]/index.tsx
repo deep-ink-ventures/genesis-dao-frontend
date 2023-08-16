@@ -41,7 +41,7 @@ const TabButton = ({
     <div
       className={`${
         activeTab === name ? 'selected-tab' : 'brightness-75'
-      } flex h-[55px] px-7 py-4 hover:cursor-pointer`}
+      } flex h-[55px] px-7 py-4 hover:cursor-pointer hover:text-primary`}
       onClick={() => onClick(name)}>
       {children}
     </div>
