@@ -17,7 +17,7 @@ const CreateDaoModal = () => {
     handleSubmit,
     reset,
     watch,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<CreateDaoData>();
   const [hasTenDots, setHasTenDots] = useState<boolean | null>(null);
   const isStartModalOpen = useGenesisStore((s) => s.isStartModalOpen);
@@ -63,10 +63,9 @@ const CreateDaoModal = () => {
   };
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-  });
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (currentWalletAccount?.address) {
@@ -179,7 +178,7 @@ const CreateDaoModal = () => {
                       }`}
                       type='text'
                       placeholder='e.g. Apple DAO'
-                      disabled={!hasTenDots}
+                      disabled={!hasTenDots || txnProcessing}
                       {...register('daoName', {
                         required: 'Required',
                         maxLength: { value: 32, message: 'Max length is 32' },
@@ -223,7 +222,7 @@ const CreateDaoModal = () => {
                       }`}
                       type='text'
                       placeholder='e.g. APPLE'
-                      disabled={!hasTenDots}
+                      disabled={!hasTenDots || txnProcessing}
                       {...register('daoId', {
                         required: 'Required',
                         maxLength: { value: 8, message: 'Max Length is 8' },
