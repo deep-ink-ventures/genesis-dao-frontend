@@ -88,6 +88,7 @@ export interface GenesisState {
   currentBlockNumber: number | null;
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
+  daoTokenSupplyBalance: BN | null;
   currentDaoFromChain: BasicDaoInfo | null;
   daosFromDB: DaoDetail[] | null;
   walletAccounts: WalletAccount[] | null;
@@ -126,6 +127,7 @@ export interface GenesisActions {
   fetchDao: (daoId: string) => void;
   fetchDaoTokenBalance: (assetId: number, accountId: string) => void;
   fetchNativeTokenBalance: (address: string) => void;
+  fetchDaoTokenSupplyBalance: (assetId: number) => void;
   fetchCurrentAssetId: () => void;
   fetchDaoFromDB: (daoId: string) => void;
   fetchBlockNumber: () => void;
@@ -153,6 +155,7 @@ export interface GenesisActions {
   updateCurrentDao: (currentDao: DaoDetail | null) => void;
   updateCurrentDaoFromChain: (currentDaoFromChain: BasicDaoInfo | null) => void;
   updateDaoTokenBalance: (daoTokenBalance: BN | null) => void;
+  updateDaoTokenSupplyBalance: (daoTokenSupplyBalance: BN | null) => void;
   updateNativeTokenBalance: (nativeTokenBalance: BN | null) => void;
   updateShowCongrats: (showCongrats: boolean) => void;
 
@@ -193,6 +196,7 @@ const useGenesisStore = create<GenesisStore>()(
     currentDaoFromChain: null,
     nativeTokenBalance: null,
     daoTokenBalance: null,
+    daoTokenSupplyBalance: null,
     showCongrats: false,
     currentBlockNumber: null,
     proposalValues: null,
@@ -434,6 +438,19 @@ const useGenesisStore = create<GenesisStore>()(
         get().handleErrors(err);
       }
     },
+    fetchDaoTokenSupplyBalance: (assetId: number) => {
+      get()
+        .apiConnection?.query.assets?.asset?.(assetId)
+        .then((data) => {
+          const supply = (data.toHuman() as any)?.supply;
+          if (supply?.length) {
+            const daoTokenSupplyBalance = new BN(
+              Number(supply?.replace(/,/g, ''))
+            );
+            set({ daoTokenSupplyBalance });
+          }
+        });
+    },
     fetchNativeTokenBalance: async (address: string) => {
       try {
         const response = await fetch(`${SERVICE_URL}/accounts/${address}/`);
@@ -605,6 +622,8 @@ const useGenesisStore = create<GenesisStore>()(
       set(() => ({ currentDaoFromChain })),
     updateDaoTokenBalance: (daoTokenBalance) =>
       set(() => ({ daoTokenBalance })),
+    updateDaoTokenSupplyBalance: (daoTokenSupplyBalance) =>
+      set(() => ({ daoTokenSupplyBalance })),
     updateNativeTokenBalance: (nativeTokenBalance) =>
       set(() => ({ nativeTokenBalance })),
     updateShowCongrats: (showCongrats) => set(() => ({ showCongrats })),
