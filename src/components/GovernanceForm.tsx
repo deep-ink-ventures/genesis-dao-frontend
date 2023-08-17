@@ -20,6 +20,14 @@ const GovernanceForm = (props: { daoId: string | null }) => {
     }
   };
 
+  const ComingSoonBadge = () => {
+    return (
+      <div className='absolute left-[80px] top-[-8px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
+        Coming Soon!
+      </div>
+    );
+  };
+
   return (
     <div className='flex flex-col items-center gap-y-6 '>
       <div>
@@ -47,31 +55,32 @@ const GovernanceForm = (props: { daoId: string | null }) => {
           Majority Vote
         </div>
         <div className='relative'>
-          <div className='absolute left-[80px] top-[-8px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
-            Coming Soon!
-          </div>
+          <ComingSoonBadge />
           <div className='card flex h-[110px] w-[170px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'>
             Delegated Council Vote
           </div>
         </div>
         <div className='relative'>
-          <div className='absolute left-[80px] top-[-8px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
-            Coming Soon!
-          </div>
+          <ComingSoonBadge />
           <div className='card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'>
             Create Your Own
           </div>
         </div>
-        <div
-          className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center hover:cursor-pointer ${
-            model === 'customized'
-              ? 'border border-primary hover:border-primary'
-              : 'text-sm'
-          }`}
-          onClick={() => {
-            handleChangeTab('customized');
-          }}>
-          Customized
+        <div className='relative'>
+          <ComingSoonBadge />
+          <div
+            className='card flex h-[110px] w-[180px] items-center justify-center px-4 text-center text-sm opacity-40 hover:border-none hover:brightness-100'
+            // className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center hover:cursor-pointer ${
+            //   model === 'customized'
+            //     ? 'border border-primary hover:border-primary'
+            //     : 'text-sm'
+            // }`}
+            // onClick={() => {
+            //   handleChangeTab('customized');
+            // }}
+          >
+            Customized
+          </div>
         </div>
       </div>
       {model === 'majority' ? (
