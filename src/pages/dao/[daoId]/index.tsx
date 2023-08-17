@@ -204,12 +204,7 @@ const MainDaoPage = () => {
                     <div className='flex flex-col'>
                       <p>You have</p>
                       <p>
-                        {' '}
-                        {uiTokens(
-                          daoTokenBalance,
-                          'dao',
-                          currentDao?.daoId
-                        )}{' '}
+                        {uiTokens(daoTokenBalance, 'dao', currentDao?.daoId)}
                       </p>
                     </div>
                   </div>
@@ -231,13 +226,11 @@ const MainDaoPage = () => {
                     <div className='flex flex-col'>
                       <p>Treasury</p>
                       <p>
-                        {' '}
-                        {daoTokenSupplyBalance &&
-                          uiTokens(
-                            daoTokenSupplyBalance,
-                            'dao',
-                            currentDao?.daoId
-                          )}{' '}
+                        {uiTokens(
+                          daoTokenSupplyBalance || new BN(0),
+                          'dao',
+                          currentDao?.daoId
+                        )}
                       </p>
                     </div>
                   </div>
