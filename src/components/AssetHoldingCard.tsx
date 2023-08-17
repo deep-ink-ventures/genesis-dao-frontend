@@ -19,7 +19,9 @@ const AssetHoldingCard = (props: {
       />
       <div>
         <div>{assetHolding?.asset?.dao_id}</div>
-        <div>Owned Tokens: {uiTokens(new BN(assetHolding.balance), 'dao')}</div>
+        <div>
+          Owned Tokens: {uiTokens(new BN(assetHolding.balance), 'dao', ' ')}
+        </div>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ describe('AssetHoldingCard', () => {
   test('renders the owned balance', () => {
     render(<AssetHoldingCard assetHolding={mockAssetHolding as any} />);
 
-    const el = screen.getAllByText(/Owned Tokens: 10 kUNITS/);
+    const el = screen.getAllByText(/Owned Tokens: 10,000/);
     expect(el[0]).toBeInTheDocument();
   });
 });
