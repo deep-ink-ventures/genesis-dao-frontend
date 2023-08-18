@@ -46,7 +46,7 @@ export interface MajorityModelValues {
   votingDays: number; // in days
 }
 
-export type DaoPage = 'dashboard' | 'proposals' | 'transactions';
+export type DaoPage = 'dashboard' | 'proposals' | 'transactions' | 'governance';
 
 export interface TransferFormValues {
   assetId: number;

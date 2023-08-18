@@ -4,12 +4,14 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import DaoDashboard from '@/components/DaoDashboard';
+import Governance from '@/components/Governance';
 import Proposals from '@/components/Proposals';
 import Spinner from '@/components/Spinner';
 import Transactions from '@/components/Transactions';
 import WalletConnect from '@/components/WalletConnect';
 import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+import governanceIcon from '@/svg/about.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
 import arrowRight from '@/svg/arrow-right.svg';
 import dashboard from '@/svg/dashboard.svg';
@@ -24,6 +26,7 @@ enum DashboardTabs {
   DASHBOARD = 'dashboard',
   PROPOSALS = 'proposals',
   TRANSACTIONS = 'transactions',
+  GOVERNANCE = 'governance',
 }
 
 const TabButton = ({
@@ -137,6 +140,8 @@ const MainDaoPage = () => {
         return <Proposals daoId={daoId as string} />;
       case DashboardTabs.TRANSACTIONS:
         return <Transactions daoId={daoId as string} />;
+      case DashboardTabs.GOVERNANCE:
+        return <Governance />;
       default:
         return <DaoDashboard />;
     }
@@ -244,6 +249,19 @@ const MainDaoPage = () => {
                   className='mr-4'
                 />
                 <p>Transactions</p>
+              </TabButton>
+              <TabButton
+                name={DashboardTabs.GOVERNANCE}
+                activeTab={daoPage}
+                onClick={() => handleChangePage('governance')}>
+                <Image
+                  src={governanceIcon}
+                  height={15}
+                  width={15}
+                  alt='governance'
+                  className='mr-4'
+                />
+                <p>Governance</p>
               </TabButton>
               {/* <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
                 <Image
