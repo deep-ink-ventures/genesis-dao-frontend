@@ -1,0 +1,16 @@
+<svg style="enable-background:new 0 0 139 139;" version="1.1" viewBox="0 0 139 139" xml:space="preserve"
+	xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" >
+	<style type="text/css">
+		.st4 {
+			fill: none;
+			stroke: #FFF;
+			stroke-width: 6;
+			stroke-miterlimit: 10;
+		}
+	</style>
+		<g id="user">
+		<circle class="st4" cx="69.5" cy="52.2" r="27.4" />
+		<path class="st4" d="M69.2,124.6c0,0,22,1.8,40.2-17.9c0,0,1.5-19.2-12.7-24.9l-9.9-4.7c0,0-1.1-1.9-0.7-3.4" />
+		<path class="st4" d="M70,124.6c0,0-22,1.8-40.2-17.9c0,0-1.5-19.2,12.7-24.9l9.9-4.7c0,0,1.1-1.9,0.7-3.4" />
+	</g>
+</svg>

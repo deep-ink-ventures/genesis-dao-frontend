@@ -10,9 +10,9 @@ import useGenesisStore from '@/stores/genesisStore';
 import arrowLeft from '@/svg/arrow-left.svg';
 import coins from '@/svg/coins.svg';
 import copy from '@/svg/copy.svg';
-import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
 import polkadotjs from '@/svg/polkadotjs.svg';
+import user from '@/svg/user-icon.svg';
 import MainLayout from '@/templates/MainLayout';
 import { TxnResponse } from '@/types/response';
 
@@ -64,7 +64,7 @@ const AccountPage = () => {
           width={120}
         />
         <div className='absolute'>
-          <Image src={mountain} alt='mountain' width={30} height={17}></Image>
+          <Image src={user} alt='mountain' width={60} height={60}></Image>
         </div>
       </div>
     );
