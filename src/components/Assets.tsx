@@ -86,7 +86,7 @@ const Assets = () => {
       AssetsHoldingsService.listAssetHoldings({
         offset: pagination.offset - 1,
         limit: 5,
-        owner_id: currentWalletAccount?.address,
+        search: currentWalletAccount?.address,
       }).then((res) => {
         setAssetHoldingsResponse({
           totalCount: res.count,
