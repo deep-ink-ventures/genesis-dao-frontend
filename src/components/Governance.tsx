@@ -1,6 +1,7 @@
 import useGenesisStore from '@/stores/genesisStore';
 
 import DestroyDao from './DestroyDao';
+import ChangeDaoOwner from './ChangeDaoOwner';
 
 const Governance = () => {
   const [currentWalletAccount, currentDao] = useGenesisStore((s) => [
@@ -28,6 +29,15 @@ const Governance = () => {
                 <div className='flex grow'>Destroy DAO</div>
                 <div className='flex'>
                   <DestroyDao
+                    daoId={currentDao.daoId}
+                    assetId={currentDao.daoAssetId}
+                  />
+                </div>
+              </div>
+              <div className='flex items-center rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
+                <div className='flex grow'>Change Owner</div>
+                <div className='flex'>
+                  <ChangeDaoOwner
                     daoId={currentDao.daoId}
                     assetId={currentDao.daoAssetId}
                   />

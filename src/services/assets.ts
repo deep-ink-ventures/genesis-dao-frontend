@@ -40,6 +40,15 @@ const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
   return objResponse as Paginated<AssetHolding[]>;
 };
 
+const getAssetHolding = async (assetId: string) => {
+  const response = await fetch(`${SERVICE_URL}/asset-holdings/${assetId}`);
+
+  const objResponse = await response.json();
+
+  return objResponse as AssetHolding;
+};
+
+
 const listAssets = async (params?: ListAssetsQueryParams) => {
   const query = Object.fromEntries(
     Object.entries(params || {}).filter(([, v]) => v != null)
@@ -58,5 +67,6 @@ const listAssets = async (params?: ListAssetsQueryParams) => {
 
 export const AssetsHoldingsService = {
   listAssets,
+  getAssetHolding,
   listAssetHoldings,
 };
