@@ -5,7 +5,7 @@ import Congratulations from '@/components/Congratulations';
 import CouncilTokens from '@/components/CouncilTokens';
 import GovernanceForm from '@/components/GovernanceForm';
 import Loading from '@/components/Loading';
-import LogoForm from '@/components/LogoForm';
+import MetadataForm from '@/components/MetadataForm';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
 import MainLayout from '@/templates/MainLayout';
@@ -85,7 +85,7 @@ const Customize = () => {
     }
 
     if (!currentDaoFromChain?.metadataHash) {
-      return <LogoForm daoId={daoId as string} />;
+      return <MetadataForm daoId={daoId as string} />;
     }
 
     if (
