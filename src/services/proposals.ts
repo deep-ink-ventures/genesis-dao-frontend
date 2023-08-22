@@ -12,7 +12,7 @@ export interface ReportFaultedRequestPayload {
 }
 
 export interface ListProposalsQueryParams {
-  daoId?: string;
+  search?: string;
   limit?: number;
   orderBy?: string;
   offset?: number;

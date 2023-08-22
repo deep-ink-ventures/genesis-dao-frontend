@@ -5,9 +5,7 @@ interface ListAssetsQueryParams {
   limit?: number;
   offset?: number;
   order_by?: 'id' | 'owner_id' | 'asset_id';
-  id?: string;
-  owner_id?: string;
-  asset_id?: string;
+  search?: string;
 }
 
 export interface Asset {

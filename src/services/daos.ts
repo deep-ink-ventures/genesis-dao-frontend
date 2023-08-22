@@ -41,12 +41,9 @@ export interface Image {
 
 export interface ListDaosQueryParams {
   limit?: number;
-  offest?: number;
+  offset?: number;
   orderBy?: string;
-  id?: string;
-  name?: string;
-  creatorId?: string;
-  ownerId?: string;
+  search?: string;
 }
 
 const get = async (daoId: string) => {
