@@ -14,7 +14,7 @@ export interface ReportFaultedRequestPayload {
 export interface ListProposalsQueryParams {
   search?: string;
   limit?: number;
-  orderBy?: string;
+  ordering?: string;
   offset?: number;
 }
 

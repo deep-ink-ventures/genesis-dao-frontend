@@ -4,7 +4,7 @@ import type { Paginated } from '@/types/response';
 interface ListAssetsQueryParams {
   limit?: number;
   offset?: number;
-  order_by?: 'id' | 'owner_id' | 'asset_id';
+  ordering?: 'id' | 'owner_id' | 'asset_id';
   search?: string;
 }
 

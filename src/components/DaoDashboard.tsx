@@ -89,7 +89,7 @@ const DaoDashboard = () => {
       ProposalsService.listProposals({
         search: currentDao.daoId,
         limit: 5,
-        orderBy: '-id',
+        ordering: '-id',
       }).then((result) => {
         setLatestProposals(result.mappedData);
       });

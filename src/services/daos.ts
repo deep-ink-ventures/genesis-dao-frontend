@@ -42,7 +42,7 @@ export interface Image {
 export interface ListDaosQueryParams {
   limit?: number;
   offset?: number;
-  orderBy?: string;
+  ordering?: string;
   search?: string;
 }
 
