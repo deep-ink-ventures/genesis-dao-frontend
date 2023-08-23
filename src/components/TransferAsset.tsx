@@ -9,12 +9,17 @@ import useGenesisStore from '@/stores/genesisStore';
 import TransferAssetModal from './TransferAssetModal';
 
 const TransferAsset = () => {
-  const [currentDao, fetchDaoTokenBalanceFromDB, currentWalletAccount] =
-    useGenesisStore((s) => [
-      s.currentDao,
-      s.fetchDaoTokenBalanceFromDB,
-      s.currentWalletAccount,
-    ]);
+  const [
+    currentDao,
+    fetchDaoTokenBalanceFromDB,
+    fetchDaoTokenBalance,
+    currentWalletAccount,
+  ] = useGenesisStore((s) => [
+    s.currentDao,
+    s.fetchDaoTokenBalanceFromDB,
+    s.fetchDaoTokenBalance,
+    s.currentWalletAccount,
+  ]);
   const [open, setOpen] = useState(false);
 
   const [assetHolding, setAssetHolding] = useState<
@@ -58,6 +63,7 @@ const TransferAsset = () => {
         currentDao?.daoAssetId,
         currentWalletAccount.address
       );
+      fetchDaoTokenBalance(currentDao.daoAssetId, currentWalletAccount.address);
     }
   };
 
