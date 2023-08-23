@@ -250,19 +250,23 @@ const MainDaoPage = () => {
                 />
                 <p>Transactions</p>
               </TabButton>
-              <TabButton
-                name={DashboardTabs.GOVERNANCE}
-                activeTab={daoPage}
-                onClick={() => handleChangePage('governance')}>
-                <Image
-                  src={governanceIcon}
-                  height={15}
-                  width={15}
-                  alt='governance'
-                  className='mr-4'
-                />
-                <p>Governance</p>
-              </TabButton>
+              {currentWalletAccount?.address ===
+                currentDao?.daoOwnerAddress && (
+                <TabButton
+                  name={DashboardTabs.GOVERNANCE}
+                  activeTab={daoPage}
+                  onClick={() => handleChangePage('governance')}>
+                  <Image
+                    src={governanceIcon}
+                    height={15}
+                    width={15}
+                    alt='governance'
+                    className='mr-4'
+                  />
+                  <p>Governance</p>
+                </TabButton>
+              )}
+
               {/* <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
                 <Image
                   src={about}
