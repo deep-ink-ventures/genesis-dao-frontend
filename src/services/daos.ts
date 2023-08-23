@@ -2,7 +2,7 @@ import { SERVICE_URL } from '@/config';
 import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
 
-export interface Dao {
+export interface RawDao {
   id: string;
   name: string;
   creator_id: string;
@@ -51,7 +51,7 @@ const get = async (daoId: string) => {
 
   const objResponse = await response.json();
 
-  return objResponse as Dao;
+  return objResponse as RawDao;
 };
 
 const list = async (params?: ListDaosQueryParams) => {
@@ -73,8 +73,8 @@ const list = async (params?: ListDaosQueryParams) => {
   );
 
   const objResponse = await response?.json();
-
-  return objResponse as Paginated<Dao[]>;
+  console.log('dao objResponse', objResponse);
+  return objResponse as Paginated<RawDao[]>;
 };
 
 export const DaoService = {

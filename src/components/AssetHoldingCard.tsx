@@ -1,13 +1,13 @@
 import { BN } from '@polkadot/util';
 
 import type { Asset, AssetHolding } from '@/services/assets';
-import type { Dao } from '@/services/daos';
+import type { RawDao } from '@/services/daos';
 import { uiTokens } from '@/utils';
 
 import DaoImage from './DaoImage';
 
 const AssetHoldingCard = (props: {
-  assetHolding: AssetHolding & { asset?: Asset & { dao?: Dao } };
+  assetHolding: AssetHolding & { asset?: Asset & { dao?: RawDao } };
 }) => {
   const { assetHolding } = props;
   return (

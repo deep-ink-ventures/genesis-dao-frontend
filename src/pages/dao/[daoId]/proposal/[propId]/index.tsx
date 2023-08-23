@@ -139,7 +139,7 @@ const Proposal = () => {
         setVoteSelection(null);
         setIsRefreshing(true);
         setTimeout(() => {
-          fetchOneProposalDB(daoId as string, propId as string);
+          fetchOneProposalDB(propId as string);
         }, 6000);
         setTimeout(() => {
           setIsRefreshing(false);
@@ -174,7 +174,7 @@ const Proposal = () => {
       () => {
         setIsStatusRefreshing(true);
         setTimeout(() => {
-          fetchOneProposalDB(daoId as string, propId as string);
+          fetchOneProposalDB(propId as string);
         }, 6000);
         setTimeout(() => {
           setIsStatusRefreshing(false);
@@ -186,7 +186,7 @@ const Proposal = () => {
   useEffect(() => {
     if (daoId && propId) {
       const timer = setTimeout(() => {
-        fetchOneProposalDB(daoId as string, propId as string);
+        fetchOneProposalDB(propId as string);
         fetchDaoFromDB(daoId as string);
         fetchProposalFaultyReports(propId as string);
         // eslint-disable-next-line

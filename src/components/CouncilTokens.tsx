@@ -1,5 +1,6 @@
 import { ErrorMessage } from '@hookform/error-message';
 import { BN } from '@polkadot/util';
+import { sortAddresses } from '@polkadot/util-crypto';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
@@ -116,8 +117,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       noMultisig = true;
     }
 
+    const sortedAddresses = sortAddresses(addresses);
+
     const multisigAddress = getMultisigAddress(
-      addresses,
+      sortedAddresses,
       data.councilThreshold
     );
 
@@ -161,7 +164,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     );
 
     try {
-      await MultiSigsService.create(addresses, data.councilThreshold);
+      await MultiSigsService.create(sortedAddresses, data.councilThreshold);
       await sendBatchTxns(
         withChangeOwner,
         'Tokens Issued and Transferred DAO Ownership!',

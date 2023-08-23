@@ -54,7 +54,7 @@ export interface DaoCreationValues {
   treasuryTokens: number;
 }
 
-export interface IncomingDaoInfo {
+export interface RawDaoInfo {
   id: string;
   name: string;
   owner: string;

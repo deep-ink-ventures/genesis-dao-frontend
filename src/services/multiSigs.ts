@@ -1,5 +1,5 @@
 import { SERVICE_URL } from '@/config';
-import type { MultiSig } from '@/types/multiSigs';
+import type { MultiSig } from '@/types/multiSig';
 import { camelToSnakeCase, isValidPolkadotAddress } from '@/utils';
 
 import type { Paginated } from '../types/response';
