@@ -16,7 +16,7 @@ const ChangeDaoOwner = (props: { daoId: string; assetId: number | null }) => {
         className={`btn-primary btn w-[180px] ${
           txnProcessing ? 'loading' : ''
         }`}
-        disabled={!currentWalletAccount}
+        disabled={!currentWalletAccount || true}
         onClick={handleTransferDao}>
         Change Owner
       </button>
