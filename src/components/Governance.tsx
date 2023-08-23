@@ -26,25 +26,35 @@ const Governance = () => {
         {currentWalletAccount &&
           currentWalletAccount?.address === currentDao?.daoOwnerAddress && (
             <>
-              <div className='flex items-center rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
-                <div className='flex grow'>Destroy DAO</div>
+              <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
+                <div className='flex w-1/6 shrink-0'>Change Owner</div>
+                <div className='flex grow'>
+                  Transfer Ownership of the DAO to another account
+                </div>
+                <div className='flex'>
+                  <ChangeDaoOwner />
+                </div>
+              </div>
+              <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
+                <div className='flex w-1/6 shrink-0'>Transfer Asset</div>
+                <div className='flex grow'>
+                  Transfer tokens from your treasury to other accounts
+                </div>
+                <div className='flex'>
+                  <TransferAsset />
+                </div>
+              </div>
+              <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
+                <div className='flex w-1/6 shrink-0'>Destroy DAO</div>
+                <div className='flex grow'>
+                  Say goodbye and wrap up. Your stake will be repaid to the
+                  current DAO Owner
+                </div>
                 <div className='flex'>
                   <DestroyDao
                     daoId={currentDao.daoId}
                     assetId={currentDao.daoAssetId}
                   />
-                </div>
-              </div>
-              <div className='flex items-center rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
-                <div className='flex grow'>Change Owner</div>
-                <div className='flex'>
-                  <ChangeDaoOwner />
-                </div>
-              </div>
-              <div className='flex items-center rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
-                <div className='flex grow'>Transfer Asset</div>
-                <div className='flex'>
-                  <TransferAsset />
                 </div>
               </div>
             </>
