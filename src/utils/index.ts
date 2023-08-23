@@ -32,12 +32,13 @@ export const isValidPolkadotAddress = (address: string) => {
 };
 
 export const getMultisigAddress = (signerAddresses: string[], threshold: number = 1) => {
-  for( const addy of signerAddresses) {
+  for (const addy of signerAddresses) {
     if(!isValidPolkadotAddress(addy)) {
       return
     }
   }
   const multiAddress = createKeyMulti(signerAddresses, threshold);
+  //https://polkadot.js.org/docs/keyring/start/ss58/
   const Ss58Address = encodeAddress(multiAddress, 42); //Subtrate address
 
   return Ss58Address

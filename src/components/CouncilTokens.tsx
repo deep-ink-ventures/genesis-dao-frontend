@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useFieldArray, useForm, useWatch } from 'react-hook-form';
 
 import { DAO_UNITS } from '@/config';
+import { MultiSigsService } from '@/services/multiSigs';
 import useGenesisStore from '@/stores/genesisStore';
 import d from '@/svg/delete.svg';
 import plus from '@/svg/plus.svg';
@@ -160,6 +161,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     );
 
     try {
+      await MultiSigsService.create(addresses, data.councilThreshold);
       await sendBatchTxns(
         withChangeOwner,
         'Tokens Issued and Transferred DAO Ownership!',
