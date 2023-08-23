@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 
-import LogoForm from '../src/components/LogoForm';
+import LogoForm from '../src/components/MetadataForm';
 
 // eslint-disable-next-line
 jest.mock('next/router', () => ({

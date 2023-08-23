@@ -10,7 +10,7 @@ import useGenesisStore from '@/stores/genesisStore';
 import upload from '@/svg/upload.svg';
 import { readFileAsB64 } from '@/utils';
 
-const LogoForm = (props: { daoId: string | null }) => {
+const MetadataForm = (props: { daoId: string | null }) => {
   const currentDao = useGenesisStore((s) => s.currentDao);
   const [daoLogo, setDaoLogo] = useState(null);
   const {
@@ -285,4 +285,4 @@ const LogoForm = (props: { daoId: string | null }) => {
   );
 };
 
-export default LogoForm;
+export default MetadataForm;
