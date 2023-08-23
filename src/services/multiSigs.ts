@@ -20,7 +20,7 @@ interface ListMultiSigsQueryParams {
 
 const transformToMultiSig = (data: RawMultiSig): MultiSig => ({
   address: data.address,
-  daoId: data.dao_id, 
+  daoId: data.dao_id,
   signatories: data.signatories,
   threshold: data.threshold,
 });
