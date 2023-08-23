@@ -64,6 +64,11 @@ const MainDaoPage = () => {
     fetchDaoTokenBalanceFromDB,
     updateDaoTokenBalance,
     updateDaoPage,
+    daoTokenSupplyBalance,
+    fetchDaoTokenSupplyBalance,
+    updateDaoTokenSupplyBalance,
+    apiConnection,
+    createApiConnection,
   ] = useGenesisStore((s) => [
     s.daoPage,
     s.currentWalletAccount,
@@ -74,6 +79,11 @@ const MainDaoPage = () => {
     s.fetchDaoTokenBalanceFromDB,
     s.updateDaoTokenBalance,
     s.updateDaoPage,
+    s.daoTokenSupplyBalance,
+    s.fetchDaoTokenSupplyBalance,
+    s.updateDaoTokenSupplyBalance,
+    s.apiConnection,
+    s.createApiConnection,
   ]);
 
   const handleChangePage = (pageParam: DaoPage) => {
@@ -89,19 +99,28 @@ const MainDaoPage = () => {
   }, [daoId, fetchDaoFromDB, fetchDao]);
 
   useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
     if (currentDao?.daoAssetId && currentWalletAccount) {
       fetchDaoTokenBalanceFromDB(
         currentDao?.daoAssetId,
         currentWalletAccount.address
       );
+      fetchDaoTokenSupplyBalance(currentDao.daoAssetId);
     } else {
       updateDaoTokenBalance(new BN(0));
+      updateDaoTokenSupplyBalance(new BN(0));
     }
   }, [
+    apiConnection,
+    createApiConnection,
     currentDao,
     currentWalletAccount,
     fetchDaoTokenBalanceFromDB,
+    fetchDaoTokenSupplyBalance,
     updateDaoTokenBalance,
+    updateDaoTokenSupplyBalance,
   ]);
 
   const displayImage = () => {
@@ -181,7 +200,7 @@ const MainDaoPage = () => {
                 <p className='text-center text-accent'>{`DAO ID: ${currentDao?.daoId}`}</p>
               </div>
             </div>
-            <div className='flex justify-center py-3'>
+            <div className='flex justify-center pt-3'>
               {!currentWalletAccount?.address ? (
                 <WalletConnect text='Connect to view tokens' />
               ) : (
@@ -190,12 +209,7 @@ const MainDaoPage = () => {
                     <div className='flex flex-col'>
                       <p>You have</p>
                       <p>
-                        {' '}
-                        {uiTokens(
-                          daoTokenBalance,
-                          'dao',
-                          currentDao?.daoId
-                        )}{' '}
+                        {uiTokens(daoTokenBalance, 'dao', currentDao?.daoId)}
                       </p>
                     </div>
                   </div>
@@ -210,6 +224,24 @@ const MainDaoPage = () => {
                 </div>
               )}
             </div>
+            {currentWalletAccount?.address != null && (
+              <div className='flex justify-center pb-3'>
+                <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
+                  <div className='px-5 text-center text-sm'>
+                    <div className='flex flex-col'>
+                      <p>Treasury</p>
+                      <p>
+                        {uiTokens(
+                          daoTokenSupplyBalance || new BN(0),
+                          'dao',
+                          currentDao?.daoId
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className='w-full'>
               <TabButton
                 name={DashboardTabs.DASHBOARD}

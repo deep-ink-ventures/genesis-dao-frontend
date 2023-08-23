@@ -35,8 +35,8 @@ const ExploreDaos = () => {
     try {
       const response = await DaoService.list({
         limit: 50,
-        orderBy: 'id',
-        name: debouncedSearchTerm,
+        ordering: 'id',
+        search: debouncedSearchTerm,
       });
 
       if (response?.results?.length) {

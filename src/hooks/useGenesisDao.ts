@@ -256,7 +256,12 @@ const useGenesisDao = () => {
       handleErrors('wallet does not have a signer');
     }
   };
-
+  /**
+   * Multiple steps here: Start destroy process -> Destroy assets -> destroy asset accounts -> destroy asset approvals
+   * @param daoId
+   * @param assetId
+   * @returns
+   */
   const destroyDaoAndAssets = async (daoId: string, assetId: number | null) => {
     if (!currentWalletAccount) {
       return;
