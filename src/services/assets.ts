@@ -64,8 +64,17 @@ const listAssets = async (params?: ListAssetsQueryParams) => {
   return objResponse as Paginated<Asset[]>;
 };
 
+const getAsset = async (assetId: string) => {
+  const response = await fetch(`${SERVICE_URL}/assets/${assetId}`);
+
+  const objResponse = await response.json();
+
+  return objResponse as Asset;
+};
+
 export const AssetsHoldingsService = {
   listAssets,
+  getAsset,
   getAssetHolding,
   listAssetHoldings,
 };

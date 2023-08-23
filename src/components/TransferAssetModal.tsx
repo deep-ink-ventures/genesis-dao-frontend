@@ -8,8 +8,7 @@ import { useForm } from 'react-hook-form';
 
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
-import type { Asset, AssetHolding } from '@/services/assets';
-import type { Dao } from '@/services/daos';
+import type { AssetHolding } from '@/services/assets';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { isValidPolkadotAddress } from '@/utils';
@@ -18,7 +17,9 @@ import AssetHoldingCard from './AssetHoldingCard';
 
 const TransferAssetModal = (props: {
   open?: boolean;
-  assetHolding: AssetHolding & { asset?: Asset & { dao?: Dao } };
+  assetHolding: AssetHolding;
+  daoId?: string;
+  daoImage?: string | null;
   onClose?: () => void;
   onSuccess?: () => void;
 }) => {
@@ -37,7 +38,7 @@ const TransferAssetModal = (props: {
     s.createApiConnection,
   ]);
 
-  const { assetHolding, open, onClose, onSuccess } = props;
+  const { assetHolding, daoImage, daoId, open, onClose, onSuccess } = props;
   const {
     handleSubmit,
     register,
@@ -109,7 +110,7 @@ const TransferAssetModal = (props: {
               <div className='grow'>
                 <input
                   type='text'
-                  className='input input-bordered input-primary'
+                  className='input-bordered input-primary input'
                   placeholder='Recipient Address'
                   {...register('toAddress', {
                     required: 'Required',
@@ -131,7 +132,11 @@ const TransferAssetModal = (props: {
             <div className='flex w-full items-center'>
               <p className='w-1/4'>Asset</p>
               <div className='grow'>
-                <AssetHoldingCard assetHolding={assetHolding} />
+                <AssetHoldingCard
+                  assetHolding={assetHolding}
+                  daoImage={daoImage}
+                  daoId={daoId}
+                />
               </div>
             </div>
             <div className='flex w-full items-center'>
@@ -139,7 +144,7 @@ const TransferAssetModal = (props: {
               <div className='grow'>
                 <input
                   type='number'
-                  className='input input-bordered input-primary'
+                  className='input-bordered input-primary input'
                   placeholder='Amount'
                   {...register('amount', {
                     valueAsNumber: true,
@@ -171,7 +176,7 @@ const TransferAssetModal = (props: {
             <button
               type='submit'
               disabled={transferAssets.txnProcessing}
-              className={cn('btn btn-primary w-1/2 ', {
+              className={cn('btn-primary btn w-1/2 ', {
                 'btn-disabled': !assetHolding.balance,
                 loading: transferAssets.txnProcessing,
               })}>

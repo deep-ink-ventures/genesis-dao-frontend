@@ -9,21 +9,18 @@ jest.mock('next/router', () => ({
 }));
 
 const assetHolding = {
-  asset: {
-    id: 1,
-    name: 'Asset 1',
-    dao: {
-      id: 101,
-      name: 'DAO 1',
-    },
-  },
   balance: 10,
 } as any;
 
 describe('TransferAssetModal', () => {
   test('renders TransferAssetModal', () => {
     const { getByText } = render(
-      <TransferAssetModal assetHolding={assetHolding} open onClose={() => {}} />
+      <TransferAssetModal
+        assetHolding={assetHolding}
+        daoId='101'
+        open
+        onClose={() => {}}
+      />
     );
     expect(getByText(/Transfer Asset/)).toBeInTheDocument();
   });
