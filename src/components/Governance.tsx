@@ -38,19 +38,13 @@ const Governance = () => {
               <div className='flex items-center rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
                 <div className='flex grow'>Change Owner</div>
                 <div className='flex'>
-                  <ChangeDaoOwner
-                    daoId={currentDao.daoId}
-                    assetId={currentDao.daoAssetId}
-                  />
+                  <ChangeDaoOwner />
                 </div>
               </div>
               <div className='flex items-center rounded-[8px] border-[0.3px] border-neutral-focus p-4 hover:cursor-pointer'>
                 <div className='flex grow'>Transfer Asset</div>
                 <div className='flex'>
-                  <TransferAsset
-                    daoId={currentDao.daoId}
-                    assetId={currentDao.daoAssetId}
-                  />
+                  <TransferAsset />
                 </div>
               </div>
             </>

@@ -2,7 +2,7 @@
 import useGenesisStore from '@/stores/genesisStore';
 // import TransferAssetModal from './TransferAssetModal';
 
-const TransferAsset = (props: { daoId: string; assetId: number | null }) => {
+const TransferAsset = () => {
   // todo: fetch asset. dao, and assetholding details
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);

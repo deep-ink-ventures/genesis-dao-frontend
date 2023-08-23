@@ -48,7 +48,6 @@ const getAssetHolding = async (assetId: string) => {
   return objResponse as AssetHolding;
 };
 
-
 const listAssets = async (params?: ListAssetsQueryParams) => {
   const query = Object.fromEntries(
     Object.entries(params || {}).filter(([, v]) => v != null)

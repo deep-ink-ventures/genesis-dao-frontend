@@ -1,7 +1,7 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
 
-const ChangeDaoOwner = (props: { daoId: string; assetId: number | null }) => {
+const ChangeDaoOwner = () => {
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
   // const { makeBatchTransferTxn } = useGenesisDao();
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
