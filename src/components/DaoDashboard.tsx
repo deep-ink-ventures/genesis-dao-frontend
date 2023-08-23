@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { BadgeVariant } from '@/components/Badge';
 import Badge from '@/components/Badge';
-import DestroyDao from '@/components/DestroyDao';
 import StatusCard from '@/components/StatusCard';
 import { ProposalsService } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
