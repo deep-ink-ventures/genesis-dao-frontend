@@ -2,6 +2,7 @@ import type { RawDao } from '@/services/daos';
 import type { RawMultiSigTransaction } from '@/services/multiSigTransactions';
 import type { DaoDetail } from '@/types/dao';
 import type { MultiSigTransaction } from '@/types/multiSigTransaction';
+import { BN } from '@polkadot/util';
 
 export const transformDaoToDaoDetail = (dao: RawDao) => {
   return {
@@ -48,7 +49,7 @@ export const transformMultiSigTxnToCamelCase = (
                 id: input.corresponding_models.asset.id,
                 daoId: input.corresponding_models.asset.dao_id,
                 ownerId: input.corresponding_models.asset.owner_id,
-                totalSupply: input.corresponding_models.asset.total_supply,
+                totalSupply: new BN(input.corresponding_models.asset.total_supply?? 0),
               }
             : null,
           dao: input.corresponding_models.dao
@@ -61,7 +62,7 @@ export const transformMultiSigTxnToCamelCase = (
                 proposalDuration:
                   input.corresponding_models.dao.proposal_duration,
                 proposalTokenDeposit:
-                  input.corresponding_models.dao.proposal_token_deposit,
+                  new BN(input.corresponding_models.dao.proposal_token_deposit?? 0),
                 minimumMajorityPer1024:
                   input.corresponding_models.dao.minimum_majority_per_1024,
                 setupComplete: input.corresponding_models.dao.setup_complete,
@@ -83,7 +84,12 @@ export const transformMultiSigTxnToCamelCase = (
                 creatorId: input.corresponding_models.proposal.creator_id,
                 status: input.corresponding_models.proposal.status,
                 fault: input.corresponding_models.proposal.fault,
-                votes: input.corresponding_models.proposal.votes,
+                votes: {
+                  pro: new BN(input.corresponding_models.proposal.votes?.pro ?? 0),
+                  contra: new BN(input.corresponding_models.proposal.votes?.contra ?? 0),
+                  abstained: new BN(input.corresponding_models.proposal.votes?.abstained ?? 0),
+                  total: new BN(input.corresponding_models.proposal.votes?.total ?? 0),
+                  } || null,
                 metadata: input.corresponding_models.proposal.metadata,
                 metadataUrl: input.corresponding_models.proposal.metadata_url,
                 metadataHash: input.corresponding_models.proposal.metadata_hash,
