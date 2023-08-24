@@ -139,7 +139,7 @@ const MetadataForm = (props: { daoId: string | null }) => {
             <div className='min-w-full'>
               <p className='mb-1 ml-1'>Email</p>
               <input
-                className='input-primary input'
+                className='input input-primary'
                 type='text'
                 placeholder='Email'
                 {...register('email', {
@@ -272,7 +272,7 @@ const MetadataForm = (props: { daoId: string | null }) => {
           </div>
           <div className='flex justify-end'>
             <button
-              className={`btn-primary btn mr-3 w-48 ${
+              className={`btn btn-primary mr-3 w-48 ${
                 txnProcessing ? 'loading' : ''
               }`}
               type='submit'>

@@ -79,7 +79,7 @@ const ExploreDaos = () => {
         <div className='flex items-center'>
           <input
             id='search-input'
-            className='input-primary input w-72 text-sm'
+            className='input input-primary w-72 text-sm'
             placeholder='Search DAO name or DAO ID'
             onChange={handleSearch}
           />

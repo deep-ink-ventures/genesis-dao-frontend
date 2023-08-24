@@ -125,7 +125,7 @@ const Assets = () => {
           <div>
             <input
               id='search-input'
-              className='input-primary input w-72 text-sm'
+              className='input input-primary w-72 text-sm'
               placeholder='Search Assets'
               value={searchTerm}
               onChange={handleSearch}

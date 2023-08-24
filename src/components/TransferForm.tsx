@@ -102,7 +102,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
         <div className='mb-3'>
           <input
             type='text'
-            className='input-bordered input-primary input'
+            className='input input-bordered input-primary'
             placeholder='Recipient Address'
             {...register('toAddress', {
               required: 'Required',
@@ -121,7 +121,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
         <div className='mb-3'>
           <input
             type='number'
-            className='input-bordered input-primary input'
+            className='input input-bordered input-primary'
             placeholder='Amount'
             {...register('amount', {
               valueAsNumber: true,
@@ -142,7 +142,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
           <button
             type='submit'
             // disabled={!currentWalletAccount}
-            className={`btn-primary btn 
+            className={`btn btn-primary 
           ${txnProcessing ? `loading` : ``}
           `}
             disabled={!currentWalletAccount}>
