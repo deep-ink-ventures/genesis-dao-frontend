@@ -98,7 +98,7 @@ const ChangeDaoOwner = () => {
 
     const withChangeOwner = makeChangeOwnerTxn(
       [],
-      props.daoId,
+      currentDao.daoId,
       noMultisig ? currentDao.daoCreatorAddress : multisigAddress
     );
 
@@ -112,7 +112,7 @@ const ChangeDaoOwner = () => {
           reset();
           updateShowCongrats(true);
           setTimeout(() => {
-            fetchDaoFromDB(props?.daoId as string);
+            fetchDaoFromDB(currentDao.daoId as string);
           }, 3000);
         }
       );
