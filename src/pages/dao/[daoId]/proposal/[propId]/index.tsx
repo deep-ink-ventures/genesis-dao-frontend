@@ -266,7 +266,7 @@ const Proposal = () => {
       </div>
       <div className='mt-5 flex min-h-[500px] justify-between gap-x-4'>
         <div className='container flex min-h-[640px] basis-3/4 justify-center p-6'>
-          {!p || p.proposalId !== propId ? (
+          {!p || p.proposalId?.toString() !== propId ? (
             <div className='mt-10'>
               {' '}
               <Spinner />

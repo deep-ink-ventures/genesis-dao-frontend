@@ -514,14 +514,11 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
     }
   },
   fetchOneProposalDB: async (proposalId) => {
-    console.log('fetch one proposal');
     try {
       const response = await fetch(`${SERVICE_URL}/proposals/${proposalId}`);
 
       const objResponse = await response.json();
-      console.log(objResponse);
       if (!objResponse) {
-        console.log('no proposal');
         return;
       }
       const p: RawProposal = objResponse;

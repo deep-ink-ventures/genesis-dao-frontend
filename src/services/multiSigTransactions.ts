@@ -75,7 +75,6 @@ interface ListMultiSigTxnsQueryParams {
   offset?: number;
 }
 
-
 // fixme waiting to for service to add back filter by dao_id
 // const get = async (address: string) => {
 //   const response = await fetch(`${SERVICE_URL}/multisig-transactions/${address}`);

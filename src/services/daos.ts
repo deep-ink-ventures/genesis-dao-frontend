@@ -73,7 +73,6 @@ const list = async (params?: ListDaosQueryParams) => {
   );
 
   const objResponse = await response?.json();
-  console.log('dao objResponse', objResponse);
   return objResponse as Paginated<RawDao[]>;
 };
 
