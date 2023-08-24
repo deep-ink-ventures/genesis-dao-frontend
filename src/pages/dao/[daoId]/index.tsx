@@ -99,15 +99,17 @@ const MainDaoPage = () => {
     if (!apiConnection) {
       createApiConnection();
     }
-    if (currentDao?.daoAssetId && currentWalletAccount) {
-      fetchDaoTokenBalanceFromDB(
-        currentDao?.daoAssetId,
-        currentWalletAccount.address
-      );
+    if (currentDao?.daoAssetId) {
       fetchDaoTokenTreasuryBalance(
         currentDao.daoAssetId,
         currentDao.daoOwnerAddress
       );
+      if (currentWalletAccount) {
+        fetchDaoTokenBalanceFromDB(
+          currentDao?.daoAssetId,
+          currentWalletAccount.address
+        );
+      }
     } else {
       updateDaoTokenBalance(new BN(0));
       updateDaoTokenTreasuryBalance(new BN(0));
@@ -222,24 +224,22 @@ const MainDaoPage = () => {
                 </div>
               )}
             </div>
-            {currentWalletAccount?.address != null && (
-              <div className='flex justify-center pb-3'>
-                <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
-                  <div className='px-5 text-center text-sm'>
-                    <div className='flex flex-col'>
-                      <p>Treasury</p>
-                      <p>
-                        {uiTokens(
-                          daoTokenTreasuryBalance || new BN(0),
-                          'dao',
-                          currentDao?.daoId
-                        )}
-                      </p>
-                    </div>
+            <div className='flex justify-center pb-3'>
+              <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
+                <div className='px-5 text-center text-sm'>
+                  <div className='flex flex-col'>
+                    <p>Treasury</p>
+                    <p>
+                      {uiTokens(
+                        daoTokenTreasuryBalance || new BN(0),
+                        'dao',
+                        currentDao?.daoId
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
             <div className='w-full'>
               <TabButton
                 name={DashboardTabs.DASHBOARD}
