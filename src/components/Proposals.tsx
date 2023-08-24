@@ -22,22 +22,16 @@ const Proposals = (props: { daoId: string }) => {
     s.currentBlockNumber,
     s.updateBlockNumber,
   ]);
-  const filteredProposals = currentProposals
-    ?.filter((prop) => {
-      // filter out proposals without metadata onchain here because we can let users search and complete them fixme
-      // return prop.setupComplete === true;
-      return typeof prop.metadata !== null;
-    })
-    ?.filter((prop) => {
-      return (
-        !searchTerm?.length ||
-        prop.proposalId
-          ?.toString()
-          ?.toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        prop.proposalName?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
+  const filteredProposals = currentProposals?.filter((prop) => {
+    return (
+      !searchTerm?.length ||
+      prop.proposalId
+        ?.toString()
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      prop.proposalName?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   const displayProposal = () => {
     if (!filteredProposals || filteredProposals?.length === 0) {

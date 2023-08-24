@@ -6,7 +6,7 @@ import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
 import type { Asset, AssetHolding } from '@/services/assets';
 import { AssetsHoldingsService } from '@/services/assets';
-import type { Dao } from '@/services/daos';
+import type { RawDao } from '@/services/daos';
 import useGenesisStore from '@/stores/genesisStore';
 
 import type { AssetHoldingsTableItem } from './AssetsTable';
@@ -46,7 +46,7 @@ const Assets = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [assetHoldingsResponse, setAssetHoldingsResponse] = useState<{
     totalCount: number;
-    assetHoldings: Array<AssetHolding & { asset?: Asset & { dao?: Dao } }>;
+    assetHoldings: Array<AssetHolding & { asset?: Asset & { dao?: RawDao } }>;
   }>();
 
   const [pagination, setPagination] = useState({

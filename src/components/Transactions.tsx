@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
 import TransactionAccordion from '@/components/TransactionAccordion';
+import { MultiSigTransactionsService } from '@/services/multiSigTransactions';
 import useGenesisStore from '@/stores/genesisStore';
 
 const Transactions = (props: { daoId: string }) => {
@@ -37,6 +38,10 @@ const Transactions = (props: { daoId: string }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.currentPage, currentWalletAccount]);
+
+  useEffect(() => {
+    MultiSigTransactionsService.list();
+  }, []);
 
   const handleAccordionClick = (proposalId?: string) => {
     setActiveAccordion(activeAccordion === proposalId ? null : proposalId);

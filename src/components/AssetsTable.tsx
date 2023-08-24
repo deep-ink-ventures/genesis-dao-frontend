@@ -3,7 +3,7 @@ import cn from 'classnames';
 import Image from 'next/image';
 
 import type { Asset, AssetHolding } from '@/services/assets';
-import type { Dao } from '@/services/daos';
+import type { RawDao } from '@/services/daos';
 import coinsTransfer from '@/svg/coinsTransfer.svg';
 import openLink from '@/svg/openlink.svg';
 import { uiTokens } from '@/utils';
@@ -11,7 +11,7 @@ import { uiTokens } from '@/utils';
 import DaoImage from './DaoImage';
 
 export type AssetHoldingsTableItem = AssetHolding & {
-  asset?: Asset & { dao?: Dao };
+  asset?: Asset & { dao?: RawDao };
 };
 
 const AssetsHoldingsTable = ({

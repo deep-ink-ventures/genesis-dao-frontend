@@ -4,7 +4,7 @@ import type { StateCreator } from 'zustand';
 
 import type { Asset, AssetHolding } from '@/services/assets';
 import { AssetsHoldingsService } from '@/services/assets';
-import type { Dao } from '@/services/daos';
+import type { RawDao } from '@/services/daos';
 import { DaoService } from '@/services/daos';
 
 import type { GenesisState } from './genesisStore';
@@ -12,13 +12,15 @@ import type { GenesisState } from './genesisStore';
 export type AccountSlice = {
   assets: {
     loading: boolean;
-    data: Array<Asset & { dao?: Dao }>;
+    data: Array<Asset & { dao?: RawDao }>;
     fetchAssets: () => void;
     selectedAssetHolding:
-      | (AssetHolding & { asset?: Asset & { dao?: Dao } })
+      | (AssetHolding & { asset?: Asset & { dao?: RawDao } })
       | null;
     selectAssetHolding: (
-      assetHolding?: (AssetHolding & { asset?: Asset & { dao?: Dao } }) | null
+      assetHolding?:
+        | (AssetHolding & { asset?: Asset & { dao?: RawDao } })
+        | null
     ) => void;
   };
   tabs: {
@@ -54,7 +56,7 @@ export const createAccountSlice: StateCreator<
         );
         AssetsHoldingsService.listAssets()
           .then(async (response) => {
-            let newData: Array<Asset & { dao?: Dao }> = [];
+            let newData: Array<Asset & { dao?: RawDao }> = [];
             if (response.results?.length) {
               const daoDetails = await Promise.all(
                 response.results.map((asset) => DaoService.get(asset.dao_id))

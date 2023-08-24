@@ -785,6 +785,7 @@ const useGenesisDao = () => {
       handleErrors('Wallet not connected');
       return;
     }
+
     apiConnection?.tx?.votes
       ?.createProposal?.(daoId)
       .signAndSend?.(
