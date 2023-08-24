@@ -74,7 +74,7 @@ export const DistributeTokensForm = () => {
                 <input
                   type='text'
                   placeholder='Wallet Address'
-                  className='input-primary input'
+                  className='input input-primary'
                   {...register(`tokenRecipients.${index}.walletAddress`, {
                     required: 'Required',
                     validate: (add) =>
@@ -95,7 +95,7 @@ export const DistributeTokensForm = () => {
               <p className='ml-1'>Number of Tokens</p>
               <input
                 type='number'
-                className='input-primary input text-center'
+                className='input input-primary text-center'
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },

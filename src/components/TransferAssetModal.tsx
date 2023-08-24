@@ -110,7 +110,7 @@ const TransferAssetModal = (props: {
               <div className='grow'>
                 <input
                   type='text'
-                  className='input-bordered input-primary input'
+                  className='input input-bordered input-primary'
                   placeholder='Recipient Address'
                   {...register('toAddress', {
                     required: 'Required',
@@ -144,7 +144,7 @@ const TransferAssetModal = (props: {
               <div className='grow'>
                 <input
                   type='number'
-                  className='input-bordered input-primary input'
+                  className='input input-bordered input-primary'
                   placeholder='Amount'
                   {...register('amount', {
                     valueAsNumber: true,
@@ -176,7 +176,7 @@ const TransferAssetModal = (props: {
             <button
               type='submit'
               disabled={transferAssets.txnProcessing}
-              className={cn('btn-primary btn w-1/2 ', {
+              className={cn('btn btn-primary w-1/2 ', {
                 'btn-disabled': !assetHolding.balance,
                 loading: transferAssets.txnProcessing,
               })}>

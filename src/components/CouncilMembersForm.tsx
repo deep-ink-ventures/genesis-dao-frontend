@@ -53,7 +53,7 @@ export const CouncilMembersForm = (props: {
                     <input
                       type='text'
                       placeholder='Name'
-                      className='input-primary input '
+                      className='input input-primary '
                       {...register(`councilMembers.${index}.name`, {
                         required: 'Required',
                         minLength: { value: 1, message: 'Minimum is 1' },
@@ -74,7 +74,7 @@ export const CouncilMembersForm = (props: {
                   <input
                     type='text'
                     placeholder='Wallet Address'
-                    className='input-primary input'
+                    className='input input-primary'
                     {...register(`councilMembers.${index}.walletAddress`, {
                       required: 'Required',
                       validate: (add) =>

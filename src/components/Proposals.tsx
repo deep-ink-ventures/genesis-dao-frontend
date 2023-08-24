@@ -95,7 +95,7 @@ const Proposals = (props: { daoId: string }) => {
           <div>
             <input
               id='search-input'
-              className='input-primary input w-72 text-sm'
+              className='input input-primary w-72 text-sm'
               placeholder='Search Proposals'
               onChange={handleSearch}
             />
@@ -116,7 +116,7 @@ const Proposals = (props: { daoId: string }) => {
           <div>
             <Link
               href={`/dao/${encodeURIComponent(props.daoId)}/create-proposal`}>
-              <button className='btn-primary btn flex items-center gap-x-1'>
+              <button className='btn btn-primary flex items-center gap-x-1'>
                 <Image src={plusBlack} height={16} width={16} alt='plus' />
                 <p className='flex items-center pt-[1px]'>New Proposal</p>
               </button>

@@ -101,7 +101,7 @@ const TransferAsset = () => {
     <>
       <div className='flex justify-center'>
         <button
-          className={`btn-primary btn w-[180px] ${
+          className={`btn btn-primary w-[180px] ${
             txnProcessing ? 'loading' : ''
           }`}
           disabled={!currentWalletAccount}
@@ -132,7 +132,7 @@ const TransferAsset = () => {
             </div>
             <div className='mt-6 flex w-full justify-end'>
               <button
-                className={`btn-primary btn mr-3 w-48 ${
+                className={`btn btn-primary mr-3 w-48 ${
                   !daoTokenBalance ? 'btn-disabled' : ''
                 } ${txnProcessing ? 'loading' : ''}`}
                 type='submit'>
