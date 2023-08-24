@@ -61,9 +61,9 @@ const MainDaoPage = () => {
     fetchDaoTokenBalanceFromDB,
     updateDaoTokenBalance,
     updateDaoPage,
-    daoTokenSupplyBalance,
-    fetchDaoTokenSupplyBalance,
-    updateDaoTokenSupplyBalance,
+    daoTokenTreasuryBalance,
+    fetchDaoTokenTreasuryBalance,
+    updateDaoTokenTreasuryBalance,
     apiConnection,
     createApiConnection,
   ] = useGenesisStore((s) => [
@@ -76,9 +76,9 @@ const MainDaoPage = () => {
     s.fetchDaoTokenBalanceFromDB,
     s.updateDaoTokenBalance,
     s.updateDaoPage,
-    s.daoTokenSupplyBalance,
-    s.fetchDaoTokenSupplyBalance,
-    s.updateDaoTokenSupplyBalance,
+    s.daoTokenTreasuryBalance,
+    s.fetchDaoTokenTreasuryBalance,
+    s.updateDaoTokenTreasuryBalance,
     s.apiConnection,
     s.createApiConnection,
   ]);
@@ -104,10 +104,13 @@ const MainDaoPage = () => {
         currentDao?.daoAssetId,
         currentWalletAccount.address
       );
-      fetchDaoTokenSupplyBalance(currentDao.daoAssetId);
+      fetchDaoTokenTreasuryBalance(
+        currentDao.daoAssetId,
+        currentDao.daoOwnerAddress
+      );
     } else {
       updateDaoTokenBalance(new BN(0));
-      updateDaoTokenSupplyBalance(new BN(0));
+      updateDaoTokenTreasuryBalance(new BN(0));
     }
   }, [
     apiConnection,
@@ -115,9 +118,9 @@ const MainDaoPage = () => {
     currentDao,
     currentWalletAccount,
     fetchDaoTokenBalanceFromDB,
-    fetchDaoTokenSupplyBalance,
+    fetchDaoTokenTreasuryBalance,
     updateDaoTokenBalance,
-    updateDaoTokenSupplyBalance,
+    updateDaoTokenTreasuryBalance,
   ]);
 
   const displayImage = () => {
@@ -227,7 +230,7 @@ const MainDaoPage = () => {
                       <p>Treasury</p>
                       <p>
                         {uiTokens(
-                          daoTokenSupplyBalance || new BN(0),
+                          daoTokenTreasuryBalance || new BN(0),
                           'dao',
                           currentDao?.daoId
                         )}
