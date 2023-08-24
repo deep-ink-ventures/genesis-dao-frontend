@@ -251,7 +251,7 @@ const CreateDaoModal = () => {
               </div>
               <div className='flex justify-center'>
                 <button
-                  className={`btn btn-primary w-96 ${
+                  className={`btn-primary btn w-96 ${
                     txnProcessing ? 'loading' : null
                   }`}
                   type='submit'

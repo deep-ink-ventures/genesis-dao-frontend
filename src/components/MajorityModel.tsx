@@ -105,7 +105,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 <input
                   type='number'
                   placeholder='0'
-                  className='input input-primary pr-24'
+                  className='input-primary input pr-24'
                   {...register('tokensToIssue', {
                     required: 'Required',
                     min: { value: 1, message: 'Minimum is 1' },
@@ -196,7 +196,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
             </p>
             <div className='relative w-[175px] flex-col'>
               <input
-                className='input input-primary pr-16'
+                className='input-primary input pr-16'
                 type='number'
                 placeholder='0'
                 {...register('votingDays', {
@@ -218,7 +218,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
       </div>
       <div className='mt-4 flex w-full justify-end'>
         <button
-          className={`btn btn-primary mr-3 w-48 ${
+          className={`btn-primary btn mr-3 w-48 ${
             txnProcessing ? 'loading' : null
           }`}
           type='submit'>

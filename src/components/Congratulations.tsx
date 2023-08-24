@@ -49,7 +49,7 @@ const Congratulations = (props: { daoId: string | null }) => {
         </p>
       </div>
       <div>
-        <button className='btn btn-primary' onClick={handleDashboard}>
+        <button className='btn-primary btn' onClick={handleDashboard}>
           Return to DAO dashboard
         </button>
       </div>

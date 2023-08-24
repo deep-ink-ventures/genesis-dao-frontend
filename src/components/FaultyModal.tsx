@@ -104,7 +104,7 @@ const FaultyModal = (props: { propId: string; daoId: string }) => {
           {!faultyReason.includes('Other') ? (
             <div className='mt-4 flex justify-center'>
               <button
-                className={`btn btn-primary w-[400px] ${
+                className={`btn-primary btn w-[400px] ${
                   txnProcessing ? 'loading' : ''
                 }`}
                 onClick={handleSubmitReason}>
@@ -140,7 +140,7 @@ const FaultyModal = (props: { propId: string; daoId: string }) => {
               </div>
               <div>
                 <button
-                  className={`btn btn-primary w-[400px] ${
+                  className={`btn-primary btn w-[400px] ${
                     txnProcessing ? 'loading' : ''
                   }`}>
                   Submit
