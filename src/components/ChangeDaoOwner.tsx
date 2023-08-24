@@ -18,7 +18,7 @@ interface ChangeDaoOwnerFormValues {
   councilThreshold: number;
 }
 
-const ChangeDaoOwner = (props: { daoId?: string }) => {
+const ChangeDaoOwner = () => {
   const { makeChangeOwnerTxn, sendBatchTxns } = useGenesisDao();
   const [
     currentWalletAccount,
@@ -86,7 +86,7 @@ const ChangeDaoOwner = (props: { daoId?: string }) => {
 
     if (
       !currentDao?.daoCreatorAddress ||
-      !props.daoId ||
+      !currentDao.daoId ||
       !currentDaoFromChain?.daoAssetId ||
       !multisigAddress
     ) {

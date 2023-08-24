@@ -1,69 +1,99 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
-import { useCallback, useEffect, useState } from 'react';
+import { BN } from '@polkadot/util';
+import Modal from 'antd/lib/modal';
+import { useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import type { Asset, AssetHolding } from '@/services/assets';
-import { AssetsHoldingsService } from '@/services/assets';
-import type { Dao } from '@/services/daos';
+import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
+import type { TokenRecipient } from '@/types/council';
 
-import TransferAssetModal from './TransferAssetModal';
+import { DistributeTokensForm } from './DistributeTokensForm';
+
+interface TransferAssetFormValues {
+  tokenRecipients: TokenRecipient[];
+}
 
 const TransferAsset = () => {
+  const { makeBatchTransferTxn, sendBatchTxns } = useGenesisDao();
+  const [currentDaoFromChain] = useGenesisStore((s) => [s.currentDaoFromChain]);
+
   const [
     currentDao,
-    fetchDaoTokenBalanceFromDB,
-    fetchDaoTokenBalance,
+    fetchDaoFromDB,
     currentWalletAccount,
+    txnProcessing,
+    daoTokenBalance,
+    handleErrors,
+    updateShowCongrats,
   ] = useGenesisStore((s) => [
     s.currentDao,
-    s.fetchDaoTokenBalanceFromDB,
-    s.fetchDaoTokenBalance,
+    s.fetchDaoFromDB,
     s.currentWalletAccount,
+    s.txnProcessing,
+    s.daoTokenBalance,
+    s.handleErrors,
+    s.updateShowCongrats,
   ]);
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const formMethods = useForm<TransferAssetFormValues>({
+    defaultValues: {
+      tokenRecipients: [
+        {
+          walletAddress: '',
+          tokens: new BN(0),
+        },
+      ],
+    },
+  });
 
-  const [assetHolding, setAssetHolding] = useState<
-    AssetHolding & { asset?: Asset & { dao?: Dao } }
-  >();
+  const { handleSubmit, reset } = formMethods;
 
-  const fetchData = useCallback(async () => {
-    if (currentDao?.daoAssetId) {
-      const newAssetHolding = await AssetsHoldingsService.listAssetHoldings({
-        asset_id: currentDao.daoAssetId.toString(),
-      }).then((result) => result?.results?.[0]);
-
-      if (newAssetHolding) {
-        setAssetHolding(newAssetHolding);
-      }
-    }
-  }, [currentDao]);
-
-  useEffect(() => {
-    if (currentDao?.daoAssetId) {
-      fetchData();
-    }
-  }, [currentDao, fetchData]);
-  // todo: fetch asset. dao, and assetholding details
-  const txnProcessing = useGenesisStore((s) => s.txnProcessing);
-  // const updateTxnProcessing = useGenesisStore((s) => s.updateTxnProcessing);
   const handleTransferAsset = () => {
-    if (assetHolding) {
-      setOpen(true);
-    }
+    setIsOpen(true);
   };
 
-  const onClose = () => {
-    setOpen(false);
-  };
-
-  const onSuccess = () => {
-    onClose();
-    if (currentDao?.daoAssetId && currentWalletAccount) {
-      fetchDaoTokenBalanceFromDB(
-        currentDao?.daoAssetId,
-        currentWalletAccount.address
+  const onSubmit: SubmitHandler<TransferAssetFormValues> = async (data) => {
+    if (
+      !currentWalletAccount ||
+      !currentDao?.daoId ||
+      !currentDaoFromChain?.daoAssetId
+    ) {
+      handleErrors(
+        `Sorry we've run into some issues related to the multisig account`
       );
-      fetchDaoTokenBalance(currentDao.daoAssetId, currentWalletAccount.address);
+      return;
+    }
+
+    const recipients = data.tokenRecipients.map((recipient) => {
+      return {
+        walletAddress: recipient.walletAddress,
+        tokens: recipient.tokens,
+      };
+    });
+
+    const withRecipients = makeBatchTransferTxn(
+      [],
+      recipients,
+      Number(currentDaoFromChain?.daoAssetId)
+    );
+
+    try {
+      await sendBatchTxns(
+        withRecipients,
+        'Tokens Issued!',
+        'Transaction failed',
+        () => {
+          reset();
+          updateShowCongrats(true);
+          setTimeout(() => {
+            fetchDaoFromDB(props?.daoId as string);
+          }, 3000);
+        }
+      );
+    } catch (err) {
+      handleErrors(err);
     }
   };
 
@@ -74,21 +104,44 @@ const TransferAsset = () => {
           className={`btn-primary btn w-[180px] ${
             txnProcessing ? 'loading' : ''
           }`}
-          disabled={!currentWalletAccount || !assetHolding}
+          disabled={!currentWalletAccount}
           onClick={handleTransferAsset}>
           Transfer Asset
         </button>
       </div>
-      {assetHolding && (
-        <TransferAssetModal
-          assetHolding={assetHolding}
-          daoId={currentDao?.daoId}
-          daoImage={currentDao?.images?.small}
-          open={open}
-          onClose={onClose}
-          onSuccess={onSuccess}
-        />
-      )}
+      <Modal
+        open={isOpen}
+        wrapClassName='a-modal-bg'
+        className='a-modal'
+        onCancel={() => {
+          setIsOpen(false);
+        }}
+        footer={null}
+        width={615}
+        zIndex={99}>
+        <FormProvider {...formMethods}>
+          <div className='mb-6'>
+            <h3 className='text-center text-primary'>{currentDao?.daoName}</h3>
+            <div className='text-center text-xl'>
+              Transfer tokens from your treasury to other accounts
+            </div>
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className='mb-5 flex w-full flex-col items-center justify-center gap-y-6 border-none hover:brightness-100'>
+              <DistributeTokensForm />
+            </div>
+            <div className='mt-6 flex w-full justify-end'>
+              <button
+                className={`btn-primary btn mr-3 w-48 ${
+                  !daoTokenBalance ? 'btn-disabled' : ''
+                } ${txnProcessing ? 'loading' : ''}`}
+                type='submit'>
+                {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
+              </button>
+            </div>
+          </form>
+        </FormProvider>
+      </Modal>
     </>
   );
 };
