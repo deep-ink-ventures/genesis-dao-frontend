@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
 import type { Asset, AssetHolding } from '@/services/assets';
-import type { Dao } from '@/services/daos';
+import type { RawDao } from '@/services/daos';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { isValidPolkadotAddress } from '@/utils';
@@ -18,7 +18,7 @@ import AssetHoldingCard from './AssetHoldingCard';
 
 const TransferAssetModal = (props: {
   open?: boolean;
-  assetHolding: AssetHolding & { asset?: Asset & { dao?: Dao } };
+  assetHolding: AssetHolding & { asset?: Asset & { dao?: RawDao } };
   onClose?: () => void;
   onSuccess?: () => void;
 }) => {

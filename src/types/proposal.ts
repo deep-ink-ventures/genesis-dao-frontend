@@ -67,7 +67,7 @@ export interface ProposalDetail {
   setupComplete: boolean;
 }
 
-export interface IncomingProposal {
+export interface RawProposal {
   id: string;
   dao_id: string;
   creator_id: string;

@@ -1,7 +1,7 @@
 import { BN } from '@polkadot/util';
 
 import { SERVICE_URL } from '@/config';
-import type { IncomingProposal, ProposalDetail } from '@/types/proposal';
+import type { ProposalDetail, RawProposal } from '@/types/proposal';
 import { proposalStatusNames } from '@/types/proposal';
 import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
@@ -36,10 +36,10 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
 
   const json = await response.json();
   const newProposals: ProposalDetail[] = json.results
-    ?.filter((p: IncomingProposal) => {
+    ?.filter((p: RawProposal) => {
       return !!p.metadata_url === true;
     })
-    .map((p: IncomingProposal) => {
+    .map((p: RawProposal) => {
       return {
         proposalId: p.id,
         daoId: p.dao_id,
@@ -60,7 +60,7 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
     });
 
   return {
-    data: json as Paginated<IncomingProposal>,
+    data: json as Paginated<RawProposal>,
     mappedData: newProposals,
   };
 };
