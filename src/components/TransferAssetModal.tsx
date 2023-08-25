@@ -8,8 +8,7 @@ import { useForm } from 'react-hook-form';
 
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
-import type { Asset, AssetHolding } from '@/services/assets';
-import type { RawDao } from '@/services/daos';
+import type { AssetHolding } from '@/services/assets';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { isValidPolkadotAddress } from '@/utils';
@@ -18,7 +17,9 @@ import AssetHoldingCard from './AssetHoldingCard';
 
 const TransferAssetModal = (props: {
   open?: boolean;
-  assetHolding: AssetHolding & { asset?: Asset & { dao?: RawDao } };
+  assetHolding: AssetHolding;
+  daoId?: string;
+  daoImage?: string | null;
   onClose?: () => void;
   onSuccess?: () => void;
 }) => {
@@ -37,7 +38,7 @@ const TransferAssetModal = (props: {
     s.createApiConnection,
   ]);
 
-  const { assetHolding, open, onClose, onSuccess } = props;
+  const { assetHolding, daoImage, daoId, open, onClose, onSuccess } = props;
   const {
     handleSubmit,
     register,
@@ -131,7 +132,11 @@ const TransferAssetModal = (props: {
             <div className='flex w-full items-center'>
               <p className='w-1/4'>Asset</p>
               <div className='grow'>
-                <AssetHoldingCard assetHolding={assetHolding} />
+                <AssetHoldingCard
+                  assetHolding={assetHolding}
+                  daoImage={daoImage}
+                  daoId={daoId}
+                />
               </div>
             </div>
             <div className='flex w-full items-center'>

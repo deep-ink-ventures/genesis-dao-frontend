@@ -1,24 +1,21 @@
 import { BN } from '@polkadot/util';
 
-import type { Asset, AssetHolding } from '@/services/assets';
-import type { RawDao } from '@/services/daos';
+import type { AssetHolding } from '@/services/assets';
 import { uiTokens } from '@/utils';
 
 import DaoImage from './DaoImage';
 
 const AssetHoldingCard = (props: {
-  assetHolding: AssetHolding & { asset?: Asset & { dao?: RawDao } };
+  assetHolding: AssetHolding;
+  daoImage?: string | null;
+  daoId?: string;
 }) => {
-  const { assetHolding } = props;
+  const { assetHolding, daoImage, daoId } = props;
   return (
     <div className='flex gap-2 rounded-lg border-[0.02rem] border-neutral-focus px-4 py-3'>
-      <DaoImage
-        image={assetHolding?.asset?.dao?.metadata?.images?.logo?.small?.url}
-        width={40}
-        height={40}
-      />
+      <DaoImage image={daoImage || undefined} width={40} height={40} />
       <div>
-        <div>{assetHolding?.asset?.dao_id}</div>
+        <div>{daoId}</div>
         <div>
           Owned Tokens: {uiTokens(new BN(assetHolding.balance), 'dao', ' ')}
         </div>

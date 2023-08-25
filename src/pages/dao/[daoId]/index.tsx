@@ -4,12 +4,14 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import DaoDashboard from '@/components/DaoDashboard';
+import Governance from '@/components/Governance';
 import Proposals from '@/components/Proposals';
 import Spinner from '@/components/Spinner';
 import Transactions from '@/components/Transactions';
 import WalletConnect from '@/components/WalletConnect';
 import type { DaoPage } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
+import governanceIcon from '@/svg/about.svg';
 import arrowLeft from '@/svg/arrow-left.svg';
 import arrowRight from '@/svg/arrow-right.svg';
 import dashboard from '@/svg/dashboard.svg';
@@ -24,6 +26,7 @@ enum DashboardTabs {
   DASHBOARD = 'dashboard',
   PROPOSALS = 'proposals',
   TRANSACTIONS = 'transactions',
+  GOVERNANCE = 'governance',
 }
 
 const TabButton = ({
@@ -61,9 +64,9 @@ const MainDaoPage = () => {
     fetchDaoTokenBalanceFromDB,
     updateDaoTokenBalance,
     updateDaoPage,
-    daoTokenSupplyBalance,
-    fetchDaoTokenSupplyBalance,
-    updateDaoTokenSupplyBalance,
+    daoTokenTreasuryBalance,
+    fetchDaoTokenTreasuryBalance,
+    updateDaoTokenTreasuryBalance,
     apiConnection,
     createApiConnection,
   ] = useGenesisStore((s) => [
@@ -76,9 +79,9 @@ const MainDaoPage = () => {
     s.fetchDaoTokenBalanceFromDB,
     s.updateDaoTokenBalance,
     s.updateDaoPage,
-    s.daoTokenSupplyBalance,
-    s.fetchDaoTokenSupplyBalance,
-    s.updateDaoTokenSupplyBalance,
+    s.daoTokenTreasuryBalance,
+    s.fetchDaoTokenTreasuryBalance,
+    s.updateDaoTokenTreasuryBalance,
     s.apiConnection,
     s.createApiConnection,
   ]);
@@ -99,15 +102,20 @@ const MainDaoPage = () => {
     if (!apiConnection) {
       createApiConnection();
     }
-    if (currentDao?.daoAssetId && currentWalletAccount) {
-      fetchDaoTokenBalanceFromDB(
-        currentDao?.daoAssetId,
-        currentWalletAccount.address
+    if (currentDao?.daoAssetId) {
+      fetchDaoTokenTreasuryBalance(
+        currentDao.daoAssetId,
+        currentDao.daoOwnerAddress
       );
-      fetchDaoTokenSupplyBalance(currentDao.daoAssetId);
+      if (currentWalletAccount) {
+        fetchDaoTokenBalanceFromDB(
+          currentDao?.daoAssetId,
+          currentWalletAccount.address
+        );
+      }
     } else {
       updateDaoTokenBalance(new BN(0));
-      updateDaoTokenSupplyBalance(new BN(0));
+      updateDaoTokenTreasuryBalance(new BN(0));
     }
   }, [
     apiConnection,
@@ -115,9 +123,9 @@ const MainDaoPage = () => {
     currentDao,
     currentWalletAccount,
     fetchDaoTokenBalanceFromDB,
-    fetchDaoTokenSupplyBalance,
+    fetchDaoTokenTreasuryBalance,
     updateDaoTokenBalance,
-    updateDaoTokenSupplyBalance,
+    updateDaoTokenTreasuryBalance,
   ]);
 
   const displayImage = () => {
@@ -156,6 +164,8 @@ const MainDaoPage = () => {
         return <Proposals daoId={daoId as string} />;
       case DashboardTabs.TRANSACTIONS:
         return <Transactions daoId={daoId as string} />;
+      case DashboardTabs.GOVERNANCE:
+        return <Governance />;
       default:
         return <DaoDashboard />;
     }
@@ -219,24 +229,22 @@ const MainDaoPage = () => {
                 </div>
               )}
             </div>
-            {currentWalletAccount?.address != null && (
-              <div className='flex justify-center pb-3'>
-                <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
-                  <div className='px-5 text-center text-sm'>
-                    <div className='flex flex-col'>
-                      <p>Treasury</p>
-                      <p>
-                        {uiTokens(
-                          daoTokenSupplyBalance || new BN(0),
-                          'dao',
-                          currentDao?.daoId
-                        )}
-                      </p>
-                    </div>
+            <div className='flex justify-center pb-3'>
+              <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
+                <div className='px-5 text-center text-sm'>
+                  <div className='flex flex-col'>
+                    <p>Treasury</p>
+                    <p>
+                      {uiTokens(
+                        daoTokenTreasuryBalance || new BN(0),
+                        'dao',
+                        currentDao?.daoId
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
             <div className='w-full'>
               <TabButton
                 name={DashboardTabs.DASHBOARD}
@@ -277,6 +285,23 @@ const MainDaoPage = () => {
                 />
                 <p>Transactions</p>
               </TabButton>
+              {currentWalletAccount?.address ===
+                currentDao?.daoOwnerAddress && (
+                <TabButton
+                  name={DashboardTabs.GOVERNANCE}
+                  activeTab={daoPage}
+                  onClick={() => handleChangePage('governance')}>
+                  <Image
+                    src={governanceIcon}
+                    height={15}
+                    width={15}
+                    alt='governance'
+                    className='mr-4'
+                  />
+                  <p>Governance</p>
+                </TabButton>
+              )}
+
               {/* <div className={`flex h-[55px] py-4 px-7 brightness-75`}>
                 <Image
                   src={about}

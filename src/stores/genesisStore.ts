@@ -6,6 +6,7 @@ import type { Wallet } from '@talismn/connect-wallets';
 import { create } from 'zustand';
 
 import { NODE_URL, SERVICE_URL } from '@/config';
+import { AssetsHoldingsService } from '@/services/assets';
 import type {
   BasicDaoInfo,
   DaoCreationValues,
@@ -45,7 +46,7 @@ export interface MajorityModelValues {
   votingDays: number; // in days
 }
 
-export type DaoPage = 'dashboard' | 'proposals' | 'transactions';
+export type DaoPage = 'dashboard' | 'proposals' | 'transactions' | 'governance';
 
 export interface TransferFormValues {
   assetId: number;
@@ -87,7 +88,7 @@ export interface GenesisState {
   currentBlockNumber: number | null;
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
-  daoTokenSupplyBalance: BN | null;
+  daoTokenTreasuryBalance: BN | null;
   currentDaoFromChain: BasicDaoInfo | null;
   daosFromDB: DaoDetail[] | null;
   walletAccounts: WalletAccount[] | null;
@@ -126,7 +127,7 @@ export interface GenesisActions {
   fetchDao: (daoId: string) => void;
   fetchDaoTokenBalance: (assetId: number, accountId: string) => void;
   fetchNativeTokenBalance: (address: string) => void;
-  fetchDaoTokenSupplyBalance: (assetId: number) => void;
+  fetchDaoTokenTreasuryBalance: (assetId: number, ownerId: string) => void;
   fetchCurrentAssetId: () => void;
   fetchDaoFromDB: (daoId: string) => void;
   fetchBlockNumber: () => void;
@@ -154,7 +155,7 @@ export interface GenesisActions {
   updateCurrentDao: (currentDao: DaoDetail | null) => void;
   updateCurrentDaoFromChain: (currentDaoFromChain: BasicDaoInfo | null) => void;
   updateDaoTokenBalance: (daoTokenBalance: BN | null) => void;
-  updateDaoTokenSupplyBalance: (daoTokenSupplyBalance: BN | null) => void;
+  updateDaoTokenTreasuryBalance: (daoTokenSupplyBalance: BN | null) => void;
   updateNativeTokenBalance: (nativeTokenBalance: BN | null) => void;
   updateShowCongrats: (showCongrats: boolean) => void;
 
@@ -194,7 +195,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   currentDaoFromChain: null,
   nativeTokenBalance: null,
   daoTokenBalance: null,
-  daoTokenSupplyBalance: null,
+  daoTokenTreasuryBalance: null,
   showCongrats: false,
   currentBlockNumber: null,
   proposalValues: null,
@@ -438,18 +439,19 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       get().handleErrors(err);
     }
   },
-  fetchDaoTokenSupplyBalance: (assetId: number) => {
-    get()
-      .apiConnection?.query.assets?.asset?.(assetId)
-      .then((data) => {
-        const supply = (data.toHuman() as any)?.supply;
-        if (supply?.length) {
-          const daoTokenSupplyBalance = new BN(
-            Number(supply?.replace(/,/g, ''))
-          );
-          set({ daoTokenSupplyBalance });
-        }
+  fetchDaoTokenTreasuryBalance: async (assetId: number, ownerId: string) => {
+    try {
+      const response = await AssetsHoldingsService.listAssetHoldings({
+        search: ownerId,
       });
+      const assetHolding = response.results?.find((item: any) => {
+        return item.asset_id.toString() === assetId.toString();
+      });
+      const daoTokenTreasuryBalance = new BN(assetHolding?.balance || 0);
+      set({ daoTokenTreasuryBalance });
+    } catch (err) {
+      get().handleErrors(err);
+    }
   },
   fetchNativeTokenBalance: async (address: string) => {
     try {
@@ -617,8 +619,8 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   updateCurrentDaoFromChain: (currentDaoFromChain) =>
     set(() => ({ currentDaoFromChain })),
   updateDaoTokenBalance: (daoTokenBalance) => set(() => ({ daoTokenBalance })),
-  updateDaoTokenSupplyBalance: (daoTokenSupplyBalance) =>
-    set(() => ({ daoTokenSupplyBalance })),
+  updateDaoTokenTreasuryBalance: (daoTokenSupplyBalance) =>
+    set(() => ({ daoTokenTreasuryBalance: daoTokenSupplyBalance })),
   updateNativeTokenBalance: (nativeTokenBalance) =>
     set(() => ({ nativeTokenBalance })),
   updateShowCongrats: (showCongrats) => set(() => ({ showCongrats })),
