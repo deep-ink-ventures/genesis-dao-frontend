@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 
 import Loading from '@/components/Loading';
 import Pagination from '@/components/Pagination';
-import TransactionAccordion from '@/components/TransactionAccordion';
-import { MultiSigTransactionsService } from '@/services/multiSigTransactions';
 import useGenesisStore from '@/stores/genesisStore';
+
+import MultisigTransactionAccordion from './MultisigTransactionAccordion';
 
 const Transactions = (props: { daoId: string }) => {
   const { daoId } = props;
@@ -19,32 +19,30 @@ const Transactions = (props: { daoId: string }) => {
     offset: 0,
   });
 
-  const [activeAccordion, setActiveAccordion] = useState<string | null>();
+  const [activeAccordion, setActiveAccordion] = useState<number | null>();
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
 
   const fetchTransactions = () => {
-    dao.transactions.fetchTransactions({
+    dao.multiSigTransactions.fetchMultiSigTransactions({
       limit: 5,
-      offset: pagination.offset - 1,
+      offset: Math.max(0, pagination.offset - 1),
       search: daoId,
     });
   };
 
   useEffect(() => {
-    if (dao.transactions.loading === false && currentWalletAccount) {
+    if (dao.multiSigTransactions.loading === false && currentWalletAccount) {
       fetchTransactions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.currentPage, currentWalletAccount]);
 
-  useEffect(() => {
-    MultiSigTransactionsService.list();
-  }, []);
-
-  const handleAccordionClick = (proposalId?: string) => {
-    setActiveAccordion(activeAccordion === proposalId ? null : proposalId);
+  const handleAccordionClick = (multisigTxnId?: number) => {
+    setActiveAccordion(
+      activeAccordion === multisigTxnId ? null : multisigTxnId
+    );
   };
 
   return (
@@ -74,15 +72,15 @@ const Transactions = (props: { daoId: string }) => {
           <Loading spinnerSize='32' />
         )}
         {currentWalletAccount &&
-          !dao.transactions.loading &&
-          dao.transactions.data?.map((proposal) => (
-            <TransactionAccordion
-              key={proposal.proposalId}
-              proposal={proposal}
+          !dao.multiSigTransactions.loading &&
+          dao.multiSigTransactions.data?.map((multisigTransaction) => (
+            <MultisigTransactionAccordion
+              key={multisigTransaction.id}
+              multisigTransaction={multisigTransaction}
               collapsed={
-                proposal.proposalId !== activeAccordion || !activeAccordion
+                multisigTransaction.id !== activeAccordion || !activeAccordion
               }
-              onClick={() => handleAccordionClick(proposal.proposalId)}
+              onClick={() => handleAccordionClick(multisigTransaction.id)}
             />
           ))}
         {!dao.transactions.loading && currentWalletAccount && (
