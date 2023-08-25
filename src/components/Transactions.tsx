@@ -68,9 +68,14 @@ const Transactions = (props: { daoId: string }) => {
             Connect to view Transactions
           </div>
         )}
-        {currentWalletAccount && dao.transactions.loading && (
+        {currentWalletAccount && dao.multiSigTransactions.loading && (
           <Loading spinnerSize='32' />
         )}
+        {currentWalletAccount &&
+          !dao.multiSigTransactions.loading &&
+          !dao.multiSigTransactions.data?.length && (
+            <>Sorry, no transactions found</>
+          )}
         {currentWalletAccount &&
           !dao.multiSigTransactions.loading &&
           dao.multiSigTransactions.data?.map((multisigTransaction) => (
