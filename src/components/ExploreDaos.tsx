@@ -45,7 +45,7 @@ const ExploreDaos = () => {
         setDaos(undefined);
       }
     } catch (ex) {
-      handleErrors(new Error(ex));
+      handleErrors('Error in fetching DAOs', new Error(ex));
     }
   };
 

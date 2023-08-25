@@ -78,7 +78,7 @@ const TransferAssetModal = (props: {
           onTransferAssetSuccess
         );
       } catch (ex) {
-        handleErrors(new Error(ex));
+        handleErrors('Errors in transferring tokens', new Error(ex));
       }
     }
   };

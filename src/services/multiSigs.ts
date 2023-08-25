@@ -26,11 +26,18 @@ const transformToMultiSig = (data: RawMultiSig): MultiSig => ({
 });
 
 const get = async (address: string) => {
-  const response = await fetch(`${SERVICE_URL}/multisigs/${address}`);
+  try {
+    const response = await fetch(`${SERVICE_URL}/multisigs/${address}`);
+    const objResponse = await response.json();
 
-  const objResponse = (await response.json()) as RawMultiSig;
+    if (!objResponse?.address) {
+      return null;
+    }
 
-  return transformToMultiSig(objResponse);
+    return transformToMultiSig(objResponse as RawMultiSig);
+  } catch (err) {
+    throw Error('Cannot fetch multisigs');
+  }
 };
 
 const list = async (params?: ListMultiSigsQueryParams) => {

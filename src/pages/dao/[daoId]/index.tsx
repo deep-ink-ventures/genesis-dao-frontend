@@ -1,7 +1,7 @@
 import { BN } from '@polkadot/util';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import DaoDashboard from '@/components/DaoDashboard';
 import Governance from '@/components/Governance';
@@ -62,13 +62,9 @@ const MainDaoPage = () => {
     fetchDaoFromDB,
     fetchDao,
     fetchDaoTokenBalanceFromDB,
-    updateDaoTokenBalance,
     updateDaoPage,
     daoTokenTreasuryBalance,
     fetchDaoTokenTreasuryBalance,
-    updateDaoTokenTreasuryBalance,
-    apiConnection,
-    createApiConnection,
   ] = useGenesisStore((s) => [
     s.daoPage,
     s.currentWalletAccount,
@@ -77,14 +73,12 @@ const MainDaoPage = () => {
     s.fetchDaoFromDB,
     s.fetchDao,
     s.fetchDaoTokenBalanceFromDB,
-    s.updateDaoTokenBalance,
     s.updateDaoPage,
     s.daoTokenTreasuryBalance,
     s.fetchDaoTokenTreasuryBalance,
-    s.updateDaoTokenTreasuryBalance,
-    s.apiConnection,
-    s.createApiConnection,
   ]);
+
+  const [showSpinner, setShowSpinner] = useState(true);
 
   const handleChangePage = (pageParam: DaoPage) => {
     updateDaoPage(pageParam);
@@ -95,38 +89,31 @@ const MainDaoPage = () => {
       return;
     }
     fetchDaoFromDB(daoId as string);
-    fetchDao(daoId as string);
   }, [daoId, fetchDaoFromDB, fetchDao]);
 
   useEffect(() => {
-    if (!apiConnection) {
-      createApiConnection();
-    }
-    if (currentDao?.daoAssetId) {
+    setShowSpinner(true);
+    const timeout1 = setTimeout(() => {
+      if (!currentDao?.daoAssetId || !currentWalletAccount?.address) {
+        return;
+      }
       fetchDaoTokenTreasuryBalance(
         currentDao.daoAssetId,
         currentDao.daoOwnerAddress
       );
-      if (currentWalletAccount) {
-        fetchDaoTokenBalanceFromDB(
-          currentDao?.daoAssetId,
-          currentWalletAccount.address
-        );
-      }
-    } else {
-      updateDaoTokenBalance(new BN(0));
-      updateDaoTokenTreasuryBalance(new BN(0));
-    }
-  }, [
-    apiConnection,
-    createApiConnection,
-    currentDao,
-    currentWalletAccount,
-    fetchDaoTokenBalanceFromDB,
-    fetchDaoTokenTreasuryBalance,
-    updateDaoTokenBalance,
-    updateDaoTokenTreasuryBalance,
-  ]);
+      fetchDaoTokenBalanceFromDB(
+        currentDao.daoAssetId,
+        currentWalletAccount.address
+      );
+    }, 200);
+    const timeout2 = setTimeout(() => {
+      setShowSpinner(false);
+    }, 1000);
+    return () => {
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+    };
+  }, [currentDao, currentWalletAccount]);
 
   const displayImage = () => {
     if (!currentDao || !currentDao.images.medium) {
@@ -211,12 +198,16 @@ const MainDaoPage = () => {
               ) : (
                 <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
                   <div className='px-5 text-center text-sm'>
-                    <div className='flex flex-col'>
-                      <p>You have</p>
-                      <p>
-                        {uiTokens(daoTokenBalance, 'dao', currentDao?.daoId)}
-                      </p>
-                    </div>
+                    {showSpinner ? (
+                      <Spinner size='22' />
+                    ) : (
+                      <div className='flex flex-col'>
+                        <p>You have</p>
+                        <p>
+                          {uiTokens(daoTokenBalance, 'dao', currentDao?.daoId)}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Image
@@ -231,17 +222,21 @@ const MainDaoPage = () => {
             </div>
             <div className='flex justify-center pb-3'>
               <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
-                <div className='px-5 text-center text-sm'>
-                  <div className='flex flex-col'>
-                    <p>Treasury</p>
-                    <p>
-                      {uiTokens(
-                        daoTokenTreasuryBalance || new BN(0),
-                        'dao',
-                        currentDao?.daoId
-                      )}
-                    </p>
-                  </div>
+                <div className='flex justify-center px-5 text-center text-sm'>
+                  {showSpinner ? (
+                    <Spinner size='22' />
+                  ) : (
+                    <div className='flex flex-col'>
+                      <p>Treasury</p>
+                      <p>
+                        {uiTokens(
+                          daoTokenTreasuryBalance || new BN(0),
+                          'dao',
+                          currentDao?.daoId
+                        )}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

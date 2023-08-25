@@ -140,7 +140,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     );
 
     try {
-      await MultiSigsService.create(sortedAddresses, data.councilThreshold);
+      const multiSig = await MultiSigsService.get(multisigAddress);
+      if (!multiSig) {
+        await MultiSigsService.create(sortedAddresses, data.councilThreshold);
+      }
       await sendBatchTxns(
         withChangeOwner,
         'Tokens Issued and Transferred DAO Ownership!',
@@ -154,7 +157,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
         }
       );
     } catch (err) {
-      handleErrors(err);
+      handleErrors(
+        'Errors in issuing tokens and transferring ownership',
+        new Error(err)
+      );
     }
   };
 

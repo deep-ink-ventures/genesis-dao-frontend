@@ -24,27 +24,41 @@ export interface AssetHolding {
 }
 
 const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
-  const query = Object.fromEntries(
-    Object.entries(params || {}).filter(([, v]) => v != null)
-  );
+  try {
+    const query = Object.fromEntries(
+      Object.entries(params || {}).filter(([, v]) => v != null)
+    );
 
-  const queryString = new URLSearchParams(query);
+    const queryString = new URLSearchParams(query);
 
-  const response = await fetch(
-    `${SERVICE_URL}/asset-holdings/?${queryString.toString()}`
-  );
+    const response = await fetch(
+      `${SERVICE_URL}/asset-holdings/?${queryString.toString()}`
+    );
 
-  const objResponse = await response.json();
+    const objResponse = await response.json();
+    if (!objResponse?.results?.[0]) {
+      return null;
+    }
 
-  return objResponse as Paginated<AssetHolding[]>;
+    return objResponse as Paginated<AssetHolding[]>;
+  } catch (err) {
+    throw Error('Cannot fetch asset holdings');
+  }
 };
 
 const getAssetHolding = async (assetId: string) => {
-  const response = await fetch(`${SERVICE_URL}/asset-holdings/${assetId}`);
+  try {
+    // fixme. Should not use assetId
+    const response = await fetch(`${SERVICE_URL}/asset-holdings/${assetId}`);
 
-  const objResponse = await response.json();
-
-  return objResponse as AssetHolding;
+    const objResponse = await response.json();
+    if (!objResponse.asset_id) {
+      return null;
+    }
+    return objResponse as AssetHolding;
+  } catch (err) {
+    throw Error('Cannot fetch asset holding');
+  }
 };
 
 const listAssets = async (params?: ListAssetsQueryParams) => {

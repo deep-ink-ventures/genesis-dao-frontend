@@ -70,7 +70,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
         }
       );
     } catch (err) {
-      handleErrors(err);
+      handleErrors('Error in issuing tokens and setting governance model', err);
     }
   };
 

@@ -806,7 +806,7 @@ const useGenesisDao = () => {
         }
       )
       .catch((err) => {
-        handleErrors(err);
+        handleErrors('createAProposal error', err);
         updateTxnProcessing(false);
       });
   };

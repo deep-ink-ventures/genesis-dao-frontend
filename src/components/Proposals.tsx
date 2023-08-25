@@ -68,7 +68,8 @@ const Proposals = (props: { daoId: string }) => {
     }, 500);
     // eslint-disable-next-line
     return () => clearTimeout(timer);
-  }, [props.daoId, fetchProposalsFromDB]);
+    // eslint-disable-next-line
+  }, [props.daoId]);
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
@@ -125,7 +126,7 @@ const Proposals = (props: { daoId: string }) => {
         </div>
       </div>
       <div>
-        {!currentProposals ? (
+        {!filteredProposals ? (
           <div className='mt-10'>
             <Spinner />
           </div>

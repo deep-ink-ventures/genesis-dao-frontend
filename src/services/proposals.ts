@@ -34,8 +34,8 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
     `${SERVICE_URL}/proposals/?${queryString?.toString()}`
   );
 
-  const json = await response.json();
-  const newProposals: ProposalDetail[] = json.results
+  const objResponse = await response.json();
+  const newProposals: ProposalDetail[] = objResponse.results
     ?.filter((p: RawProposal) => {
       return !!p.metadata_url === true;
     })
@@ -50,7 +50,6 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
         status: proposalStatusNames[p.status],
         inFavor: new BN(p.votes?.pro || 0),
         against: new BN(p.votes?.contra || 0),
-        voterCount: new BN(p.votes?.total || 0),
         proposalName: p.metadata?.title || null,
         description: p.metadata?.description || null,
         link: p.metadata?.url || null,
@@ -60,7 +59,7 @@ const listProposals = async (params?: ListProposalsQueryParams) => {
     });
 
   return {
-    data: json as Paginated<RawProposal>,
+    data: objResponse as Paginated<RawProposal>,
     mappedData: newProposals,
   };
 };
