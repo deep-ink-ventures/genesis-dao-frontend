@@ -14,7 +14,7 @@ import { getMultisigAddress } from '@/utils';
 import { CouncilMembersForm } from './CouncilMembersForm';
 
 interface ChangeDaoOwnerFormValues {
-  councilMembers: CouncilMember[];
+  newCouncilMembers: CouncilMember[];
   councilThreshold: number;
 }
 
@@ -48,7 +48,7 @@ const ChangeDaoOwner = () => {
   const formMethods = useForm<ChangeDaoOwnerFormValues>({
     defaultValues: {
       councilThreshold: 1,
-      councilMembers: [
+      newCouncilMembers: [
         {
           name: '',
           walletAddress: '',
@@ -65,10 +65,10 @@ const ChangeDaoOwner = () => {
     formState: { errors },
   } = formMethods;
 
-  const councilMembers = watch('councilMembers');
+  const newCouncilMembers = watch('newCouncilMembers');
 
   const onSubmit: SubmitHandler<ChangeDaoOwnerFormValues> = async (data) => {
-    const transferToAddresses = data.councilMembers.map((el) => {
+    const transferToAddresses = data.newCouncilMembers.map((el) => {
       return el.walletAddress;
     });
 
@@ -152,7 +152,7 @@ const ChangeDaoOwner = () => {
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex w-full flex-col items-center gap-y-5 border-none hover:brightness-100'>
-              <CouncilMembersForm />
+              <CouncilMembersForm formName='newCouncilMembers' />
               <div>
                 <h4 className='text-center'>
                   Enter Council Approval Threshold
@@ -172,7 +172,7 @@ const ChangeDaoOwner = () => {
                     required: 'Required',
                     min: { value: 1, message: 'Minimum is 1' },
                     max: {
-                      value: councilMembers.length,
+                      value: newCouncilMembers.length,
                       message: 'Cannot exceed # of council members',
                     },
                   })}

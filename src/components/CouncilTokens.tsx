@@ -276,6 +276,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               </div>
             </div>
             <CouncilMembersForm
+              formName='councilMembers'
               listStartCount={2}
               onAddMember={handleAddMember}
               onDeleteMember={handleDeleteMember}
