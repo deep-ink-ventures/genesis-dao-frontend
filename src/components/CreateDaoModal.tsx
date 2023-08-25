@@ -57,7 +57,7 @@ const CreateDaoModal = () => {
         await fetchDaosFromDB();
         fetchDaoFromDB(data.daoId);
       } catch (err) {
-        handleErrors(new Error(err));
+        handleErrors('create dao errors', new Error(err));
       }
     }
   };

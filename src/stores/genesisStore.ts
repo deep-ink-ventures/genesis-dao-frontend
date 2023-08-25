@@ -119,7 +119,7 @@ interface PageSlices {
 }
 export interface GenesisActions {
   createApiConnection: () => void;
-  handleErrors: (err: Error | string) => void;
+  handleErrors: (errMsg: string, err?: Error | string) => void;
   removeTxnNotification: () => void;
   addTxnNotification: (notification: TxnNotification) => void;
   fetchDaos: () => void;
@@ -214,18 +214,18 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         await api.isReady;
         return api;
       } catch (err) {
-        get().handleErrors(new Error(err));
+        get().handleErrors('Create Api Connection Errors', new Error(err));
         return err;
       }
     };
     set({ apiConnection: await createApi() });
   },
-  handleErrors: (err: Error | string) => {
-    let message: string;
+  handleErrors: (errMsg: string, err?: Error | string) => {
+    let message = '';
     if (typeof err === 'object') {
-      message = err.message;
+      message = `${errMsg} - ${err.message} `;
     } else {
-      message = err;
+      message = errMsg;
     }
 
     const newNoti = {
@@ -260,7 +260,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         set({ currentBlockNumber: blockNumber });
       })
       .catch((err) => {
-        get().handleErrors(err);
+        get().handleErrors('Fetch Block Number Error', err);
       });
   },
 
@@ -303,7 +303,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         });
       })
       .catch((err) => {
-        get().handleErrors(new Error(err));
+        get().handleErrors('FetchDaos Errors', new Error(err));
       });
   },
   fetchDao: (daoId) => {
@@ -323,7 +323,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         get().updateCurrentDaoFromChain(dao);
       })
       .catch((err) => {
-        get().handleErrors(err);
+        get().handleErrors('fetchDao Errors', err);
       });
   },
   fetchDaoFromDB: async (daoId) => {
@@ -389,7 +389,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
 
       get().updateCurrentDao(daoDetail);
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchDaoFromDB errors', err);
     }
   },
   fetchDaosFromDB: async () => {
@@ -404,7 +404,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       );
       set({ daosFromDB: newDaos });
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchDaosFromDB error', new Error(err));
     }
   },
   fetchDaoTokenBalance: (assetId: number, accountId: string) => {
@@ -421,7 +421,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         set({ daoTokenBalance });
       })
       .catch((err) => {
-        get().handleErrors(new Error(err));
+        get().handleErrors('fetchDaoTokenBalance errors', new Error(err));
       });
   },
   fetchDaoTokenBalanceFromDB: async (assetId: number, accountId: string) => {
@@ -433,10 +433,12 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       const assetHolding = results.filter((item: any) => {
         return item.asset_id.toString() === assetId.toString();
       });
-      const daoTokenBalance = new BN(assetHolding[0].balance || 0);
+      const daoTokenBalance = assetHolding?.[0]?.balance
+        ? new BN(assetHolding[0].balance)
+        : null;
       set({ daoTokenBalance });
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchDaoTokenBalanceFromDB errors', err);
     }
   },
   fetchDaoTokenTreasuryBalance: async (assetId: number, ownerId: string) => {
@@ -444,13 +446,15 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       const response = await AssetsHoldingsService.listAssetHoldings({
         search: ownerId,
       });
-      const assetHolding = response.results?.find((item: any) => {
+      const assetHolding = response?.results?.find((item: any) => {
         return item.asset_id.toString() === assetId.toString();
       });
-      const daoTokenTreasuryBalance = new BN(assetHolding?.balance || 0);
+      const daoTokenTreasuryBalance = assetHolding
+        ? new BN(assetHolding?.balance)
+        : null;
       set({ daoTokenTreasuryBalance });
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchDaoTokenTreasuryBalance errors', err);
     }
   },
   fetchNativeTokenBalance: async (address: string) => {
@@ -467,7 +471,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         set({ nativeTokenBalance: new BN(0) });
       }
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchNativeTokenBalance errors', err);
     }
   },
   fetchCurrentAssetId: () => {
@@ -481,10 +485,13 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   fetchProposalsFromDB: async (daoId) => {
     try {
       const response = await fetch(
-        `${SERVICE_URL}/proposals/?dao_id=${daoId}&limit=50`
+        `${SERVICE_URL}/proposals/?search=${daoId}&limit=50`
       );
       const json = await response.json();
-      const newProposals = json.results
+      if (json.results.length === 0 || !json) {
+        set({ currentProposals: null });
+      }
+      const newProposals: ProposalDetail[] = json.results
         .filter((p: RawProposal) => {
           // filter out proposals without offchain metadata
           return !!p.metadata_url === true;
@@ -500,6 +507,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
             status: proposalStatusNames[p.status as keyof ProposalStatusNames],
             inFavor: new BN(p.votes?.pro || 0),
             against: new BN(p.votes?.contra || 0),
+            voterCount: new BN(p.votes?.total || 0),
             proposalName: p.metadata?.title || null,
             description: p.metadata?.description || null,
             link: p.metadata?.url || null,
@@ -512,7 +520,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         currentBlockNumber: Number(response.headers.get('block-number')),
       });
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchProposalsFromDB errors', err);
     }
   },
   fetchOneProposalDB: async (proposalId) => {
@@ -546,7 +554,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         currentBlockNumber: Number(response.headers.get('block-number')),
       });
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchOneProposalDB errors', err);
     }
   },
   fetchProposalFaultyReports: async (proposalId) => {
@@ -572,7 +580,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
 
       set({ currentProposalFaultyReports: reports });
     } catch (err) {
-      get().handleErrors(err);
+      get().handleErrors('fetchProposalFaultyReports ', err);
     }
   },
 

@@ -46,7 +46,10 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
           bnAmount
         );
       } catch (err) {
-        handleErrors(new Error(err));
+        handleErrors(
+          'Errors in transferring tokens in TransferForm ',
+          new Error(err)
+        );
       }
     }
   };

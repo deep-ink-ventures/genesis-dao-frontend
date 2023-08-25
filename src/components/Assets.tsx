@@ -88,6 +88,9 @@ const Assets = () => {
         limit: 5,
         search: currentWalletAccount?.address,
       }).then((res) => {
+        if (!res) {
+          return;
+        }
         setAssetHoldingsResponse({
           totalCount: res.count,
           assetHoldings: res.results?.map((assetHolding) => ({
