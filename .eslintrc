@@ -16,6 +16,11 @@
       }
     ]
   },
+  "settings": {
+    "import/core-modules": [
+      "dayjs"
+    ]
+  },
   "overrides": [
     // Configuration for TypeScript files
     {
