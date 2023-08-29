@@ -68,7 +68,7 @@ export interface RawMultiSigTransaction {
   updated_at: string;
 }
 
-interface ListMultiSigTxnsQueryParams {
+export interface ListMultiSigTxnsQueryParams {
   dao_id?: string;
   ordering?: string;
   limit?: number;
