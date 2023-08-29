@@ -1,5 +1,11 @@
 import type { BN } from '@polkadot/util';
 
+export enum MultiSigTransactionStatus {
+  Pending = 'PENDING',
+  Cancelled = 'CANCELLED',
+  Executed = 'EXECUTED',
+}
+
 export interface MultiSigTransaction {
   id: number;
   multisigAddress: string;
@@ -54,7 +60,7 @@ export interface MultiSigTransaction {
       setupComplete?: boolean | null;
     } | null;
   };
-  status: string;
+  status: MultiSigTransactionStatus;
   threshold?: number | null;
   approvers?: string[] | null;
   lastApprover?: string | null;
