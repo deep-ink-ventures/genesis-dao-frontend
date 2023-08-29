@@ -47,6 +47,14 @@ const MultisigTransactionAccordion = ({
     multisigTransaction?.approvers?.[0]?.toLowerCase() ===
       currentWalletAccount?.address.toLowerCase();
 
+  const transactionArgs =
+    multisigTransaction.call?.args != null &&
+    Boolean(Object.keys(multisigTransaction.call?.args)?.length) &&
+    Object.keys(multisigTransaction.call?.args).map((key) => ({
+      key,
+      value: multisigTransaction.call?.args?.[key] || '-',
+    }));
+
   return (
     <div
       className={cn('rounded-lg border-[0.02rem] border-neutral-focus p-4', {
@@ -60,7 +68,7 @@ const MultisigTransactionAccordion = ({
           }
         )}
         onClick={onClick}>
-        <div className='grow'>-</div>
+        <div className='grow'>{multisigTransaction.call?.function || '-'}</div>
         <div className='flex text-[0.8rem]'>
           <Image src={memberSign} alt='Member Sign' height={16} width={16} />
           {`${multisigTransaction.approvers?.length || 0} `}
@@ -100,10 +108,15 @@ const MultisigTransactionAccordion = ({
               <div className='border border-gray-300 p-2'>Parameter</div>
               <div className='border border-gray-300 p-2'>Value</div>
             </div>
-            <div className='grid grid-cols-2 gap-0'>
-              <div className='border border-gray-300 p-2'>-</div>
-              <div className='border border-gray-300 p-2'>-</div>
-            </div>
+            {transactionArgs &&
+              transactionArgs?.map((arg, index) => (
+                <div
+                  key={`${index}-${arg.key}`}
+                  className='grid grid-cols-2 gap-0'>
+                  <div className='border border-gray-300 p-2'>{arg.key}</div>
+                  <div className='border border-gray-300 p-2'>{arg.value}</div>
+                </div>
+              ))}
           </div>
         </div>
         <div className='h-[inherit] border-r-[0.02rem] border-neutral-focus' />
