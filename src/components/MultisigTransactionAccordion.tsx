@@ -1,17 +1,18 @@
-import { BN } from '@polkadot/util';
 import cn from 'classnames';
 import Image from 'next/image';
-import ReactHtmlParser from 'react-html-parser';
 
-import { DAO_UNITS } from '@/config';
+import useGenesisStore from '@/stores/genesisStore';
 import arrowUp from '@/svg/arrow-up.svg';
 import memberSign from '@/svg/memberSign.svg';
+import type { MultiSig } from '@/types/multiSig';
 import type { MultiSigTransaction } from '@/types/multiSigTransaction';
+import { formatISOTimestamp } from '@/utils/date';
 
 import { TransactionBadge } from './TransactionBadge';
 
 interface TransactionAccordionProps {
   multisigTransaction: MultiSigTransaction;
+  multiSig?: MultiSig;
   collapsed?: boolean;
   onClick?: () => void;
 }
@@ -21,7 +22,30 @@ const MultisigTransactionAccordion = ({
   collapsed,
   onClick,
 }: TransactionAccordionProps) => {
-  const { proposal } = multisigTransaction.correspondingModels || {};
+  const [currentWalletAccount, currentDao] = useGenesisStore((s) => [
+    s.currentWalletAccount,
+    s.currentDao,
+  ]);
+
+  const isApprover =
+    Boolean(currentWalletAccount?.address) &&
+    currentDao?.adminAddresses?.some(
+      (approver) =>
+        approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
+    );
+
+  const hasApproved =
+    isApprover &&
+    multisigTransaction?.approvers?.some(
+      (approver) =>
+        approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
+    );
+
+  const canCancel =
+    isApprover &&
+    Boolean(currentWalletAccount?.address) &&
+    multisigTransaction?.approvers?.[0]?.toLowerCase() ===
+      currentWalletAccount?.address.toLowerCase();
 
   return (
     <div
@@ -36,15 +60,15 @@ const MultisigTransactionAccordion = ({
           }
         )}
         onClick={onClick}>
-        <div className='grow'>{multisigTransaction.daoId}</div>
+        <div className='grow'>-</div>
         <div className='flex text-[0.8rem]'>
           <Image src={memberSign} alt='Member Sign' height={16} width={16} />
-          {` ${proposal?.votes?.pro?.div(new BN(DAO_UNITS)).toString()} `}
+          {`${multisigTransaction.approvers?.length || 0} `}
           out of
-          {` ${proposal?.votes?.total?.div(new BN(DAO_UNITS)).toString()}`}
+          {` ${currentDao?.adminAddresses?.length || 0}`}
         </div>
         <div className='mr-4 flex items-center gap-2 text-xs'>
-          {multisigTransaction?.createdAt}
+          {formatISOTimestamp(multisigTransaction?.createdAt)}
         </div>
         <TransactionBadge status={multisigTransaction.status as string} />
         <div className='p-2'>
@@ -71,8 +95,16 @@ const MultisigTransactionAccordion = ({
           }
         )}>
         <div className='flex-1 space-y-2'>
-          <div>{proposal?.metadata?.title}</div>
-          <div>{ReactHtmlParser(proposal?.metadata?.description ?? '')}</div>
+          <div className='border border-gray-300'>
+            <div className='grid grid-cols-2 gap-0'>
+              <div className='border border-gray-300 p-2'>Parameter</div>
+              <div className='border border-gray-300 p-2'>Value</div>
+            </div>
+            <div className='grid grid-cols-2 gap-0'>
+              <div className='border border-gray-300 p-2'>-</div>
+              <div className='border border-gray-300 p-2'>-</div>
+            </div>
+          </div>
         </div>
         <div className='h-[inherit] border-r-[0.02rem] border-neutral-focus' />
         <div className='flex-1 space-y-4'>
@@ -84,17 +116,25 @@ const MultisigTransactionAccordion = ({
               ))}
             </div>
           </div>
-          <div className='w-full border-b-[0.02rem] border-neutral-focus' />
-          <div className='space-y-2'>
-            <div className='flex gap-2'>
-              <button className='btn flex-1 bg-transparent text-neutral'>
-                Approve
-              </button>
-              <button className='btn flex-1 bg-transparent text-neutral'>
-                Reject
-              </button>
-            </div>
-          </div>
+          {isApprover && (
+            <>
+              <div className='w-full border-b-[0.02rem] border-neutral-focus' />
+              <div className='space-y-2'>
+                <div className='flex gap-2'>
+                  <button
+                    className='btn flex-1 bg-transparent text-neutral'
+                    disabled={hasApproved}>
+                    Approve
+                  </button>
+                  {canCancel && (
+                    <button className='btn flex-1 bg-transparent text-neutral'>
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
