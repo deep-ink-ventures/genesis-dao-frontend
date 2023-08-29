@@ -86,7 +86,7 @@ const DaoDashboard = () => {
   useEffect(() => {
     if (currentDao?.daoId) {
       ProposalsService.listProposals({
-        search: currentDao.daoId,
+        dao_id: currentDao.daoId,
         limit: 5,
         ordering: '-id',
       }).then((result) => {

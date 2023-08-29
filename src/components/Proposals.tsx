@@ -127,8 +127,8 @@ const Proposals = (props: { daoId: string }) => {
       </div>
       <div>
         {!filteredProposals ? (
-          <div className='mt-10'>
-            <Spinner />
+          <div className='mt-20'>
+            <Spinner size='90' />
           </div>
         ) : (
           displayProposal()

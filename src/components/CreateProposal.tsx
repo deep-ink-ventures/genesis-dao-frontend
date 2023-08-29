@@ -229,7 +229,7 @@ const CreateProposal = (props: {
               <div className='relative'>
                 <input
                   className={`input ${
-                    watchName.length > 64 || errors.proposalName
+                    watchName.length > 128 || errors.proposalName
                       ? 'input-error'
                       : 'input-primary'
                   }`}
