@@ -1,10 +1,8 @@
-import { BN } from '@polkadot/util';
 import cn from 'classnames';
 import Image from 'next/image';
 import { useMemo } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 
-import { DAO_UNITS } from '@/config';
 import useGenesisStore from '@/stores/genesisStore';
 import arrowUp from '@/svg/arrow-up.svg';
 import memberSign from '@/svg/memberSign.svg';
@@ -61,9 +59,6 @@ const TransactionAccordion = ({
         <div className='grow'>{proposal.proposalName}</div>
         <div className='flex text-[0.8rem]'>
           <Image src={memberSign} alt='Member Sign' height={16} width={16} />
-          {` ${proposal?.inFavor.div(new BN(DAO_UNITS)).toString()} `}
-          out of
-          {` ${proposal?.voterCount.div(new BN(DAO_UNITS)).toString()}`}
         </div>
         <div className='mr-4 flex items-center gap-2 text-xs'>
           Ends in

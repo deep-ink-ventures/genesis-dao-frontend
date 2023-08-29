@@ -28,8 +28,8 @@ export const DistributeTokensForm = () => {
   });
 
   const tokensValues = watch('tokenRecipients');
-  const [daoTokenBalance, currentDao] = useGenesisStore((s) => [
-    s.daoTokenBalance,
+  const [daoTokenTreasuryBalance, currentDao] = useGenesisStore((s) => [
+    s.daoTokenTreasuryBalance,
     s.currentDao,
   ]);
 
@@ -46,8 +46,8 @@ export const DistributeTokensForm = () => {
     return total;
   };
 
-  const remain = daoTokenBalance
-    ? daoTokenBalance.sub(getTotalRecipientsTokens(tokensValues))
+  const remain = daoTokenTreasuryBalance
+    ? daoTokenTreasuryBalance.sub(getTotalRecipientsTokens(tokensValues))
     : new BN(0);
 
   const handleAddRecipient = () => {
@@ -58,7 +58,7 @@ export const DistributeTokensForm = () => {
   };
 
   const recipientsFields = () => {
-    if (!daoTokenBalance) {
+    if (!daoTokenTreasuryBalance) {
       return <div className='text-center'>Please issue tokens first</div>;
     }
     return tokenRecipientsFields.map((item, index) => {
@@ -154,7 +154,7 @@ export const DistributeTokensForm = () => {
         {recipientsFields()}
       </div>
       <div>
-        {daoTokenBalance ? (
+        {daoTokenTreasuryBalance ? (
           <button
             className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
             type='button'

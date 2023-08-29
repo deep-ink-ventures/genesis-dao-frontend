@@ -1,6 +1,7 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import { ErrorMessage } from '@hookform/error-message';
 import Modal from 'antd/lib/modal';
+import cn from 'classnames';
 import { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -147,7 +148,10 @@ const ChangeDaoOwner = () => {
           <div className='mb-6'>
             <h3 className='text-center text-primary'>{currentDao?.daoName}</h3>
             <div className='text-center text-xl'>
-              Transfer Ownership to another account
+              Transfer Ownership to another multisig account
+            </div>
+            <div className='text-center text-xl'>
+              Enter minimum of 2 addresses of the council members
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -188,9 +192,14 @@ const ChangeDaoOwner = () => {
             </div>
             <div className='mt-6 flex w-full justify-end'>
               <button
-                className={`btn btn-primary mr-3 w-48 ${
-                  !daoTokenBalance ? 'btn-disabled' : ''
-                } ${txnProcessing ? 'loading' : ''}`}
+                className={cn(
+                  `btn btn-primary mr-3 w-48 ${txnProcessing ? 'loading' : ''}`,
+                  {
+                    'btn-disabled':
+                      !daoTokenBalance || newCouncilMembers.length < 2,
+                    loading: txnProcessing,
+                  }
+                )}
                 type='submit'>
                 {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
               </button>

@@ -27,8 +27,8 @@ const Transactions = (props: { daoId: string }) => {
   const fetchTransactions = () => {
     dao.multiSigTransactions.fetchMultiSigTransactions({
       limit: 5,
-      offset: Math.max(0, pagination.offset - 1),
-      search: daoId,
+      offset: pagination.offset - 1,
+      dao_id: daoId,
     });
   };
 

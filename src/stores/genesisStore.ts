@@ -7,6 +7,8 @@ import { create } from 'zustand';
 
 import { NODE_URL, SERVICE_URL } from '@/config';
 import { AssetsHoldingsService } from '@/services/assets';
+import type { RawDao } from '@/services/daos';
+import { MultiSigsService } from '@/services/multiSigs';
 import type {
   BasicDaoInfo,
   DaoCreationValues,
@@ -86,6 +88,7 @@ export interface GenesisState {
   currentProposal: ProposalDetail | null;
   currentProposalFaultyReports: FaultyReport[] | null;
   currentBlockNumber: number | null;
+  daosOwnedByUser: string[] | null; // daoIds
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
   daoTokenTreasuryBalance: BN | null;
@@ -96,7 +99,7 @@ export interface GenesisState {
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
   daos: AllDaos | null;
-  daosOwnedByWallet: DaoInfo[] | null;
+  // daosOwnedByWallet: DaoInfo[] | null;
   txnNotifications: TxnNotification[];
   loading: boolean;
   txnProcessing: boolean;
@@ -145,7 +148,6 @@ export interface GenesisActions {
   updateDaos: (daos: AllDaos | null) => void;
   updateLoading: (loading: boolean) => void;
   updateTxnProcessing: (txnProcessing: boolean) => void;
-  updateDaosOwnedByWallet: () => void;
   updateCreateDaoSteps: (steps: number) => void;
   updateNewCreatedDao: (dao: DaoInfo) => void;
   updateIsStartModalOpen: (isStartModalOpen: boolean) => void;
@@ -176,6 +178,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   currentProposal: null,
   walletAccounts: null,
   walletConnected: false,
+  daosOwnedByUser: null,
   createDaoData: null,
   rpcEndpoint: NODE_URL,
   daos: null,
@@ -333,6 +336,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         daoName: '{N/A}',
         daoOwnerAddress: '{N/A}',
         daoCreatorAddress: '{N/A}',
+        adminAddresses: [],
         setupComplete: false,
         proposalDuration: null,
         proposalTokenDeposit: null,
@@ -356,10 +360,20 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       const response = await fetch(
         `${SERVICE_URL}/daos/${encodeURIComponent(daoId as string)}/`
       );
+
       if (response.status === 404) {
         return;
       }
-      const d = await response.json();
+
+      const d: RawDao = await response.json();
+      if (!d.setup_complete) {
+        daoDetail.adminAddresses = [d.owner_id];
+      } else {
+        const multisig = await MultiSigsService.get(d.owner_id);
+        if (multisig?.signatories) {
+          daoDetail.adminAddresses = [...multisig.signatories];
+        }
+      }
       daoDetail.daoId = d.id;
       daoDetail.daoName = d.name;
       daoDetail.daoAssetId = d.asset_id;
@@ -378,13 +392,14 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       daoDetail.mostRecentProposals = d.most_recent_proposals;
 
       if (d.metadata) {
-        daoDetail.descriptionShort = d.metadata.description_short;
-        daoDetail.descriptionLong = d.metadata.description_long;
-        daoDetail.email = d.metadata.email;
-        daoDetail.images.contentType = d.metadata.images.logo.content_type;
-        daoDetail.images.small = d.metadata.images.logo.small.url;
-        daoDetail.images.medium = d.metadata.images.logo.medium.url;
-        daoDetail.images.large = d.metadata.images.logo.large.url;
+        daoDetail.descriptionShort = d.metadata.description_short ?? null;
+        daoDetail.descriptionLong = d.metadata.description_long ?? null;
+        daoDetail.email = d.metadata.email ?? null;
+        daoDetail.images.contentType =
+          d.metadata.images?.logo?.content_type ?? null;
+        daoDetail.images.small = d.metadata.images?.logo?.small?.url ?? null;
+        daoDetail.images.medium = d.metadata.images?.logo?.medium.url ?? null;
+        daoDetail.images.large = d.metadata.images?.logo?.large.url ?? null;
       }
 
       get().updateCurrentDao(daoDetail);
@@ -427,7 +442,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   fetchDaoTokenBalanceFromDB: async (assetId: number, accountId: string) => {
     try {
       const response = await fetch(
-        `${SERVICE_URL}/asset-holdings/?search=${accountId}`
+        `${SERVICE_URL}/asset-holdings/?asset_id=${assetId.toString()}&owner_id=${accountId}`
       );
       const { results } = await response.json();
       const assetHolding = results.filter((item: any) => {
@@ -444,7 +459,8 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   fetchDaoTokenTreasuryBalance: async (assetId: number, ownerId: string) => {
     try {
       const response = await AssetsHoldingsService.listAssetHoldings({
-        search: ownerId,
+        owner_id: ownerId,
+        asset_id: assetId.toString(),
       });
       const assetHolding = response?.results?.find((item: any) => {
         return item.asset_id.toString() === assetId.toString();
@@ -485,7 +501,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   fetchProposalsFromDB: async (daoId) => {
     try {
       const response = await fetch(
-        `${SERVICE_URL}/proposals/?search=${daoId}&limit=50`
+        `${SERVICE_URL}/proposals/?dao_id=${daoId}&limit=50`
       );
       const json = await response.json();
       if (json.results.length === 0 || !json) {
@@ -582,22 +598,6 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
     } catch (err) {
       get().handleErrors('fetchProposalFaultyReports ', err);
     }
-  },
-
-  updateDaosOwnedByWallet: async () => {
-    await get().fetchDaos();
-    const { daos } = get();
-    const address = get().currentWalletAccount?.address;
-    if (!daos || typeof address === 'undefined') {
-      return;
-    }
-
-    const daosArr = Object.values(daos);
-    const daosByAddress = daosArr.filter((el) => {
-      return el.owner === address;
-    });
-
-    set({ daosOwnedByWallet: daosByAddress });
   },
   updateTxnProcessing: (txnProcessing) => set(() => ({ txnProcessing })),
   updateCreateDaoSteps: (createDaoSteps) => set(() => ({ createDaoSteps })),

@@ -15,6 +15,9 @@ export interface RawDao {
   metadata_url: string;
   metadata_hash: string;
   metadata?: Metadata;
+  number_of_token_holders: number;
+  number_of_open_proposals: number;
+  most_recent_proposals: string[];
 }
 
 export interface Metadata {

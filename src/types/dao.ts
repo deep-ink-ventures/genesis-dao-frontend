@@ -7,6 +7,7 @@ export interface DaoDetail {
   daoName: string;
   daoOwnerAddress: string;
   daoCreatorAddress: string;
+  adminAddresses: string[];
   setupComplete: boolean;
   daoAssetId: number | null;
   proposalDuration: number | null;
@@ -25,7 +26,7 @@ export interface DaoDetail {
   };
   numberOfTokenHolders: number | null;
   numberOfOpenProposals: number | null;
-  mostRecentProposals: string | null;
+  mostRecentProposals: string[] | null;
 }
 
 export interface BasicDaoInfo {

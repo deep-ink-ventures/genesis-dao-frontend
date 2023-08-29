@@ -21,6 +21,7 @@ const daoDetail: DaoDetail = {
   daoName: 'MANGO',
   daoOwnerAddress: '{N/A}',
   daoCreatorAddress: '{N/A}',
+  adminAddresses: [],
   setupComplete: false,
   proposalDuration: null,
   proposalTokenDeposit: new BN(0),

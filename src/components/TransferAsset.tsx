@@ -1,7 +1,8 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import { BN } from '@polkadot/util';
+import { sortAddresses } from '@polkadot/util-crypto';
 import Modal from 'antd/lib/modal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -16,8 +17,12 @@ interface TransferAssetFormValues {
 }
 
 const TransferAsset = () => {
-  const { makeBatchTransferTxn, sendBatchTxns } = useGenesisDao();
-  const [currentDaoFromChain] = useGenesisStore((s) => [s.currentDaoFromChain]);
+  const { makeBatchTransferTxn, makeMultiSigTxnAndSend, makeBatchTxn } =
+    useGenesisDao();
+  const [createApiConnection, apiConnection] = useGenesisStore((s) => [
+    s.createApiConnection,
+    s.apiConnection,
+  ]);
 
   const [
     currentDao,
@@ -26,7 +31,6 @@ const TransferAsset = () => {
     txnProcessing,
     daoTokenBalance,
     handleErrors,
-    updateShowCongrats,
   ] = useGenesisStore((s) => [
     s.currentDao,
     s.fetchDaoFromDB,
@@ -34,7 +38,6 @@ const TransferAsset = () => {
     s.txnProcessing,
     s.daoTokenBalance,
     s.handleErrors,
-    s.updateShowCongrats,
   ]);
   const [isOpen, setIsOpen] = useState(false);
   const formMethods = useForm<TransferAssetFormValues>({
@@ -55,11 +58,7 @@ const TransferAsset = () => {
   };
 
   const onSubmit: SubmitHandler<TransferAssetFormValues> = async (data) => {
-    if (
-      !currentWalletAccount ||
-      !currentDao?.daoId ||
-      !currentDaoFromChain?.daoAssetId
-    ) {
+    if (!currentWalletAccount || !currentDao?.daoId) {
       handleErrors(
         `Sorry we've run into some issues related to the multisig account`
       );
@@ -76,26 +75,37 @@ const TransferAsset = () => {
     const withRecipients = makeBatchTransferTxn(
       [],
       recipients,
-      Number(currentDaoFromChain?.daoAssetId)
+      Number(currentDao.daoAssetId)
     );
 
-    try {
-      await sendBatchTxns(
-        withRecipients,
-        'Tokens Issued!',
-        'Transaction failed',
-        () => {
-          reset();
-          updateShowCongrats(true);
-          setTimeout(() => {
-            fetchDaoFromDB(currentDao.daoId as string);
-          }, 3000);
-        }
-      );
-    } catch (err) {
-      handleErrors(err);
+    const signatories = sortAddresses([
+      ...currentDao.adminAddresses.filter((address) => {
+        return address !== currentWalletAccount.address;
+      }),
+    ]);
+
+    const batchTxn = makeBatchTxn(withRecipients);
+
+    if (!batchTxn) {
+      handleErrors('Cannot get batch transaction');
+      return;
     }
+
+    makeMultiSigTxnAndSend(batchTxn, 2, signatories, () => {
+      setIsOpen(false);
+      fetchDaoFromDB(currentDao?.daoId);
+      reset();
+    }).catch((err) => {
+      handleErrors(err);
+    });
   };
+
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <>
