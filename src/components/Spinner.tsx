@@ -2,7 +2,7 @@ const Spinner = (props: { size?: string }) => {
   const { size = '64' } = props;
 
   return (
-    <div role='status'>
+    <div role='status' className='m-1'>
       <svg
         aria-hidden='true'
         style={{

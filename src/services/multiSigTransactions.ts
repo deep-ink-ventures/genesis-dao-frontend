@@ -69,20 +69,22 @@ export interface RawMultiSigTransaction {
 }
 
 interface ListMultiSigTxnsQueryParams {
-  search?: string;
+  dao_id?: string;
   ordering?: string;
   limit?: number;
   offset?: number;
+  search?: string;
 }
 
-// fixme waiting to for service to add back filter by dao_id
-// const get = async (address: string) => {
-//   const response = await fetch(`${SERVICE_URL}/multisig-transactions/${address}`);
+const get = async (address: string) => {
+  const response = await fetch(
+    `${SERVICE_URL}/multisig-transactions/?dao_id=${address}`
+  );
 
-//   const objResponse = (await response.json()) as RawMultiSigTransaction;
+  const objResponse = (await response.json()) as RawMultiSigTransaction;
 
-//   return transformToMultiSig(objResponse);
-// };
+  return transformMultiSigTxnToCamelCase(objResponse);
+};
 
 const list = async (params?: ListMultiSigTxnsQueryParams) => {
   let queryEntries = Object.entries(params || {}).filter(
@@ -118,4 +120,5 @@ const list = async (params?: ListMultiSigTxnsQueryParams) => {
 
 export const MultiSigTransactionsService = {
   list,
+  get,
 };

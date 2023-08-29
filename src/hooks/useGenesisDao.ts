@@ -1,3 +1,4 @@
+import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import type { SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
 import type { BN } from '@polkadot/util';
@@ -873,6 +874,71 @@ const useGenesisDao = () => {
     }
   };
 
+  const makeMultiSigTxnAndSend = async (
+    txn: SubmittableExtrinsic<'promise', ISubmittableResult>,
+    threshold: number,
+    signatories: string[],
+    cb: Function
+  ) => {
+    if (!currentWalletAccount) {
+      handleErrors('Wallet not connected');
+      return;
+    }
+    updateTxnProcessing(true);
+
+    try {
+      // fixme figure out timepoint and weight
+      const unsignedTxn = apiConnection?.tx?.multisig?.asMulti?.(
+        threshold,
+        signatories,
+        null,
+        txn,
+        null
+      );
+      unsignedTxn?.signAndSend(
+        currentWalletAccount.address,
+        { signer: currentWalletAccount.signer },
+        (result) => {
+          txResponseCallback(
+            result,
+            'Multisig Transaction sent Successfully',
+            'Multisig Transaction Failed',
+            () => {
+              cb();
+            }
+          );
+        }
+      );
+    } catch (err) {
+      updateTxnProcessing(false);
+      handleTxnError(new Error(err));
+    }
+  };
+
+  const makeTransferDaoTokens = (
+    txns: any[],
+    assetId: number,
+    targetAddress: string,
+    amount: BN
+  ) => {
+    return [
+      ...txns,
+      apiConnection?.tx?.assets?.transferKeepAlive?.(
+        assetId,
+        targetAddress,
+        amount
+      ),
+    ];
+  };
+
+  const makeBatchTxn = (txns: SubmittableExtrinsicFunction<'promise'>[]) => {
+    console.log(
+      'batch call txn ',
+      apiConnection?.tx?.utility?.batchAll?.(txns).method.toHex()
+    );
+    return apiConnection?.tx?.utility?.batchAll?.(txns);
+  };
+
   return {
     createDao,
     destroyDao,
@@ -900,6 +966,9 @@ const useGenesisDao = () => {
     createAProposal,
     setProposalMetadata,
     reportFaultyProposal,
+    makeMultiSigTxnAndSend,
+    makeTransferDaoTokens,
+    makeBatchTxn,
   };
 };
 

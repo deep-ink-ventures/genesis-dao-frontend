@@ -1,6 +1,7 @@
 import { ErrorMessage } from '@hookform/error-message';
 import { BN } from '@polkadot/util';
 import { sortAddresses } from '@polkadot/util-crypto';
+import cn from 'classnames';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 
@@ -54,6 +55,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     handleSubmit,
     reset,
     setValue,
+    watch,
     control,
     formState: { errors },
   } = formMethods;
@@ -62,6 +64,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     control,
     name: 'tokenRecipients',
   });
+  const councilMembers = watch('councilMembers');
 
   const getTotalRecipientsTokens = (
     recipients: CouncilTokensValues['tokenRecipients']
@@ -326,9 +329,13 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           </div>
           <div className='mt-6 flex w-full justify-end'>
             <button
-              className={`btn btn-primary mr-3 w-48 ${
-                !daoTokenBalance ? 'btn-disabled' : ''
-              } ${txnProcessing ? 'loading' : ''}`}
+              className={cn(
+                `btn btn-primary mr-3 w-48 ${txnProcessing ? 'loading' : ''}`,
+                {
+                  'btn-disabled': !daoTokenBalance || councilMembers.length < 1,
+                  loading: txnProcessing,
+                }
+              )}
               type='submit'>
               {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
             </button>

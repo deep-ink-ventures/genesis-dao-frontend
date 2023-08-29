@@ -12,10 +12,10 @@ export interface ReportFaultedRequestPayload {
 }
 
 export interface ListProposalsQueryParams {
-  search?: string;
   limit?: number;
   ordering?: string;
   offset?: number;
+  dao_id?: string;
 }
 
 const listProposals = async (params?: ListProposalsQueryParams) => {

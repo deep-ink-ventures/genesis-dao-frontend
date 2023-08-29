@@ -5,8 +5,8 @@ interface ListAssetsQueryParams {
   limit?: number;
   offset?: number;
   ordering?: 'id' | 'owner_id' | 'asset_id';
-  search?: string;
   asset_id?: string;
+  owner_id?: string;
 }
 
 export interface Asset {
@@ -46,21 +46,6 @@ const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
   }
 };
 
-const getAssetHolding = async (assetId: string) => {
-  try {
-    // fixme. Should not use assetId
-    const response = await fetch(`${SERVICE_URL}/asset-holdings/${assetId}`);
-
-    const objResponse = await response.json();
-    if (!objResponse.asset_id) {
-      return null;
-    }
-    return objResponse as AssetHolding;
-  } catch (err) {
-    throw Error('Cannot fetch asset holding');
-  }
-};
-
 const listAssets = async (params?: ListAssetsQueryParams) => {
   const query = Object.fromEntries(
     Object.entries(params || {}).filter(([, v]) => v != null)
@@ -88,6 +73,5 @@ const getAsset = async (assetId: string) => {
 export const AssetsHoldingsService = {
   listAssets,
   getAsset,
-  getAssetHolding,
   listAssetHoldings,
 };

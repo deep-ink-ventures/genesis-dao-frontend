@@ -28,7 +28,7 @@ const Transactions = (props: { daoId: string }) => {
     dao.transactions.fetchTransactions({
       limit: 5,
       offset: pagination.offset - 1,
-      search: daoId,
+      dao_id: daoId,
     });
   };
 

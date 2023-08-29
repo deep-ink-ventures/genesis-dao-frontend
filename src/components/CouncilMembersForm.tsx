@@ -80,7 +80,7 @@ export const CouncilMembersForm = (props: {
                 />
                 <ErrorMessage
                   errors={errors}
-                  name={`${props.formName}.${index}.walletAddress`}
+                  name={`${props.formName}`}
                   render={({ message }) => (
                     <p className='ml-2 mt-1 text-error'>{message}</p>
                   )}
