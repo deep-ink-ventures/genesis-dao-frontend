@@ -129,7 +129,7 @@ const MultisigTransactionAccordion = ({
         <div className='h-[inherit] border-r-[0.02rem] border-neutral-focus' />
         <div className='flex-1 space-y-4'>
           <div>
-            <div className='text-sm text-neutral opacity-75'>Signers</div>
+            <div className='text-sm text-neutral opacity-75'>Approvers</div>
             <div className='text-neutral'>
               {multisigTransaction?.approvers?.map((approver, index) => (
                 <div key={`${index}-${approver}`}>{approver}</div>
