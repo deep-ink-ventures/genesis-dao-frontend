@@ -58,17 +58,24 @@ export const createDaoSlice: StateCreator<
       loading: false,
       data: [],
       fetchMultiSigTransactions: async (params) => {
+        const props = params || {};
         set(
           produce((state: GenesisState) => {
             state.pages.dao.transactions.loading = true;
           })
         );
-        const response = await MultiSigTransactionsService.list(params);
+
+        const multiSigTxnResponse = await MultiSigTransactionsService.list(
+          props
+        );
+
         set(
           produce((state: GenesisState) => {
-            state.pages.dao.multiSigTransactions.data = response.results;
+            state.pages.dao.multiSigTransactions.data =
+              multiSigTxnResponse.results;
             state.pages.dao.multiSigTransactions.loading = false;
-            state.pages.dao.multiSigTransactions.totalCount = response.count;
+            state.pages.dao.multiSigTransactions.totalCount =
+              multiSigTxnResponse.count;
           })
         );
       },

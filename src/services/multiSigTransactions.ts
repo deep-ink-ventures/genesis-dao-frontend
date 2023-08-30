@@ -1,5 +1,8 @@
 import { SERVICE_URL } from '@/config';
-import type { MultiSigTransaction } from '@/types/multiSigTransaction';
+import type {
+  MultiSigTransaction,
+  MultiSigTransactionStatus,
+} from '@/types/multiSigTransaction';
 import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
 import { transformMultiSigTxnToCamelCase } from '@/utils/transformer';
@@ -58,7 +61,7 @@ export interface RawMultiSigTransaction {
       setup_complete?: boolean | null;
     } | null;
   };
-  status: string;
+  status: MultiSigTransactionStatus;
   threshold?: number | null;
   approvers: string[] | null;
   last_approver?: string | null;
@@ -69,7 +72,7 @@ export interface RawMultiSigTransaction {
 }
 
 export interface ListMultiSigTxnsQueryParams {
-  dao_id?: string;
+  daoId?: string;
   ordering?: string;
   limit?: number;
   offset?: number;
