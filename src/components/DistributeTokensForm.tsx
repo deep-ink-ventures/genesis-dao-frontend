@@ -10,7 +10,7 @@ import plus from '@/svg/plus.svg';
 import type { TokenRecipient } from '@/types/council';
 import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
-export const DistributeTokensForm = () => {
+export const DistributeTokensForm = ({ isNew }: { isNew?: boolean }) => {
   const {
     watch,
     control,
@@ -28,10 +28,12 @@ export const DistributeTokensForm = () => {
   });
 
   const tokensValues = watch('tokenRecipients');
-  const [daoTokenTreasuryBalance, currentDao] = useGenesisStore((s) => [
-    s.daoTokenTreasuryBalance,
-    s.currentDao,
-  ]);
+  const [daoTokenTreasuryBalance, daoTokenBalance, currentDao] =
+    useGenesisStore((s) => [
+      s.daoTokenTreasuryBalance,
+      s.daoTokenBalance,
+      s.currentDao,
+    ]);
 
   const getTotalRecipientsTokens = (recipients: TokenRecipient[]) => {
     let total = new BN(0);
@@ -46,8 +48,10 @@ export const DistributeTokensForm = () => {
     return total;
   };
 
-  const remain = daoTokenTreasuryBalance
-    ? daoTokenTreasuryBalance.sub(getTotalRecipientsTokens(tokensValues))
+  const daoBalance = isNew ? daoTokenBalance : daoTokenTreasuryBalance;
+
+  const remain = daoBalance
+    ? daoBalance.sub(getTotalRecipientsTokens(tokensValues))
     : new BN(0);
 
   const handleAddRecipient = () => {
@@ -58,7 +62,7 @@ export const DistributeTokensForm = () => {
   };
 
   const recipientsFields = () => {
-    if (!daoTokenTreasuryBalance) {
+    if (!daoBalance) {
       return <div className='text-center'>Please issue tokens first</div>;
     }
     return tokenRecipientsFields.map((item, index) => {
@@ -154,7 +158,7 @@ export const DistributeTokensForm = () => {
         {recipientsFields()}
       </div>
       <div>
-        {daoTokenTreasuryBalance ? (
+        {daoBalance ? (
           <button
             className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
             type='button'

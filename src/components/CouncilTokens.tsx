@@ -328,7 +328,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             </p>
           </div>
           <div className='card mb-5 flex w-full items-center justify-center gap-y-6 border-none py-5 hover:brightness-100'>
-            <DistributeTokensForm />
+            <DistributeTokensForm isNew />
           </div>
           <div className='mt-6 flex w-full justify-end'>
             <button
