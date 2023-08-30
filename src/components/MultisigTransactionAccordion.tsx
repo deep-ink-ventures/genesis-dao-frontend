@@ -97,7 +97,7 @@ const MultisigTransactionAccordion = ({
       </div>
       <div
         className={cn(
-          'opacity-1 duration-5000 flex gap-4 transition-all ease-in-out',
+          'opacity-1 duration-5000 flex flex-col gap-4 transition-all ease-in-out lg:flex-row',
           {
             '!h-[0px] min-h-[0px] overflow-hidden opacity-0': collapsed,
             'min-h-[100px]': !collapsed,
