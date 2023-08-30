@@ -80,7 +80,8 @@ const MainDaoPage = () => {
     s.pages.dao,
   ]);
 
-  const [showSpinner, setShowSpinner] = useState(true);
+  const [showTreasurySpinner, setTreasurySpinner] = useState(true);
+  const [showWalletBalanceSpinner, setWalletBalanceSpinner] = useState(true);
 
   const isAdmin =
     Boolean(currentWalletAccount?.address) &&
@@ -101,7 +102,7 @@ const MainDaoPage = () => {
   }, [daoId, fetchDaoFromDB, fetchDao]);
 
   useEffect(() => {
-    setShowSpinner(true);
+    setWalletBalanceSpinner(true);
     const timeout1 = setTimeout(() => {
       if (!currentDao?.daoAssetId || !currentWalletAccount?.address) {
         return;
@@ -113,7 +114,7 @@ const MainDaoPage = () => {
       );
     }, 200);
     const timeout2 = setTimeout(() => {
-      setShowSpinner(false);
+      setWalletBalanceSpinner(false);
     }, 1000);
     return () => {
       clearTimeout(timeout1);
@@ -122,7 +123,7 @@ const MainDaoPage = () => {
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
   useEffect(() => {
-    setShowSpinner(true);
+    setTreasurySpinner(true);
     const timeout1 = setTimeout(() => {
       if (!currentDao?.daoAssetId) {
         return;
@@ -133,7 +134,7 @@ const MainDaoPage = () => {
       );
     }, 200);
     const timeout2 = setTimeout(() => {
-      setShowSpinner(false);
+      setTreasurySpinner(false);
     }, 1000);
     return () => {
       clearTimeout(timeout1);
@@ -229,7 +230,7 @@ const MainDaoPage = () => {
               ) : (
                 <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
                   <div className='px-5 text-center text-sm'>
-                    {showSpinner ? (
+                    {showWalletBalanceSpinner ? (
                       <Spinner size='22' />
                     ) : (
                       <div className='flex flex-col'>
@@ -254,7 +255,7 @@ const MainDaoPage = () => {
             <div className='flex justify-center pb-3'>
               <div className='flex h-[80px] w-[240px] items-center justify-between rounded-xl bg-base-50 px-4'>
                 <div className='flex justify-center px-5 text-center text-sm'>
-                  {showSpinner ? (
+                  {showTreasurySpinner ? (
                     <Spinner size='22' />
                   ) : (
                     <div className='flex flex-col'>
