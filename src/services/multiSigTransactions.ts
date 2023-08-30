@@ -76,6 +76,34 @@ export interface ListMultiSigTxnsQueryParams {
   search?: string;
 }
 
+export interface MultiSigTxnBody {
+  hash: string;
+  module: 'Assets' | 'DaoCore' | 'DaoVotes';
+  function: string;
+  args: {};
+  data: string;
+}
+
+const create = async (daoId: string, data: MultiSigTxnBody) => {
+  const jsonData = JSON.stringify(data);
+  try {
+    const responseObj = await fetch(
+      `${SERVICE_URL}/daos/${daoId}/multisig-transaction/`,
+      {
+        method: 'POST',
+        body: jsonData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const multiSig = responseObj.json();
+    return await multiSig;
+  } catch (err) {
+    throw Error('Cannot create multisig transaction');
+  }
+};
+
 const get = async (address: string) => {
   const response = await fetch(
     `${SERVICE_URL}/multisig-transactions/?dao_id=${address}`
@@ -121,4 +149,5 @@ const list = async (params?: ListMultiSigTxnsQueryParams) => {
 export const MultiSigTransactionsService = {
   list,
   get,
+  create,
 };

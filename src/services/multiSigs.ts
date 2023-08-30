@@ -89,20 +89,24 @@ const create = async (signatories: string[], threshold: number) => {
     signatories,
     threshold,
   });
-  const response = await fetch(
-    `${SERVICE_URL}/multisigs/`,
+  try {
+    const response = await fetch(
+      `${SERVICE_URL}/multisigs/`,
 
-    {
-      method: 'POST',
-      body,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+      {
+        method: 'POST',
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-  const multiSig = response.json();
-  return multiSig;
+    const obj = await response.json();
+    return transformToMultiSig(obj as RawMultiSig);
+  } catch (err) {
+    throw new Error('Cannot create multisig');
+  }
 };
 
 export const MultiSigsService = {
