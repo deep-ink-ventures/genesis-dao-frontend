@@ -10,7 +10,11 @@ import plus from '@/svg/plus.svg';
 import type { TokenRecipient } from '@/types/council';
 import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
-export const DistributeTokensForm = () => {
+export const DistributeTokensForm = ({
+  multiple = true,
+}: {
+  multiple?: boolean;
+}) => {
   const {
     watch,
     control,
@@ -128,18 +132,20 @@ export const DistributeTokensForm = () => {
                   % */}
             </div>
           </div>
-          <div className='ml-3 flex items-center pt-5'>
-            <Image
-              className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
-              src={d}
-              width={18}
-              height={18}
-              alt='delete button'
-              onClick={() => {
-                tokenRecipientsRemove(index);
-              }}
-            />
-          </div>
+          {multiple && (
+            <div className='ml-3 flex items-center pt-5'>
+              <Image
+                className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
+                src={d}
+                width={18}
+                height={18}
+                alt='delete button'
+                onClick={() => {
+                  tokenRecipientsRemove(index);
+                }}
+              />
+            </div>
+          )}
         </div>
       );
     });
@@ -154,7 +160,7 @@ export const DistributeTokensForm = () => {
         {recipientsFields()}
       </div>
       <div>
-        {daoTokenTreasuryBalance ? (
+        {daoTokenTreasuryBalance && multiple ? (
           <button
             className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
             type='button'
