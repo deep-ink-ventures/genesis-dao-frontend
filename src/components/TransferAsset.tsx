@@ -193,7 +193,7 @@ const TransferAsset = () => {
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className='mb-5 flex w-full flex-col items-center justify-center gap-y-6 border-none hover:brightness-100'>
-              <DistributeTokensForm />
+              <DistributeTokensForm multiple={false} />
             </div>
             <div className='mt-6 flex w-full justify-end'>
               <button

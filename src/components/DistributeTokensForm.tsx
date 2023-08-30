@@ -10,7 +10,11 @@ import plus from '@/svg/plus.svg';
 import type { TokenRecipient } from '@/types/council';
 import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
-export const DistributeTokensForm = () => {
+export const DistributeTokensForm = ({
+  multiple = true,
+}: {
+  multiple?: boolean;
+}) => {
   const {
     watch,
     control,
@@ -68,9 +72,11 @@ export const DistributeTokensForm = () => {
             <div className='w-[370px] flex-col'>
               <p className='pl-8'>Wallet Address</p>
               <div className='flex'>
-                <div className='mr-4 flex flex-col justify-center'>
-                  {index + 1}
-                </div>
+                {multiple && (
+                  <div className='mr-4 flex flex-col justify-center'>
+                    {index + 1}
+                  </div>
+                )}
                 <input
                   type='text'
                   placeholder='Wallet Address'
@@ -115,8 +121,9 @@ export const DistributeTokensForm = () => {
                 // {errors?.tokenRecipients?.[index]?.tokens && <p>error</p>}
               />
             </div>
+            {/*
             <div className='flex w-[65px] items-center justify-center pt-5'>
-              {/* {watch(`tokenRecipients.${index}.tokens`)
+              {watch(`tokenRecipients.${index}.tokens`)
                     .div(daoTokenBalance)
                     .mul(new BN(100))
                     .gte(new BN(100))
@@ -125,21 +132,24 @@ export const DistributeTokensForm = () => {
                         ?.div(daoTokenBalance)
                         .mul(new BN(100))
                         .toString()}{' '}
-                  % */}
+                  %
             </div>
+             */}
           </div>
-          <div className='ml-3 flex items-center pt-5'>
-            <Image
-              className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
-              src={d}
-              width={18}
-              height={18}
-              alt='delete button'
-              onClick={() => {
-                tokenRecipientsRemove(index);
-              }}
-            />
-          </div>
+          {multiple && (
+            <div className='ml-3 flex items-center pt-5'>
+              <Image
+                className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
+                src={d}
+                width={18}
+                height={18}
+                alt='delete button'
+                onClick={() => {
+                  tokenRecipientsRemove(index);
+                }}
+              />
+            </div>
+          )}
         </div>
       );
     });
@@ -154,7 +164,7 @@ export const DistributeTokensForm = () => {
         {recipientsFields()}
       </div>
       <div>
-        {daoTokenTreasuryBalance ? (
+        {daoTokenTreasuryBalance && multiple ? (
           <button
             className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
             type='button'
