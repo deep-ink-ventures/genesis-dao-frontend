@@ -72,9 +72,11 @@ export const DistributeTokensForm = ({
             <div className='w-[370px] flex-col'>
               <p className='pl-8'>Wallet Address</p>
               <div className='flex'>
-                <div className='mr-4 flex flex-col justify-center'>
-                  {index + 1}
-                </div>
+                {multiple && (
+                  <div className='mr-4 flex flex-col justify-center'>
+                    {index + 1}
+                  </div>
+                )}
                 <input
                   type='text'
                   placeholder='Wallet Address'
@@ -119,8 +121,9 @@ export const DistributeTokensForm = ({
                 // {errors?.tokenRecipients?.[index]?.tokens && <p>error</p>}
               />
             </div>
+            {/*
             <div className='flex w-[65px] items-center justify-center pt-5'>
-              {/* {watch(`tokenRecipients.${index}.tokens`)
+              {watch(`tokenRecipients.${index}.tokens`)
                     .div(daoTokenBalance)
                     .mul(new BN(100))
                     .gte(new BN(100))
@@ -129,8 +132,9 @@ export const DistributeTokensForm = ({
                         ?.div(daoTokenBalance)
                         .mul(new BN(100))
                         .toString()}{' '}
-                  % */}
+                  %
             </div>
+             */}
           </div>
           {multiple && (
             <div className='ml-3 flex items-center pt-5'>
