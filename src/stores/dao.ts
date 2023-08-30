@@ -6,7 +6,10 @@ import type { ListMultiSigTxnsQueryParams } from '@/services/multiSigTransaction
 import { MultiSigTransactionsService } from '@/services/multiSigTransactions';
 import type { ListProposalsQueryParams } from '@/services/proposals';
 import { ProposalsService } from '@/services/proposals';
-import type { MultiSigTransaction } from '@/types/multiSigTransaction';
+import {
+  type MultiSigTransaction,
+  MultiSigTransactionStatus,
+} from '@/types/multiSigTransaction';
 import type { ProposalDetail } from '@/types/proposal';
 
 import type { GenesisState } from './genesisStore';
@@ -26,6 +29,12 @@ export type DaoSlice = {
       params?: ListMultiSigTxnsQueryParams
     ) => Promise<void>;
   };
+  stats: {
+    pendingMultisig: {
+      fetch: () => Promise<void>;
+      count?: number;
+    };
+  };
 };
 
 export const createDaoSlice: StateCreator<
@@ -33,7 +42,7 @@ export const createDaoSlice: StateCreator<
   [],
   [],
   { dao: DaoSlice }
-> = (set) => ({
+> = (set, get) => ({
   dao: {
     transactions: {
       loading: false,
@@ -58,7 +67,6 @@ export const createDaoSlice: StateCreator<
       loading: false,
       data: [],
       fetchMultiSigTransactions: async (params) => {
-        const props = params || {};
         set(
           produce((state: GenesisState) => {
             state.pages.dao.transactions.loading = true;
@@ -66,7 +74,7 @@ export const createDaoSlice: StateCreator<
         );
 
         const multiSigTxnResponse = await MultiSigTransactionsService.list(
-          props
+          params
         );
 
         set(
@@ -78,6 +86,55 @@ export const createDaoSlice: StateCreator<
               multiSigTxnResponse.count;
           })
         );
+      },
+    },
+    stats: {
+      pendingMultisig: {
+        fetch: async () => {
+          if (get()?.currentDao?.daoId) {
+            const multiSigTxnResponse = await MultiSigTransactionsService.list({
+              daoId: get()?.currentDao?.daoId,
+              limit: 50,
+              search: MultiSigTransactionStatus.Pending,
+            });
+
+            const currentWalletAccountAddress =
+              get()?.currentWalletAccount?.address.toLowerCase();
+
+            const isAdmin =
+              Boolean(currentWalletAccountAddress) &&
+              get().currentDao?.adminAddresses?.some(
+                (approver) =>
+                  approver.toLowerCase() === currentWalletAccountAddress
+              );
+
+            const pendingMultisigCount = isAdmin
+              ? multiSigTxnResponse.results?.filter((transaction) => {
+                  return (
+                    !transaction.approvers?.length ||
+                    !transaction.approvers?.some(
+                      (a) =>
+                        a.toLowerCase() ===
+                        currentWalletAccountAddress?.toLowerCase()
+                    )
+                  );
+                })?.length
+              : 0;
+
+            set(
+              produce((state: GenesisState) => {
+                state.pages.dao.stats.pendingMultisig.count =
+                  pendingMultisigCount;
+              })
+            );
+          } else {
+            set(
+              produce((state: GenesisState) => {
+                state.pages.dao.stats.pendingMultisig.count = 0;
+              })
+            );
+          }
+        },
       },
     },
   },

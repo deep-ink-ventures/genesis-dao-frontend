@@ -97,13 +97,13 @@ const MultisigTransactionAccordion = ({
       </div>
       <div
         className={cn(
-          'opacity-1 duration-5000 flex gap-4 transition-all ease-in-out',
+          'opacity-1 duration-5000 flex flex-col gap-4 transition-all ease-in-out lg:flex-row',
           {
             '!h-[0px] min-h-[0px] overflow-hidden opacity-0': collapsed,
             'min-h-[100px]': !collapsed,
           }
         )}>
-        <div className='flex-1 space-y-2'>
+        <div className='w-full space-y-2 lg:w-1/2'>
           <div className='border border-gray-300'>
             <div className='grid grid-cols-2 gap-0'>
               <div className='border border-gray-300 p-2'>Parameter</div>
@@ -127,12 +127,14 @@ const MultisigTransactionAccordion = ({
           </div>
         </div>
         <div className='h-[inherit] border-r-[0.02rem] border-neutral-focus' />
-        <div className='flex-1 space-y-4'>
+        <div className='w-full space-y-4 lg:w-1/2'>
           <div>
-            <div className='text-sm text-neutral opacity-75'>Signers</div>
+            <div className='text-sm text-neutral opacity-75'>Approvers</div>
             <div className='text-neutral'>
               {multisigTransaction?.approvers?.map((approver, index) => (
-                <div key={`${index}-${approver}`}>{approver}</div>
+                <div key={`${index}-${approver}`} className='truncate'>
+                  {approver}
+                </div>
               ))}
             </div>
           </div>
