@@ -103,7 +103,7 @@ const MultisigTransactionAccordion = ({
             'min-h-[100px]': !collapsed,
           }
         )}>
-        <div className='w-1/2 space-y-2'>
+        <div className='w-full space-y-2 lg:w-1/2'>
           <div className='border border-gray-300'>
             <div className='grid grid-cols-2 gap-0'>
               <div className='border border-gray-300 p-2'>Parameter</div>
@@ -127,7 +127,7 @@ const MultisigTransactionAccordion = ({
           </div>
         </div>
         <div className='h-[inherit] border-r-[0.02rem] border-neutral-focus' />
-        <div className='w-1/2 space-y-4'>
+        <div className='w-full space-y-4 lg:w-1/2'>
           <div>
             <div className='text-sm text-neutral opacity-75'>Approvers</div>
             <div className='text-neutral'>
