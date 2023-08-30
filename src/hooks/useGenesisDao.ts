@@ -6,11 +6,16 @@ import { stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
 import { DAO_UNITS, SERVICE_URL } from '@/config';
+import type {
+  MultiSigTxnBody,
+  RawMultiSigTransaction,
+} from '@/services/multiSigTransactions';
 import type { AssetDetails } from '@/types/asset';
 import type { TokenRecipient } from '@/types/council';
 import type { ProposalCreationValues } from '@/types/proposal';
 import { TxnResponse } from '@/types/response';
 import { hexToBase64 } from '@/utils';
+import { transformMultiSigTxnToCamelCase } from '@/utils/transformer';
 
 import type { CreateDaoData, WalletAccount } from '../stores/genesisStore';
 import useGenesisStore from '../stores/genesisStore';
@@ -108,9 +113,9 @@ const useGenesisDao = () => {
     if (result.status.isInBlock) {
       // eslint-disable-next-line
       console.log(
-        'Included at block hash',
+        'Included at block hash ',
         result.status.asInBlock.toHex(),
-        '\nwait for 10-20 seconds to finalize'
+        ' \nwait for 10-20 seconds to finalize'
       );
       result.events.forEach(
         ({
@@ -122,20 +127,25 @@ const useGenesisDao = () => {
           const err = error as any;
           if (err?.isModule) {
             // for module errors, we have the section indexed, lookup
-            const decoded = apiConnection?.registry.findMetaError(err.asModule);
-            const string = `${decoded?.section}.${decoded?.method}}`;
-            if (string.includes('AlreadyExists')) {
-              const errorNoti = {
-                title: `${TxnResponse.Error}`,
-                message: 'This DAO ID already exists',
-                type: TxnResponse.Error,
-                txnHash: result.status.asInBlock.toHex(),
-                timestamp: Date.now(),
-              };
-              addTxnNotification(errorNoti);
-              updateTxnProcessing(false);
-              return;
-            }
+            const decodedError = apiConnection?.registry.findMetaError(
+              err.asModule
+            );
+
+            const errorMethod = decodedError?.method;
+            const errorDocs = decodedError?.docs[0];
+            // eslint-disable-next-line
+            console.log('Decoded Error:', errorMethod, errorDocs, decodedError);
+
+            const errorNoti = {
+              title: `${TxnResponse.Error}`,
+              message: `${errorMethod} - ${errorDocs ?? ''}`,
+              type: TxnResponse.Error,
+              txnHash: result.status.asInBlock.toHex(),
+              timestamp: Date.now(),
+            };
+            addTxnNotification(errorNoti);
+            updateTxnProcessing(false);
+            return;
           }
 
           if (method === 'DaoCreated') {
@@ -165,6 +175,8 @@ const useGenesisDao = () => {
           }
 
           if (method === 'ExtrinsicFailed') {
+            // eslint-disable-next-line
+            console.log('Result dispatch error', result.dispatchError?.toHuman());
             const errorNoti = {
               title: `${TxnResponse.Error}`,
               message: errorMsg,
@@ -530,9 +542,9 @@ const useGenesisDao = () => {
     txns: any[],
     recipients: TokenRecipient[],
     assetId: number
-  ): SubmittableExtrinsicFunction<'promise'>[] => {
+  ) => {
     const transferTxns = recipients.map((recipient) => {
-      return apiConnection?.tx.assets?.transfer?.(
+      return apiConnection?.tx.assets?.transferKeepAlive?.(
         Number(assetId),
         recipient.walletAddress,
         recipient.tokens
@@ -544,7 +556,7 @@ const useGenesisDao = () => {
   };
 
   const sendBatchTxns = async (
-    txns: SubmittableExtrinsicFunction<'promise'>[],
+    txns: SubmittableExtrinsic<'promise', ISubmittableResult>[] | undefined[],
     successMsg: string,
     errorMsg: string,
     successCb?: Function
@@ -637,14 +649,19 @@ const useGenesisDao = () => {
   };
 
   const makeChangeOwnerTxn = (
-    txns: any[],
+    txns: SubmittableExtrinsic<'promise', ISubmittableResult>[] | undefined[],
     daoId: string,
     newOwnerAddress: string
   ) => {
-    return [
-      ...txns,
-      apiConnection?.tx?.daoCore?.changeOwner?.(daoId, newOwnerAddress),
-    ];
+    const tx = apiConnection?.tx?.daoCore?.changeOwner?.(
+      daoId,
+      newOwnerAddress
+    );
+
+    return [...txns, tx] as SubmittableExtrinsic<
+      'promise',
+      ISubmittableResult
+    >[];
   };
 
   const makeCreateProposalTxn = (txns: any[], daoId: string) => {
@@ -717,6 +734,7 @@ const useGenesisDao = () => {
       return null;
     }
   };
+
   const setProposalMetadata = async (
     daoId: string,
     proposalId: string,
@@ -895,6 +913,7 @@ const useGenesisDao = () => {
         txn,
         null
       );
+
       unsignedTxn?.signAndSend(
         currentWalletAccount.address,
         { signer: currentWalletAccount.signer },
@@ -932,11 +951,37 @@ const useGenesisDao = () => {
   };
 
   const makeBatchTxn = (txns: SubmittableExtrinsicFunction<'promise'>[]) => {
-    console.log(
-      'batch call txn ',
-      apiConnection?.tx?.utility?.batchAll?.(txns).method.toHex()
-    );
     return apiConnection?.tx?.utility?.batchAll?.(txns);
+  };
+
+  const postMultiSigTxn = async (daoId: string, data: MultiSigTxnBody) => {
+    try {
+      const jsonData = JSON.stringify(data);
+      const sig = await doChallenge(daoId);
+      if (!sig) {
+        handleErrors(`Cannot get validate signature`);
+        return;
+      }
+      const responseObj = await fetch(
+        `${SERVICE_URL}/daos/${daoId}/multisig-transaction/`,
+        {
+          method: 'POST',
+          body: jsonData,
+          headers: {
+            'Content-Type': 'application/json',
+            signature: sig,
+          },
+        }
+      );
+      const multiSigTxn =
+        (await responseObj.json()) as unknown as RawMultiSigTransaction;
+      // eslint-disable-next-line
+      return transformMultiSigTxnToCamelCase(multiSigTxn);
+    } catch (err) {
+      handleErrors('Cannot create multisig transaction', err);
+      // eslint-disable-next-line
+      return null;
+    }
   };
 
   return {
@@ -969,6 +1014,7 @@ const useGenesisDao = () => {
     makeMultiSigTxnAndSend,
     makeTransferDaoTokens,
     makeBatchTxn,
+    postMultiSigTxn,
   };
 };
 

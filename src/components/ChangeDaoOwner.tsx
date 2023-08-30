@@ -1,13 +1,15 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import { ErrorMessage } from '@hookform/error-message';
+import { sortAddresses } from '@polkadot/util-crypto';
 import Modal from 'antd/lib/modal';
 import cn from 'classnames';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import useGenesisDao from '@/hooks/useGenesisDao';
 import { MultiSigsService } from '@/services/multiSigs';
+import type { MultiSigTxnBody } from '@/services/multiSigTransactions';
 import useGenesisStore from '@/stores/genesisStore';
 import type { CouncilMember } from '@/types/council';
 import { getMultisigAddress } from '@/utils';
@@ -20,26 +22,26 @@ interface ChangeDaoOwnerFormValues {
 }
 
 const ChangeDaoOwner = () => {
-  const { makeChangeOwnerTxn, sendBatchTxns } = useGenesisDao();
+  const { makeChangeOwnerTxn, makeMultiSigTxnAndSend, postMultiSigTxn } =
+    useGenesisDao();
   const [
     currentWalletAccount,
-    currentDaoFromChain,
     handleErrors,
-    updateShowCongrats,
     fetchDaoFromDB,
     daoTokenBalance,
     currentDao,
+    updateTxnProcessing,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
-    s.currentDaoFromChain,
     s.handleErrors,
-    s.updateShowCongrats,
     s.fetchDaoFromDB,
     s.daoTokenBalance,
     s.currentDao,
+    s.updateTxnProcessing,
   ]);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [threshold, setThreshold] = useState<number>();
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
 
   const handleTransferDao = () => {
@@ -69,58 +71,106 @@ const ChangeDaoOwner = () => {
   const newCouncilMembers = watch('newCouncilMembers');
 
   const onSubmit: SubmitHandler<ChangeDaoOwnerFormValues> = async (data) => {
+    if (!currentWalletAccount || !currentDao?.daoId) {
+      return;
+    }
+
     const transferToAddresses = data.newCouncilMembers.map((el) => {
       return el.walletAddress;
     });
 
-    let noMultisig = false;
     const addresses = transferToAddresses?.filter((address) => address.length);
-
-    if (addresses.length < 1) {
-      noMultisig = true;
-    }
 
     const multisigAddress = getMultisigAddress(
       addresses,
       data.councilThreshold
     );
 
-    if (
-      !currentDao?.daoCreatorAddress ||
-      !currentDao.daoId ||
-      !currentDaoFromChain?.daoAssetId ||
-      !multisigAddress
-    ) {
+    if (!currentDao.daoId || !multisigAddress) {
       handleErrors(
         `Sorry we've run into some issues related to the multisig account`
       );
+      return;
+    }
+    if (!threshold) {
+      handleErrors(`Error in getting multisig threshold`);
       return;
     }
 
     const withChangeOwner = makeChangeOwnerTxn(
       [],
       currentDao.daoId,
-      noMultisig ? currentDao.daoCreatorAddress : multisigAddress
+      multisigAddress
     );
 
+    const tx = withChangeOwner.pop();
+    if (!tx) {
+      handleErrors('Error in making change ownership transaction');
+      return;
+    }
+    const callHash = tx.method.hash.toHex();
+    const callData = tx.method.toHex();
+
+    const signatories = sortAddresses([
+      ...currentDao.adminAddresses.filter((address) => {
+        return address !== currentWalletAccount.address;
+      }),
+    ]);
+
+    // if current multisig does not exist, create a new one
     try {
-      await MultiSigsService.create(addresses, data.councilThreshold);
-      await sendBatchTxns(
-        withChangeOwner,
-        'Tokens Issued and Transferred DAO Ownership!',
-        'Transaction failed',
-        () => {
-          reset();
-          updateShowCongrats(true);
-          setTimeout(() => {
-            fetchDaoFromDB(currentDao.daoId as string);
-          }, 3000);
-        }
-      );
+      const multiSig = await MultiSigsService.get(multisigAddress);
+      if (!multiSig) {
+        await MultiSigsService.create(signatories, data.councilThreshold);
+      }
     } catch (err) {
       handleErrors(err);
+      return;
     }
+
+    makeMultiSigTxnAndSend(tx, threshold, signatories, () => {
+      const body: MultiSigTxnBody = {
+        hash: callHash,
+        module: 'DaoCore',
+        function: 'change_owner',
+        args: {
+          daoId: currentDao.daoId,
+          newOwner: multisigAddress,
+        },
+        data: callData,
+      };
+
+      postMultiSigTxn(currentDao.daoId, body).then(() => {
+        updateTxnProcessing(false);
+        setIsOpen(false);
+        fetchDaoFromDB(currentDao?.daoId);
+        reset();
+      });
+    }).catch((err) => {
+      handleErrors('Change Owner Error', err);
+      updateTxnProcessing(false);
+      setIsOpen(false);
+    });
   };
+
+  useEffect(() => {
+    const getThreshold = async () => {
+      if (!currentDao) {
+        return;
+      }
+      try {
+        const multiSig = await MultiSigsService.get(
+          currentDao?.daoOwnerAddress
+        );
+        if (multiSig) {
+          setThreshold(multiSig?.threshold);
+        }
+      } catch (err) {
+        handleErrors(err);
+      }
+    };
+    getThreshold();
+  }, [currentDao, handleErrors]);
 
   return (
     <>

@@ -7,6 +7,8 @@ import type { SubmitHandler } from 'react-hook-form';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import useGenesisDao from '@/hooks/useGenesisDao';
+import { MultiSigsService } from '@/services/multiSigs';
+import type { MultiSigTxnBody } from '@/services/multiSigTransactions';
 import useGenesisStore from '@/stores/genesisStore';
 import type { TokenRecipient } from '@/types/council';
 
@@ -17,12 +19,21 @@ interface TransferAssetFormValues {
 }
 
 const TransferAsset = () => {
-  const { makeBatchTransferTxn, makeMultiSigTxnAndSend, makeBatchTxn } =
-    useGenesisDao();
-  const [createApiConnection, apiConnection] = useGenesisStore((s) => [
-    s.createApiConnection,
-    s.apiConnection,
-  ]);
+  const {
+    makeBatchTransferTxn,
+    makeMultiSigTxnAndSend,
+    makeBatchTxn,
+    postMultiSigTxn,
+  } = useGenesisDao();
+
+  const [threshold, setThreshold] = useState<number>();
+
+  const [createApiConnection, apiConnection, updateTxnProcessing] =
+    useGenesisStore((s) => [
+      s.createApiConnection,
+      s.apiConnection,
+      s.updateTxnProcessing,
+    ]);
 
   const [
     currentDao,
@@ -64,6 +75,10 @@ const TransferAsset = () => {
       );
       return;
     }
+    if (!threshold) {
+      handleErrors(`Error in getting multisig threshold`);
+      return;
+    }
 
     const recipients = data.tokenRecipients.map((recipient) => {
       return {
@@ -84,19 +99,40 @@ const TransferAsset = () => {
       }),
     ]);
 
-    const batchTxn = makeBatchTxn(withRecipients);
+    const tx = makeBatchTxn(withRecipients);
 
-    if (!batchTxn) {
+    if (!tx) {
       handleErrors('Cannot get batch transaction');
       return;
     }
+    const callHash = tx.method.hash.toHex();
+    const callData = tx.method.toHex();
 
-    makeMultiSigTxnAndSend(batchTxn, 2, signatories, () => {
-      setIsOpen(false);
-      fetchDaoFromDB(currentDao?.daoId);
-      reset();
+    makeMultiSigTxnAndSend(tx, threshold, signatories, () => {
+      updateTxnProcessing(true);
+
+      const body: MultiSigTxnBody = {
+        hash: callHash,
+        module: 'Assets',
+        function: 'transfer_keep_alive',
+        args: {
+          id: currentDao?.daoAssetId,
+          target: recipients[0]?.walletAddress,
+          amount: recipients[0]?.tokens.toString(),
+        },
+        data: callData,
+      };
+
+      postMultiSigTxn(currentDao.daoId, body).then(() => {
+        updateTxnProcessing(false);
+        setIsOpen(false);
+        fetchDaoFromDB(currentDao?.daoId);
+        reset();
+      });
     }).catch((err) => {
-      handleErrors(err);
+      handleErrors('MultiSig Transaction Error', err);
+      updateTxnProcessing(false);
+      setIsOpen(false);
     });
   };
 
@@ -106,6 +142,25 @@ const TransferAsset = () => {
     }
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    const getThreshold = async () => {
+      if (!currentDao) {
+        return;
+      }
+      try {
+        const multiSig = await MultiSigsService.get(
+          currentDao?.daoOwnerAddress
+        );
+        if (multiSig) {
+          setThreshold(multiSig?.threshold);
+        }
+      } catch (err) {
+        handleErrors(err);
+      }
+    };
+    getThreshold();
+  }, [currentDao, handleErrors]);
 
   return (
     <>

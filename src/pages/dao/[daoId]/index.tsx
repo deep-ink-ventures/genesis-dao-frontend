@@ -106,10 +106,7 @@ const MainDaoPage = () => {
       if (!currentDao?.daoAssetId || !currentWalletAccount?.address) {
         return;
       }
-      fetchDaoTokenTreasuryBalance(
-        currentDao.daoAssetId,
-        currentDao.daoOwnerAddress
-      );
+
       fetchDaoTokenBalanceFromDB(
         currentDao.daoAssetId,
         currentWalletAccount.address
@@ -122,7 +119,27 @@ const MainDaoPage = () => {
       clearTimeout(timeout1);
       clearTimeout(timeout2);
     };
-  }, [currentDao, currentWalletAccount]);
+  }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
+
+  useEffect(() => {
+    setShowSpinner(true);
+    const timeout1 = setTimeout(() => {
+      if (!currentDao?.daoAssetId) {
+        return;
+      }
+      fetchDaoTokenTreasuryBalance(
+        currentDao.daoAssetId,
+        currentDao.daoOwnerAddress
+      );
+    }, 200);
+    const timeout2 = setTimeout(() => {
+      setShowSpinner(false);
+    }, 1000);
+    return () => {
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+    };
+  }, [currentDao, currentWalletAccount, fetchDaoTokenTreasuryBalance]);
 
   useEffect(() => {
     updateDaoPage('dashboard');
