@@ -17,7 +17,8 @@ const Pagination = (props: PaginationProps) => {
   const lastItemIndex = currentPage * maxPageSize;
   const firstItemIndex = Math.min(
     lastItemIndex - maxPageSize + 1,
-    lastItemIndex
+    lastItemIndex,
+    totalCount
   );
 
   const handleNextClick = () => {

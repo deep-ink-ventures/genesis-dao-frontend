@@ -141,6 +141,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       props.daoId,
       noMultisig ? data.creatorWallet : multisigAddress
     );
+    if (!withChangeOwner[0]) {
+      return;
+    }
 
     try {
       const multiSig = await MultiSigsService.get(multisigAddress);

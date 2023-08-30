@@ -1,5 +1,8 @@
 import { SERVICE_URL } from '@/config';
-import type { MultiSigTransaction } from '@/types/multiSigTransaction';
+import type {
+  MultiSigTransaction,
+  MultiSigTransactionStatus,
+} from '@/types/multiSigTransaction';
 import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
 import { transformMultiSigTxnToCamelCase } from '@/utils/transformer';
@@ -58,7 +61,7 @@ export interface RawMultiSigTransaction {
       setup_complete?: boolean | null;
     } | null;
   };
-  status: string;
+  status: MultiSigTransactionStatus;
   threshold?: number | null;
   approvers: string[] | null;
   last_approver?: string | null;
@@ -69,12 +72,40 @@ export interface RawMultiSigTransaction {
 }
 
 export interface ListMultiSigTxnsQueryParams {
-  dao_id?: string;
+  daoId?: string;
   ordering?: string;
   limit?: number;
   offset?: number;
   search?: string;
 }
+
+export interface MultiSigTxnBody {
+  hash: string;
+  module: 'Assets' | 'DaoCore' | 'DaoVotes';
+  function: string;
+  args: {};
+  data: string;
+}
+
+const create = async (daoId: string, data: MultiSigTxnBody) => {
+  const jsonData = JSON.stringify(data);
+  try {
+    const responseObj = await fetch(
+      `${SERVICE_URL}/daos/${daoId}/multisig-transaction/`,
+      {
+        method: 'POST',
+        body: jsonData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const multiSig = responseObj.json();
+    return await multiSig;
+  } catch (err) {
+    throw Error('Cannot create multisig transaction');
+  }
+};
 
 const get = async (address: string) => {
   const response = await fetch(
@@ -121,4 +152,5 @@ const list = async (params?: ListMultiSigTxnsQueryParams) => {
 export const MultiSigTransactionsService = {
   list,
   get,
+  create,
 };

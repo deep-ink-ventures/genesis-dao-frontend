@@ -80,6 +80,13 @@ const MainDaoPage = () => {
 
   const [showSpinner, setShowSpinner] = useState(true);
 
+  const isAdmin =
+    Boolean(currentWalletAccount?.address) &&
+    currentDao?.adminAddresses?.some(
+      (approver) =>
+        approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
+    );
+
   const handleChangePage = (pageParam: DaoPage) => {
     updateDaoPage(pageParam);
   };
@@ -97,10 +104,7 @@ const MainDaoPage = () => {
       if (!currentDao?.daoAssetId || !currentWalletAccount?.address) {
         return;
       }
-      fetchDaoTokenTreasuryBalance(
-        currentDao.daoAssetId,
-        currentDao.daoOwnerAddress
-      );
+
       fetchDaoTokenBalanceFromDB(
         currentDao.daoAssetId,
         currentWalletAccount.address
@@ -113,7 +117,31 @@ const MainDaoPage = () => {
       clearTimeout(timeout1);
       clearTimeout(timeout2);
     };
-  }, [currentDao, currentWalletAccount]);
+  }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
+
+  useEffect(() => {
+    setShowSpinner(true);
+    const timeout1 = setTimeout(() => {
+      if (!currentDao?.daoAssetId) {
+        return;
+      }
+      fetchDaoTokenTreasuryBalance(
+        currentDao.daoAssetId,
+        currentDao.daoOwnerAddress
+      );
+    }, 200);
+    const timeout2 = setTimeout(() => {
+      setShowSpinner(false);
+    }, 1000);
+    return () => {
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+    };
+  }, [currentDao, currentWalletAccount, fetchDaoTokenTreasuryBalance]);
+
+  useEffect(() => {
+    updateDaoPage('dashboard');
+  }, [currentWalletAccount]);
 
   const displayImage = () => {
     if (!currentDao || !currentDao.images.medium) {
@@ -267,19 +295,21 @@ const MainDaoPage = () => {
                 />
                 <p>Proposals</p>
               </TabButton>
-              <TabButton
-                name={DashboardTabs.TRANSACTIONS}
-                activeTab={daoPage}
-                onClick={() => handleChangePage('transactions')}>
-                <Image
-                  src={switchIcon}
-                  height={15}
-                  width={15}
-                  alt='dashboard'
-                  className='mr-4'
-                />
-                <p>Transactions</p>
-              </TabButton>
+              {isAdmin && (
+                <TabButton
+                  name={DashboardTabs.TRANSACTIONS}
+                  activeTab={daoPage}
+                  onClick={() => handleChangePage('transactions')}>
+                  <Image
+                    src={switchIcon}
+                    height={15}
+                    width={15}
+                    alt='dashboard'
+                    className='mr-4'
+                  />
+                  <p>Transactions</p>
+                </TabButton>
+              )}
               {currentWalletAccount?.address &&
                 currentDao.setupComplete &&
                 currentDao.adminAddresses.find((v) => {

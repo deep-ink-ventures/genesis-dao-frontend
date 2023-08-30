@@ -46,7 +46,7 @@ const TransactionAccordion = ({
       })}>
       <div
         className={cn(
-          'flex w-full cursor-pointer items-center gap-2 border-neutral-focus',
+          'flex w-full cursor-pointer flex-wrap items-center gap-2 border-neutral-focus',
           {
             'border-b-[0.02rem] pb-2': !collapsed,
           }
