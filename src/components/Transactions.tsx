@@ -2,11 +2,11 @@ import cn from 'classnames';
 import { useEffect, useState } from 'react';
 
 import Loading from '@/components/Loading';
-import Pagination from '@/components/Pagination';
 import useGenesisStore from '@/stores/genesisStore';
 import { MultiSigTransactionStatus } from '@/types/multiSigTransaction';
 
 import MultisigTransactionAccordion from './MultisigTransactionAccordion';
+import Pagination from './Pagination';
 
 const MultisigTransactionFilterList = [
   {
@@ -31,11 +31,12 @@ const Transactions = (props: { daoId: string }) => {
   ]);
 
   const [, setSearchTerm] = useState('');
+
+  const [filter, setFilter] = useState(MultiSigTransactionStatus.Pending);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     offset: 0,
   });
-  const [filter, setFilter] = useState(MultiSigTransactionStatus.Pending);
   const [activeAccordion, setActiveAccordion] = useState<number | null>();
 
   const handleSearch = (e: any) => {
@@ -46,8 +47,8 @@ const Transactions = (props: { daoId: string }) => {
   const fetchTransactions = () => {
     dao.multiSigTransactions.fetchMultiSigTransactions({
       limit: 5,
-      offset: Math.max(0, pagination.offset - 1),
       daoId,
+      offset: Math.max(pagination.offset - 1, 0),
       search: filter,
     });
   };
@@ -57,7 +58,7 @@ const Transactions = (props: { daoId: string }) => {
       fetchTransactions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.currentPage, currentWalletAccount, filter]);
+  }, [pagination, currentWalletAccount, filter]);
 
   const handleAccordionClick = (multisigTxnId?: number) => {
     setActiveAccordion(
@@ -71,16 +72,20 @@ const Transactions = (props: { daoId: string }) => {
 
   const handleSetFilter = (newFilter: MultiSigTransactionStatus) => {
     setFilter(newFilter);
+    setPagination({
+      offset: 0,
+      currentPage: 1,
+    });
     setDropdownOpen(false);
   };
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
-      <div className='flex justify-between'>
-        <div className='flex items-center'>
+      <div className='flex flex-wrap justify-between gap-x-4'>
+        <div className='flex grow items-center'>
           <h1 className='text-2xl'>Transactions</h1>
         </div>
-        <div className='flex gap-x-4'>
+        <div className='flex grow-0 gap-x-4'>
           <div>
             <input
               id='search-input'
@@ -89,53 +94,53 @@ const Transactions = (props: { daoId: string }) => {
               onChange={handleSearch}
             />
           </div>
-          <div className='z-10'>
-            <div className='flex flex-col'>
-              <button
-                tabIndex={0}
-                className={`btn bg-transparent px-6 py-3.5 hover:bg-base-100`}
-                onClick={handleDropdownOpen}>
-                <span className='flex items-center gap-2 text-neutral'>
-                  {MultisigTransactionFilterList.find(
-                    (multiSigTxnFilter) => multiSigTxnFilter.value === filter
-                  )?.label || MultiSigTransactionStatus.Pending}{' '}
-                  <span>
-                    <svg
-                      width='20'
-                      height='16'
-                      viewBox='0 0 20 20'
-                      fill='none'
-                      xmlns='http://www.w3.org/2000/svg'>
-                      <path
-                        d='M11.9802 16.9929C11.8484 16.9929 11.7099 16.9671 11.5648 16.9156C11.4198 16.864 11.2813 16.7739 11.1495 16.645L3.35604 9.03111C3.11868 8.79921 3 8.51579 3 8.18082C3 7.84586 3.11868 7.56244 3.35604 7.33054C3.59341 7.09865 3.87033 6.9827 4.18681 6.9827C4.5033 6.9827 4.78022 7.09865 5.01758 7.33054L11.9802 14.1328L18.9429 7.33054C19.1802 7.09865 19.4637 6.9827 19.7934 6.9827C20.1231 6.9827 20.4066 7.09865 20.644 7.33054C20.8813 7.56244 21 7.83942 21 8.1615C21 8.48358 20.8813 8.76057 20.644 8.99246L12.811 16.645C12.6791 16.7739 12.5473 16.864 12.4154 16.9156C12.2835 16.9671 12.1385 16.9929 11.9802 16.9929Z'
-                        fill='#FAFAFA'
-                      />
-                    </svg>
-                  </span>
+        </div>
+        <div className='z-10 grow-0'>
+          <div className='flex flex-col'>
+            <button
+              tabIndex={0}
+              className={`btn bg-transparent px-6 py-3.5 hover:bg-base-100`}
+              onClick={handleDropdownOpen}>
+              <span className='flex items-center gap-2 text-neutral'>
+                {MultisigTransactionFilterList.find(
+                  (multiSigTxnFilter) => multiSigTxnFilter.value === filter
+                )?.label || MultiSigTransactionStatus.Pending}{' '}
+                <span>
+                  <svg
+                    width='20'
+                    height='16'
+                    viewBox='0 0 20 20'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M11.9802 16.9929C11.8484 16.9929 11.7099 16.9671 11.5648 16.9156C11.4198 16.864 11.2813 16.7739 11.1495 16.645L3.35604 9.03111C3.11868 8.79921 3 8.51579 3 8.18082C3 7.84586 3.11868 7.56244 3.35604 7.33054C3.59341 7.09865 3.87033 6.9827 4.18681 6.9827C4.5033 6.9827 4.78022 7.09865 5.01758 7.33054L11.9802 14.1328L18.9429 7.33054C19.1802 7.09865 19.4637 6.9827 19.7934 6.9827C20.1231 6.9827 20.4066 7.09865 20.644 7.33054C20.8813 7.56244 21 7.83942 21 8.1615C21 8.48358 20.8813 8.76057 20.644 8.99246L12.811 16.645C12.6791 16.7739 12.5473 16.864 12.4154 16.9156C12.2835 16.9671 12.1385 16.9929 11.9802 16.9929Z'
+                      fill='#FAFAFA'
+                    />
+                  </svg>
                 </span>
-              </button>
-              <div className='relative'>
-                <div
-                  className={cn(
-                    'shadow-[0_0_4px_0_rgba(255, 255, 255, 0.20)] absolute right-0 top-[5px] w-fit space-y-2 rounded-2xl bg-primary-content py-1 shadow-sm',
-                    {
-                      hidden: !dropdownOpen,
-                    }
-                  )}>
-                  {MultisigTransactionFilterList.map((multiSigTxnFilter) => (
-                    <div
-                      key={multiSigTxnFilter.value}
-                      onClick={() => handleSetFilter(multiSigTxnFilter.value)}
-                      className={cn(
-                        `group flex cursor-pointer items-center gap-2 whitespace-nowrap px-4 py-2 hover:text-primary`,
-                        {
-                          'text-primary': multiSigTxnFilter.value === filter,
-                        }
-                      )}>
-                      {multiSigTxnFilter.label}
-                    </div>
-                  ))}
-                </div>
+              </span>
+            </button>
+            <div className='relative'>
+              <div
+                className={cn(
+                  'shadow-[0_0_4px_0_rgba(255, 255, 255, 0.20)] absolute right-0 top-[5px] w-fit space-y-2 rounded-2xl bg-primary-content py-1 shadow-sm',
+                  {
+                    hidden: !dropdownOpen,
+                  }
+                )}>
+                {MultisigTransactionFilterList.map((multiSigTxnFilter) => (
+                  <div
+                    key={multiSigTxnFilter.value}
+                    onClick={() => handleSetFilter(multiSigTxnFilter.value)}
+                    className={cn(
+                      `group flex cursor-pointer items-center gap-2 whitespace-nowrap px-4 py-2 hover:text-primary`,
+                      {
+                        'text-primary': multiSigTxnFilter.value === filter,
+                      }
+                    )}>
+                    {multiSigTxnFilter.label}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -167,12 +172,12 @@ const Transactions = (props: { daoId: string }) => {
               onClick={() => handleAccordionClick(multisigTransaction.id)}
             />
           ))}
-        {!dao.transactions.loading && currentWalletAccount && (
+        {!dao.multiSigTransactions.loading && currentWalletAccount && (
           <div>
             <Pagination
               currentPage={pagination.currentPage}
               pageSize={5}
-              totalCount={dao.transactions.totalCount}
+              totalCount={dao.multiSigTransactions.totalCount}
               onPageChange={(newPage, newOffset) =>
                 setPagination({ currentPage: newPage, offset: newOffset })
               }

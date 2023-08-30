@@ -6,6 +6,7 @@ import arrowUp from '@/svg/arrow-up.svg';
 import memberSign from '@/svg/memberSign.svg';
 import type { MultiSig } from '@/types/multiSig';
 import type { MultiSigTransaction } from '@/types/multiSigTransaction';
+import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
 import { formatISOTimestamp } from '@/utils/date';
 
 import { TransactionBadge } from './TransactionBadge';
@@ -62,7 +63,7 @@ const MultisigTransactionAccordion = ({
       })}>
       <div
         className={cn(
-          'flex w-full cursor-pointer items-center gap-2 border-neutral-focus',
+          'flex w-full cursor-pointer flex-wrap items-center gap-2 border-neutral-focus',
           {
             'border-b-[0.02rem] pb-2': !collapsed,
           }
@@ -113,8 +114,14 @@ const MultisigTransactionAccordion = ({
                 <div
                   key={`${index}-${arg.key}`}
                   className='grid grid-cols-2 gap-0'>
-                  <div className='border border-gray-300 p-2'>{arg.key}</div>
-                  <div className='border border-gray-300 p-2'>{arg.value}</div>
+                  <div className='truncate border border-gray-300 p-2'>
+                    {arg.key}
+                  </div>
+                  <div className='truncate border border-gray-300 p-2'>
+                    {isValidPolkadotAddress(arg.value)
+                      ? truncateMiddle(arg.value, 5, 4)
+                      : arg.value}
+                  </div>
                 </div>
               ))}
           </div>

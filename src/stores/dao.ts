@@ -2,7 +2,6 @@
 import { produce } from 'immer';
 import type { StateCreator } from 'zustand';
 
-import { MultiSigsService } from '@/services/multiSigs';
 import type { ListMultiSigTxnsQueryParams } from '@/services/multiSigTransactions';
 import { MultiSigTransactionsService } from '@/services/multiSigTransactions';
 import type { ListProposalsQueryParams } from '@/services/proposals';
@@ -59,7 +58,7 @@ export const createDaoSlice: StateCreator<
       loading: false,
       data: [],
       fetchMultiSigTransactions: async (params) => {
-        const { daoId, ...props } = params || {};
+        const props = params || {};
         set(
           produce((state: GenesisState) => {
             state.pages.dao.transactions.loading = true;
@@ -69,29 +68,11 @@ export const createDaoSlice: StateCreator<
         const multiSigTxnResponse = await MultiSigTransactionsService.list(
           props
         );
-        const multiSigsResponse = await MultiSigsService.list({
-          search: daoId,
-        });
-
-        const filteredMultiSigsResponse = multiSigsResponse.results
-          .filter(
-            (multiSig) => multiSig.daoId?.toLowerCase() === daoId?.toLowerCase()
-          )
-          .map((multiSig) => multiSig.address);
-
-        const filteredMultiSigTxnResponse = multiSigTxnResponse.results.filter(
-          (multiSigTxn) =>
-            filteredMultiSigsResponse.some(
-              (multiSig) =>
-                multiSig.toLowerCase() ===
-                multiSigTxn.multisigAddress.toLowerCase()
-            )
-        );
 
         set(
           produce((state: GenesisState) => {
             state.pages.dao.multiSigTransactions.data =
-              filteredMultiSigTxnResponse;
+              multiSigTxnResponse.results;
             state.pages.dao.multiSigTransactions.loading = false;
             state.pages.dao.multiSigTransactions.totalCount =
               multiSigTxnResponse.count;
