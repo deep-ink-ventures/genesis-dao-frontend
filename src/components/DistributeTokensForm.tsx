@@ -148,7 +148,7 @@ export const DistributeTokensForm = () => {
     <>
       <div className='flex flex-col gap-y-4'>
         <div className='w-full text-center'>
-          <h4 className='text-center'>Recipients</h4>
+          <h4 className='text-center'>Add DAO Token Recipients</h4>
           <p className='text-sm'>Distribute Tokens To Other Wallet Addresses</p>
         </div>
         {recipientsFields()}
@@ -175,14 +175,14 @@ export const DistributeTokensForm = () => {
           <h4 className='mb-2 text-center'>Treasury</h4>
         </div>
         <div className='flex flex-col justify-center px-10 text-center'>
-          <p>Distribute</p>
+          <p>Distribute the remaining</p>
           <p>
             <span className='mx-3 w-[70px] text-center text-primary'>
               {uiTokens(remain, 'dao', currentDao?.daoId)}
               {' Tokens'}
             </span>
           </p>
-          <p> to treasury controlled by council members</p>
+          <p> to multi-signature account controlled by council members</p>
         </div>
       </div>
     </>

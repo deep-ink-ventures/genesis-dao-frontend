@@ -16,6 +16,7 @@ describe('DaoCard', () => {
         daoAssetId={assetId}
         imageUrl={'https://google.com'}
         setupComplete={false}
+        adminAddresses={[]}
       />
     );
 

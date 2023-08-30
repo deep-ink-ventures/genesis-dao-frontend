@@ -15,6 +15,7 @@ const DaoCards = ({ daos }: { daos: DaoDetail[] | null }) => {
             daoOwnerAddress={dao.daoOwnerAddress}
             imageUrl={dao.images.small}
             setupComplete={dao.setupComplete}
+            adminAddresses={dao.adminAddresses}
           />
         );
       })}
