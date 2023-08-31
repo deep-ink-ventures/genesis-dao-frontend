@@ -12,7 +12,7 @@ import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
 export const DistributeTokensForm = ({
   multiple = true,
-  isNew
+  isNew,
 }: {
   multiple?: boolean;
   isNew?: boolean;
