@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { MultiSigsService } from '@/services/multiSigs';
 import useGenesisStore from '@/stores/genesisStore';
 import mountain from '@/svg/mountain.svg';
 import placeholderImage from '@/svg/placeholderImage.svg';
@@ -52,16 +53,26 @@ const DaoCard = (props: DaoCardProps) => {
     );
   };
 
+  const checkIsAdmin = async () => {
+    const multiSig = await MultiSigsService.get(props.daoOwnerAddress);
+    const adminAddresses = multiSig?.signatories;
+    const isThisAdmin =
+      Boolean(currentWalletAccount?.address) &&
+      adminAddresses?.some(
+        (approver) =>
+          approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
+      );
+    if (isThisAdmin) {
+      setIsAdmin(isThisAdmin);
+    }
+  };
+
   useEffect(() => {
     if (!currentWalletAccount) {
       return;
     }
-    const isThisAdmin = props.setupComplete
-      ? props.adminAddresses?.includes(currentWalletAccount.address)
-      : currentWalletAccount.address === props.daoOwnerAddress;
-    if (isThisAdmin) {
-      setIsAdmin(isThisAdmin);
-    }
+    checkIsAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentWalletAccount]);
 
   return (
