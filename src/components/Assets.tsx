@@ -1,5 +1,4 @@
 import cn from 'classnames';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import Loading from '@/components/Loading';
@@ -41,8 +40,6 @@ const Assets = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [filter, setFilter] = useState(AssetTableFilter.All);
 
-  const router = useRouter();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [assetHoldingsResponse, setAssetHoldingsResponse] = useState<{
     totalCount: number;
@@ -77,8 +74,15 @@ const Assets = () => {
     account.modals.transferAssets.setVisibility(true);
   };
 
-  const handleLinkClick = (assetHolding?: AssetHoldingsTableItem) => {
-    router.push(`/dao/${assetHolding?.asset?.dao_id}`);
+  // const handleLinkClick = (assetHolding?: AssetHoldingsTableItem) => {
+  //   router.push(`/dao/${assetHolding?.asset?.dao_id}`);
+  // };
+  // fixme this is temporary. Will link to https://www.subscan.io/ later
+  const handleLinkClick = () => {
+    window.open(
+      `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fnode.genesis-dao.org#/accounts`,
+      '_blank'
+    );
   };
 
   const fetchAssetHoldings = async () => {
