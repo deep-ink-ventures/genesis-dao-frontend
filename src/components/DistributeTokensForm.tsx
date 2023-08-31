@@ -10,7 +10,13 @@ import plus from '@/svg/plus.svg';
 import type { TokenRecipient } from '@/types/council';
 import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
-export const DistributeTokensForm = ({ isNew }: { isNew?: boolean }) => {
+export const DistributeTokensForm = ({
+  multiple = true,
+  isNew
+}: {
+  multiple?: boolean;
+  isNew?: boolean;
+}) => {
   const {
     watch,
     control,
@@ -72,9 +78,11 @@ export const DistributeTokensForm = ({ isNew }: { isNew?: boolean }) => {
             <div className='w-[370px] flex-col'>
               <p className='pl-8'>Wallet Address</p>
               <div className='flex'>
-                <div className='mr-4 flex flex-col justify-center'>
-                  {index + 1}
-                </div>
+                {multiple && (
+                  <div className='mr-4 flex flex-col justify-center'>
+                    {index + 1}
+                  </div>
+                )}
                 <input
                   type='text'
                   placeholder='Wallet Address'
@@ -119,8 +127,9 @@ export const DistributeTokensForm = ({ isNew }: { isNew?: boolean }) => {
                 // {errors?.tokenRecipients?.[index]?.tokens && <p>error</p>}
               />
             </div>
+            {/*
             <div className='flex w-[65px] items-center justify-center pt-5'>
-              {/* {watch(`tokenRecipients.${index}.tokens`)
+              {watch(`tokenRecipients.${index}.tokens`)
                     .div(daoTokenBalance)
                     .mul(new BN(100))
                     .gte(new BN(100))
@@ -129,21 +138,24 @@ export const DistributeTokensForm = ({ isNew }: { isNew?: boolean }) => {
                         ?.div(daoTokenBalance)
                         .mul(new BN(100))
                         .toString()}{' '}
-                  % */}
+                  %
             </div>
+             */}
           </div>
-          <div className='ml-3 flex items-center pt-5'>
-            <Image
-              className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
-              src={d}
-              width={18}
-              height={18}
-              alt='delete button'
-              onClick={() => {
-                tokenRecipientsRemove(index);
-              }}
-            />
-          </div>
+          {multiple && (
+            <div className='ml-3 flex items-center pt-5'>
+              <Image
+                className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
+                src={d}
+                width={18}
+                height={18}
+                alt='delete button'
+                onClick={() => {
+                  tokenRecipientsRemove(index);
+                }}
+              />
+            </div>
+          )}
         </div>
       );
     });
@@ -152,13 +164,13 @@ export const DistributeTokensForm = ({ isNew }: { isNew?: boolean }) => {
     <>
       <div className='flex flex-col gap-y-4'>
         <div className='w-full text-center'>
-          <h4 className='text-center'>Recipients</h4>
+          <h4 className='text-center'>Add DAO Token Recipients</h4>
           <p className='text-sm'>Distribute Tokens To Other Wallet Addresses</p>
         </div>
         {recipientsFields()}
       </div>
       <div>
-        {daoBalance ? (
+        {daoBalance && multiple ? (
           <button
             className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
             type='button'
@@ -179,14 +191,14 @@ export const DistributeTokensForm = ({ isNew }: { isNew?: boolean }) => {
           <h4 className='mb-2 text-center'>Treasury</h4>
         </div>
         <div className='flex flex-col justify-center px-10 text-center'>
-          <p>Distribute</p>
+          <p>Distribute the remaining</p>
           <p>
             <span className='mx-3 w-[70px] text-center text-primary'>
               {uiTokens(remain, 'dao', currentDao?.daoId)}
               {' Tokens'}
             </span>
           </p>
-          <p> to treasury controlled by council members</p>
+          <p> to multi-signature account controlled by council members</p>
         </div>
       </div>
     </>

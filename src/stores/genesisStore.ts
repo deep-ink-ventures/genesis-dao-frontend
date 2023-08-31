@@ -456,10 +456,10 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       get().handleErrors('fetchDaoTokenBalanceFromDB errors', err);
     }
   },
-  fetchDaoTokenTreasuryBalance: async (assetId: number, ownerId: string) => {
+  fetchDaoTokenTreasuryBalance: async (assetId: number, daoOwnerId: string) => {
     try {
       const response = await AssetsHoldingsService.listAssetHoldings({
-        owner_id: ownerId,
+        owner_id: daoOwnerId,
         asset_id: assetId.toString(),
       });
       const assetHolding = response?.results?.find((item: any) => {
@@ -468,6 +468,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       const daoTokenTreasuryBalance = assetHolding
         ? new BN(assetHolding?.balance)
         : null;
+
       set({ daoTokenTreasuryBalance });
     } catch (err) {
       get().handleErrors('fetchDaoTokenTreasuryBalance errors', err);

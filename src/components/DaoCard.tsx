@@ -1,6 +1,7 @@
 import cn from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 import useGenesisStore from '@/stores/genesisStore';
 import mountain from '@/svg/mountain.svg';
@@ -10,6 +11,7 @@ interface DaoCardProps {
   daoId: string;
   daoName: string;
   daoOwnerAddress: string;
+  adminAddresses: string[];
   daoAssetId: number | null;
   imageUrl: string | null;
   setupComplete: boolean;
@@ -20,6 +22,7 @@ const DaoCard = (props: DaoCardProps) => {
     s.currentWalletAccount,
     s.updateDaoPage,
   ]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const displayImage = () => {
     if (!props.imageUrl) {
       return (
@@ -49,6 +52,18 @@ const DaoCard = (props: DaoCardProps) => {
     );
   };
 
+  useEffect(() => {
+    if (!currentWalletAccount) {
+      return;
+    }
+    const isThisAdmin = props.setupComplete
+      ? props.adminAddresses?.includes(currentWalletAccount.address)
+      : currentWalletAccount.address === props.daoOwnerAddress;
+    if (isThisAdmin) {
+      setIsAdmin(isThisAdmin);
+    }
+  }, [currentWalletAccount]);
+
   return (
     <div
       className={`card-compact relative z-0 m-1 w-64 py-4  shadow-xl hover:cursor-pointer md:w-56 md:pb-10 md:pt-4`}>
@@ -57,7 +72,7 @@ const DaoCard = (props: DaoCardProps) => {
         onClick={() => {
           updateDaoPage('dashboard');
         }}>
-        {currentWalletAccount?.address === props.daoOwnerAddress ? (
+        {isAdmin ? (
           <div className='absolute left-44 top-3 rounded-[15px] bg-primary px-2 py-1 text-xs text-primary-content md:left-40 md:top-3 md:block'>
             Admin
           </div>

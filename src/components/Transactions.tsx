@@ -95,7 +95,7 @@ const Transactions = (props: { daoId: string }) => {
             />
           </div>
         </div>
-        <div className='z-10 grow-0'>
+        <div className='z-10 w-36 shrink-0 grow-0'>
           <div className='flex flex-col'>
             <button
               tabIndex={0}

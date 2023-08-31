@@ -15,12 +15,13 @@ import { CouncilMembersForm } from './CouncilMembersForm';
 import { DistributeTokensForm } from './DistributeTokensForm';
 
 const CouncilTokens = (props: { daoId: string | null }) => {
-  const fetchDaoTokenBalance = useGenesisStore((s) => s.fetchDaoTokenBalance);
+  const fetchDaoTokenTreasuryBalance = useGenesisStore(
+    (s) => s.fetchDaoTokenTreasuryBalance
+  );
   const fetchDaoFromDB = useGenesisStore((s) => s.fetchDaoFromDB);
   const handleErrors = useGenesisStore((s) => s.handleErrors);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const updateShowCongrats = useGenesisStore((s) => s.updateShowCongrats);
-
   const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
@@ -175,7 +176,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       fetchDaoFromDB(props.daoId);
     }
     if (currentWalletAccount && currentDaoFromChain?.daoAssetId) {
-      fetchDaoTokenBalance(
+      fetchDaoTokenTreasuryBalance(
         currentDaoFromChain?.daoAssetId,
         currentWalletAccount.address
       );
@@ -183,7 +184,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   }, [
     currentWalletAccount,
     currentDaoFromChain?.daoAssetId,
-    fetchDaoTokenBalance,
+    fetchDaoTokenTreasuryBalance,
     props.daoId,
     fetchDaoFromDB,
     txnProcessing,
@@ -198,7 +199,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     let interval: any;
     if (currentWalletAccount && currentDaoFromChain?.daoAssetId) {
       interval = setInterval(() => {
-        fetchDaoTokenBalance(
+        fetchDaoTokenTreasuryBalance(
           currentDaoFromChain?.daoAssetId as number,
           currentWalletAccount.address
         );
@@ -250,9 +251,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           <div className='card mb-6 flex w-full flex-col items-center gap-y-5 border-none py-5 hover:brightness-100'>
             <div>
               <h4 className='text-center'>Add Council Members</h4>
-              <p className='px-24 text-sm'>
-                Council members wallets will be used to create a multi-signature
-                account
+              <p className='px-24 text-center text-sm'>
+                Please enter 2 or more publickey addresses. Council members
+                wallets will be used to create a multi-signature account.
               </p>
             </div>
             <div className='flex w-full px-4'>
@@ -297,7 +298,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               <h4 className='text-center'>Enter Council Approval Threshold</h4>
               <p className='px-24 text-center text-sm'>
                 The approval threshold is a defined level of consensus that must
-                be reached in order for proposals to be approved and implemented
+                be reached in order for multi-signature transactions to be
+                approved.
               </p>
             </div>
             <div className='w-[100px]'>
