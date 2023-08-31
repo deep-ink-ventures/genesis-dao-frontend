@@ -157,8 +157,8 @@ const AccountPage = () => {
               onClick={() => handleChangePage('assets')}>
               <a
                 className='flex'
-                href='https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fnode.genesis-dao.org#/accounts' target='_blank'>
-                  
+                href='https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fnode.genesis-dao.org#/accounts'
+                target='_blank'>
                 <Image
                   src={polkadotjs}
                   height={15}
