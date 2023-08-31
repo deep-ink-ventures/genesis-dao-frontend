@@ -1,7 +1,7 @@
 import { BN } from '@polkadot/util';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import DaoDashboard from '@/components/DaoDashboard';
 import Governance from '@/components/Governance';
@@ -101,18 +101,23 @@ const MainDaoPage = () => {
     fetchDaoFromDB(daoId as string);
   }, [daoId, fetchDaoFromDB, fetchDao]);
 
+  const fetchDaoTokenBalance = useCallback(() => {
+    if (!currentDao?.daoAssetId || !currentWalletAccount?.address) {
+      return;
+    }
+    fetchDaoTokenBalanceFromDB(
+      currentDao.daoAssetId,
+      currentWalletAccount.address
+    );
+  }, [
+    currentDao?.daoAssetId,
+    currentWalletAccount?.address,
+    fetchDaoTokenBalanceFromDB,
+  ]);
+
   useEffect(() => {
     setWalletBalanceSpinner(true);
-    const timeout1 = setTimeout(() => {
-      if (!currentDao?.daoAssetId || !currentWalletAccount?.address) {
-        return;
-      }
-
-      fetchDaoTokenBalanceFromDB(
-        currentDao.daoAssetId,
-        currentWalletAccount.address
-      );
-    }, 200);
+    const timeout1 = setTimeout(() => fetchDaoTokenBalance(), 200);
     const timeout2 = setTimeout(() => {
       setWalletBalanceSpinner(false);
     }, 1000);
@@ -120,6 +125,7 @@ const MainDaoPage = () => {
       clearTimeout(timeout1);
       clearTimeout(timeout2);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDao, currentWalletAccount, fetchDaoTokenBalanceFromDB]);
 
   useEffect(() => {
@@ -186,7 +192,7 @@ const MainDaoPage = () => {
       case DashboardTabs.GOVERNANCE:
         return <Governance />;
       default:
-        return <DaoDashboard />;
+        return <DaoDashboard onTransferTokenSuccess={fetchDaoTokenBalance} />;
     }
   };
 

@@ -22,6 +22,6 @@ describe('TransferAssetModal', () => {
         onClose={() => {}}
       />
     );
-    expect(getByText(/Transfer Asset/)).toBeInTheDocument();
+    expect(getByText(/Transfer Tokens/)).toBeInTheDocument();
   });
 });

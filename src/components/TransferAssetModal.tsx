@@ -43,6 +43,7 @@ const TransferAssetModal = (props: {
     handleSubmit,
     register,
     formState: { errors },
+    reset,
   } = useForm<TransferFormValues>();
 
   const buttonText = () => {
@@ -61,6 +62,7 @@ const TransferAssetModal = (props: {
     if (onSuccess) {
       onSuccess();
     }
+    reset();
   };
 
   const onSubmit: SubmitHandler<TransferFormValues> = async (data) => {
@@ -102,7 +104,7 @@ const TransferAssetModal = (props: {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='px-12'>
           <h2 className='mb-4 text-center text-3xl font-semibold text-primary'>
-            Transfer Asset
+            Transfer Tokens
           </h2>
           <div className='w-full space-y-8'>
             <div className='flex w-full items-center'>

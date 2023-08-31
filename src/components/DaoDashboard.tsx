@@ -5,11 +5,15 @@ import { useEffect, useMemo, useState } from 'react';
 import type { BadgeVariant } from '@/components/Badge';
 import Badge from '@/components/Badge';
 import StatusCard from '@/components/StatusCard';
+import type { AssetHolding } from '@/services/assets';
+import { AssetsHoldingsService } from '@/services/assets';
 import { ProposalsService } from '@/services/proposals';
 import useGenesisStore from '@/stores/genesisStore';
 import type { ProposalDetail } from '@/types/proposal';
 import { ProposalStatus } from '@/types/proposal';
 import { getProposalEndTime } from '@/utils';
+
+import TransferAssetModal from './TransferAssetModal';
 
 const ProposalStatusBadgeMap: Record<ProposalStatus, BadgeVariant> = {
   Active: 'none',
@@ -71,13 +75,16 @@ const ProposalRow = ({ proposal }: { proposal: ProposalDetail }) => {
   );
 };
 
-const DaoDashboard = () => {
+const DaoDashboard = (props: { onTransferTokenSuccess?: () => void }) => {
   const [currentWalletAccount, updateDaoPage] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.updateDaoPage,
   ]);
   const currentDao = useGenesisStore((s) => s.currentDao);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
+
+  const [assetHolding, setAssetHolding] = useState<AssetHolding>();
+  const [isTransferTokensVisible, setIsTransferTokensVisible] = useState(false);
 
   const [latestProposals, setLatestProposals] = useState<
     ProposalDetail[] | null
@@ -92,8 +99,25 @@ const DaoDashboard = () => {
       }).then((result) => {
         setLatestProposals(result.mappedData);
       });
+      if (currentDao.daoAssetId) {
+        AssetsHoldingsService.listAssetHoldings({
+          asset_id: currentDao.daoAssetId.toString(),
+          owner_id: currentWalletAccount?.address,
+        }).then((result) => {
+          setAssetHolding(result?.results?.[0]);
+        });
+      }
     }
-  }, [currentDao?.daoId]);
+  }, [
+    currentDao?.daoAssetId,
+    currentDao?.daoId,
+    currentWalletAccount?.address,
+  ]);
+
+  const hasNoDaoTokenBalance =
+    !currentWalletAccount ||
+    daoTokenBalance?.isZero() ||
+    !daoTokenBalance?.gt(new BN(0));
 
   return (
     <>
@@ -142,27 +166,14 @@ const DaoDashboard = () => {
                 Create Proposal
               </button>
             </Link>
-            <Link
-              href={`/dao/${encodeURIComponent(
-                currentDao?.daoId as string
-              )}/tokens`}
-              className={`${
-                !currentWalletAccount ||
-                daoTokenBalance?.isZero() ||
-                !daoTokenBalance?.gt(new BN(0))
-                  ? 'disable-link'
-                  : ''
-              }`}>
+            {assetHolding && !hasNoDaoTokenBalance && (
               <button
+                onClick={() => setIsTransferTokensVisible(true)}
                 className={`btn btn-primary w-[180px]`}
-                disabled={
-                  !currentWalletAccount ||
-                  daoTokenBalance?.isZero() ||
-                  !daoTokenBalance?.gt(new BN(0))
-                }>
+                disabled={hasNoDaoTokenBalance}>
                 Send Tokens
               </button>
-            </Link>
+            )}
           </div>
         </div>
       </div>
@@ -198,6 +209,21 @@ const DaoDashboard = () => {
           </div>
         </div>
       </div>
+      {assetHolding && !hasNoDaoTokenBalance && (
+        <TransferAssetModal
+          assetHolding={assetHolding}
+          daoId={currentDao?.daoId}
+          daoImage={currentDao?.images?.small}
+          open={isTransferTokensVisible}
+          onClose={() => setIsTransferTokensVisible(false)}
+          onSuccess={() => {
+            setIsTransferTokensVisible(false);
+            if (props.onTransferTokenSuccess) {
+              props.onTransferTokenSuccess();
+            }
+          }}
+        />
+      )}
     </>
   );
 };
