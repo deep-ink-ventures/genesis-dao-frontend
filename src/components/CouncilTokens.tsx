@@ -24,8 +24,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
   const updateShowCongrats = useGenesisStore((s) => s.updateShowCongrats);
   const currentDaoFromChain = useGenesisStore((s) => s.currentDaoFromChain);
   const txnProcessing = useGenesisStore((s) => s.txnProcessing);
-  const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
   const currentWalletAccount = useGenesisStore((s) => s.currentWalletAccount);
+  const daoTokenTreasuryBalance = useGenesisStore(
+    (s) => s.daoTokenTreasuryBalance
+  );
   const { makeBatchTransferTxn, sendBatchTxns, makeChangeOwnerTxn } =
     useGenesisDao();
   const [membersCount, setMembersCount] = useState(2);
@@ -82,8 +84,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     return total;
   };
 
-  const remain = daoTokenBalance
-    ? daoTokenBalance.sub(getTotalRecipientsTokens(tokensValues))
+  const remain = daoTokenTreasuryBalance
+    ? daoTokenTreasuryBalance.sub(getTotalRecipientsTokens(tokensValues))
     : new BN(0);
 
   const onSubmit = async (data: CouncilTokensValues) => {
@@ -337,7 +339,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               className={cn(
                 `btn btn-primary mr-3 w-48 ${txnProcessing ? 'loading' : ''}`,
                 {
-                  'btn-disabled': !daoTokenBalance || councilMembers.length < 1,
+                  'btn-disabled':
+                    !daoTokenTreasuryBalance || councilMembers.length < 1,
                   loading: txnProcessing,
                 }
               )}

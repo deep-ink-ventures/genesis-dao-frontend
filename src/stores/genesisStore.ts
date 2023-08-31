@@ -88,7 +88,6 @@ export interface GenesisState {
   currentProposal: ProposalDetail | null;
   currentProposalFaultyReports: FaultyReport[] | null;
   currentBlockNumber: number | null;
-  daosOwnedByUser: string[] | null; // daoIds
   nativeTokenBalance: BN | null;
   daoTokenBalance: BN | null;
   daoTokenTreasuryBalance: BN | null;
@@ -99,7 +98,6 @@ export interface GenesisState {
   createDaoData: CreateDaoData | null;
   rpcEndpoint: string;
   daos: AllDaos | null;
-  // daosOwnedByWallet: DaoInfo[] | null;
   txnNotifications: TxnNotification[];
   loading: boolean;
   txnProcessing: boolean;
@@ -176,13 +174,12 @@ export interface GenesisStore extends GenesisState, GenesisActions {}
 const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   currentWalletAccount: null,
   currentProposal: null,
+  currentProposals: null,
   walletAccounts: null,
   walletConnected: false,
-  daosOwnedByUser: null,
   createDaoData: null,
   rpcEndpoint: NODE_URL,
   daos: null,
-  daosOwnedByWallet: null, // all the daos that can be managed by the wallet address
   txnNotifications: [],
   loading: false,
   txnProcessing: false,
@@ -196,14 +193,13 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   daosFromDB: null,
   currentDao: null,
   currentDaoFromChain: null,
-  nativeTokenBalance: null,
-  daoTokenBalance: null,
-  daoTokenTreasuryBalance: null,
+  nativeTokenBalance: null, // user's native(DOT) token balance
+  daoTokenBalance: null, // user's DAO token balance
+  daoTokenTreasuryBalance: null, // current DAO owner's DAO token balance
   showCongrats: false,
   currentBlockNumber: null,
   proposalValues: null,
   daoPage: 'dashboard',
-  currentProposals: null,
   isFaultyModalOpen: false,
   currentProposalFaultyReports: null,
   isFaultyReportsOpen: false,
