@@ -110,6 +110,10 @@ const ChangeDaoOwner = () => {
     }
     const callHash = tx.method.hash.toHex();
     const callData = tx.method.toHex();
+    const timepoint = {
+      height: 1000,
+      index: 1,
+    };
 
     const signatories = sortAddresses([
       ...currentDao.adminAddresses.filter((address) => {
@@ -138,6 +142,7 @@ const ChangeDaoOwner = () => {
           newOwner: multisigAddress,
         },
         data: callData,
+        timepoint,
       };
 
       postMultiSigTxn(currentDao.daoId, body).then(() => {

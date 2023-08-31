@@ -149,9 +149,16 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     }
 
     try {
-      const multiSig = await MultiSigsService.get(multisigAddress);
+      let multiSig = await MultiSigsService.get(multisigAddress);
       if (!multiSig) {
-        await MultiSigsService.create(sortedAddresses, data.councilThreshold);
+        multiSig = await MultiSigsService.create(
+          sortedAddresses,
+          data.councilThreshold
+        );
+      }
+      if (!multiSig) {
+        handleErrors('Error in handling multisignature account');
+        return;
       }
       await sendBatchTxns(
         withChangeOwner,

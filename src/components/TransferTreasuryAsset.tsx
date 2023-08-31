@@ -18,7 +18,7 @@ interface TransferAssetFormValues {
   tokenRecipients: TokenRecipient[];
 }
 
-const TransferAsset = () => {
+const TransferTreasuryAsset = () => {
   const {
     makeBatchTransferTxn,
     makeMultiSigTxnAndSend,
@@ -40,15 +40,15 @@ const TransferAsset = () => {
     fetchDaoFromDB,
     currentWalletAccount,
     txnProcessing,
-    daoTokenBalance,
     handleErrors,
+    daoTokenTreasuryBalance,
   ] = useGenesisStore((s) => [
     s.currentDao,
     s.fetchDaoFromDB,
     s.currentWalletAccount,
     s.txnProcessing,
-    s.daoTokenBalance,
     s.handleErrors,
+    s.daoTokenTreasuryBalance,
   ]);
   const [isOpen, setIsOpen] = useState(false);
   const formMethods = useForm<TransferAssetFormValues>({
@@ -107,6 +107,10 @@ const TransferAsset = () => {
     }
     const callHash = tx.method.hash.toHex();
     const callData = tx.method.toHex();
+    const timepoint = {
+      height: 1025,
+      index: 1,
+    };
 
     makeMultiSigTxnAndSend(tx, threshold, signatories, () => {
       updateTxnProcessing(true);
@@ -121,6 +125,7 @@ const TransferAsset = () => {
           amount: recipients[0]?.tokens.toString(),
         },
         data: callData,
+        timepoint,
       };
 
       postMultiSigTxn(currentDao.daoId, body).then(() => {
@@ -198,7 +203,7 @@ const TransferAsset = () => {
             <div className='mt-6 flex w-full justify-end'>
               <button
                 className={`btn btn-primary mr-3 w-48 ${
-                  !daoTokenBalance ? 'btn-disabled' : ''
+                  daoTokenTreasuryBalance?.isZero() ? 'btn-disabled' : ''
                 } ${txnProcessing ? 'loading' : ''}`}
                 type='submit'>
                 {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
@@ -211,4 +216,4 @@ const TransferAsset = () => {
   );
 };
 
-export default TransferAsset;
+export default TransferTreasuryAsset;
