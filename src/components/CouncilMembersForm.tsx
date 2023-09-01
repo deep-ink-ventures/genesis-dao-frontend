@@ -9,10 +9,11 @@ import { isValidPolkadotAddress } from '@/utils';
 export const CouncilMembersForm = (props: {
   formName: string;
   listStartCount?: number;
+  disabled?: boolean;
   onAddMember?: () => void;
   onDeleteMember?: () => void;
 }) => {
-  const { onAddMember, onDeleteMember, listStartCount = 1 } = props;
+  const { onAddMember, onDeleteMember, listStartCount = 1, disabled } = props;
   const {
     control,
     register,
@@ -50,6 +51,7 @@ export const CouncilMembersForm = (props: {
                     type='text'
                     placeholder='Name'
                     className='input input-primary '
+                    disabled={disabled}
                     {...register(`${props.formName}.${index}.name`, {
                       required: 'Required',
                       minLength: { value: 1, message: 'Minimum is 1' },
@@ -71,6 +73,7 @@ export const CouncilMembersForm = (props: {
                   type='text'
                   placeholder='Wallet Address'
                   className='input input-primary'
+                  disabled={disabled}
                   {...register(`${props.formName}.${index}.walletAddress`, {
                     required: 'Required',
                     validate: (add) =>
@@ -86,21 +89,23 @@ export const CouncilMembersForm = (props: {
                   )}
                 />
               </div>
-              <div className='ml-3 flex items-center pt-5'>
-                <Image
-                  className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
-                  src={d}
-                  width={18}
-                  height={18}
-                  alt='delete button'
-                  onClick={() => {
-                    if (onDeleteMember) {
-                      onDeleteMember();
-                    }
-                    remove(index);
-                  }}
-                />
-              </div>
+              {!disabled && (
+                <div className='ml-3 flex items-center pt-5'>
+                  <Image
+                    className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
+                    src={d}
+                    width={18}
+                    height={18}
+                    alt='delete button'
+                    onClick={() => {
+                      if (onDeleteMember) {
+                        onDeleteMember();
+                      }
+                      remove(index);
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );
@@ -109,6 +114,7 @@ export const CouncilMembersForm = (props: {
         <button
           className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
           type='button'
+          disabled={disabled}
           onClick={handleAddMember}>
           <Image
             src={plus}

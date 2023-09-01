@@ -255,7 +255,7 @@ const CreateDaoModal = () => {
                     txnProcessing ? 'loading' : null
                   }`}
                   type='submit'
-                  disabled={!hasTenDots}>
+                  disabled={!hasTenDots || txnProcessing}>
                   {txnProcessing ? 'Processing' : 'Submit and Sign'}
                 </button>
               </div>

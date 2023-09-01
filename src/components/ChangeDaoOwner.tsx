@@ -211,7 +211,10 @@ const ChangeDaoOwner = () => {
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex w-full flex-col items-center gap-y-5 border-none hover:brightness-100'>
-              <CouncilMembersForm formName='newCouncilMembers' />
+              <CouncilMembersForm
+                formName='newCouncilMembers'
+                disabled={txnProcessing}
+              />
               <div>
                 <h4 className='text-center'>
                   Enter Council Approval Threshold
@@ -227,6 +230,7 @@ const ChangeDaoOwner = () => {
                   className='input input-primary text-center'
                   type='number'
                   placeholder='1'
+                  disabled={txnProcessing}
                   {...register('councilThreshold', {
                     required: 'Required',
                     min: { value: 1, message: 'Minimum is 1' },
@@ -255,6 +259,7 @@ const ChangeDaoOwner = () => {
                     loading: txnProcessing,
                   }
                 )}
+                disabled={txnProcessing}
                 type='submit'>
                 {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
               </button>

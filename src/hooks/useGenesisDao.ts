@@ -730,7 +730,7 @@ const useGenesisDao = () => {
 
       return hexToBase64(signerResult.signature.substring(2));
     } catch (err) {
-      handleErrors(err);
+      handleErrors(err?.message ?? err);
       return null;
     }
   };

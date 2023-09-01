@@ -106,6 +106,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                   type='number'
                   placeholder='0'
                   className='input input-primary pr-24'
+                  disabled={txnProcessing}
                   {...register('tokensToIssue', {
                     required: 'Required',
                     min: { value: 1, message: 'Minimum is 1' },
@@ -144,6 +145,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 }`}
                 type='number'
                 placeholder='0'
+                disabled={txnProcessing}
                 {...register('proposalTokensCost', {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
@@ -179,6 +181,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                     className='range range-primary h-3 w-[75%]'
                     min={0}
                     max={25}
+                    disabled={txnProcessing}
                     value={watchMinimumMajority}
                     {...register('minimumMajority')}
                   />
@@ -199,6 +202,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
                 className='input input-primary pr-16'
                 type='number'
                 placeholder='0'
+                disabled={txnProcessing}
                 {...register('votingDays', {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
@@ -221,6 +225,7 @@ const MajorityModel = (props: { daoId: string | null }) => {
           className={`btn btn-primary mr-3 w-48 ${
             txnProcessing ? 'loading' : null
           }`}
+          disabled={txnProcessing}
           type='submit'>
           {txnProcessing ? 'Processing' : 'Submit and Sign'}
         </button>

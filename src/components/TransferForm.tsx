@@ -107,6 +107,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
             type='text'
             className='input input-bordered input-primary'
             placeholder='Recipient Address'
+            disabled={txnProcessing}
             {...register('toAddress', {
               required: 'Required',
               validate: (add) =>
@@ -126,6 +127,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
             type='number'
             className='input input-bordered input-primary'
             placeholder='Amount'
+            disabled={txnProcessing}
             {...register('amount', {
               valueAsNumber: true,
               required: 'Required',
@@ -148,7 +150,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
             className={`btn btn-primary 
           ${txnProcessing ? `loading` : ``}
           `}
-            disabled={!currentWalletAccount}>
+            disabled={!currentWalletAccount || txnProcessing}>
             {buttonText()}
           </button>
         </div>
