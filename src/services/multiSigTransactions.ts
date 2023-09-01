@@ -85,6 +85,7 @@ export interface MultiSigTxnBody {
   function: string;
   args: {};
   data: string;
+  timepoint: {};
 }
 
 const create = async (daoId: string, data: MultiSigTxnBody) => {

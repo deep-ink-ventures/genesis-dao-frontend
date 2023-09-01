@@ -2,7 +2,7 @@ import useGenesisStore from '@/stores/genesisStore';
 
 import ChangeDaoOwner from './ChangeDaoOwner';
 import DestroyDao from './DestroyDao';
-import TransferAsset from './TransferAsset';
+import TransferAsset from './TransferTreasuryAsset';
 
 const Governance = () => {
   const [currentWalletAccount, currentDao] = useGenesisStore((s) => [

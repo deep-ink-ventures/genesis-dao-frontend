@@ -16,7 +16,7 @@
     "check-types": "tsc --noEmit --pretty",
     "test": "jest",
     "pre-commit": "yarn format && yarn check-types && yarn test",
-    "commit": "yarn test && cz",
+    "commit": "cz",
     "prepare": "husky install"
   },
   "dependencies": {

@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import Image from 'next/image';
+import { useEffect } from 'react';
 
 import useGenesisStore from '@/stores/genesisStore';
 import arrowUp from '@/svg/arrow-up.svg';
@@ -18,6 +19,28 @@ interface TransactionAccordionProps {
   onClick?: () => void;
 }
 
+interface ExtrinsicFunctionMapping {
+  transfer_keep_alive: string;
+  change_owner: string;
+  [key: string]: string | undefined;
+}
+
+const extrinsicFunctionToEnglish: ExtrinsicFunctionMapping = {
+  transfer_keep_alive: 'Transfer DAO Tokens',
+  change_owner: 'Change DAO Owner',
+};
+
+type ExtrinsicFunctions = keyof typeof extrinsicFunctionToEnglish;
+
+const convertFunctionToEnglish = (
+  str: ExtrinsicFunctions | null | undefined
+) => {
+  if (!str) {
+    return ' - ';
+  }
+  return extrinsicFunctionToEnglish[str];
+};
+
 const MultisigTransactionAccordion = ({
   multisigTransaction,
   collapsed,
@@ -30,23 +53,19 @@ const MultisigTransactionAccordion = ({
 
   const isApprover =
     Boolean(currentWalletAccount?.address) &&
-    currentDao?.adminAddresses?.some(
+    multisigTransaction.approvers?.some(
       (approver) =>
         approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
     );
 
-  const hasApproved =
-    isApprover &&
-    multisigTransaction?.approvers?.some(
-      (approver) =>
-        approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
-    );
+  // admin address but has not approved
+  const hasNotApproved = !!currentDao?.adminAddresses.filter(
+    (addy) => !multisigTransaction.approvers?.includes(addy)
+  );
 
-  const canCancel =
-    isApprover &&
-    Boolean(currentWalletAccount?.address) &&
-    multisigTransaction?.approvers?.[0]?.toLowerCase() ===
-      currentWalletAccount?.address.toLowerCase();
+  // the address that initiated the multisig txn. The only address that can cancel the txn(to get tokens back)
+  const isFirstApprover =
+    multisigTransaction.approvers?.[0] === currentWalletAccount?.address;
 
   const transactionArgs =
     multisigTransaction.call?.args != null &&
@@ -55,6 +74,10 @@ const MultisigTransactionAccordion = ({
       key,
       value: multisigTransaction.call?.args?.[key] || '-',
     }));
+
+  useEffect(() => {
+    console.log(hasNotApproved);
+  });
 
   return (
     <div
@@ -69,7 +92,9 @@ const MultisigTransactionAccordion = ({
           }
         )}
         onClick={onClick}>
-        <div className='grow'>{multisigTransaction.call?.function || '-'}</div>
+        <div className='grow'>
+          {convertFunctionToEnglish(multisigTransaction.call?.function) || '-'}
+        </div>
         <div className='flex text-[0.8rem]'>
           <Image src={memberSign} alt='Member Sign' height={16} width={16} />
           {`${multisigTransaction.approvers?.length || 0} `}
@@ -138,25 +163,23 @@ const MultisigTransactionAccordion = ({
               ))}
             </div>
           </div>
-          {isApprover && (
-            <>
-              <div className='w-full border-b-[0.02rem] border-neutral-focus' />
-              <div className='space-y-2'>
-                <div className='flex gap-2'>
-                  <button
-                    className='btn flex-1 bg-transparent text-neutral'
-                    disabled={hasApproved}>
-                    Approve
-                  </button>
-                  {canCancel && (
-                    <button className='btn flex-1 bg-transparent text-neutral'>
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
+          <div className='w-full border-b-[0.02rem] border-neutral-focus' />
+          <div className='space-y-2'>
+            <div className='flex gap-2'>
+              {hasNotApproved && (
+                <button
+                  className='btn btn-primary flex-1  text-neutral'
+                  disabled={isApprover}>
+                  Approve
+                </button>
+              )}
+              {isFirstApprover && (
+                <button className='mtext-neutral btn btn-primary flex-1'>
+                  Cancel
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
