@@ -24,16 +24,10 @@ const TransferTreasuryAsset = () => {
     makeMultiSigTxnAndSend,
     makeBatchTxn,
     postMultiSigTxn,
+    handleTxnError,
   } = useGenesisDao();
 
   const [threshold, setThreshold] = useState<number>();
-
-  const [createApiConnection, apiConnection, updateTxnProcessing] =
-    useGenesisStore((s) => [
-      s.createApiConnection,
-      s.apiConnection,
-      s.updateTxnProcessing,
-    ]);
 
   const [
     currentDao,
@@ -42,6 +36,9 @@ const TransferTreasuryAsset = () => {
     txnProcessing,
     handleErrors,
     daoTokenTreasuryBalance,
+    apiConnection,
+    createApiConnection,
+    updateTxnProcessing,
   ] = useGenesisStore((s) => [
     s.currentDao,
     s.fetchDaoFromDB,
@@ -49,6 +46,9 @@ const TransferTreasuryAsset = () => {
     s.txnProcessing,
     s.handleErrors,
     s.daoTokenTreasuryBalance,
+    s.apiConnection,
+    s.createApiConnection,
+    s.updateTxnProcessing,
   ]);
   const [isOpen, setIsOpen] = useState(false);
   const formMethods = useForm<TransferAssetFormValues>({
@@ -107,38 +107,57 @@ const TransferTreasuryAsset = () => {
     }
     const callHash = tx.method.hash.toHex();
     const callData = tx.method.toHex();
-    const timepoint = {
-      height: 1025,
-      index: 1,
-    };
 
-    makeMultiSigTxnAndSend(tx, threshold, signatories, () => {
-      updateTxnProcessing(true);
+    try {
+      await makeMultiSigTxnAndSend(tx, threshold, signatories, async () => {
+        updateTxnProcessing(true);
 
-      const body: MultiSigTxnBody = {
-        hash: callHash,
-        module: 'Assets',
-        function: 'transfer_keep_alive',
-        args: {
-          id: currentDao?.daoAssetId,
-          target: recipients[0]?.walletAddress,
-          amount: recipients[0]?.tokens.toString(),
-        },
-        data: callData,
-        timepoint,
-      };
+        let timepoint = {};
 
-      postMultiSigTxn(currentDao.daoId, body).then(() => {
-        updateTxnProcessing(false);
-        setIsOpen(false);
-        fetchDaoFromDB(currentDao?.daoId);
-        reset();
+        try {
+          const multiSigInfo =
+            await apiConnection?.query?.multisig?.multisigs?.(
+              currentDao.daoOwnerAddress,
+              tx.method.hash.toHex()
+            );
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((multiSigInfo as any).isSome) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            timepoint = (multiSigInfo as any).unwrap().when;
+          }
+        } catch (err) {
+          handleErrors('Error in fetching multisig transaction info', err);
+        }
+
+        const body: MultiSigTxnBody = {
+          hash: callHash,
+          module: 'Assets',
+          function: 'transfer_keep_alive',
+          args: {
+            id: currentDao?.daoAssetId,
+            target: recipients[0]?.walletAddress,
+            amount: recipients[0]?.tokens.toString(),
+          },
+          data: callData,
+          timepoint,
+        };
+
+        try {
+          await postMultiSigTxn(currentDao.daoId, body);
+          updateTxnProcessing(false);
+          setIsOpen(false);
+          fetchDaoFromDB(currentDao?.daoId);
+          reset();
+        } catch (err) {
+          handleErrors('Error in creating multisig transaction off-chain');
+        }
       });
-    }).catch((err) => {
-      handleErrors('MultiSig Transaction Error', err);
+    } catch (err) {
+      handleErrors('MultiSig Transaction Error', new Error(err));
+      handleTxnError(new Error(err));
       updateTxnProcessing(false);
       setIsOpen(false);
-    });
+    }
   };
 
   useEffect(() => {

@@ -75,7 +75,6 @@ const useGenesisDao = () => {
     addTxnNotification(newNoti);
   };
 
-  // fixme need to be able to separate txn types to send different response msgs
   const txResponseCallback = (
     result: ISubmittableResult,
     successMsg: string,
@@ -931,6 +930,7 @@ const useGenesisDao = () => {
     } catch (err) {
       updateTxnProcessing(false);
       handleTxnError(new Error(err));
+      handleErrors('Error in multisig transaction', err);
     }
   };
 
