@@ -1,6 +1,5 @@
 import cn from 'classnames';
 import Image from 'next/image';
-import { useEffect } from 'react';
 
 import useGenesisStore from '@/stores/genesisStore';
 import arrowUp from '@/svg/arrow-up.svg';
@@ -51,6 +50,7 @@ const MultisigTransactionAccordion = ({
     s.currentDao,
   ]);
 
+  // This user has already approved this multisig transaction
   const isApprover =
     Boolean(currentWalletAccount?.address) &&
     multisigTransaction.approvers?.some(
@@ -58,12 +58,12 @@ const MultisigTransactionAccordion = ({
         approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
     );
 
-  // admin address but has not approved
+  // It's admin but has not approved this multisig transaction
   const hasNotApproved = !!currentDao?.adminAddresses.filter(
     (addy) => !multisigTransaction.approvers?.includes(addy)
   );
 
-  // the address that initiated the multisig txn. The only address that can cancel the txn(to get tokens back)
+  // It's the address that initiated the multisig txn. The only address that can cancel the txn(to get tokens back)
   const isFirstApprover =
     multisigTransaction.approvers?.[0] === currentWalletAccount?.address;
 
@@ -74,10 +74,6 @@ const MultisigTransactionAccordion = ({
       key,
       value: multisigTransaction.call?.args?.[key] || '-',
     }));
-
-  useEffect(() => {
-    console.log(hasNotApproved);
-  });
 
   return (
     <div
@@ -95,11 +91,17 @@ const MultisigTransactionAccordion = ({
         <div className='grow'>
           {convertFunctionToEnglish(multisigTransaction.call?.function) || '-'}
         </div>
-        <div className='flex text-[0.8rem]'>
-          <Image src={memberSign} alt='Member Sign' height={16} width={16} />
-          {`${multisigTransaction.approvers?.length || 0} `}
+        <div className='mr-2 flex text-[0.8rem]'>
+          <Image
+            src={memberSign}
+            alt='Member Sign'
+            height={16}
+            width={16}
+            className='mr-1'
+          />
+          {`${multisigTransaction.approvers?.length || 'N/A'} `}
           out of
-          {` ${currentDao?.adminAddresses?.length || 0}`}
+          {` ${currentDao?.adminAddresses?.length || 'N/A'}`}
         </div>
         <div className='mr-4 flex items-center gap-2 text-xs'>
           {formatISOTimestamp(multisigTransaction?.createdAt)}
@@ -168,13 +170,13 @@ const MultisigTransactionAccordion = ({
             <div className='flex gap-2'>
               {hasNotApproved && (
                 <button
-                  className='btn btn-primary flex-1  text-neutral'
+                  className='btn btn-primary flex-1 text-neutral'
                   disabled={isApprover}>
                   Approve
                 </button>
               )}
               {isFirstApprover && (
-                <button className='mtext-neutral btn btn-primary flex-1'>
+                <button className='btn btn-primary flex-1 text-neutral'>
                   Cancel
                 </button>
               )}

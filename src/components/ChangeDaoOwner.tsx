@@ -31,6 +31,8 @@ const ChangeDaoOwner = () => {
     daoTokenBalance,
     currentDao,
     updateTxnProcessing,
+    createApiConnection,
+    apiConnection,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.handleErrors,
@@ -38,6 +40,8 @@ const ChangeDaoOwner = () => {
     s.daoTokenBalance,
     s.currentDao,
     s.updateTxnProcessing,
+    s.createApiConnection,
+    s.apiConnection,
   ]);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -110,10 +114,6 @@ const ChangeDaoOwner = () => {
     }
     const callHash = tx.method.hash.toHex();
     const callData = tx.method.toHex();
-    const timepoint = {
-      height: 1000,
-      index: 1,
-    };
 
     const signatories = sortAddresses([
       ...currentDao.adminAddresses.filter((address) => {
@@ -132,7 +132,25 @@ const ChangeDaoOwner = () => {
       return;
     }
 
-    makeMultiSigTxnAndSend(tx, threshold, signatories, () => {
+    makeMultiSigTxnAndSend(tx, threshold, signatories, async () => {
+      updateTxnProcessing(true);
+
+      let timepoint = {};
+
+      try {
+        const multiSigInfo = await apiConnection?.query?.multisig?.multisigs?.(
+          currentDao.daoOwnerAddress,
+          tx.method.hash.toHex()
+        );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if ((multiSigInfo as any).isSome) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          timepoint = (multiSigInfo as any).unwrap().when;
+        }
+      } catch (err) {
+        handleErrors('Error in fetching multisig transaction info', err);
+      }
+
       const body: MultiSigTxnBody = {
         hash: callHash,
         module: 'DaoCore',
@@ -145,16 +163,15 @@ const ChangeDaoOwner = () => {
         timepoint,
       };
 
-      postMultiSigTxn(currentDao.daoId, body).then(() => {
+      try {
+        await postMultiSigTxn(currentDao.daoId, body);
         updateTxnProcessing(false);
         setIsOpen(false);
         fetchDaoFromDB(currentDao?.daoId);
         reset();
-      });
-    }).catch((err) => {
-      handleErrors('Change Owner Error', err);
-      updateTxnProcessing(false);
-      setIsOpen(false);
+      } catch (err) {
+        handleErrors('Error in creating multisig transaction off-chain');
+      }
     });
   };
 
@@ -176,6 +193,12 @@ const ChangeDaoOwner = () => {
     };
     getThreshold();
   }, [currentDao, handleErrors]);
+
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+  }, []);
 
   return (
     <>
@@ -203,10 +226,10 @@ const ChangeDaoOwner = () => {
           <div className='mb-6'>
             <h3 className='text-center text-primary'>{currentDao?.daoName}</h3>
             <div className='text-center text-xl'>
-              Transfer Ownership to another multisig account
+              Transfer Ownership To Another Multisignature Account
             </div>
             <div className='text-center text-xl'>
-              Enter minimum of 2 addresses of the council members
+              Enter at least 2 Council Members
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -265,5 +288,4 @@ const ChangeDaoOwner = () => {
     </>
   );
 };
-
 export default ChangeDaoOwner;

@@ -261,8 +261,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             <div>
               <h4 className='text-center'>Add Council Members</h4>
               <p className='px-24 text-center text-sm'>
-                Please enter 2 or more publickey addresses. Council members
-                wallets will be used to create a multi-signature account.
+                Enter at least 2 Council Members The wallet addresses will be
+                used to create a multi-signature account.
               </p>
             </div>
             <div className='flex w-full px-4'>
@@ -306,9 +306,8 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             <div>
               <h4 className='text-center'>Enter Council Approval Threshold</h4>
               <p className='px-24 text-center text-sm'>
-                The approval threshold is a defined level of consensus that must
-                be reached in order for multi-signature transactions to be
-                approved.
+                The approval threshold is a the minimum number of signatures
+                needed to approve a multi-signature transaction
               </p>
             </div>
             <div className='w-[100px]'>
