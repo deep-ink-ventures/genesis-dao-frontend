@@ -75,7 +75,7 @@ const DaoCard = (props: DaoCardProps) => {
     }
     checkIsAdmin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentWalletAccount]);
+  }, [currentWalletAccount, props.daoId]);
 
   return (
     <div

@@ -44,9 +44,7 @@ const AssetItemRow = ({
         adminAddresses?.some(
           (approver) => approver.toLowerCase() === currentWallet?.toLowerCase()
         );
-      if (isDaoAdmin) {
-        setIsAdmin(isDaoAdmin);
-      }
+      setIsAdmin(Boolean(isDaoAdmin));
     }
   };
 
@@ -56,15 +54,12 @@ const AssetItemRow = ({
     }
     checkIsAdmin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentWallet]);
-
-  useEffect(() => {}, []);
+  }, [currentWallet, assetHolding.asset?.dao_id]);
 
   return (
     <div
       className='grid grid-cols-[auto_10%_15%_15%_15%] gap-2 space-x-2 rounded-lg border-[0.3px] border-solid
-    border-neutral-focus px-4 py-3 text-sm font-normal text-neutral-focus
-    '>
+    border-neutral-focus px-4 py-3 text-sm font-normal text-neutral-focus'>
       <span className='flex items-center gap-2'>
         <div className='relative flex items-center justify-center'>
           <DaoImage
@@ -78,6 +73,7 @@ const AssetItemRow = ({
       <span className='my-auto'>{assetHolding.asset?.dao?.id}</span>
       <span className='my-auto'>
         <span
+          key={`${assetHolding.id}-${isAdmin}`}
           className={cn(
             'badge inline-block w-fit max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-xs text-base-100',
             {
