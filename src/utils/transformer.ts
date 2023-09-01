@@ -40,6 +40,8 @@ export const transformMultiSigTxnToCamelCase = (
           module: input.call.module,
           function: input.call.function,
           args: input.call.args,
+          timepoint: input.call.timepoint,
+          data: input.call.data,
         }
       : null,
     callHash: input.call_hash,

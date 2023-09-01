@@ -15,6 +15,11 @@ export interface MultiSigTransaction {
     module?: string | null;
     function?: string | null;
     args?: Record<string, any> | null;
+    data: string | null;
+    timepoint: {
+      height: number;
+      index: number;
+    } | null;
   } | null;
   callHash: string;
   correspondingModels?: {
@@ -68,4 +73,19 @@ export interface MultiSigTransaction {
   canceledBy?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AsMultiParameters {
+  threshold: number;
+  otherSignatories: string[];
+  txnInHex: string;
+  timepoint?: { height: number; index: number };
+  weight?: {}; // not sure yet
+}
+
+export interface CancelAsMultiParameters {
+  threshold: number;
+  otherSignatories: string[];
+  txnHashInHex: string;
+  timepoint?: { height: number; index: number };
 }

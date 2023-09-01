@@ -1,11 +1,17 @@
+import { sortAddresses } from '@polkadot/util-crypto';
 import cn from 'classnames';
 import Image from 'next/image';
 
+import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
 import arrowUp from '@/svg/arrow-up.svg';
 import memberSign from '@/svg/memberSign.svg';
 import type { MultiSig } from '@/types/multiSig';
-import type { MultiSigTransaction } from '@/types/multiSigTransaction';
+import type {
+  AsMultiParameters,
+  CancelAsMultiParameters,
+  MultiSigTransaction,
+} from '@/types/multiSigTransaction';
 import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
 import { formatISOTimestamp } from '@/utils/date';
 
@@ -45,11 +51,21 @@ const MultisigTransactionAccordion = ({
   collapsed,
   onClick,
 }: TransactionAccordionProps) => {
-  const [currentWalletAccount, currentDao] = useGenesisStore((s) => [
+  const [
+    currentWalletAccount,
+    currentDao,
+    handleErrors,
+    updateTxnProcessing,
+    txnProcessing,
+  ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.currentDao,
+    s.handleErrors,
+    s.updateTxnProcessing,
+    s.txnProcessing,
   ]);
 
+  const { makeMultiSigTxnAndSend, cancelMultisigTxnAndSend } = useGenesisDao();
   // This user has already approved this multisig transaction
   const isApprover =
     Boolean(currentWalletAccount?.address) &&
@@ -59,13 +75,13 @@ const MultisigTransactionAccordion = ({
     );
 
   // It's admin but has not approved this multisig transaction
-  const hasNotApproved = !!currentDao?.adminAddresses.filter(
-    (addy) => !multisigTransaction.approvers?.includes(addy)
-  );
+  // const hasNotApproved = !!currentDao?.adminAddresses.filter(
+  //   (addy) => !multisigTransaction.approvers?.includes(addy)
+  // );
 
   // It's the address that initiated the multisig txn. The only address that can cancel the txn(to get tokens back)
-  const isFirstApprover =
-    multisigTransaction.approvers?.[0] === currentWalletAccount?.address;
+  // const isFirstApprover =
+  //   multisigTransaction.approvers?.[0] === currentWalletAccount?.address;
 
   const transactionArgs =
     multisigTransaction.call?.args != null &&
@@ -74,6 +90,88 @@ const MultisigTransactionAccordion = ({
       key,
       value: multisigTransaction.call?.args?.[key] || '-',
     }));
+
+  const handleApprove = async () => {
+    updateTxnProcessing(true);
+
+    const { call, threshold } = multisigTransaction;
+
+    if (
+      !threshold ||
+      !currentDao?.adminAddresses ||
+      !call?.data ||
+      !call?.timepoint ||
+      !currentWalletAccount
+    ) {
+      handleErrors('Error in multisig approval');
+      return;
+    }
+
+    const otherSignatories = sortAddresses([
+      ...currentDao.adminAddresses.filter((address) => {
+        return address !== currentWalletAccount.address;
+      }),
+    ]);
+
+    const arg: AsMultiParameters = {
+      threshold,
+      otherSignatories,
+      txnInHex: call?.data,
+      timepoint: call?.timepoint,
+      weight: {
+        refTime: 857484000,
+        proofSize: 3120,
+      },
+    };
+
+    try {
+      makeMultiSigTxnAndSend(arg, () => {
+        updateTxnProcessing(false);
+      });
+    } catch (err) {
+      handleErrors('Error in sending approval transaction', err);
+      updateTxnProcessing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    updateTxnProcessing(true);
+
+    const { call, threshold } = multisigTransaction;
+
+    if (
+      !threshold ||
+      !currentDao?.adminAddresses ||
+      !call?.hash ||
+      !call?.timepoint ||
+      !currentWalletAccount
+    ) {
+      handleErrors('Error in cancel multisig values');
+      return;
+    }
+
+    const otherSignatories = sortAddresses([
+      ...currentDao.adminAddresses.filter((address) => {
+        return address !== currentWalletAccount.address;
+      }),
+    ]);
+
+    const arg: CancelAsMultiParameters = {
+      threshold,
+      otherSignatories,
+      txnHashInHex: call?.hash,
+      timepoint: call?.timepoint,
+    };
+
+    try {
+      cancelMultisigTxnAndSend(arg, () => {
+        updateTxnProcessing(false);
+      });
+    } catch (err) {
+      handleErrors('Error in canceling multisig transaction', err);
+      updateTxnProcessing(false);
+    }
+  };
 
   return (
     <div
@@ -168,15 +266,21 @@ const MultisigTransactionAccordion = ({
           <div className='w-full border-b-[0.02rem] border-neutral-focus' />
           <div className='space-y-2'>
             <div className='flex gap-2'>
-              {hasNotApproved && (
+              {/* fixme */}
+              {true && (
                 <button
-                  className='btn btn-primary flex-1 text-neutral'
-                  disabled={isApprover}>
+                  className={`btn btn-primary flex-1 text-neutral ${
+                    txnProcessing ? 'loading' : ''
+                  }`}
+                  disabled={isApprover}
+                  onClick={handleApprove}>
                   Approve
                 </button>
               )}
-              {isFirstApprover && (
-                <button className='btn btn-primary flex-1 text-neutral'>
+              {true && (
+                <button
+                  className='btn btn-primary flex-1 text-neutral'
+                  onClick={handleCancel}>
                   Cancel
                 </button>
               )}

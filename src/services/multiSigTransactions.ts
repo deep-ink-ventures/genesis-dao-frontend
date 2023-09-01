@@ -16,6 +16,11 @@ export interface RawMultiSigTransaction {
     module?: string | null;
     function?: string | null;
     args?: Record<string, any> | null;
+    data: string | null;
+    timepoint: {
+      height: number;
+      index: number;
+    } | null;
   } | null;
   call_hash: string;
   corresponding_models?: {
