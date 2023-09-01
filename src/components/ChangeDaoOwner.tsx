@@ -12,6 +12,7 @@ import { MultiSigsService } from '@/services/multiSigs';
 import type { MultiSigTxnBody } from '@/services/multiSigTransactions';
 import useGenesisStore from '@/stores/genesisStore';
 import type { CouncilMember } from '@/types/council';
+import type { AsMultiParameters } from '@/types/multiSigTransaction';
 import { getMultisigAddress } from '@/utils';
 
 import { CouncilMembersForm } from './CouncilMembersForm';
@@ -112,10 +113,10 @@ const ChangeDaoOwner = () => {
       handleErrors('Error in making change ownership transaction');
       return;
     }
-    const callHash = tx.method.hash.toHex();
-    const callData = tx.method.toHex();
+    const callHashInHex = tx.method.hash.toHex();
+    const callDataInHex = tx.method.toHex();
 
-    const signatories = sortAddresses([
+    const otherSignatories = sortAddresses([
       ...currentDao.adminAddresses.filter((address) => {
         return address !== currentWalletAccount.address;
       }),
@@ -125,54 +126,66 @@ const ChangeDaoOwner = () => {
     try {
       const multiSig = await MultiSigsService.get(multisigAddress);
       if (!multiSig) {
-        await MultiSigsService.create(signatories, data.councilThreshold);
+        await MultiSigsService.create(addresses, data.councilThreshold);
       }
     } catch (err) {
       handleErrors(err);
       return;
     }
 
-    makeMultiSigTxnAndSend(tx, threshold, signatories, async () => {
-      updateTxnProcessing(true);
-
-      let timepoint = {};
-
-      try {
-        const multiSigInfo = await apiConnection?.query?.multisig?.multisigs?.(
-          currentDao.daoOwnerAddress,
-          tx.method.hash.toHex()
-        );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((multiSigInfo as any).isSome) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          timepoint = (multiSigInfo as any).unwrap().when;
-        }
-      } catch (err) {
-        handleErrors('Error in fetching multisig transaction info', err);
-      }
-
-      const body: MultiSigTxnBody = {
-        hash: callHash,
-        module: 'DaoCore',
-        function: 'change_owner',
-        args: {
-          daoId: currentDao.daoId,
-          newOwner: multisigAddress,
-        },
-        data: callData,
-        timepoint,
+    try {
+      const multiArgs: AsMultiParameters = {
+        threshold,
+        txnInHex: callDataInHex,
+        otherSignatories,
       };
+      makeMultiSigTxnAndSend(multiArgs, async () => {
+        updateTxnProcessing(true);
 
-      try {
-        await postMultiSigTxn(currentDao.daoId, body);
-        updateTxnProcessing(false);
-        setIsOpen(false);
-        fetchDaoFromDB(currentDao?.daoId);
-        reset();
-      } catch (err) {
-        handleErrors('Error in creating multisig transaction off-chain');
-      }
-    });
+        let timepoint = {};
+
+        try {
+          const multiSigInfo =
+            await apiConnection?.query?.multisig?.multisigs?.(
+              currentDao.daoOwnerAddress,
+              tx.method.hash.toHex()
+            );
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((multiSigInfo as any).isSome) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            timepoint = (multiSigInfo as any).unwrap().when;
+          }
+        } catch (err) {
+          handleErrors('Error in fetching multisig transaction info', err);
+        }
+
+        const body: MultiSigTxnBody = {
+          hash: callHashInHex,
+          module: 'DaoCore',
+          function: 'change_owner',
+          args: {
+            daoId: currentDao.daoId,
+            newOwner: multisigAddress,
+          },
+          data: callDataInHex,
+          timepoint,
+        };
+
+        try {
+          await postMultiSigTxn(currentDao.daoId, body);
+          updateTxnProcessing(false);
+          setIsOpen(false);
+          fetchDaoFromDB(currentDao?.daoId);
+          reset();
+        } catch (err) {
+          handleErrors('Error in creating multisig transaction off-chain');
+        }
+      });
+    } catch (err) {
+      handleErrors('Error in Changing Ownership', err);
+      updateTxnProcessing(false);
+      setIsOpen(false);
+    }
   };
 
   useEffect(() => {

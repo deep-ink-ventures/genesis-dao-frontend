@@ -12,6 +12,10 @@ import type {
 } from '@/services/multiSigTransactions';
 import type { AssetDetails } from '@/types/asset';
 import type { TokenRecipient } from '@/types/council';
+import type {
+  AsMultiParameters,
+  CancelAsMultiParameters,
+} from '@/types/multiSigTransaction';
 import type { ProposalCreationValues } from '@/types/proposal';
 import { TxnResponse } from '@/types/response';
 import { hexToBase64 } from '@/utils';
@@ -892,9 +896,7 @@ const useGenesisDao = () => {
   };
 
   const makeMultiSigTxnAndSend = async (
-    txn: SubmittableExtrinsic<'promise', ISubmittableResult>,
-    threshold: number,
-    signatories: string[],
+    params: AsMultiParameters,
     cb: Function
   ) => {
     if (!currentWalletAccount) {
@@ -904,13 +906,12 @@ const useGenesisDao = () => {
     updateTxnProcessing(true);
 
     try {
-      // fixme figure out timepoint and weight
       const unsignedTxn = apiConnection?.tx?.multisig?.asMulti?.(
-        threshold,
-        signatories,
-        null,
-        txn,
-        null
+        params.threshold,
+        params.otherSignatories,
+        params.timepoint,
+        params.txnInHex,
+        params.weight
       );
 
       unsignedTxn?.signAndSend(
@@ -919,7 +920,7 @@ const useGenesisDao = () => {
         (result) => {
           txResponseCallback(
             result,
-            'Multisig Transaction sent Successfully',
+            'Multisig Transaction created Successfully',
             'Multisig Transaction Failed',
             () => {
               cb();
@@ -984,6 +985,45 @@ const useGenesisDao = () => {
     }
   };
 
+  const cancelMultisigTxnAndSend = async (
+    params: CancelAsMultiParameters,
+    cb: Function
+  ) => {
+    if (!currentWalletAccount) {
+      handleErrors('Wallet not connected');
+      return;
+    }
+    updateTxnProcessing(true);
+
+    try {
+      const unsignedTxn = await apiConnection?.tx?.multisig?.cancelAsMulti?.(
+        params.threshold,
+        params.otherSignatories,
+        params.timepoint,
+        params.txnHashInHex
+      );
+
+      await unsignedTxn?.signAndSend(
+        currentWalletAccount.address,
+        { signer: currentWalletAccount.signer },
+        (result) => {
+          txResponseCallback(
+            result,
+            'Multisig transaction has bene canceled successfully',
+            'Transaction Failed',
+            () => {
+              cb();
+            }
+          );
+        }
+      );
+    } catch (err) {
+      updateTxnProcessing(false);
+      handleTxnError(new Error(err));
+      handleErrors('Error in multisig transaction', err);
+    }
+  };
+
   return {
     createDao,
     destroyDao,
@@ -1015,6 +1055,7 @@ const useGenesisDao = () => {
     makeTransferDaoTokens,
     makeBatchTxn,
     postMultiSigTxn,
+    cancelMultisigTxnAndSend,
   };
 };
 

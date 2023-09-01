@@ -11,6 +11,7 @@ import { MultiSigsService } from '@/services/multiSigs';
 import type { MultiSigTxnBody } from '@/services/multiSigTransactions';
 import useGenesisStore from '@/stores/genesisStore';
 import type { TokenRecipient } from '@/types/council';
+import type { AsMultiParameters } from '@/types/multiSigTransaction';
 
 import { DistributeTokensForm } from './DistributeTokensForm';
 
@@ -20,9 +21,8 @@ interface TransferAssetFormValues {
 
 const TransferTreasuryAsset = () => {
   const {
-    makeBatchTransferTxn,
+    makeTransferDaoTokens,
     makeMultiSigTxnAndSend,
-    makeBatchTxn,
     postMultiSigTxn,
     handleTxnError,
   } = useGenesisDao();
@@ -87,29 +87,35 @@ const TransferTreasuryAsset = () => {
       };
     });
 
-    const withRecipients = makeBatchTransferTxn(
+    const withTransferTxn = makeTransferDaoTokens(
       [],
-      recipients,
-      Number(currentDao.daoAssetId)
+      currentDao?.daoAssetId!!,
+      recipients[0]?.walletAddress!!,
+      recipients[0]?.tokens!!
     );
 
-    const signatories = sortAddresses([
+    const otherSignatories = sortAddresses([
       ...currentDao.adminAddresses.filter((address) => {
         return address !== currentWalletAccount.address;
       }),
     ]);
 
-    const tx = makeBatchTxn(withRecipients);
+    const tx = withTransferTxn.pop();
 
     if (!tx) {
       handleErrors('Cannot get batch transaction');
       return;
     }
-    const callHash = tx.method.hash.toHex();
-    const callData = tx.method.toHex();
+    const callHashInHex = tx.method.hash.toHex();
+    const callDataInHex = tx.method.toHex();
 
     try {
-      await makeMultiSigTxnAndSend(tx, threshold, signatories, async () => {
+      const multiArgs: AsMultiParameters = {
+        threshold,
+        txnInHex: callDataInHex,
+        otherSignatories,
+      };
+      await makeMultiSigTxnAndSend(multiArgs, async () => {
         updateTxnProcessing(true);
 
         let timepoint = {};
@@ -130,7 +136,7 @@ const TransferTreasuryAsset = () => {
         }
 
         const body: MultiSigTxnBody = {
-          hash: callHash,
+          hash: callHashInHex,
           module: 'Assets',
           function: 'transfer_keep_alive',
           args: {
@@ -138,10 +144,9 @@ const TransferTreasuryAsset = () => {
             target: recipients[0]?.walletAddress,
             amount: recipients[0]?.tokens.toString(),
           },
-          data: callData,
+          data: callDataInHex,
           timepoint,
         };
-
         try {
           await postMultiSigTxn(currentDao.daoId, body);
           updateTxnProcessing(false);
