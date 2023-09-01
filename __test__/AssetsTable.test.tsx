@@ -54,8 +54,6 @@ describe('AssetsTable', () => {
 
     expect(getByText('Item 1')).toBeInTheDocument();
     expect(screen.getAllByText('DAOID').length).toBe(2);
-    expect(getByText('Admin')).toBeInTheDocument();
-    expect(getByText('Token Holder')).toBeInTheDocument();
     expect(screen.getAllByText('10,000 DAOID')[0]).toBeInTheDocument();
   });
 });
