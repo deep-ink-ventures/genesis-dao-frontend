@@ -54,8 +54,10 @@ const DaoCard = (props: DaoCardProps) => {
   };
 
   const checkIsAdmin = async () => {
-    const multiSig = await MultiSigsService.get(props.daoOwnerAddress);
-    const adminAddresses = multiSig?.signatories;
+    const multiSig = await MultiSigsService.list({
+      daoId: props.daoId,
+    });
+    const adminAddresses = multiSig?.results?.[0]?.signatories;
     const isThisAdmin =
       Boolean(currentWalletAccount?.address) &&
       adminAddresses?.some(
@@ -73,7 +75,7 @@ const DaoCard = (props: DaoCardProps) => {
     }
     checkIsAdmin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentWalletAccount]);
+  }, [currentWalletAccount, props.daoId]);
 
   return (
     <div

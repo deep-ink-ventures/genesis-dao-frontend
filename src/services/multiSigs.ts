@@ -15,6 +15,7 @@ interface ListMultiSigsQueryParams {
   search?: string;
   ordering?: string;
   limit?: number;
+  daoId?: string;
   offset?: number;
 }
 
