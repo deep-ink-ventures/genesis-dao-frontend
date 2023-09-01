@@ -12,8 +12,10 @@ import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
 export const DistributeTokensForm = ({
   multiple = true,
+  disabled,
 }: {
   multiple?: boolean;
+  disabled?: boolean;
 }) => {
   const {
     watch,
@@ -81,6 +83,7 @@ export const DistributeTokensForm = ({
                   type='text'
                   placeholder='Wallet Address'
                   className='input input-primary'
+                  disabled={disabled}
                   {...register(`tokenRecipients.${index}.walletAddress`, {
                     required: 'Required',
                     validate: (add) =>
@@ -102,6 +105,7 @@ export const DistributeTokensForm = ({
               <input
                 type='number'
                 className='input input-primary text-center'
+                disabled={disabled}
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
@@ -136,7 +140,7 @@ export const DistributeTokensForm = ({
             </div>
              */}
           </div>
-          {multiple && (
+          {multiple && !disabled && (
             <div className='ml-3 flex items-center pt-5'>
               <Image
                 className='duration-150 hover:cursor-pointer hover:brightness-125 active:brightness-90'
@@ -168,6 +172,7 @@ export const DistributeTokensForm = ({
           <button
             className='btn border-white bg-[#403945] text-white hover:bg-[#403945] hover:brightness-110'
             type='button'
+            disabled={disabled}
             onClick={handleAddRecipient}>
             <Image
               src={plus}

@@ -142,6 +142,7 @@ const MetadataForm = (props: { daoId: string | null }) => {
                 className='input input-primary'
                 type='text'
                 placeholder='Email'
+                disabled={txnProcessing}
                 {...register('email', {
                   required: 'Required',
                   pattern: {
@@ -168,6 +169,7 @@ const MetadataForm = (props: { daoId: string | null }) => {
                   type='file'
                   accept='image/*'
                   id='file'
+                  disabled={txnProcessing}
                   {...register('logoImage', {
                     required: 'Required',
                     validate: {
@@ -235,6 +237,7 @@ const MetadataForm = (props: { daoId: string | null }) => {
               </p>
               <textarea
                 className='textarea h-48'
+                disabled={txnProcessing}
                 {...register('shortOverview', {
                   required: 'Required',
                   min: { value: 1, message: 'Too short' },
@@ -255,6 +258,7 @@ const MetadataForm = (props: { daoId: string | null }) => {
               </p>
               <textarea
                 className='textarea h-64'
+                disabled={txnProcessing}
                 {...register('longDescription', {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum character count is 1' },
@@ -275,6 +279,7 @@ const MetadataForm = (props: { daoId: string | null }) => {
               className={`btn btn-primary mr-3 w-48 ${
                 txnProcessing ? 'loading' : ''
               }`}
+              disabled={txnProcessing}
               type='submit'>
               {`${txnProcessing ? 'Processing' : 'Upload and Sign'}`}
             </button>

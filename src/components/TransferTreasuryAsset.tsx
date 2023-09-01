@@ -198,13 +198,14 @@ const TransferTreasuryAsset = () => {
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className='mb-5 flex w-full flex-col items-center justify-center gap-y-6 border-none hover:brightness-100'>
-              <DistributeTokensForm multiple={false} />
+              <DistributeTokensForm multiple={false} disabled={txnProcessing} />
             </div>
             <div className='mt-6 flex w-full justify-end'>
               <button
                 className={`btn btn-primary mr-3 w-48 ${
                   daoTokenTreasuryBalance?.isZero() ? 'btn-disabled' : ''
                 } ${txnProcessing ? 'loading' : ''}`}
+                disabled={txnProcessing}
                 type='submit'>
                 {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
               </button>

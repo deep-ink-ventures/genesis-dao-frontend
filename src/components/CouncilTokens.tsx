@@ -274,6 +274,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                     type='text'
                     placeholder='Your name'
                     className='input input-primary'
+                    disabled={txnProcessing}
                     {...register('creatorName', {
                       required: 'Required',
                       minLength: { value: 1, message: 'Minimum is 1' },
@@ -302,6 +303,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               listStartCount={2}
               onAddMember={handleAddMember}
               onDeleteMember={handleDeleteMember}
+              disabled={txnProcessing}
             />
             <div>
               <h4 className='text-center'>Enter Council Approval Threshold</h4>
@@ -316,6 +318,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 className='input input-primary text-center'
                 type='number'
                 placeholder='1'
+                disabled={txnProcessing}
                 {...register('councilThreshold', {
                   required: 'Required',
                   min: { value: 1, message: 'Minimum is 1' },
@@ -339,7 +342,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             </p>
           </div>
           <div className='card mb-5 flex w-full items-center justify-center gap-y-6 border-none py-5 hover:brightness-100'>
-            <DistributeTokensForm />
+            <DistributeTokensForm disabled={txnProcessing} />
           </div>
           <div className='mt-6 flex w-full justify-end'>
             <button
@@ -351,6 +354,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                   loading: txnProcessing,
                 }
               )}
+              disabled={txnProcessing}
               type='submit'>
               {`${txnProcessing ? 'Processing' : 'Approve and Sign'}`}
             </button>
