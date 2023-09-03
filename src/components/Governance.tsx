@@ -28,14 +28,14 @@ const Governance = () => {
             <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>
               <div className='flex w-1/6 shrink-0'>Change Owner</div>
               <div className='flex grow'>
-                Transfer Ownership of the DAO to another account
+                Transfer DAO ownership to another account
               </div>
               <div className='flex'>
                 <ChangeDaoOwner />
               </div>
             </div>
             <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>
-              <div className='flex w-1/6 shrink-0'>Transfer Asset</div>
+              <div className='flex w-1/6 shrink-0'>Transfer Tokens</div>
               <div className='flex grow'>
                 Transfer tokens from your treasury to other accounts
               </div>
@@ -46,10 +46,13 @@ const Governance = () => {
             <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>
               <div className='flex w-1/6 shrink-0'>Destroy DAO</div>
               <div className='flex grow'>
-                Say goodbye and wrap up. Your stake will be repaid to the
-                current DAO Owner
+                Say goodbye to your organization. Your deposit will be returned
+                to the DAO creator
               </div>
-              <div className='flex'>
+              <div className='relative flex'>
+                <div className='absolute left-[80px] top-[-8px] z-10 flex h-[25px] w-[100px] items-center justify-center rounded-[15px] bg-primary text-center text-xs font-medium text-black'>
+                  Coming Soon!
+                </div>
                 <DestroyMultiSigDao />
               </div>
             </div>
