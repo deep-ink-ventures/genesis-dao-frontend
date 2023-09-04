@@ -16,7 +16,7 @@ const DestroyDao = (props: { daoId: string; assetId: number | null }) => {
   };
 
   return (
-    <div className='flex justify-center'>
+    <div className='flex justify-center '>
       <button
         className={`btn btn-primary w-[180px] ${
           txnProcessing ? 'loading' : ''

@@ -42,7 +42,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           walletAddress: '',
         },
       ],
-      councilThreshold: 1,
+      councilThreshold: 2,
       tokenRecipients: [
         {
           walletAddress: '',
@@ -80,7 +80,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     for (const item of recipients) {
       total = total.add(item.tokens);
     }
-    // multiply by DAO units to get the right tokens
     return total;
   };
 
@@ -307,12 +306,13 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             />
             <div>
               <h4 className='text-center'>Enter Council Approval Threshold</h4>
-              <p className='px-24 text-center text-sm'>
+              <p className='px-20 text-center text-sm'>
                 The approval threshold is a the minimum number of signatures
-                needed to approve a multi-signature transaction
+                needed to approve a multi-signature transaction. The minimum
+                threshold is 2.
               </p>
             </div>
-            <div className='w-[100px]'>
+            <div className='w-[120px]'>
               <input
                 className='input input-primary text-center'
                 type='number'
@@ -320,7 +320,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 disabled={txnProcessing}
                 {...register('councilThreshold', {
                   required: 'Required',
-                  min: { value: 1, message: 'Minimum is 1' },
+                  min: { value: 2, message: 'Minimum is 2' },
                   max: {
                     value: membersCount,
                     message: 'Cannot exceed # of council members',

@@ -200,7 +200,7 @@ const TransferTreasuryAsset = () => {
           }`}
           disabled={!currentWalletAccount}
           onClick={handleTransferAsset}>
-          Transfer Asset
+          Transfer Tokens
         </button>
       </div>
       <Modal

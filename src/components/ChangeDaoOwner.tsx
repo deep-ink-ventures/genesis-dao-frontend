@@ -55,8 +55,12 @@ const ChangeDaoOwner = () => {
 
   const formMethods = useForm<ChangeDaoOwnerFormValues>({
     defaultValues: {
-      councilThreshold: 1,
+      councilThreshold: 2,
       newCouncilMembers: [
+        {
+          name: '',
+          walletAddress: '',
+        },
         {
           name: '',
           walletAddress: '',
@@ -238,11 +242,11 @@ const ChangeDaoOwner = () => {
         <FormProvider {...formMethods}>
           <div className='mb-6'>
             <h3 className='text-center text-primary'>{currentDao?.daoName}</h3>
-            <div className='text-center text-xl'>
+            <div className='mb-4 text-center text-xl'>
               Transfer Ownership To Another Multisignature Account
             </div>
             <div className='text-center text-xl'>
-              Enter at least 2 Council Members
+              Enter a minimum of 2 Council Members
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -252,13 +256,13 @@ const ChangeDaoOwner = () => {
                 disabled={txnProcessing}
               />
               <div>
-                <h4 className='text-center'>
+                <h4 className='text-center text-xl'>
                   Enter Council Approval Threshold
                 </h4>
-                <p className='px-24 text-center text-sm'>
-                  The approval threshold is a defined level of consensus that
-                  must be reached in order for proposals to be approved and
-                  implemented
+                <p className='px-24 text-center'>
+                  The approval threshold is a the minimum number of signatures
+                  needed to approve a multi-signature transaction. The minimum
+                  threshold is 2.
                 </p>
               </div>
               <div className='w-[100px]'>
@@ -269,7 +273,7 @@ const ChangeDaoOwner = () => {
                   disabled={txnProcessing}
                   {...register('councilThreshold', {
                     required: 'Required',
-                    min: { value: 1, message: 'Minimum is 1' },
+                    min: { value: 2, message: 'Minimum is 2' },
                     max: {
                       value: newCouncilMembers.length,
                       message: 'Cannot exceed # of council members',
