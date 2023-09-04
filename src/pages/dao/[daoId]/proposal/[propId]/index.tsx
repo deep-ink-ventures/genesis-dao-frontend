@@ -8,7 +8,6 @@ import ReactHtmlParser from 'react-html-parser';
 import FaultyModal from '@/components/FaultyModal';
 import FaultyReportsModal from '@/components/FaultyReportsModal';
 import Spinner from '@/components/Spinner';
-import Tooltip from '@/components/Tooltip';
 import { statusColors } from '@/components/TransactionBadge';
 import WalletConnect from '@/components/WalletConnect';
 import { DAO_UNITS } from '@/config';
@@ -244,13 +243,9 @@ const Proposal = () => {
     }
 
     return (
-      <Tooltip
-        placement='top'
-        content={`Please note, that creating a proposal requires a one-time deposit of ${currentDao?.proposalTokenDeposit} tokens`}>
-        <button className='btn btn-primary min-w-[250px]' onClick={handleVote}>
-          Vote
-        </button>
-      </Tooltip>
+      <button className='btn btn-primary min-w-[250px]' onClick={handleVote}>
+        Vote
+      </button>
     );
   };
 
