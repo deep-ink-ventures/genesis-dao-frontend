@@ -215,6 +215,7 @@ const ChangeDaoOwner = () => {
     if (!apiConnection) {
       createApiConnection();
     }
+    // eslint-disable-next-line
   }, []);
 
   return (

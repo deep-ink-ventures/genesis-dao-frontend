@@ -151,6 +151,7 @@ const MainDaoPage = () => {
   useEffect(() => {
     updateDaoPage('dashboard');
     page.stats.pendingMultisig.fetch();
+    // eslint-disable-next-line
   }, [currentWalletAccount]);
 
   const displayImage = () => {

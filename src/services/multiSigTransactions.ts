@@ -142,11 +142,13 @@ const list = async (params?: ListMultiSigTxnsQueryParams) => {
 
   const objResponse = await response?.json();
 
-  const multiSigTransactions = objResponse?.results?.map(
-    (rawMultiSigTxn: RawMultiSigTransaction) => {
+  const multiSigTransactions = objResponse?.results
+    ?.filter((txn: any) => {
+      return txn.call.function !== 'fault_proposal';
+    })
+    .map((rawMultiSigTxn: RawMultiSigTransaction) => {
       return transformMultiSigTxnToCamelCase(rawMultiSigTxn);
-    }
-  );
+    });
 
   const paginated = Object.assign(objResponse, {
     results: multiSigTransactions,
