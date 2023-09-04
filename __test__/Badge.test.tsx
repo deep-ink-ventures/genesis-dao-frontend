@@ -27,7 +27,7 @@ describe('Badge', () => {
   test('renders the Badge with "warning" variant classnames correctly', () => {
     const viewBadge = render(<Badge variant='warning'>Warning</Badge>);
     const badgeElement = getById(viewBadge.container, 'badge');
-    expect(badgeElement).toHaveClass('dark:bg-orange-800 dark:text-black');
+    expect(badgeElement).toHaveClass('dark:bg-secondary dark:text-black');
   });
 
   test('renders the Badge with "success" variant classnames correctly', () => {
