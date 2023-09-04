@@ -11,11 +11,22 @@ import type {
   AsMultiParameters,
   CancelAsMultiParameters,
   MultiSigTransaction,
+  MultiSigTransactionStatus,
 } from '@/types/multiSigTransaction';
 import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
 import { formatISOTimestamp } from '@/utils/date';
 
-import { TransactionBadge } from './TransactionBadge';
+import type { BadgeVariant } from './Badge';
+import Badge from './Badge';
+
+const MultisigTransactionStatusBadgeMap: Record<
+  MultiSigTransactionStatus,
+  BadgeVariant
+> = {
+  PENDING: 'warning',
+  EXECUTED: 'success',
+  CANCELLED: 'danger',
+};
 
 interface TransactionAccordionProps {
   multisigTransaction: MultiSigTransaction;
@@ -204,7 +215,13 @@ const MultisigTransactionAccordion = ({
         <div className='mr-4 flex items-center gap-2 text-xs'>
           {formatISOTimestamp(multisigTransaction?.createdAt)}
         </div>
-        <TransactionBadge status={multisigTransaction.status as string} />
+        <Badge
+          variant={
+            MultisigTransactionStatusBadgeMap[multisigTransaction.status]
+          }
+          className='ml-auto w-fit text-xs capitalize'>
+          {multisigTransaction.status}
+        </Badge>
         <div className='p-2'>
           <Image
             src={arrowUp}

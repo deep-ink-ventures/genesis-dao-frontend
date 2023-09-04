@@ -3,7 +3,7 @@ export type BadgeVariant = 'none' | 'danger' | 'warning' | 'success';
 const BadgeVariantStyleMap: Record<BadgeVariant, string> = {
   none: 'dark:bg-white dark:text-black',
   danger: 'dark:bg-red-800 dark:text-white',
-  warning: 'dark:bg-orange-800 dark:text-black',
+  warning: 'dark:bg-secondary dark:text-black',
   success: 'dark:bg-green-300 dark:text-black',
 };
 
