@@ -37,7 +37,7 @@ const extrinsicFunctionToEnglish: ExtrinsicFunctionMapping = {
 
 type ExtrinsicFunctions = keyof typeof extrinsicFunctionToEnglish;
 
-const convertFunctionToEnglish = (
+export const convertFunctionToEnglish = (
   str: ExtrinsicFunctions | null | undefined
 ) => {
   if (!str) {

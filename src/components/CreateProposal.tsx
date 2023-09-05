@@ -228,7 +228,7 @@ const CreateProposal = (props: {
               </div>
               <div className='relative'>
                 <input
-                  className={`input ${
+                  className={`input pr-[4.5rem] ${
                     watchName.length > 128 || errors.proposalName
                       ? 'input-error'
                       : 'input-primary'
