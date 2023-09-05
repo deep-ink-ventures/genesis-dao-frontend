@@ -461,11 +461,18 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       const assetHolding = response?.results?.find((item: any) => {
         return item.asset_id.toString() === assetId.toString();
       });
-      const daoTokenTreasuryBalance = assetHolding
-        ? new BN(assetHolding?.balance)
-        : null;
 
-      set({ daoTokenTreasuryBalance });
+      if (!assetHolding?.balance) {
+        set({ daoTokenTreasuryBalance: null });
+      } else {
+        // BN._initNumber sets 0x20000000000000 as max value
+        const daoTokenTreasuryBalance =
+          assetHolding.balance >= 0x20000000000000
+            ? new BN(assetHolding.balance / 2).mul(new BN(2))
+            : new BN(assetHolding.balance);
+
+        set({ daoTokenTreasuryBalance });
+      }
     } catch (err) {
       get().handleErrors('fetchDaoTokenTreasuryBalance errors', err);
     }
