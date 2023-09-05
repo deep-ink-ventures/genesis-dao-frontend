@@ -193,7 +193,7 @@ const MainDaoPage = () => {
       case DashboardTabs.GOVERNANCE:
         return <Governance />;
       default:
-        return <DaoDashboard onTransferTokenSuccess={fetchDaoTokenBalance} />;
+        return <DaoDashboard />;
     }
   };
 
@@ -204,7 +204,7 @@ const MainDaoPage = () => {
   return (
     <MainLayout
       title={`${currentDao?.daoName} - GenesisDAO - DAO Platform On Polkadot'`}
-      description={`${currentDao?.daoName} - Create a DAO`}>
+      description={`${currentDao?.daoName} - Create a DA O`}>
       <div
         className='mt-5 flex w-[65px] items-center justify-between hover:cursor-pointer hover:underline'
         onClick={handleBack}>

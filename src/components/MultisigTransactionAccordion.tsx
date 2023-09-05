@@ -85,14 +85,14 @@ const MultisigTransactionAccordion = ({
         approver.toLowerCase() === currentWalletAccount?.address.toLowerCase()
     );
 
-  // It's admin but has not approved this multisig transaction
-  // const hasNotApproved = !!currentDao?.adminAddresses.filter(
-  //   (addy) => !multisigTransaction.approvers?.includes(addy)
-  // );
+  // It's an admin/signatory who has not approved this multisig transaction
+  const hasNotApproved = !!currentDao?.adminAddresses.filter(
+    (addy) => !multisigTransaction.approvers?.includes(addy)
+  );
 
   // It's the address that initiated the multisig txn. The only address that can cancel the txn(to get tokens back)
-  // const isFirstApprover =
-  //   multisigTransaction.approvers?.[0] === currentWalletAccount?.address;
+  const isFirstApprover =
+    multisigTransaction.approvers?.[0] === currentWalletAccount?.address;
 
   const transactionArgs =
     multisigTransaction.call?.args != null &&
@@ -284,7 +284,7 @@ const MultisigTransactionAccordion = ({
           <div className='space-y-2'>
             <div className='flex gap-2'>
               {/* fixme */}
-              {true && (
+              {hasNotApproved && (
                 <button
                   className={`btn btn-primary flex-1 text-neutral ${
                     txnProcessing ? 'loading' : ''
@@ -294,7 +294,7 @@ const MultisigTransactionAccordion = ({
                   Approve
                 </button>
               )}
-              {true && (
+              {isFirstApprover && multisigTransaction.status !== 'EXECUTED' && (
                 <button
                   className='btn btn-primary flex-1 text-neutral'
                   onClick={handleCancel}>
