@@ -1,4 +1,5 @@
 import { BN } from '@polkadot/util';
+import cn from 'classnames';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -24,8 +25,10 @@ const ProposalStatusBadgeMap: Record<ProposalStatus, BadgeVariant> = {
 };
 
 const ProposalRow = ({ proposal }: { proposal: ProposalDetail }) => {
-  const currentDao = useGenesisStore((s) => s.currentDao);
-  const currentBlockNumber = useGenesisStore((s) => s.currentBlockNumber);
+  const [currentBlockNumber, currentDao] = useGenesisStore((s) => [
+    s.currentBlockNumber,
+    s.currentDao,
+  ]);
 
   const dhmMemo = useMemo(() => {
     return proposal?.birthBlock &&
@@ -75,11 +78,10 @@ const ProposalRow = ({ proposal }: { proposal: ProposalDetail }) => {
   );
 };
 
-const DaoDashboard = (props: { onTransferTokenSuccess?: () => void }) => {
-  const [currentWalletAccount, updateDaoPage] = useGenesisStore((s) => [
-    s.currentWalletAccount,
-    s.updateDaoPage,
-  ]);
+const DaoDashboard = () => {
+  const [currentWalletAccount, updateDaoPage, txnProcessing] = useGenesisStore(
+    (s) => [s.currentWalletAccount, s.updateDaoPage, s.txnProcessing]
+  );
   const currentDao = useGenesisStore((s) => s.currentDao);
   const daoTokenBalance = useGenesisStore((s) => s.daoTokenBalance);
 
@@ -157,7 +159,9 @@ const DaoDashboard = (props: { onTransferTokenSuccess?: () => void }) => {
                   : ''
               }`}>
               <button
-                className={`btn btn-primary w-[180px]`}
+                className={cn(`btn btn-primary w-[180px]`, {
+                  loading: txnProcessing,
+                })}
                 disabled={
                   !currentWalletAccount ||
                   daoTokenBalance?.isZero() ||
@@ -169,7 +173,9 @@ const DaoDashboard = (props: { onTransferTokenSuccess?: () => void }) => {
             {assetHolding && !hasNoDaoTokenBalance && (
               <button
                 onClick={() => setIsTransferTokensVisible(true)}
-                className={`btn btn-primary w-[180px]`}
+                className={cn(`btn btn-primary w-[180px]`, {
+                  loading: txnProcessing,
+                })}
                 disabled={hasNoDaoTokenBalance}>
                 Send Tokens
               </button>
@@ -216,12 +222,6 @@ const DaoDashboard = (props: { onTransferTokenSuccess?: () => void }) => {
           daoImage={currentDao?.images?.small}
           open={isTransferTokensVisible}
           onClose={() => setIsTransferTokensVisible(false)}
-          onSuccess={() => {
-            setIsTransferTokensVisible(false);
-            if (props.onTransferTokenSuccess) {
-              props.onTransferTokenSuccess();
-            }
-          }}
         />
       )}
     </>

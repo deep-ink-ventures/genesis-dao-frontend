@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 
 import { DAO_UNITS } from '@/config';
 import useGenesisDao from '@/hooks/useGenesisDao';
-import type { AssetHolding } from '@/services/assets';
+import { type AssetHolding } from '@/services/assets';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { isValidPolkadotAddress } from '@/utils';
