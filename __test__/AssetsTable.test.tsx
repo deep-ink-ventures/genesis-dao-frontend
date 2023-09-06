@@ -48,9 +48,7 @@ describe('AssetsTable', () => {
       },
     ];
 
-    const { getByText } = render(
-      <AssetsTable assetHoldings={items as any} currentWallet='Owner 1' />
-    );
+    const { getByText } = render(<AssetsTable assetHoldings={items as any} />);
 
     expect(getByText('Item 1')).toBeInTheDocument();
     expect(screen.getAllByText('DAOID').length).toBe(2);

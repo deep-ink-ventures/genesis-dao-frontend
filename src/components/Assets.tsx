@@ -6,6 +6,7 @@ import Pagination from '@/components/Pagination';
 import type { Asset, AssetHolding } from '@/services/assets';
 import { AssetsHoldingsService } from '@/services/assets';
 import type { RawDao } from '@/services/daos';
+import { MultiSigsService } from '@/services/multiSigs';
 import useGenesisStore from '@/stores/genesisStore';
 
 import type { AssetHoldingsTableItem } from './AssetsTable';
@@ -43,7 +44,9 @@ const Assets = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [assetHoldingsResponse, setAssetHoldingsResponse] = useState<{
     totalCount: number;
-    assetHoldings: Array<AssetHolding & { asset?: Asset & { dao?: RawDao } }>;
+    assetHoldings: Array<
+      AssetHolding & { asset?: Asset & { dao?: RawDao }; isAdmin?: boolean }
+    >;
   }>();
 
   const [pagination, setPagination] = useState({
@@ -57,14 +60,12 @@ const Assets = () => {
 
   const filteredAssetHoldings = assetHoldingsResponse?.assetHoldings.filter(
     (assetHolding) => {
-      const isOwner =
-        assetHolding.asset?.dao?.creator_id?.toLowerCase().trim() ===
-        currentWalletAccount?.address?.toLowerCase().trim();
-
       return (
         assetHolding.asset?.dao?.name?.indexOf(searchTerm) !== -1 &&
         (filter === AssetTableFilter.All ||
-          (filter === AssetTableFilter.Admin ? isOwner : !isOwner))
+          (filter === AssetTableFilter.Admin
+            ? assetHolding.isAdmin
+            : !assetHolding.isAdmin))
       );
     }
   );
@@ -85,24 +86,54 @@ const Assets = () => {
     );
   };
 
+  const getIsAdmin = async (currentWallet?: string, daoId?: string) => {
+    if (currentWalletAccount && daoId) {
+      const multiSig = await MultiSigsService.list({
+        daoId,
+      });
+      const adminAddresses = multiSig?.results?.[0]?.signatories;
+      const isDaoAdmin =
+        Boolean(currentWallet) &&
+        adminAddresses?.some(
+          (approver) => approver.toLowerCase() === currentWallet?.toLowerCase()
+        );
+      return Boolean(isDaoAdmin);
+    }
+    return false;
+  };
+
   const fetchAssetHoldings = async () => {
     if (account.assets.data) {
       AssetsHoldingsService.listAssetHoldings({
         offset: pagination.offset - 1,
         limit: 5,
         owner_id: currentWalletAccount?.address,
-      }).then((res) => {
+      }).then(async (res) => {
         if (!res) {
           return;
         }
+        const result = await Promise.all(
+          res.results?.map(async (assetHolding) => {
+            const asset = account.assets.data.find(
+              (currentAsset) => currentAsset.id === assetHolding.asset_id
+            );
+
+            const isAdmin = await getIsAdmin(
+              currentWalletAccount?.address,
+              asset?.dao_id
+            );
+
+            return {
+              ...assetHolding,
+              asset,
+              isAdmin,
+            };
+          })
+        );
+
         setAssetHoldingsResponse({
           totalCount: res.count,
-          assetHoldings: res.results?.map((assetHolding) => ({
-            ...assetHolding,
-            asset: account.assets.data.find(
-              (asset) => asset.id === assetHolding.asset_id
-            ),
-          })),
+          assetHoldings: result,
         });
       });
     }
@@ -138,8 +169,8 @@ const Assets = () => {
               onChange={handleSearch}
             />
           </div>
-          <div>
-            <div className='flex flex-col'>
+          <div className='w-44'>
+            <div className='ml-auto flex w-fit flex-col'>
               <button
                 tabIndex={0}
                 className={`btn bg-transparent px-6 py-3.5 hover:bg-base-100`}
@@ -204,7 +235,6 @@ const Assets = () => {
             {filteredAssetHoldings?.length ? (
               <AssetsHoldingsTable
                 assetHoldings={filteredAssetHoldings}
-                currentWallet={currentWalletAccount?.address}
                 onTransferClick={handleTransferClick}
                 onOpenLinkClick={handleLinkClick}
               />
