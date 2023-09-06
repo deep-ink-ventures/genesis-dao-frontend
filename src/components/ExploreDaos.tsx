@@ -86,7 +86,7 @@ const ExploreDaos = () => {
         </div>
       </div>
       <div className='my-2 flex justify-center'>
-        {!daosFromDB ? <Spinner /> : displayDaos()}
+        {daosFromDB === null ? <Spinner /> : displayDaos()}
       </div>
     </div>
   );
