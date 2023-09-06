@@ -1,11 +1,9 @@
 import { BN } from '@polkadot/util';
 import cn from 'classnames';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 
 import type { Asset, AssetHolding } from '@/services/assets';
 import type { RawDao } from '@/services/daos';
-import { MultiSigsService } from '@/services/multiSigs';
 import coinsTransfer from '@/svg/coinsTransfer.svg';
 import openLink from '@/svg/openlink.svg';
 import { uiTokens } from '@/utils';
@@ -14,47 +12,22 @@ import DaoImage from './DaoImage';
 
 export type AssetHoldingsTableItem = AssetHolding & {
   asset?: Asset & { dao?: RawDao };
+  isAdmin?: boolean;
 };
 
 interface AssestHoldingsTableProps {
   assetHoldings?: Array<AssetHoldingsTableItem>;
-  currentWallet?: string;
   onTransferClick?: (assetHolding?: AssetHoldingsTableItem) => void;
   onOpenLinkClick?: (assetHolding?: AssetHoldingsTableItem) => void;
 }
 
 const AssetItemRow = ({
   assetHolding,
-  currentWallet,
   onTransferClick,
   onOpenLinkClick,
 }: Omit<AssestHoldingsTableProps, 'assetHoldings'> & {
   assetHolding: AssetHoldingsTableItem;
 }) => {
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-
-  const checkIsAdmin = async () => {
-    if (assetHolding?.asset?.dao_id) {
-      const multiSig = await MultiSigsService.list({
-        daoId: assetHolding?.asset?.dao_id,
-      });
-      const adminAddresses = multiSig?.results?.[0]?.signatories;
-      const isDaoAdmin =
-        Boolean(currentWallet) &&
-        adminAddresses?.some(
-          (approver) => approver.toLowerCase() === currentWallet?.toLowerCase()
-        );
-      setIsAdmin(Boolean(isDaoAdmin));
-    }
-  };
-
-  useEffect(() => {
-    if (!currentWallet) {
-      return;
-    }
-    checkIsAdmin();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentWallet, assetHolding.asset?.dao_id]);
 
   return (
     <div
@@ -73,14 +46,14 @@ const AssetItemRow = ({
       <span className='my-auto'>{assetHolding.asset?.dao?.id}</span>
       <span className='my-auto'>
         <span
-          key={`${assetHolding.id}-${isAdmin}`}
+          key={`${assetHolding.id}-${assetHolding.isAdmin}`}
           className={cn(
             'badge inline-block w-fit max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-center text-xs text-base-100',
             {
-              'badge-primary': isAdmin,
+              'badge-primary': assetHolding.isAdmin,
             }
           )}>
-          {isAdmin ? 'Admin' : 'Token Holder'}
+          {assetHolding.isAdmin ? 'Admin' : 'Token Holder'}
         </span>
       </span>
       <span className='my-auto'>
