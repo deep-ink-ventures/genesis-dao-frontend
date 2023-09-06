@@ -61,7 +61,9 @@ const Assets = () => {
   const filteredAssetHoldings = assetHoldingsResponse?.assetHoldings.filter(
     (assetHolding) => {
       return (
-        assetHolding.asset?.dao?.name?.indexOf(searchTerm) !== -1 &&
+        assetHolding.asset?.dao?.name
+          ?.toLowerCase()
+          ?.includes(searchTerm.toLowerCase()) &&
         (filter === AssetTableFilter.All ||
           (filter === AssetTableFilter.Admin
             ? assetHolding.isAdmin
@@ -105,7 +107,7 @@ const Assets = () => {
   const fetchAssetHoldings = async () => {
     if (account.assets.data) {
       AssetsHoldingsService.listAssetHoldings({
-        offset: pagination.offset - 1,
+        offset: Math.max(pagination.offset - 1, 0),
         limit: 5,
         owner_id: currentWalletAccount?.address,
       }).then(async (res) => {
