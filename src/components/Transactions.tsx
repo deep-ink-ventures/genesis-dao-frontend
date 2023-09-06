@@ -3,9 +3,12 @@ import { useEffect, useState } from 'react';
 
 import Loading from '@/components/Loading';
 import useGenesisStore from '@/stores/genesisStore';
+import type { MultiSigTransaction } from '@/types/multiSigTransaction';
 import { MultiSigTransactionStatus } from '@/types/multiSigTransaction';
 
-import MultisigTransactionAccordion from './MultisigTransactionAccordion';
+import MultisigTransactionAccordion, {
+  convertFunctionToEnglish,
+} from './MultisigTransactionAccordion';
 import Pagination from './Pagination';
 
 const MultisigTransactionFilterList = [
@@ -30,7 +33,7 @@ const Transactions = (props: { daoId: string }) => {
     s.pages.dao,
   ]);
 
-  const [, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [filter, setFilter] = useState(MultiSigTransactionStatus.Pending);
   const [pagination, setPagination] = useState({
@@ -77,6 +80,21 @@ const Transactions = (props: { daoId: string }) => {
       currentPage: 1,
     });
     setDropdownOpen(false);
+  };
+
+  const filterTransaction = (multisigTransaction: MultiSigTransaction) => {
+    return (
+      !searchTerm?.length ||
+      [
+        multisigTransaction.daoId,
+        multisigTransaction.callHash,
+        convertFunctionToEnglish(multisigTransaction.call?.function),
+      ]
+        .filter((values) => values?.length)
+        .some((value) =>
+          value?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
   };
 
   return (
@@ -162,16 +180,18 @@ const Transactions = (props: { daoId: string }) => {
           )}
         {currentWalletAccount &&
           !dao.multiSigTransactions.loading &&
-          dao.multiSigTransactions.data?.map((multisigTransaction) => (
-            <MultisigTransactionAccordion
-              key={multisigTransaction.id}
-              multisigTransaction={multisigTransaction}
-              collapsed={
-                multisigTransaction.id !== activeAccordion || !activeAccordion
-              }
-              onClick={() => handleAccordionClick(multisigTransaction.id)}
-            />
-          ))}
+          dao.multiSigTransactions.data
+            ?.filter((transaction) => filterTransaction(transaction))
+            ?.map((multisigTransaction) => (
+              <MultisigTransactionAccordion
+                key={multisigTransaction.id}
+                multisigTransaction={multisigTransaction}
+                collapsed={
+                  multisigTransaction.id !== activeAccordion || !activeAccordion
+                }
+                onClick={() => handleAccordionClick(multisigTransaction.id)}
+              />
+            ))}
         {!dao.multiSigTransactions.loading && currentWalletAccount && (
           <div>
             <Pagination
