@@ -410,9 +410,8 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       );
       const daosRes = await getDaosResponse.json();
       const daosArr = daosRes.results;
-      const newDaos: DaoDetail[] = daosArr?.map((dao: any) =>
-        transformDaoToDaoDetail(dao)
-      );
+      const newDaos: DaoDetail[] =
+        daosArr?.map((dao: any) => transformDaoToDaoDetail(dao)) || [];
       set({ daosFromDB: newDaos });
     } catch (err) {
       get().handleErrors('fetchDaosFromDB error', new Error(err));
