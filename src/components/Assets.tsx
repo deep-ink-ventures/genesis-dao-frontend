@@ -235,7 +235,6 @@ const Assets = () => {
             {filteredAssetHoldings?.length ? (
               <AssetsHoldingsTable
                 assetHoldings={filteredAssetHoldings}
-                currentWallet={currentWalletAccount?.address}
                 onTransferClick={handleTransferClick}
                 onOpenLinkClick={handleLinkClick}
               />

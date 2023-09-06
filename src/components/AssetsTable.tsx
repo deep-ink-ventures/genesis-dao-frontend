@@ -28,7 +28,6 @@ const AssetItemRow = ({
 }: Omit<AssestHoldingsTableProps, 'assetHoldings'> & {
   assetHolding: AssetHoldingsTableItem;
 }) => {
-
   return (
     <div
       className='grid grid-cols-[auto_10%_15%_15%_15%] gap-2 space-x-2 rounded-lg border-[0.3px] border-solid
@@ -93,7 +92,6 @@ const AssetItemRow = ({
 
 const AssetsHoldingsTable = ({
   assetHoldings = [],
-  currentWallet,
   onTransferClick,
   onOpenLinkClick,
 }: AssestHoldingsTableProps) => {
@@ -111,7 +109,6 @@ const AssetsHoldingsTable = ({
           <AssetItemRow
             key={`${index}-${assetHolding.id}`}
             assetHolding={assetHolding}
-            currentWallet={currentWallet}
             onTransferClick={onTransferClick}
             onOpenLinkClick={onOpenLinkClick}
           />
