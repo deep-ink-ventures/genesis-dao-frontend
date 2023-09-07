@@ -190,6 +190,7 @@ const Transactions = (props: { daoId: string }) => {
                   multisigTransaction.id !== activeAccordion || !activeAccordion
                 }
                 onClick={() => handleAccordionClick(multisigTransaction.id)}
+                onSuccess={fetchTransactions}
               />
             ))}
         {!dao.multiSigTransactions.loading && currentWalletAccount && (

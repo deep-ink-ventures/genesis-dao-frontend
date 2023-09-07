@@ -33,6 +33,7 @@ interface TransactionAccordionProps {
   multiSig?: MultiSig;
   collapsed?: boolean;
   onClick?: () => void;
+  onSuccess?: () => void;
 }
 
 interface ExtrinsicFunctionMapping {
@@ -60,6 +61,7 @@ export const convertFunctionToEnglish = (
 const MultisigTransactionAccordion = ({
   multisigTransaction,
   collapsed,
+  onSuccess,
   onClick,
 }: TransactionAccordionProps) => {
   const [
@@ -68,12 +70,14 @@ const MultisigTransactionAccordion = ({
     handleErrors,
     updateTxnProcessing,
     txnProcessing,
+    page,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.currentDao,
     s.handleErrors,
     s.updateTxnProcessing,
     s.txnProcessing,
+    s.pages.dao,
   ]);
 
   const { makeMultiSigTxnAndSend, cancelMultisigTxnAndSend } = useGenesisDao();
@@ -138,6 +142,10 @@ const MultisigTransactionAccordion = ({
     try {
       makeMultiSigTxnAndSend(arg, () => {
         updateTxnProcessing(false);
+        page.stats.pendingMultisig.fetch();
+        if (onSuccess) {
+          onSuccess();
+        }
       });
     } catch (err) {
       handleErrors('Error in sending approval transaction', err);
