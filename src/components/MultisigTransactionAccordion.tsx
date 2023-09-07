@@ -11,8 +11,8 @@ import type {
   AsMultiParameters,
   CancelAsMultiParameters,
   MultiSigTransaction,
-  MultiSigTransactionStatus,
 } from '@/types/multiSigTransaction';
+import { MultiSigTransactionStatus } from '@/types/multiSigTransaction';
 import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
 import { formatISOTimestamp } from '@/utils/date';
 
@@ -70,14 +70,12 @@ const MultisigTransactionAccordion = ({
     handleErrors,
     updateTxnProcessing,
     txnProcessing,
-    page,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.currentDao,
     s.handleErrors,
     s.updateTxnProcessing,
     s.txnProcessing,
-    s.pages.dao,
   ]);
 
   const { makeMultiSigTxnAndSend, cancelMultisigTxnAndSend } = useGenesisDao();
@@ -142,7 +140,6 @@ const MultisigTransactionAccordion = ({
     try {
       makeMultiSigTxnAndSend(arg, () => {
         updateTxnProcessing(false);
-        page.stats.pendingMultisig.fetch();
         if (onSuccess) {
           onSuccess();
         }
@@ -185,6 +182,9 @@ const MultisigTransactionAccordion = ({
     try {
       cancelMultisigTxnAndSend(arg, () => {
         updateTxnProcessing(false);
+        if (onSuccess) {
+          onSuccess();
+        }
       });
     } catch (err) {
       handleErrors('Error in canceling multisig transaction', err);
@@ -302,13 +302,17 @@ const MultisigTransactionAccordion = ({
                   Approve
                 </button>
               )}
-              {isFirstApprover && multisigTransaction.status !== 'EXECUTED' && (
-                <button
-                  className='btn btn-primary flex-1 text-neutral'
-                  onClick={handleCancel}>
-                  Cancel
-                </button>
-              )}
+              {isFirstApprover &&
+                ![
+                  MultiSigTransactionStatus.Executed,
+                  MultiSigTransactionStatus.Cancelled,
+                ].includes(multisigTransaction.status) && (
+                  <button
+                    className='btn btn-primary flex-1 text-neutral'
+                    onClick={handleCancel}>
+                    Cancel
+                  </button>
+                )}
             </div>
           </div>
         </div>

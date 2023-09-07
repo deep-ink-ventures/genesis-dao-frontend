@@ -5,10 +5,15 @@ import DestroyMultiSigDao from './DestroyMultiSigDao';
 import TransferTreasuryAsset from './TransferTreasuryAsset';
 
 const Governance = () => {
-  const [currentWalletAccount, currentDao] = useGenesisStore((s) => [
+  const [currentWalletAccount, currentDao, dao] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.currentDao,
+    s.pages.dao,
   ]);
+
+  const onSuccess = () => {
+    dao.stats.pendingMultisig.fetch();
+  };
 
   return (
     <div className='container flex w-full flex-col gap-y-4 p-6'>
@@ -31,7 +36,7 @@ const Governance = () => {
                 Transfer DAO ownership to another account
               </div>
               <div className='flex'>
-                <ChangeDaoOwner />
+                <ChangeDaoOwner onSuccess={onSuccess} />
               </div>
             </div>
             <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>
@@ -40,7 +45,7 @@ const Governance = () => {
                 Transfer tokens from your treasury to other accounts
               </div>
               <div className='flex'>
-                <TransferTreasuryAsset />
+                <TransferTreasuryAsset onSuccess={onSuccess} />
               </div>
             </div>
             <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>

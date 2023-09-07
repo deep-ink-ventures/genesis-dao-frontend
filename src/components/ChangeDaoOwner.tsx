@@ -22,7 +22,7 @@ interface ChangeDaoOwnerFormValues {
   councilThreshold: number;
 }
 
-const ChangeDaoOwner = () => {
+const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
   const { makeChangeOwnerTxn, makeMultiSigTxnAndSend, postMultiSigTxn } =
     useGenesisDao();
   const [
@@ -180,6 +180,9 @@ const ChangeDaoOwner = () => {
           updateTxnProcessing(false);
           setIsOpen(false);
           fetchDaoFromDB(currentDao?.daoId);
+          if (onSuccess) {
+            onSuccess();
+          }
           reset();
         } catch (err) {
           handleErrors('Error in creating multisig transaction off-chain');

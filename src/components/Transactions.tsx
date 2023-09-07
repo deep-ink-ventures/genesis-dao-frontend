@@ -54,6 +54,7 @@ const Transactions = (props: { daoId: string }) => {
       offset: Math.max(pagination.offset - 1, 0),
       search: filter,
     });
+    dao.stats.pendingMultisig.fetch();
   };
 
   useEffect(() => {
