@@ -33,7 +33,7 @@ import { createAccountSlice } from './account';
 import type { DaoSlice } from './dao';
 import { createDaoSlice } from './dao';
 
-const MAX_BN_INIT_NUMBER = 0x20000000000000;
+export const MAX_BN_INIT_NUMBER = 0x20000000000000;
 
 export interface LogoFormValues {
   email: string;
@@ -448,10 +448,15 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
 
       const divisor = MAX_BN_INIT_NUMBER / 2;
 
-      const daoTokenBalance = assetHolding?.[0]?.balance
-        ? new BN(assetHolding[0].balance / divisor).mul(new BN(divisor))
-        : null;
-      set({ daoTokenBalance });
+      if (assetHolding?.[0]?.balance) {
+        const daoTokenBalance =
+          assetHolding?.[0]?.balance >= MAX_BN_INIT_NUMBER
+            ? new BN(assetHolding[0].balance / divisor).mul(new BN(divisor))
+            : new BN(assetHolding[0].balance);
+        set({ daoTokenBalance });
+      } else {
+        set({ daoTokenBalance: null });
+      }
     } catch (err) {
       get().handleErrors('fetchDaoTokenBalanceFromDB errors', err);
     }
