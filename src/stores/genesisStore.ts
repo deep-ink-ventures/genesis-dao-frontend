@@ -464,11 +464,11 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   fetchDaoTokenTreasuryBalance: async (assetId: number, daoOwnerId: string) => {
     try {
       const response = await AssetsHoldingsService.listAssetHoldings({
-        owner_id: daoOwnerId,
-        asset_id: assetId.toString(),
+        ownerId: daoOwnerId,
+        assetId: assetId.toString(),
       });
-      const assetHolding = response?.results?.find((item: any) => {
-        return item.asset_id.toString() === assetId.toString();
+      const assetHolding = response?.results?.find((item) => {
+        return item.assetId.toString() === assetId.toString();
       });
 
       if (!assetHolding?.balance) {

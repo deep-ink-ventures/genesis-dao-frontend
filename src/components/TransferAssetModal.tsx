@@ -73,7 +73,7 @@ const TransferAssetModal = (props: {
 
         transfer(
           currentWalletAccount,
-          assetHolding.asset_id,
+          assetHolding.assetId,
           data.toAddress,
           bnAmount,
           () => transferAssets.setTxnProcessing(true),

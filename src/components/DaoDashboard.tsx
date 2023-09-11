@@ -103,8 +103,8 @@ const DaoDashboard = () => {
       });
       if (currentDao.daoAssetId) {
         AssetsHoldingsService.listAssetHoldings({
-          asset_id: currentDao.daoAssetId.toString(),
-          owner_id: currentWalletAccount?.address,
+          assetId: currentDao.daoAssetId.toString(),
+          ownerId: currentWalletAccount?.address,
         }).then((result) => {
           setAssetHolding(result?.results?.[0]);
         });

@@ -1,33 +1,49 @@
 import { SERVICE_URL } from '@/config';
 import type { Paginated } from '@/types/response';
+import { camelToSnakeCase } from '@/utils';
+import { keysToCamelCase } from '@/utils/transformer';
 
 interface ListAssetsQueryParams {
   limit?: number;
   offset?: number;
   ordering?: 'id' | 'owner_id' | 'asset_id';
-  asset_id?: string;
-  owner_id?: string;
+  assetId?: string;
+  ownerId?: string;
 }
 
-export interface Asset {
+interface RawAsset {
   dao_id: string;
   id: number;
   owner_id: string;
   total_supply: number;
 }
 
-export interface AssetHolding {
+export interface Asset {
+  daoId: string;
+  id: number;
+  ownerId: string;
+  totalSupply: number;
+}
+
+interface RawAssetHolding {
   asset_id: number;
   balance: number;
   id: number;
   owner_id: string;
 }
 
+export interface AssetHolding {
+  assetId: number;
+  balance: number;
+  id: number;
+  ownerId: string;
+}
+
 const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
   try {
-    const query = Object.fromEntries(
-      Object.entries(params || {}).filter(([, v]) => v != null)
-    );
+    const query = Object.entries(params || {})
+      .filter(([, v]) => v?.toString()?.length)
+      ?.map((value) => [camelToSnakeCase(value[0]), value[1]]);
 
     const queryString = new URLSearchParams(query);
 
@@ -40,16 +56,25 @@ const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
       return null;
     }
 
-    return objResponse as Paginated<AssetHolding[]>;
+    const data = objResponse as Paginated<RawAssetHolding[]>;
+
+    const formattedAssetHoldings: AssetHolding[] = data.results?.map((item) =>
+      keysToCamelCase<RawAssetHolding>(item)
+    );
+
+    return {
+      ...data,
+      results: formattedAssetHoldings,
+    } as Paginated<AssetHolding[]>;
   } catch (err) {
     throw Error('Cannot fetch asset holdings');
   }
 };
 
 const listAssets = async (params?: ListAssetsQueryParams) => {
-  const query = Object.fromEntries(
-    Object.entries(params || {}).filter(([, v]) => v != null)
-  );
+  const query = Object.entries(params || {})
+    .filter(([, v]) => v?.toString()?.length)
+    ?.map((value) => [camelToSnakeCase(value[0]), value[1]]);
 
   const queryString = new URLSearchParams(query);
 
@@ -59,7 +84,16 @@ const listAssets = async (params?: ListAssetsQueryParams) => {
 
   const objResponse = await response.json();
 
-  return objResponse as Paginated<Asset[]>;
+  const data = objResponse as Paginated<RawAsset[]>;
+
+  const formattedAssets: Asset[] = data.results?.map((item) =>
+    keysToCamelCase<RawAsset>(item)
+  );
+
+  return {
+    ...data,
+    results: formattedAssets,
+  } as Paginated<Asset[]>;
 };
 
 const getAsset = async (assetId: string) => {
@@ -67,7 +101,9 @@ const getAsset = async (assetId: string) => {
 
   const objResponse = await response.json();
 
-  return objResponse as Asset;
+  const formattedAsset: Asset = keysToCamelCase<RawAsset>(objResponse);
+
+  return formattedAsset;
 };
 
 export const AssetsHoldingsService = {
