@@ -109,7 +109,7 @@ const Assets = () => {
       AssetsHoldingsService.listAssetHoldings({
         offset: Math.max(pagination.offset - 1, 0),
         limit: 5,
-        owner_id: currentWalletAccount?.address,
+        ownerId: currentWalletAccount?.address,
       }).then(async (res) => {
         if (!res) {
           return;
@@ -117,12 +117,12 @@ const Assets = () => {
         const result = await Promise.all(
           res.results?.map(async (assetHolding) => {
             const asset = account.assets.data.find(
-              (currentAsset) => currentAsset.id === assetHolding.asset_id
+              (currentAsset) => currentAsset.id === assetHolding.assetId
             );
 
             const isAdmin = await getIsAdmin(
               currentWalletAccount?.address,
-              asset?.dao_id
+              asset?.daoId
             );
 
             return {

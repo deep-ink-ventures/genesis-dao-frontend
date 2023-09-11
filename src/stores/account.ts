@@ -59,7 +59,7 @@ export const createAccountSlice: StateCreator<
             let newData: Array<Asset & { dao?: RawDao }> = [];
             if (response.results?.length) {
               const daoDetails = await Promise.all(
-                response.results.map((asset) => DaoService.get(asset.dao_id))
+                response.results.map((asset) => DaoService.get(asset.daoId))
               );
               newData = response.results.map((asset) => ({
                 ...asset,

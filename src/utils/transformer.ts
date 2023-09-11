@@ -126,3 +126,25 @@ export const transformMultiSigTxnToCamelCase = (
     updatedAt: input.updated_at,
   };
 };
+
+type CamelCase<S extends string> = S extends `${infer A}_${infer B}`
+  ? `${Lowercase<A>}${Capitalize<B>}`
+  : Lowercase<S>;
+
+type CameCaseObject<T extends Record<string, any>> = {
+  // @ts-ignore
+  [K in keyof T as CamelCase<K>]: T[K];
+};
+
+export const keysToCamelCase = <T extends Record<any, any>>(
+  input: T
+): CameCaseObject<T> =>
+  Object.entries(input).reduce((acc, [key, value]) => {
+    const camelCaseKey = key.replace(/_([a-z])/g, (_, letter) =>
+      letter.toUpperCase()
+    );
+    return {
+      ...acc,
+      [camelCaseKey]: value,
+    };
+  }, {} as CameCaseObject<T>);

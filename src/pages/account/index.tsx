@@ -176,7 +176,7 @@ const AccountPage = () => {
       {account.assets.selectedAssetHolding != null && (
         <TransferAssetModal
           assetHolding={account.assets.selectedAssetHolding}
-          daoId={account.assets?.selectedAssetHolding?.asset?.dao_id}
+          daoId={account.assets?.selectedAssetHolding?.asset?.daoId}
           daoImage={
             account.assets?.selectedAssetHolding?.asset?.dao?.metadata?.images
               ?.logo?.small?.url
