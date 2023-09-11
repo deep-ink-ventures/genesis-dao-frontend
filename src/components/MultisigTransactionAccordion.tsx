@@ -11,8 +11,8 @@ import type {
   AsMultiParameters,
   CancelAsMultiParameters,
   MultiSigTransaction,
-  MultiSigTransactionStatus,
 } from '@/types/multiSigTransaction';
+import { MultiSigTransactionStatus } from '@/types/multiSigTransaction';
 import { isValidPolkadotAddress, truncateMiddle } from '@/utils';
 import { formatISOTimestamp } from '@/utils/date';
 
@@ -33,6 +33,7 @@ interface TransactionAccordionProps {
   multiSig?: MultiSig;
   collapsed?: boolean;
   onClick?: () => void;
+  onSuccess?: () => void;
 }
 
 interface ExtrinsicFunctionMapping {
@@ -60,6 +61,7 @@ export const convertFunctionToEnglish = (
 const MultisigTransactionAccordion = ({
   multisigTransaction,
   collapsed,
+  onSuccess,
   onClick,
 }: TransactionAccordionProps) => {
   const [
@@ -138,6 +140,9 @@ const MultisigTransactionAccordion = ({
     try {
       makeMultiSigTxnAndSend(arg, () => {
         updateTxnProcessing(false);
+        if (onSuccess) {
+          onSuccess();
+        }
       });
     } catch (err) {
       handleErrors('Error in sending approval transaction', err);
@@ -177,6 +182,9 @@ const MultisigTransactionAccordion = ({
     try {
       cancelMultisigTxnAndSend(arg, () => {
         updateTxnProcessing(false);
+        if (onSuccess) {
+          onSuccess();
+        }
       });
     } catch (err) {
       handleErrors('Error in canceling multisig transaction', err);
@@ -294,13 +302,17 @@ const MultisigTransactionAccordion = ({
                   Approve
                 </button>
               )}
-              {isFirstApprover && multisigTransaction.status !== 'EXECUTED' && (
-                <button
-                  className='btn btn-primary flex-1 text-neutral'
-                  onClick={handleCancel}>
-                  Cancel
-                </button>
-              )}
+              {isFirstApprover &&
+                ![
+                  MultiSigTransactionStatus.Executed,
+                  MultiSigTransactionStatus.Cancelled,
+                ].includes(multisigTransaction.status) && (
+                  <button
+                    className='btn btn-primary flex-1 text-neutral'
+                    onClick={handleCancel}>
+                    Cancel
+                  </button>
+                )}
             </div>
           </div>
         </div>

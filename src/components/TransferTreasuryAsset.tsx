@@ -19,7 +19,7 @@ interface TransferAssetFormValues {
   tokenRecipients: TokenRecipient[];
 }
 
-const TransferTreasuryAsset = () => {
+const TransferTreasuryAsset = ({ onSuccess }: { onSuccess?: () => void }) => {
   const {
     makeTransferDaoTokens,
     makeMultiSigTxnAndSend,
@@ -151,6 +151,9 @@ const TransferTreasuryAsset = () => {
           await postMultiSigTxn(currentDao.daoId, body);
           updateTxnProcessing(false);
           setIsOpen(false);
+          if (onSuccess) {
+            onSuccess();
+          }
           fetchDaoFromDB(currentDao?.daoId);
           reset();
         } catch (err) {

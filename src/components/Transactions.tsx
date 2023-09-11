@@ -54,6 +54,7 @@ const Transactions = (props: { daoId: string }) => {
       offset: Math.max(pagination.offset - 1, 0),
       search: filter,
     });
+    dao.stats.pendingMultisig.fetch();
   };
 
   useEffect(() => {
@@ -190,6 +191,7 @@ const Transactions = (props: { daoId: string }) => {
                   multisigTransaction.id !== activeAccordion || !activeAccordion
                 }
                 onClick={() => handleAccordionClick(multisigTransaction.id)}
+                onSuccess={fetchTransactions}
               />
             ))}
         {!dao.multiSigTransactions.loading && currentWalletAccount && (
