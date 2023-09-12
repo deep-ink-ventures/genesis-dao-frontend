@@ -57,7 +57,7 @@ const AssetItemRow = ({
       </span>
       <span className='my-auto'>
         {uiTokens(
-          new BN(assetHolding.balance),
+          assetHolding.balance,
           'dao',
           `${assetHolding.asset?.dao?.id}`
         )}
