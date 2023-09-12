@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
+import { convertToBN } from '@/utils/number';
+
 import AssetHoldingCard from '../src/components/AssetHoldingCard';
 
 // eslint-disable-next-line
@@ -25,10 +27,10 @@ const mockAsset = {
 };
 
 const mockAssetHolding = {
-  asset_id: 1,
-  balance: 100000000000000,
+  assetId: 1,
+  balance: convertToBN(100000000000000),
   id: 1,
-  owner_id: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
+  ownerId: '5Dc4froJzAxNrpxC1JMvM27GMMjk6fN5cxiQDV6zdbeHvBn6',
   asset: mockAsset,
 };
 

@@ -2,6 +2,7 @@
 import { render, screen } from '@testing-library/react';
 
 import AssetsTable from '@/components/AssetsTable';
+import { convertToBN } from '@/utils/number';
 
 describe('AssetsTable', () => {
   test('renders the table header correctly', () => {
@@ -18,7 +19,7 @@ describe('AssetsTable', () => {
       {
         dao_id: 'DAOID',
         owner_id: 'Owner 1',
-        balance: 100000000000000,
+        balance: convertToBN(100000000000000),
         image: 'image1.jpg',
         asset: {
           dao: {
@@ -34,7 +35,7 @@ describe('AssetsTable', () => {
         dao_id: 'DAOID',
         name: 'Item 2',
         owner_id: 'Owner 2',
-        balance: 100000000000000,
+        balance: convertToBN(100000000000000),
         image: 'image1.jpg',
         asset: {
           dao: {
