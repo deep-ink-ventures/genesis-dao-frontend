@@ -1,6 +1,9 @@
+import type { BN } from '@polkadot/util';
+
 import { SERVICE_URL } from '@/config';
 import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
+import { convertToBN } from '@/utils/number';
 import { keysToCamelCase } from '@/utils/transformer';
 
 interface ListAssetsQueryParams {
@@ -34,7 +37,7 @@ interface RawAssetHolding {
 
 export interface AssetHolding {
   assetId: number;
-  balance: number;
+  balance: BN;
   id: number;
   ownerId: string;
 }
@@ -58,9 +61,14 @@ const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
 
     const data = objResponse as Paginated<RawAssetHolding[]>;
 
-    const formattedAssetHoldings: AssetHolding[] = data.results?.map((item) =>
-      keysToCamelCase<RawAssetHolding>(item)
-    );
+    const formattedAssetHoldings: AssetHolding[] = data.results?.map((item) => {
+      const formattedAssetHolding = keysToCamelCase(item);
+
+      return {
+        ...formattedAssetHolding,
+        balance: convertToBN(formattedAssetHolding.balance),
+      };
+    });
 
     return {
       ...data,

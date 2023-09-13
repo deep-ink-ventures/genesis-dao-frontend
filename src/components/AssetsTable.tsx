@@ -1,4 +1,3 @@
-import { BN } from '@polkadot/util';
 import cn from 'classnames';
 import Image from 'next/image';
 
@@ -57,7 +56,7 @@ const AssetItemRow = ({
       </span>
       <span className='my-auto'>
         {uiTokens(
-          new BN(assetHolding.balance),
+          assetHolding.balance,
           'dao',
           `${assetHolding.asset?.dao?.id}`
         )}
