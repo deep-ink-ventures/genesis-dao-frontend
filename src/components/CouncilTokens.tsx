@@ -58,7 +58,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     handleSubmit,
     reset,
     setValue,
-    watch,
     control,
     formState: { errors },
   } = formMethods;
@@ -67,7 +66,6 @@ const CouncilTokens = (props: { daoId: string | null }) => {
     control,
     name: 'tokenRecipients',
   });
-  const councilMembers = watch('councilMembers');
 
   const getTotalRecipientsTokens = (
     recipients: CouncilTokensValues['tokenRecipients']
@@ -327,14 +325,14 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                   },
                 })}
               />
-              <ErrorMessage
-                errors={errors}
-                name='councilThreshold'
-                render={({ message }) => (
-                  <p className='ml-2 mt-1 text-error'>{message}</p>
-                )}
-              />
             </div>
+            <ErrorMessage
+              errors={errors}
+              name='councilThreshold'
+              render={({ message }) => (
+                <p className='ml-2 mt-1 text-error'>{message}</p>
+              )}
+            />
             <p className='text-lg'>
               Out of <span className='text-primary'>{membersCount}</span>{' '}
               Council Member(s)
@@ -348,8 +346,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
               className={cn(
                 `btn btn-primary mr-3 w-48 ${txnProcessing ? 'loading' : ''}`,
                 {
-                  'btn-disabled':
-                    !daoTokenTreasuryBalance || councilMembers.length < 1,
+                  'btn-disabled': !daoTokenTreasuryBalance || membersCount < 2,
                   loading: txnProcessing,
                 }
               )}
