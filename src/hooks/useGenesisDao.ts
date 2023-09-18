@@ -509,12 +509,12 @@ const useGenesisDao = () => {
               () => {
                 setTimeout(() => {
                   fetchDaoTokenBalance(assetId, walletAccount.address);
-                  if (onSuccess) {
-                    onSuccess();
-                  }
                 }, 2000);
               }
             );
+            if (onSuccess) {
+              onSuccess();
+            }
           }
         )
         .catch((err) => {

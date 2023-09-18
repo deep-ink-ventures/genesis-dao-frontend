@@ -491,11 +491,11 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
   fetchNativeTokenBalance: async (address: string) => {
     try {
       const response = await fetch(`${SERVICE_URL}/accounts/${address}/`);
-      if (response.status === 404) {
+      if (!response.ok) {
         return;
       }
       const account = await response.json();
-      if (account.balance?.free) {
+      if (account?.balance?.free) {
         const freeBalance = new BN(account.balance.free);
         set({ nativeTokenBalance: freeBalance });
       } else {
