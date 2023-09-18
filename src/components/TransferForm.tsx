@@ -2,7 +2,6 @@
 // import { hexToU8a, isHex, BN } from '@polkadot/util';
 
 import { ErrorMessage } from '@hookform/error-message';
-import { BN } from '@polkadot/util';
 import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
@@ -12,6 +11,7 @@ import useGenesisDao from '@/hooks/useGenesisDao';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { isValidPolkadotAddress, uiTokens } from '@/utils';
+import { convertToBN } from '@/utils/number';
 
 const TransferForm = (props: { assetId: number; daoId: string }) => {
   const { transfer } = useGenesisDao();
@@ -35,7 +35,7 @@ const TransferForm = (props: { assetId: number; daoId: string }) => {
   const onSubmit: SubmitHandler<TransferFormValues> = async (
     data: TransferFormValues
   ) => {
-    const bnAmount = new BN(data.amount * DAO_UNITS);
+    const bnAmount = convertToBN(data.amount * DAO_UNITS);
     updateTxnProcessing(true);
     if (currentWalletAccount) {
       try {

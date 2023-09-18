@@ -1,5 +1,4 @@
 import { ErrorMessage } from '@hookform/error-message';
-import { BN } from '@polkadot/util';
 import Modal from 'antd/lib/modal';
 import cn from 'classnames';
 import { useEffect } from 'react';
@@ -12,6 +11,7 @@ import { type AssetHolding } from '@/services/assets';
 import type { TransferFormValues } from '@/stores/genesisStore';
 import useGenesisStore from '@/stores/genesisStore';
 import { isValidPolkadotAddress } from '@/utils';
+import { convertToBN } from '@/utils/number';
 
 import AssetHoldingCard from './AssetHoldingCard';
 
@@ -66,7 +66,7 @@ const TransferAssetModal = (props: {
   };
 
   const onSubmit: SubmitHandler<TransferFormValues> = async (data) => {
-    const bnAmount = new BN(data.amount * DAO_UNITS);
+    const bnAmount = convertToBN(data.amount * DAO_UNITS);
     if (currentWalletAccount) {
       try {
         transferAssets.setTxnProcessing(true);

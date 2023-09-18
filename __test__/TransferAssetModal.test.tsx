@@ -2,6 +2,7 @@
 import { render } from '@testing-library/react';
 
 import TransferAssetModal from '@/components/TransferAssetModal';
+import { convertToBN } from '@/utils/number';
 
 // eslint-disable-next-line
 jest.mock('next/router', () => ({
@@ -9,7 +10,7 @@ jest.mock('next/router', () => ({
 }));
 
 const assetHolding = {
-  balance: 10,
+  balance: convertToBN(10),
 } as any;
 
 describe('TransferAssetModal', () => {

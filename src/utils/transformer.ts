@@ -5,6 +5,8 @@ import type { RawMultiSigTransaction } from '@/services/multiSigTransactions';
 import type { DaoDetail } from '@/types/dao';
 import type { MultiSigTransaction } from '@/types/multiSigTransaction';
 
+import { convertToBN } from './number';
+
 export const transformDaoToDaoDetail = (dao: RawDao) => {
   return {
     daoId: dao.id,
@@ -52,7 +54,7 @@ export const transformMultiSigTxnToCamelCase = (
                 id: input.corresponding_models.asset.id,
                 daoId: input.corresponding_models.asset.dao_id,
                 ownerId: input.corresponding_models.asset.owner_id,
-                totalSupply: new BN(
+                totalSupply: convertToBN(
                   input.corresponding_models.asset.total_supply ?? 0
                 ),
               }

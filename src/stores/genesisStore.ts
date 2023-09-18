@@ -26,14 +26,13 @@ import type {
 import { proposalStatusNames } from '@/types/proposal';
 import { TxnResponse } from '@/types/response';
 import type { IncomingTokenBalanceData } from '@/types/token';
+import { convertToBN } from '@/utils/number';
 import { transformDaoToDaoDetail } from '@/utils/transformer';
 
 import type { AccountSlice } from './account';
 import { createAccountSlice } from './account';
 import type { DaoSlice } from './dao';
 import { createDaoSlice } from './dao';
-
-export const MAX_BN_INIT_NUMBER = 0x20000000000000;
 
 export interface LogoFormValues {
   email: string;
@@ -429,7 +428,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
           return;
         }
         const balanceStr = assetData?.balance?.replaceAll(',', '');
-        const daoTokenBalance = new BN(balanceStr);
+        const daoTokenBalance = convertToBN(Number(balanceStr));
         set({ daoTokenBalance });
       })
       .catch((err) => {
@@ -446,13 +445,8 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         return item.asset_id.toString() === assetId.toString();
       });
 
-      const divisor = MAX_BN_INIT_NUMBER / 2;
-
       if (assetHolding?.[0]?.balance) {
-        const daoTokenBalance =
-          assetHolding?.[0]?.balance >= MAX_BN_INIT_NUMBER
-            ? new BN(assetHolding[0].balance / divisor).mul(new BN(divisor))
-            : new BN(assetHolding[0].balance);
+        const daoTokenBalance = convertToBN(assetHolding[0].balance);
         set({ daoTokenBalance });
       } else {
         set({ daoTokenBalance: null });
@@ -474,15 +468,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       if (!assetHolding?.balance) {
         set({ daoTokenTreasuryBalance: null });
       } else {
-        // BN._initNumber sets 0x20000000000000 as max value
-        const divisor = MAX_BN_INIT_NUMBER / 2;
-
-        const daoTokenTreasuryBalance =
-          assetHolding.balance >= MAX_BN_INIT_NUMBER
-            ? new BN(assetHolding.balance / divisor).mul(new BN(divisor))
-            : new BN(assetHolding.balance);
-
-        set({ daoTokenTreasuryBalance });
+        set({ daoTokenTreasuryBalance: assetHolding.balance });
       }
     } catch (err) {
       get().handleErrors('fetchDaoTokenTreasuryBalance errors', err);
@@ -495,8 +481,9 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         return;
       }
       const account = await response.json();
+
       if (account?.balance?.free) {
-        const freeBalance = new BN(account.balance.free);
+        const freeBalance = convertToBN(account.balance.free);
         set({ nativeTokenBalance: freeBalance });
       } else {
         set({ nativeTokenBalance: new BN(0) });
