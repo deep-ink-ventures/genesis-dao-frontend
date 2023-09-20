@@ -1,9 +1,8 @@
-import type { BN } from '@polkadot/util';
+import { BN } from '@polkadot/util';
 
 import { SERVICE_URL } from '@/config';
 import type { Paginated } from '@/types/response';
 import { camelToSnakeCase } from '@/utils';
-import { convertToBN } from '@/utils/number';
 import { keysToCamelCase } from '@/utils/transformer';
 
 interface ListAssetsQueryParams {
@@ -66,7 +65,7 @@ const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
 
       return {
         ...formattedAssetHolding,
-        balance: convertToBN(formattedAssetHolding.balance),
+        balance: new BN(formattedAssetHolding.balance.toString()),
       };
     });
 

@@ -26,7 +26,6 @@ import type {
 import { proposalStatusNames } from '@/types/proposal';
 import { TxnResponse } from '@/types/response';
 import type { IncomingTokenBalanceData } from '@/types/token';
-import { convertToBN } from '@/utils/number';
 import { transformDaoToDaoDetail } from '@/utils/transformer';
 
 import type { AccountSlice } from './account';
@@ -428,7 +427,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
           return;
         }
         const balanceStr = assetData?.balance?.replaceAll(',', '');
-        const daoTokenBalance = convertToBN(Number(balanceStr));
+        const daoTokenBalance = new BN(balanceStr);
         set({ daoTokenBalance });
       })
       .catch((err) => {
@@ -446,7 +445,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       });
 
       if (assetHolding?.[0]?.balance) {
-        const daoTokenBalance = convertToBN(assetHolding[0].balance);
+        const daoTokenBalance = new BN(assetHolding[0].balance.toString());
         set({ daoTokenBalance });
       } else {
         set({ daoTokenBalance: null });
@@ -483,7 +482,7 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       const account = await response.json();
 
       if (account?.balance?.free) {
-        const freeBalance = convertToBN(account.balance.free);
+        const freeBalance = new BN(account.balance.free.toString());
         set({ nativeTokenBalance: freeBalance });
       } else {
         set({ nativeTokenBalance: new BN(0) });
@@ -523,9 +522,9 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
             metadataUrl: p.metadata_url || null,
             metadataHash: p.metadata_hash || null,
             status: proposalStatusNames[p.status as keyof ProposalStatusNames],
-            inFavor: new BN(p.votes?.pro || 0),
-            against: new BN(p.votes?.contra || 0),
-            voterCount: new BN(p.votes?.total || 0),
+            inFavor: new BN(p.votes?.pro.toString() || 0),
+            against: new BN(p.votes?.contra.toString() || 0),
+            voterCount: new BN(p.votes?.total.toString() || 0),
             proposalName: p.metadata?.title || null,
             description: p.metadata?.description || null,
             link: p.metadata?.url || null,
@@ -559,9 +558,9 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         metadataHash: p.metadata_hash || null,
         status:
           proposalStatusNames[p.status as keyof ProposalStatusNames] || null,
-        inFavor: new BN(p.votes?.pro || 0),
-        against: new BN(p.votes?.contra || 0),
-        voterCount: new BN(p.votes?.total || 0),
+        inFavor: new BN(p.votes?.pro.toString() || 0),
+        against: new BN(p.votes?.contra.toString() || 0),
+        voterCount: new BN(p.votes?.total.toString() || 0),
         proposalName: p.metadata?.title || null,
         description: p.metadata?.description || null,
         link: p.metadata?.url || null,

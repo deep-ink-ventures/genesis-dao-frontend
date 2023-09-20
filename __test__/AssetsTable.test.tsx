@@ -1,8 +1,8 @@
 /* eslint-disable testing-library/prefer-screen-queries */
+import { BN } from '@polkadot/util';
 import { render, screen } from '@testing-library/react';
 
 import AssetsTable from '@/components/AssetsTable';
-import { convertToBN } from '@/utils/number';
 
 describe('AssetsTable', () => {
   test('renders the table header correctly', () => {
@@ -19,7 +19,7 @@ describe('AssetsTable', () => {
       {
         dao_id: 'DAOID',
         owner_id: 'Owner 1',
-        balance: convertToBN(100000000000000),
+        balance: new BN('10000000000000000000000000'),
         image: 'image1.jpg',
         asset: {
           dao: {
@@ -35,7 +35,7 @@ describe('AssetsTable', () => {
         dao_id: 'DAOID',
         name: 'Item 2',
         owner_id: 'Owner 2',
-        balance: convertToBN(100000000000000),
+        balance: new BN('10000000000000000000000000'),
         image: 'image1.jpg',
         asset: {
           dao: {
@@ -53,6 +53,8 @@ describe('AssetsTable', () => {
 
     expect(getByText('Item 1')).toBeInTheDocument();
     expect(screen.getAllByText('DAOID').length).toBe(2);
-    expect(screen.getAllByText('10,000 DAOID')[0]).toBeInTheDocument();
+    expect(
+      screen.getAllByText('1,000,000,000,000,000 DAOID')[0]
+    ).toBeInTheDocument();
   });
 });
