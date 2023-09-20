@@ -1,8 +1,8 @@
 /* eslint-disable testing-library/prefer-screen-queries */
+import { BN } from '@polkadot/util';
 import { render } from '@testing-library/react';
 
 import TransferAssetModal from '@/components/TransferAssetModal';
-import { convertToBN } from '@/utils/number';
 
 // eslint-disable-next-line
 jest.mock('next/router', () => ({
@@ -10,7 +10,7 @@ jest.mock('next/router', () => ({
 }));
 
 const assetHolding = {
-  balance: convertToBN(10),
+  balance: new BN('10000000000000000000000000'),
 } as any;
 
 describe('TransferAssetModal', () => {

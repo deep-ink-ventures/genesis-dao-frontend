@@ -5,8 +5,6 @@ import type { RawMultiSigTransaction } from '@/services/multiSigTransactions';
 import type { DaoDetail } from '@/types/dao';
 import type { MultiSigTransaction } from '@/types/multiSigTransaction';
 
-import { convertToBN } from './number';
-
 export const transformDaoToDaoDetail = (dao: RawDao) => {
   return {
     daoId: dao.id,
@@ -54,8 +52,8 @@ export const transformMultiSigTxnToCamelCase = (
                 id: input.corresponding_models.asset.id,
                 daoId: input.corresponding_models.asset.dao_id,
                 ownerId: input.corresponding_models.asset.owner_id,
-                totalSupply: convertToBN(
-                  input.corresponding_models.asset.total_supply ?? 0
+                totalSupply: new BN(
+                  input.corresponding_models.asset.total_supply?.toString() ?? 0
                 ),
               }
             : null,
@@ -69,7 +67,8 @@ export const transformMultiSigTxnToCamelCase = (
                 proposalDuration:
                   input.corresponding_models.dao.proposal_duration,
                 proposalTokenDeposit: new BN(
-                  input.corresponding_models.dao.proposal_token_deposit ?? 0
+                  input.corresponding_models.dao.proposal_token_deposit?.toString() ??
+                    0
                 ),
                 minimumMajorityPer1024:
                   input.corresponding_models.dao.minimum_majority_per_1024,
@@ -95,16 +94,20 @@ export const transformMultiSigTxnToCamelCase = (
                 votes:
                   {
                     pro: new BN(
-                      input.corresponding_models.proposal.votes?.pro ?? 0
+                      input.corresponding_models.proposal.votes?.pro?.toString() ??
+                        0
                     ),
                     contra: new BN(
-                      input.corresponding_models.proposal.votes?.contra ?? 0
+                      input.corresponding_models.proposal.votes?.contra?.toString() ??
+                        0
                     ),
                     abstained: new BN(
-                      input.corresponding_models.proposal.votes?.abstained ?? 0
+                      input.corresponding_models.proposal.votes?.abstained?.toString() ??
+                        0
                     ),
                     total: new BN(
-                      input.corresponding_models.proposal.votes?.total ?? 0
+                      input.corresponding_models.proposal.votes?.total?.toString() ??
+                        0
                     ),
                   } || null,
                 metadata: input.corresponding_models.proposal.metadata,
