@@ -105,7 +105,6 @@ const useGenesisDao = () => {
           // add txn to our store - first index
           addTxnNotification(successNoti);
           successCB?.();
-          updateTxnProcessing(false);
         }
         updateTxnProcessing(false);
       }
@@ -215,7 +214,6 @@ const useGenesisDao = () => {
               `Congrats! ${daoName} is created.`,
               'Something went wrong. Please try again.',
               () => {
-                updateTxnProcessing(true);
                 setTimeout(() => {
                   fetchDaoFromDB(daoId as string);
                   updateTxnProcessing(false);
@@ -259,6 +257,7 @@ const useGenesisDao = () => {
               'DAO Destroyed. Bye Bye.',
               'Something went wrong. Please try again.',
               () => {
+                updateTxnProcessing(false);
                 router.push('/');
               }
             );
@@ -509,6 +508,7 @@ const useGenesisDao = () => {
               () => {
                 setTimeout(() => {
                   fetchDaoTokenBalance(assetId, walletAccount.address);
+                  updateTxnProcessing(false);
                 }, 2000);
               }
             );
@@ -610,6 +610,7 @@ const useGenesisDao = () => {
             'Governance Model Set Up Successfully',
             'Governance Setup Transaction Failed',
             () => {
+              updateTxnProcessing(false);
               updateCreateDaoSteps(2);
             }
           );
@@ -923,6 +924,7 @@ const useGenesisDao = () => {
             'Multisig Transaction created Successfully',
             'Multisig Transaction Failed',
             () => {
+              updateTxnProcessing(false);
               cb();
             }
           );
@@ -1012,6 +1014,7 @@ const useGenesisDao = () => {
             'Multisig transaction has bene canceled successfully',
             'Transaction Failed',
             () => {
+              updateTxnProcessing(false);
               cb();
             }
           );
