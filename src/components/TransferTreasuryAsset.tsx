@@ -23,6 +23,7 @@ const TransferTreasuryAsset = ({ onSuccess }: { onSuccess?: () => void }) => {
   const {
     makeTransferDaoTokens,
     makeMultiSigTxnAndSend,
+    doChallenge,
     postMultiSigTxn,
     handleTxnError,
   } = useGenesisDao();
@@ -115,6 +116,16 @@ const TransferTreasuryAsset = ({ onSuccess }: { onSuccess?: () => void }) => {
         txnInHex: callDataInHex,
         otherSignatories,
       };
+
+      const sig = await doChallenge(currentDao.daoId);
+
+      if (!sig) {
+        if (!sig) {
+          handleErrors(`Cannot get validate signature`);
+          return;
+        }
+      }
+
       await makeMultiSigTxnAndSend(multiArgs, async () => {
         updateTxnProcessing(true);
 
@@ -148,7 +159,7 @@ const TransferTreasuryAsset = ({ onSuccess }: { onSuccess?: () => void }) => {
           timepoint,
         };
         try {
-          await postMultiSigTxn(currentDao.daoId, body);
+          await postMultiSigTxn(currentDao.daoId, body, sig);
           updateTxnProcessing(false);
           setIsOpen(false);
           if (onSuccess) {
