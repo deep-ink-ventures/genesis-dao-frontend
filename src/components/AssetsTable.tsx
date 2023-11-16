@@ -1,3 +1,4 @@
+import { stringShorten } from '@polkadot/util';
 import cn from 'classnames';
 import Image from 'next/image';
 
@@ -12,24 +13,39 @@ import DaoImage from './DaoImage';
 export type AssetHoldingsTableItem = AssetHolding & {
   asset?: Asset & { dao?: RawDao };
   isAdmin?: boolean;
+  delegateAddress?: string | null;
 };
 
 interface AssestHoldingsTableProps {
   assetHoldings?: Array<AssetHoldingsTableItem>;
   onTransferClick?: (assetHolding?: AssetHoldingsTableItem) => void;
   onOpenLinkClick?: (assetHolding?: AssetHoldingsTableItem) => void;
+  onDelegateClick?: (assetHolding?: AssetHoldingsTableItem) => void;
+  onRedelegateClick?: (assetHolding?: AssetHoldingsTableItem) => void;
 }
 
 const AssetItemRow = ({
   assetHolding,
   onTransferClick,
   onOpenLinkClick,
+  onDelegateClick,
+  onRedelegateClick,
 }: Omit<AssestHoldingsTableProps, 'assetHoldings'> & {
   assetHolding: AssetHoldingsTableItem;
 }) => {
+  const handleDelegateRedelegate = () => {
+    if (assetHolding.delegateAddress) {
+      if (onRedelegateClick) {
+        onRedelegateClick(assetHolding);
+      }
+    } else if (onDelegateClick) {
+      onDelegateClick(assetHolding);
+    }
+  };
+
   return (
     <div
-      className='grid grid-cols-[auto_10%_15%_15%_15%] gap-2 space-x-2 rounded-lg border-[0.3px] border-solid
+      className='grid grid-cols-[auto_10%_15%_15%_15%_15%] gap-2 space-x-2 rounded-lg border-[0.3px] border-solid
     border-neutral-focus px-4 py-3 text-sm font-normal text-neutral-focus'>
       <span className='flex items-center gap-2'>
         <div className='relative flex items-center justify-center'>
@@ -55,6 +71,11 @@ const AssetItemRow = ({
         </span>
       </span>
       <span className='my-auto'>
+        {assetHolding.delegateAddress
+          ? stringShorten(assetHolding.delegateAddress)
+          : '-'}
+      </span>
+      <span className='my-auto'>
         {uiTokens(
           assetHolding.balance,
           'dao',
@@ -65,6 +86,17 @@ const AssetItemRow = ({
         <span
           className='rounded-full border border-solid border-neutral-focus p-2 hover:border-primary'
           onClick={() => onTransferClick && onTransferClick(assetHolding)}>
+          <Image
+            src={coinsTransfer}
+            alt='transfer'
+            width={16}
+            height={16}
+            className='m-auto cursor-pointer'
+          />
+        </span>
+        <span
+          className='rounded-full border border-solid border-neutral-focus p-2 hover:border-primary'
+          onClick={handleDelegateRedelegate}>
           <Image
             src={coinsTransfer}
             alt='transfer'
@@ -93,13 +125,16 @@ const AssetsHoldingsTable = ({
   assetHoldings = [],
   onTransferClick,
   onOpenLinkClick,
+  onDelegateClick,
+  onRedelegateClick,
 }: AssestHoldingsTableProps) => {
   return (
     <div className='w-full'>
-      <div className='grid grid-cols-[auto_10%_15%_15%_15%] gap-2 space-x-2 px-4 py-3 text-sm font-normal text-neutral-focus'>
+      <div className='grid grid-cols-[auto_10%_15%_15%_15%_15%] gap-2 space-x-2 px-4 py-3 text-sm font-normal text-neutral-focus'>
         <span>DAO NAME</span>
         <span>DAO ID</span>
         <span>Role</span>
+        <span>Delegate</span>
         <span>Owned Tokens</span>
         <span>Actions</span>
       </div>
@@ -109,6 +144,8 @@ const AssetsHoldingsTable = ({
             key={`${index}-${assetHolding.id}`}
             assetHolding={assetHolding}
             onTransferClick={onTransferClick}
+            onDelegateClick={onDelegateClick}
+            onRedelegateClick={onRedelegateClick}
             onOpenLinkClick={onOpenLinkClick}
           />
         ))}
