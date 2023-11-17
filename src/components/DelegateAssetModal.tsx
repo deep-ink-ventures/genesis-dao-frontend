@@ -134,7 +134,7 @@ const DelegateAssetModal = (props: {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='px-12'>
           <h2 className='mb-4 text-center text-3xl font-semibold text-primary'>
-            Delegate Voting Power
+            {isDelegated ? 'Revoke Delegation' : 'Delegate Voting Power'}
           </h2>
           <div className='w-full space-y-8'>
             <div className='flex w-full items-center'>
@@ -143,7 +143,7 @@ const DelegateAssetModal = (props: {
                 <input
                   type='text'
                   className='input input-bordered input-primary'
-                  placeholder='Recipient Address'
+                  placeholder='Address'
                   {...register('account', {
                     required: 'Required',
                     validate: (add) =>

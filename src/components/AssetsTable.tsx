@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { Asset, AssetHolding } from '@/services/assets';
 import type { RawDao } from '@/services/daos';
 import coinsTransfer from '@/svg/coinsTransfer.svg';
+import delegate from '@/svg/delegate.svg';
 import openLink from '@/svg/openlink.svg';
 import { uiTokens } from '@/utils';
 
@@ -98,7 +99,7 @@ const AssetItemRow = ({
           className='rounded-full border border-solid border-neutral-focus p-2 hover:border-primary'
           onClick={handleDelegateRedelegate}>
           <Image
-            src={coinsTransfer}
+            src={delegate}
             alt='transfer'
             width={16}
             height={16}
