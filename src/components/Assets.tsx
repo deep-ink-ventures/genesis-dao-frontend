@@ -143,7 +143,7 @@ const Assets = () => {
               ...assetHolding,
               asset,
               isAdmin,
-              delegateAddress: account.account.data?.delegateAddress,
+              delegateAddress: assetHolding.delegatedTo,
             };
           })
         );
