@@ -115,12 +115,18 @@ const CouncilTokens = (props: { daoId: string | null }) => {
       return;
     }
 
-    const recipients = data.tokenRecipients.map((recipient) => {
-      return {
-        walletAddress: recipient.walletAddress,
-        tokens: recipient.tokens,
-      };
-    });
+    const recipients =
+      data?.tokenRecipients
+        ?.filter(
+          (recipient) =>
+            recipient?.walletAddress?.length && recipient.tokens?.gt(new BN(0))
+        )
+        ?.map((recipient) => {
+          return {
+            walletAddress: recipient.walletAddress,
+            tokens: recipient.tokens,
+          };
+        }) || [];
 
     const recipientsWithTreasury = [
       ...recipients,
