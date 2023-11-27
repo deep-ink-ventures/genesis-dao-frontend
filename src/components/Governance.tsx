@@ -1,7 +1,9 @@
 import useGenesisStore from '@/stores/genesisStore';
 
 import ChangeDaoOwner from './ChangeDaoOwner';
+import CreateVestingWallet from './CreateVestingWallet';
 import DestroyMultiSigDao from './DestroyMultiSigDao';
+import EnablePlugins from './EnablePlugins';
 import TransferTreasuryAsset from './TransferTreasuryAsset';
 
 const Governance = () => {
@@ -46,6 +48,26 @@ const Governance = () => {
               </div>
               <div className='flex'>
                 <TransferTreasuryAsset onSuccess={onSuccess} />
+              </div>
+            </div>
+            <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>
+              <div className='flex w-1/6 shrink-0'>Enable Plugins</div>
+              <div className='flex grow'>
+                Connect your DAO to ink! - a smart contract layer that allows
+                you to extend the functionality of your ink layer.
+              </div>
+              <div className='flex'>
+                <EnablePlugins />
+              </div>
+            </div>
+            <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>
+              <div className='flex w-1/6 shrink-0'>Create Vesting Wallet</div>
+              <div className='flex grow'>
+                Create a wallet with full voting power, but tokens are locked
+                for a given vesting time.
+              </div>
+              <div className='flex'>
+                <CreateVestingWallet />
               </div>
             </div>
             <div className='flex items-center gap-2 rounded-[8px] border-[0.3px] border-neutral-focus p-4'>
