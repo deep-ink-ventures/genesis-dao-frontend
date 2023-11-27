@@ -74,7 +74,7 @@ const useGenesisDao = () => {
       };
     }
     // eslint-disable-next-line
-    console.error(err)
+    console.error(err);
     updateTxnProcessing(false);
     addTxnNotification(newNoti);
   };
@@ -179,7 +179,10 @@ const useGenesisDao = () => {
 
           if (method === 'ExtrinsicFailed') {
             // eslint-disable-next-line
-            console.log('Result dispatch error', result.dispatchError?.toHuman());
+            console.log(
+              'Result dispatch error',
+              result.dispatchError?.toHuman()
+            );
             const errorNoti = {
               title: `${TxnResponse.Error}`,
               message: errorMsg,
@@ -516,6 +519,88 @@ const useGenesisDao = () => {
               onSuccess();
             }
           }
+        )
+        .catch((err) => {
+          updateTxnProcessing(false);
+          handleTxnError(new Error(err));
+        });
+    } else {
+      handleErrors('no signer');
+    }
+  };
+
+  const delegate = (
+    walletAccount: WalletAccount,
+    assetId: number,
+    account: string,
+    onStart?: () => void,
+    onSuccess?: () => void
+  ) => {
+    if (walletAccount.signer) {
+      if (onStart) {
+        onStart();
+      }
+
+      const txCallBack = (result: ISubmittableResult) => {
+        txResponseCallback(
+          result,
+          `Transferred Successfully`,
+          'Something went wrong. Please try again. ',
+          () => {
+            if (onSuccess) {
+              onSuccess();
+            }
+          }
+        );
+      };
+
+      apiConnection?.tx?.assets
+        ?.delegate?.(assetId, account)
+        .signAndSend(
+          walletAccount.address,
+          { signer: walletAccount.signer },
+          txCallBack
+        )
+        .catch((err) => {
+          updateTxnProcessing(false);
+          handleTxnError(new Error(err));
+        });
+    } else {
+      handleErrors('no signer');
+    }
+  };
+
+  const revokeDelegation = (
+    walletAccount: WalletAccount,
+    assetId: number,
+    account: string,
+    onStart?: () => void,
+    onSuccess?: () => void
+  ) => {
+    if (walletAccount.signer) {
+      if (onStart) {
+        onStart();
+      }
+
+      const txCallBack = (result: ISubmittableResult) => {
+        txResponseCallback(
+          result,
+          `Transferred Successfully`,
+          'Something went wrong. Please try again. ',
+          () => {
+            if (onSuccess) {
+              onSuccess();
+            }
+          }
+        );
+      };
+
+      apiConnection?.tx?.assets
+        ?.revokeDelegation?.(assetId, account)
+        .signAndSend(
+          walletAccount.address,
+          { signer: walletAccount.signer },
+          txCallBack
         )
         .catch((err) => {
           updateTxnProcessing(false);
@@ -1033,6 +1118,8 @@ const useGenesisDao = () => {
     issueTokens,
     handleTxnError,
     transfer,
+    delegate,
+    revokeDelegation,
     sendBatchTxns,
     makeCreateDaoTxn,
     destroyDaoAndAssets,

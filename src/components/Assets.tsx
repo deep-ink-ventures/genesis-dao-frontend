@@ -45,7 +45,11 @@ const Assets = () => {
   const [assetHoldingsResponse, setAssetHoldingsResponse] = useState<{
     totalCount: number;
     assetHoldings: Array<
-      AssetHolding & { asset?: Asset & { dao?: RawDao }; isAdmin?: boolean }
+      AssetHolding & {
+        asset?: Asset & { dao?: RawDao };
+        isAdmin?: boolean;
+        delegateAddress?: string | null;
+      }
     >;
   }>();
 
@@ -75,6 +79,16 @@ const Assets = () => {
   const handleTransferClick = (asset?: AssetHoldingsTableItem) => {
     account.assets.selectAssetHolding(asset);
     account.modals.transferAssets.setVisibility(true);
+  };
+
+  const handleDelegateClick = (asset?: AssetHoldingsTableItem) => {
+    account.assets.selectAssetHolding(asset);
+    account.modals.delegate.setVisibility(true);
+  };
+
+  const handleRedelegateClick = (asset?: AssetHoldingsTableItem) => {
+    account.assets.selectAssetHolding(asset);
+    account.modals.revokeDelegate.setVisibility(true);
   };
 
   // const handleLinkClick = (assetHolding?: AssetHoldingsTableItem) => {
@@ -129,6 +143,7 @@ const Assets = () => {
               ...assetHolding,
               asset,
               isAdmin,
+              delegateAddress: assetHolding.delegatedTo,
             };
           })
         );
@@ -238,6 +253,8 @@ const Assets = () => {
               <AssetsHoldingsTable
                 assetHoldings={filteredAssetHoldings}
                 onTransferClick={handleTransferClick}
+                onDelegateClick={handleDelegateClick}
+                onRedelegateClick={handleRedelegateClick}
                 onOpenLinkClick={handleLinkClick}
               />
             ) : (
