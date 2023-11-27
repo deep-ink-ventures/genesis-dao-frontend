@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import Assets from '@/components/Assets';
+import DelegateAssetModal from '@/components/DelegateAssetModal';
 import TransferAssetModal from '@/components/TransferAssetModal';
 import WalletConnect from '@/components/WalletConnect';
 import useGenesisStore from '@/stores/genesisStore';
@@ -80,6 +81,9 @@ const AccountPage = () => {
 
   useEffect(() => {
     account.assets.fetchAssets();
+    if (currentWalletAccount) {
+      account.account.fetchAccount(currentWalletAccount.address);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentWalletAccount]);
 
@@ -173,16 +177,44 @@ const AccountPage = () => {
         </div>
         <div className='min-w-0 basis-3/4 p-5 pt-0'>{displayPage()}</div>
       </div>
+      {account.assets.selectedAssetHolding != null &&
+        account.modals.transferAssets.visible && (
+          <TransferAssetModal
+            assetHolding={account.assets.selectedAssetHolding}
+            daoId={account.assets?.selectedAssetHolding?.asset?.daoId}
+            daoImage={
+              account.assets?.selectedAssetHolding?.asset?.dao?.metadata?.images
+                ?.logo?.small?.url
+            }
+            open={account.modals.transferAssets.visible}
+            onClose={() => account.modals.transferAssets.setVisibility(false)}
+            onSuccess={() => account.assets.fetchAssets()}
+          />
+        )}
       {account.assets.selectedAssetHolding != null && (
-        <TransferAssetModal
+        <DelegateAssetModal
           assetHolding={account.assets.selectedAssetHolding}
           daoId={account.assets?.selectedAssetHolding?.asset?.daoId}
           daoImage={
             account.assets?.selectedAssetHolding?.asset?.dao?.metadata?.images
               ?.logo?.small?.url
           }
-          open={account.modals.transferAssets.visible}
-          onClose={() => account.modals.transferAssets.setVisibility(false)}
+          open={account.modals.delegate.visible}
+          onClose={() => account.modals.delegate.setVisibility(false)}
+          onSuccess={() => account.assets.fetchAssets()}
+        />
+      )}
+      {account.assets.selectedAssetHolding != null && (
+        <DelegateAssetModal
+          assetHolding={account.assets.selectedAssetHolding}
+          daoId={account.assets?.selectedAssetHolding?.asset?.daoId}
+          daoImage={
+            account.assets?.selectedAssetHolding?.asset?.dao?.metadata?.images
+              ?.logo?.small?.url
+          }
+          open={account.modals.revokeDelegate.visible}
+          isDelegated
+          onClose={() => account.modals.revokeDelegate.setVisibility(false)}
           onSuccess={() => account.assets.fetchAssets()}
         />
       )}

@@ -56,6 +56,11 @@ export interface TransferFormValues {
   amount: number;
 }
 
+export interface DelegateFormValues {
+  assetId: number;
+  account: string;
+}
+
 export interface TxnNotification {
   title: string;
   message: string;
