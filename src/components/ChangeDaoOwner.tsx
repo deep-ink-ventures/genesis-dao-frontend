@@ -151,10 +151,8 @@ const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
       const sig = await doChallenge(currentDao.daoId);
 
       if (!sig) {
-        if (!sig) {
-          handleErrors(`Cannot get validate signature`);
-          return;
-        }
+        handleErrors(`Cannot get validate signature`);
+        return;
       }
 
       makeMultiSigTxnAndSend(multiArgs, async () => {
