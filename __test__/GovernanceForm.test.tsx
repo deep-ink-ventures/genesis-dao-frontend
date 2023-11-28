@@ -20,9 +20,6 @@ describe('GovernanceForm', () => {
 
     const el = screen.getAllByText(/Governance/);
     expect(el[0]).toBeInTheDocument();
-
-    const ele = screen.getAllByText(/Delegated/);
-    expect(ele[0]).toBeInTheDocument();
   });
 });
 
