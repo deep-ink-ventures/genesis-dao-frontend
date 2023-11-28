@@ -42,7 +42,7 @@ const GovernanceForm = (props: { daoId: string | null }) => {
           {`Choose the governance model. You can change this afterwards only via DAO votes, that follow the governance rules that you are now setting.`}
         </p>
       </div>
-      <div className='flex justify-evenly gap-x-3'>
+      {/* <div className='flex justify-evenly gap-x-3'>
         <div
           className={`card flex h-[110px] w-[180px] items-center justify-center px-4 text-center  hover:cursor-pointer ${
             model === 'majority'
@@ -82,7 +82,7 @@ const GovernanceForm = (props: { daoId: string | null }) => {
             Customized
           </div>
         </div>
-      </div>
+      </div> */}
       {model === 'majority' ? (
         <MajorityModel daoId={props.daoId} />
       ) : (
