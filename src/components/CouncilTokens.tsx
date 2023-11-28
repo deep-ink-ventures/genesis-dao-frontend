@@ -14,6 +14,8 @@ import useGenesisDao from '../hooks/useGenesisDao';
 import { CouncilMembersForm } from './CouncilMembersForm';
 import { DistributeTokensForm } from './DistributeTokensForm';
 
+const MIN_APPROVAL_THRESHOLD = 1;
+
 const CouncilTokens = (props: { daoId: string | null }) => {
   const fetchDaoTokenTreasuryBalance = useGenesisStore(
     (s) => s.fetchDaoTokenTreasuryBalance
@@ -42,7 +44,7 @@ const CouncilTokens = (props: { daoId: string | null }) => {
           walletAddress: '',
         },
       ],
-      councilThreshold: 2,
+      councilThreshold: MIN_APPROVAL_THRESHOLD,
       tokenRecipients: [
         {
           walletAddress: '',
@@ -305,9 +307,9 @@ const CouncilTokens = (props: { daoId: string | null }) => {
             <div>
               <h4 className='text-center'>Enter Council Approval Threshold</h4>
               <p className='px-20 text-center text-sm'>
-                The approval threshold is a the minimum number of signatures
+                The approval threshold is the minimum number of signatures
                 needed to approve a multi-signature transaction. The minimum
-                threshold is 2.
+                threshold is {MIN_APPROVAL_THRESHOLD}.
               </p>
             </div>
             <div className='w-[120px]'>
@@ -318,7 +320,10 @@ const CouncilTokens = (props: { daoId: string | null }) => {
                 disabled={txnProcessing}
                 {...register('councilThreshold', {
                   required: 'Required',
-                  min: { value: 2, message: 'Minimum is 2' },
+                  min: {
+                    value: MIN_APPROVAL_THRESHOLD,
+                    message: `Minimum is ${MIN_APPROVAL_THRESHOLD}`,
+                  },
                   max: {
                     value: membersCount,
                     message: 'Cannot exceed # of council members',
