@@ -1042,10 +1042,13 @@ const useGenesisDao = () => {
     return apiConnection?.tx?.utility?.batchAll?.(txns);
   };
 
-  const postMultiSigTxn = async (daoId: string, data: MultiSigTxnBody) => {
+  const postMultiSigTxn = async (
+    daoId: string,
+    data: MultiSigTxnBody,
+    sig: string | null
+  ) => {
     try {
       const jsonData = JSON.stringify(data);
-      const sig = await doChallenge(daoId);
       if (!sig) {
         handleErrors(`Cannot get validate signature`);
         return;

@@ -23,8 +23,12 @@ interface ChangeDaoOwnerFormValues {
 }
 
 const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
-  const { makeChangeOwnerTxn, makeMultiSigTxnAndSend, postMultiSigTxn } =
-    useGenesisDao();
+  const {
+    makeChangeOwnerTxn,
+    makeMultiSigTxnAndSend,
+    postMultiSigTxn,
+    doChallenge,
+  } = useGenesisDao();
   const [
     currentWalletAccount,
     handleErrors,
@@ -81,6 +85,20 @@ const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
 
   const onSubmit: SubmitHandler<ChangeDaoOwnerFormValues> = async (data) => {
     if (!currentWalletAccount || !currentDao?.daoId) {
+      return;
+    }
+
+    let sig: string | null;
+
+    try {
+      sig = await doChallenge(currentDao.daoId);
+
+      if (!sig) {
+        handleErrors(`Cannot get validate signature`);
+        return;
+      }
+    } catch (err) {
+      handleErrors('Error in validating signature', err);
       return;
     }
 
@@ -143,6 +161,7 @@ const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
         txnInHex: callDataInHex,
         otherSignatories,
       };
+
       makeMultiSigTxnAndSend(multiArgs, async () => {
         updateTxnProcessing(true);
 
@@ -176,7 +195,7 @@ const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
         };
 
         try {
-          await postMultiSigTxn(currentDao.daoId, body);
+          await postMultiSigTxn(currentDao.daoId, body, sig);
           updateTxnProcessing(false);
           setIsOpen(false);
           fetchDaoFromDB(currentDao?.daoId);
