@@ -81,6 +81,20 @@ const TransferTreasuryAsset = ({ onSuccess }: { onSuccess?: () => void }) => {
       return;
     }
 
+    let sig: string | null;
+
+    try {
+      sig = await doChallenge(currentDao.daoId);
+
+      if (!sig) {
+        handleErrors(`Cannot get validate signature`);
+        return;
+      }
+    } catch (err) {
+      handleErrors('Error in validating signature', err);
+      return;
+    }
+
     const recipients = data.tokenRecipients.map((recipient) => {
       return {
         walletAddress: recipient.walletAddress,
@@ -116,13 +130,6 @@ const TransferTreasuryAsset = ({ onSuccess }: { onSuccess?: () => void }) => {
         txnInHex: callDataInHex,
         otherSignatories,
       };
-
-      const sig = await doChallenge(currentDao.daoId);
-
-      if (!sig) {
-        handleErrors(`Cannot get validate signature`);
-        return;
-      }
 
       await makeMultiSigTxnAndSend(multiArgs, async () => {
         updateTxnProcessing(true);

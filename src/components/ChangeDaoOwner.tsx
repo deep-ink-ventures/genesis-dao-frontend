@@ -88,6 +88,20 @@ const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
       return;
     }
 
+    let sig: string | null;
+
+    try {
+      sig = await doChallenge(currentDao.daoId);
+
+      if (!sig) {
+        handleErrors(`Cannot get validate signature`);
+        return;
+      }
+    } catch (err) {
+      handleErrors('Error in validating signature', err);
+      return;
+    }
+
     const transferToAddresses = data.newCouncilMembers.map((el) => {
       return el.walletAddress;
     });
@@ -147,13 +161,6 @@ const ChangeDaoOwner = ({ onSuccess }: { onSuccess?: () => void }) => {
         txnInHex: callDataInHex,
         otherSignatories,
       };
-
-      const sig = await doChallenge(currentDao.daoId);
-
-      if (!sig) {
-        handleErrors(`Cannot get validate signature`);
-        return;
-      }
 
       makeMultiSigTxnAndSend(multiArgs, async () => {
         updateTxnProcessing(true);
