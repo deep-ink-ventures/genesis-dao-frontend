@@ -61,6 +61,12 @@ export interface DelegateFormValues {
   account: string;
 }
 
+export interface CreateEscrowFormValues {
+  account?: string;
+  vestingTime?: number;
+  amount?: number;
+}
+
 export interface TxnNotification {
   title: string;
   message: string;

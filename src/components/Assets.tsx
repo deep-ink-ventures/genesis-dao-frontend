@@ -91,6 +91,11 @@ const Assets = () => {
     account.modals.revokeDelegate.setVisibility(true);
   };
 
+  const handleCreateEscrowClick = (asset?: AssetHoldingsTableItem) => {
+    account.assets.selectAssetHolding(asset);
+    account.modals.createEscrow.setVisibility(true);
+  };
+
   // const handleLinkClick = (assetHolding?: AssetHoldingsTableItem) => {
   //   router.push(`/dao/${assetHolding?.asset?.dao_id}`);
   // };
@@ -256,6 +261,7 @@ const Assets = () => {
                 onDelegateClick={handleDelegateClick}
                 onRedelegateClick={handleRedelegateClick}
                 onOpenLinkClick={handleLinkClick}
+                onCreateEscrowClick={handleCreateEscrowClick}
               />
             ) : (
               <div>Sorry, no assets found</div>

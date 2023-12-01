@@ -53,6 +53,12 @@ export type AccountSlice = {
       txnProcessing?: boolean;
       setTxnProcessing: (isProcessing?: boolean) => void;
     };
+    createEscrow: {
+      visible: boolean;
+      setVisibility: (open: boolean) => void;
+      txnProcessing?: boolean;
+      setTxnProcessing: (isProcessing?: boolean) => void;
+    };
   };
 };
 
@@ -206,6 +212,28 @@ export const createAccountSlice: StateCreator<
           set(
             produce((state: GenesisState) => {
               state.pages.account.modals.revokeDelegate.txnProcessing =
+                isProcessing;
+            })
+          );
+        },
+      },
+      createEscrow: {
+        visible: false,
+        setVisibility: (open: boolean) => {
+          set(
+            produce((state: GenesisState) => {
+              state.pages.account.modals.createEscrow.visible = open;
+            })
+          );
+          if (!open) {
+            get().pages.account.assets.selectAssetHolding(null);
+          }
+        },
+        txnProcessing: false,
+        setTxnProcessing: (isProcessing?: boolean) => {
+          set(
+            produce((state: GenesisState) => {
+              state.pages.account.modals.createEscrow.txnProcessing =
                 isProcessing;
             })
           );
