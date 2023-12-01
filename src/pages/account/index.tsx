@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import Assets from '@/components/Assets';
+import CreateEscrowModal from '@/components/CreateEscrowModal';
 import DelegateAssetModal from '@/components/DelegateAssetModal';
 import TransferAssetModal from '@/components/TransferAssetModal';
 import WalletConnect from '@/components/WalletConnect';
@@ -215,6 +216,20 @@ const AccountPage = () => {
           open={account.modals.revokeDelegate.visible}
           isDelegated
           onClose={() => account.modals.revokeDelegate.setVisibility(false)}
+          onSuccess={() => account.assets.fetchAssets()}
+        />
+      )}
+      {account.assets.selectedAssetHolding != null && (
+        <CreateEscrowModal
+          assetHolding={account.assets.selectedAssetHolding}
+          daoId={account.assets?.selectedAssetHolding?.asset?.daoId}
+          daoImage={
+            account.assets?.selectedAssetHolding?.asset?.dao?.metadata?.images
+              ?.logo?.small?.url
+          }
+          open={account.modals.createEscrow.visible}
+          isDelegated
+          onClose={() => account.modals.createEscrow.setVisibility(false)}
           onSuccess={() => account.assets.fetchAssets()}
         />
       )}
