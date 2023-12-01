@@ -50,7 +50,7 @@ const AssetItemRow = ({
 
   return (
     <div
-      className='grid grid-cols-[auto_1fr_1.5fr_1.5fr_1.5fr_1.5fr_2fr] gap-2 space-x-2 rounded-lg border-[0.3px] border-solid
+      className='grid grid-cols-[1.5fr_1fr_1.5fr_1fr_1fr_1.5fr_2fr] gap-2 space-x-2 rounded-lg border-[0.3px] border-solid
     border-neutral-focus px-4 py-3 text-sm font-normal text-neutral-focus'>
       <span className='flex items-center gap-2'>
         <div className='relative flex items-center justify-center'>
@@ -80,7 +80,7 @@ const AssetItemRow = ({
           ? stringShorten(assetHolding.delegateAddress)
           : '-'}
       </span>
-      <span>-</span>
+      <span className='my-auto'>-</span>
       <span className='my-auto'>
         {uiTokens(
           assetHolding.balance,
@@ -158,7 +158,7 @@ const AssetsHoldingsTable = ({
 }: AssestHoldingsTableProps) => {
   return (
     <div className='w-full'>
-      <div className='grid grid-cols-[auto_1fr_1.5fr_1.5fr_1.5fr_1.5fr_2fr] gap-2 space-x-2 px-4 py-3 text-sm font-normal text-neutral-focus'>
+      <div className='grid grid-cols-[1.5fr_1fr_1.5fr_1fr_1fr_1.5fr_2fr] gap-2 space-x-2 px-4 py-3 text-sm font-normal text-neutral-focus'>
         <span>DAO NAME</span>
         <span>DAO ID</span>
         <span>Role</span>
