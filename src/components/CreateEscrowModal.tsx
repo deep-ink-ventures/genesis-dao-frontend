@@ -143,7 +143,7 @@ const CreateEscrowModal = (props: {
               </div>
             </div>
             <div className='flex w-full items-center'>
-              <p className='w-1/4'>Vesting Time</p>
+              <p className='w-1/4'>Lock Time</p>
               <div className='grow'>
                 <input
                   type='number'
