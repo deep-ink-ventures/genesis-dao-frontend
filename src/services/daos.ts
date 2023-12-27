@@ -53,6 +53,11 @@ export interface ListDaosQueryParams {
   search?: string;
 }
 
+export interface InitializeContractsParams {
+  daoId: string;
+  signature: string;
+}
+
 const get = async (daoId: string) => {
   const response = await fetch(`${SERVICE_URL}/daos/${daoId}`);
 
@@ -83,7 +88,30 @@ const list = async (params?: ListDaosQueryParams) => {
   return objResponse as Paginated<RawDao[]>;
 };
 
+const initializeContracts = async ({
+  daoId,
+  signature,
+}: InitializeContractsParams) => {
+  try {
+    const response = await fetch(
+      `${SERVICE_URL}/daos/${daoId}/initiate-contracts/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Signature: signature,
+        },
+      }
+    );
+    const obj = await response.json();
+    return obj;
+  } catch (ex) {
+    throw new Error('Cannot initiate dao contracts');
+  }
+};
+
 export const DaoService = {
   get,
   list,
+  initializeContracts,
 };
