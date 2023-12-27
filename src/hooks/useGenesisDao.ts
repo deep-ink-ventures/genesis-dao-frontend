@@ -6,6 +6,7 @@ import { stringToHex } from '@polkadot/util';
 import { useRouter } from 'next/router';
 
 import { DAO_UNITS, SERVICE_URL } from '@/config';
+import { DaoService } from '@/services/daos';
 import type {
   MultiSigTxnBody,
   RawMultiSigTransaction,
@@ -200,6 +201,53 @@ const useGenesisDao = () => {
     }
   };
 
+  const doChallenge = async (daoId: string) => {
+    try {
+      const challengeRes = await fetch(
+        `${SERVICE_URL}/daos/${daoId}/challenge/`
+      );
+      const challengeString = await challengeRes.json();
+      if (!challengeString.challenge) {
+        handleErrors('Error in retrieving ownership-validation challenge');
+        return null;
+      }
+      const signerResult = await currentWalletAccount?.signer?.signRaw?.({
+        address: currentWalletAccount.address,
+        data: stringToHex(challengeString.challenge),
+        type: 'bytes',
+      });
+
+      if (!signerResult) {
+        handleErrors('Not able to validate ownership');
+        return null;
+      }
+
+      return hexToBase64(signerResult.signature.substring(2));
+    } catch (err) {
+      handleErrors(err?.message ?? err);
+      return null;
+    }
+  };
+
+  const initiateContracts = async (daoId: string) => {
+    const signature = await doChallenge(daoId);
+
+    if (!signature) return null;
+
+    const response = await DaoService.initializeContracts({
+      daoId,
+      signature,
+    });
+
+    if (apiConnection?.tx?.hookpoints?.registerGlobalCallback) {
+      apiConnection.tx.hookpoints.registerGlobalCallback(
+        response.ink_registry_contract
+      );
+    }
+
+    return response;
+  };
+
   const createDao = (
     walletAccount: WalletAccount,
     { daoId, daoName }: CreateDaoData
@@ -221,6 +269,7 @@ const useGenesisDao = () => {
                   fetchDaoFromDB(daoId as string);
                   updateTxnProcessing(false);
                   updateIsStartModalOpen(false);
+                  initiateContracts(daoId);
                   router.push(`/dao/${daoId}/customize`);
                 }, 3000);
               }
@@ -794,34 +843,6 @@ const useGenesisDao = () => {
 
   const markImplementedTxn = (txns: any[], proposalId: string) => {
     return [...txns, apiConnection?.tx?.votes?.markImplemented?.(proposalId)];
-  };
-
-  const doChallenge = async (daoId: string) => {
-    try {
-      const challengeRes = await fetch(
-        `${SERVICE_URL}/daos/${daoId}/challenge/`
-      );
-      const challengeString = await challengeRes.json();
-      if (!challengeString.challenge) {
-        handleErrors('Error in retrieving ownership-validation challenge');
-        return null;
-      }
-      const signerResult = await currentWalletAccount?.signer?.signRaw?.({
-        address: currentWalletAccount.address,
-        data: stringToHex(challengeString.challenge),
-        type: 'bytes',
-      });
-
-      if (!signerResult) {
-        handleErrors('Not able to validate ownership');
-        return null;
-      }
-
-      return hexToBase64(signerResult.signature.substring(2));
-    } catch (err) {
-      handleErrors(err?.message ?? err);
-      return null;
-    }
   };
 
   const setProposalMetadata = async (

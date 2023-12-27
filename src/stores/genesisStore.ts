@@ -363,6 +363,10 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
         numberOfTokenHolders: null,
         numberOfOpenProposals: null,
         mostRecentProposals: null,
+        inkAssetContract: null,
+        inkRegistryContract: null,
+        inkVestingWalletContract: null,
+        inkVoteEscrowContract: null,
       };
       const response = await fetch(
         `${SERVICE_URL}/daos/${encodeURIComponent(daoId as string)}/`
@@ -397,6 +401,9 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       daoDetail.numberOfTokenHolders = d.number_of_token_holders;
       daoDetail.numberOfOpenProposals = d.number_of_open_proposals;
       daoDetail.mostRecentProposals = d.most_recent_proposals;
+      daoDetail.inkRegistryContract = d.ink_asset_contract;
+      daoDetail.inkVestingWalletContract = d.ink_vesting_wallet_contract;
+      daoDetail.inkVoteEscrowContract = d.ink_vote_escrow_contract;
 
       if (d.metadata) {
         daoDetail.descriptionShort = d.metadata.description_short ?? null;
