@@ -18,6 +18,10 @@ export interface RawDao {
   number_of_token_holders: number;
   number_of_open_proposals: number;
   most_recent_proposals: string[];
+  ink_asset_contract: string;
+  ink_registry_contract: string;
+  ink_vesting_wallet_contract: string;
+  ink_vote_escrow_contract: string;
 }
 
 export interface Metadata {

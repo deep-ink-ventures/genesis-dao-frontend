@@ -33,6 +33,8 @@ interface RawAssetHolding {
   id: number;
   owner_id: string;
   delegated_to: string;
+  vote_escrow: string;
+  vesting_wallet: string;
 }
 
 export interface AssetHolding {
@@ -41,6 +43,8 @@ export interface AssetHolding {
   id: number;
   ownerId: string;
   delegatedTo: string;
+  voteEscrow: string;
+  vestingWallet: string;
 }
 
 const listAssetHoldings = async (params?: ListAssetsQueryParams) => {
