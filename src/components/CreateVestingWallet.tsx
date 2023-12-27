@@ -1,9 +1,10 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import { ErrorMessage } from '@hookform/error-message';
+import { CodePromise } from '@polkadot/api-contract';
 import { BN } from '@polkadot/util';
 import Modal from 'antd/lib/modal';
 import cn from 'classnames';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
@@ -18,6 +19,7 @@ interface CreateVestingWalletFormValues {
 
 const CreateVestingWallet = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const formMethods = useForm<CreateVestingWalletFormValues>();
   const [hasExtension, setHasExtension] = useState(false);
 
@@ -27,24 +29,60 @@ const CreateVestingWallet = () => {
     formState: { errors },
   } = formMethods;
 
-  const [currentWalletAccount, daoTokenTreasuryBalance, currentDao] =
-    useGenesisStore((s) => [
-      s.currentWalletAccount,
-      s.daoTokenTreasuryBalance,
-      s.currentDao,
-    ]);
+  const [
+    currentWalletAccount,
+    daoTokenTreasuryBalance,
+    currentDao,
+    apiConnection,
+    createApiConnection,
+  ] = useGenesisStore((s) => [
+    s.currentWalletAccount,
+    s.daoTokenTreasuryBalance,
+    s.currentDao,
+    s.apiConnection,
+    s.createApiConnection,
+  ]);
 
   const handleEnablePlugin = () => {
     setIsOpen(true);
   };
 
-  const loading = false;
-
   const onClose = () => {
     setIsOpen(false);
   };
 
-  const onSubmit: SubmitHandler<CreateVestingWalletFormValues> = () => {
+  const onSubmit: SubmitHandler<CreateVestingWalletFormValues> = async (
+    data
+  ) => {
+    if (!apiConnection || !currentWalletAccount) return;
+
+    const metadata = {}; // get ABI
+
+    const contract = new CodePromise(
+      apiConnection,
+      metadata,
+      currentDao?.inkVestingWalletContract
+    );
+
+    // for testing
+    const gasLimit = 100000n * 1000000n;
+
+    if (contract?.tx?.approve) {
+      await contract?.tx?.approve({ value: data.amount, gasLimit }).signAndSend(
+        currentWalletAccount.address,
+        {
+          signer: currentWalletAccount.signer,
+        },
+        (result) => {
+          if (result.status.isInBlock) {
+            console.log('Vesting wallet created in a block');
+          } else if (result.status.isFinalized) {
+            console.log('Vesting wallet creation finalized');
+          }
+        }
+      );
+    }
+
     if (!hasExtension) {
       setHasExtension(true);
     } else {
@@ -62,6 +100,43 @@ const CreateVestingWallet = () => {
 
     return 'Send';
   };
+
+  const queryGetTotal = async () => {
+    if (!apiConnection || !currentWalletAccount) return;
+
+    try {
+      const metadata = {}; // get ABI
+
+      const contract = new CodePromise(
+        apiConnection,
+        metadata,
+        currentDao?.inkVestingWalletContract
+      );
+
+      if ((contract as any)?.query) {
+        const totalTokens = await (contract as any).query.getTotal(
+          currentWalletAccount.address,
+          { gasLimit: -1 },
+          currentWalletAccount.address
+        );
+
+        setHasExtension(!!totalTokens);
+      }
+    } catch (ex) {
+      setHasExtension(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    } else {
+      queryGetTotal();
+    }
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <>
