@@ -1,6 +1,6 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import { ErrorMessage } from '@hookform/error-message';
-import { CodePromise } from '@polkadot/api-contract';
+import { ContractPromise } from '@polkadot/api-contract';
 import { BN } from '@polkadot/util';
 import Modal from 'antd/lib/modal';
 import cn from 'classnames';
@@ -22,6 +22,7 @@ const CreateVestingWallet = () => {
   const [loading, setLoading] = useState(true);
   const formMethods = useForm<CreateVestingWalletFormValues>();
   const [hasExtension, setHasExtension] = useState(false);
+  const [contract, setContract] = useState<ContractPromise | null>(null);
 
   const {
     handleSubmit,
@@ -56,15 +57,6 @@ const CreateVestingWallet = () => {
   ) => {
     if (!apiConnection || !currentWalletAccount) return;
 
-    const metadata = {}; // get ABI
-
-    const contract = new CodePromise(
-      apiConnection,
-      metadata,
-      currentDao?.inkVestingWalletContract
-    );
-
-    // for testing
     const gasLimit = 100000n * 1000000n;
 
     if (contract?.tx?.approve) {
@@ -102,19 +94,11 @@ const CreateVestingWallet = () => {
   };
 
   const queryGetTotal = async () => {
-    if (!apiConnection || !currentWalletAccount) return;
+    if (!currentWalletAccount) return;
 
     try {
-      const metadata = {}; // get ABI
-
-      const contract = new CodePromise(
-        apiConnection,
-        metadata,
-        currentDao?.inkVestingWalletContract
-      );
-
-      if ((contract as any)?.query) {
-        const totalTokens = await (contract as any).query.getTotal(
+      if (contract?.query?.getTotal) {
+        const totalTokens = await contract.query.getTotal(
           currentWalletAccount.address,
           { gasLimit: -1 },
           currentWalletAccount.address
@@ -130,13 +114,33 @@ const CreateVestingWallet = () => {
   };
 
   useEffect(() => {
-    if (!apiConnection) {
-      createApiConnection();
-    } else {
+    if (contract) {
       queryGetTotal();
     }
     // eslint-disable-next-line
-  }, []);
+  }, [contract]);
+
+  useEffect(() => {
+    const fetchContractData = async () => {
+      if (!apiConnection || !currentDao?.inkVestingWalletContract) return;
+
+      const metadataResponse = await fetch(
+        '/contracts/vesting_wallet_contract.json'
+      );
+      const metadata = await metadataResponse.json();
+
+      const code = new ContractPromise(
+        apiConnection,
+        metadata,
+        currentDao.inkVestingWalletContract
+      );
+
+      // Set the contract instance
+      setContract(code);
+    };
+
+    fetchContractData();
+  }, [apiConnection]);
 
   return (
     <>
