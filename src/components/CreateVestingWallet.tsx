@@ -25,8 +25,8 @@ const CreateVestingWallet = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const formMethods = useForm<CreateVestingWalletFormValues>();
-  const [hasExtension, setHasExtension] = useState(false);
-  const [contract, setContract] = useState<ContractPromise | null>(null);
+  // const [hasExtension, setHasExtension] = useState(false);
+  // const [contract, setContract] = useState<ContractPromise | null>(null);
 
   const {
     handleSubmit,
@@ -60,7 +60,48 @@ const CreateVestingWallet = () => {
     setIsOpen(false);
   };
 
-  const createVestingWallet = async (amount?: number, duration?: number) => {
+  const getContract = async () => {
+    if (!apiConnection || !currentDao?.inkVestingWalletContract) return null;
+
+    const metadataResponse = await fetch(
+      '/contracts/vesting_wallet_contract.json'
+    );
+    const metadata = await metadataResponse.json();
+
+    const contract = new ContractPromise(
+      apiConnection,
+      metadata,
+      currentDao.inkVestingWalletContract
+    );
+
+    return contract;
+  };
+
+  const queryGetTotal = async (contract: ContractPromise | null) => {
+    if (!currentWalletAccount || !contract) return false;
+
+    try {
+      if (contract?.query?.getTotal) {
+        const totalTokens = await contract.query.getTotal(
+          currentWalletAccount.address,
+          { gasLimit: -1 },
+          currentWalletAccount.address
+        );
+
+        return !!totalTokens;
+      }
+
+      return false;
+    } catch (ex) {
+      return false;
+    }
+  };
+
+  const createVestingWallet = async (
+    contract: ContractPromise | null,
+    amount?: number,
+    duration?: number
+  ) => {
     if (!contract?.tx?.createVestingWalletFor || !currentWalletAccount?.address)
       return;
 
@@ -83,39 +124,55 @@ const CreateVestingWallet = () => {
   const onSubmit: SubmitHandler<CreateVestingWalletFormValues> = async (
     data
   ) => {
-    if (hasExtension) {
-      addTxnNotification({
-        title: `${TxnResponse.Error}`,
-        message: `Vesting Wallet already exists`,
-        type: TxnResponse.Error,
-        timestamp: Date.now(),
-      });
-      return;
-    }
+    setLoading(true);
 
-    if (!apiConnection || !currentWalletAccount) return;
+    try {
+      const contract = await getContract();
 
-    if (currentDao && !currentDao?.inkVestingWalletContract) {
-      initiateContracts(currentDao.daoId);
-    }
+      const hasVestingWallet = await queryGetTotal(contract);
 
-    if (contract?.tx?.approve) {
-      await contract?.tx
-        ?.approve({ value: data.amount, gasLimit: GAS_LIMIT })
-        .signAndSend(
-          currentWalletAccount.address,
-          {
-            signer: currentWalletAccount.signer,
-          },
-          async (result) => {
-            if (result.status.isInBlock || result.status.isFinalized) {
-              await createVestingWallet(data.amount, data.vestingTime);
+      if (hasVestingWallet) {
+        addTxnNotification({
+          title: `${TxnResponse.Error}`,
+          message: `Vesting Wallet already exists`,
+          type: TxnResponse.Error,
+          timestamp: Date.now(),
+        });
+        return;
+      }
+
+      if (!apiConnection || !currentWalletAccount) return;
+
+      if (currentDao && !currentDao?.inkVestingWalletContract) {
+        initiateContracts(currentDao.daoId);
+      }
+
+      if (contract?.tx?.approve) {
+        await contract?.tx
+          ?.approve({ value: data.amount, gasLimit: GAS_LIMIT })
+          .signAndSend(
+            currentWalletAccount.address,
+            {
+              signer: currentWalletAccount.signer,
+            },
+            async (result) => {
+              if (result.status.isInBlock || result.status.isFinalized) {
+                await createVestingWallet(
+                  contract,
+                  data.amount,
+                  data.vestingTime
+                );
+              }
             }
-          }
-        );
-    }
+          );
+      }
 
-    onClose();
+      onClose();
+    } catch (ex) {
+      console.error('Error creating vesting wallet');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const buttonText = () => {
@@ -129,28 +186,6 @@ const CreateVestingWallet = () => {
     return 'Send';
   };
 
-  const queryGetTotal = async () => {
-    if (!currentWalletAccount) return;
-
-    try {
-      setLoading(true);
-
-      if (contract?.query?.getTotal) {
-        const totalTokens = await contract.query.getTotal(
-          currentWalletAccount.address,
-          { gasLimit: -1 },
-          currentWalletAccount.address
-        );
-
-        setHasExtension(!!totalTokens);
-      }
-    } catch (ex) {
-      setHasExtension(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!apiConnection) {
       createApiConnection();
@@ -158,37 +193,37 @@ const CreateVestingWallet = () => {
     // eslint-disable-next-line
   }, [apiConnection]);
 
-  useEffect(() => {
-    if (contract) {
-      queryGetTotal();
-    }
-    // eslint-disable-next-line
-  }, [apiConnection, contract]);
+  // useEffect(() => {
+  //   if (contract) {
+  //     queryGetTotal();
+  //   }
+  //   // eslint-disable-next-line
+  // }, [apiConnection, contract]);
 
-  useEffect(() => {
-    const fetchContractData = async () => {
-      if (!apiConnection || !currentDao?.inkVestingWalletContract) return;
+  // useEffect(() => {
+  //   const fetchContractData = async () => {
+  //     if (!apiConnection || !currentDao?.inkVestingWalletContract) return;
 
-      const metadataResponse = await fetch(
-        '/contracts/vesting_wallet_contract.json'
-      );
-      const metadata = await metadataResponse.json();
+  //     const metadataResponse = await fetch(
+  //       '/contracts/vesting_wallet_contract.json'
+  //     );
+  //     const metadata = await metadataResponse.json();
 
-      const code = new ContractPromise(
-        apiConnection,
-        metadata,
-        currentDao.inkVestingWalletContract
-      );
+  //     const code = new ContractPromise(
+  //       apiConnection,
+  //       metadata,
+  //       currentDao.inkVestingWalletContract
+  //     );
 
-      // Set the contract instance
-      setContract(code);
-    };
+  //     // Set the contract instance
+  //     setContract(code);
+  //   };
 
-    if (apiConnection) {
-      fetchContractData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(apiConnection)]);
+  //   if (apiConnection) {
+  //     fetchContractData();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [JSON.stringify(apiConnection)]);
 
   return (
     <>
