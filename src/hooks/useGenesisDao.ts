@@ -229,7 +229,7 @@ const useGenesisDao = () => {
     }
   };
 
-  const initiateContracts = async (daoId: string) => {
+  const initializeContracts = async (daoId: string) => {
     const signature = await doChallenge(daoId);
 
     if (!signature) return null;
@@ -265,11 +265,11 @@ const useGenesisDao = () => {
               `Congrats! ${daoName} is created.`,
               'Something went wrong. Please try again.',
               () => {
-                setTimeout(() => {
+                setTimeout(async () => {
                   fetchDaoFromDB(daoId as string);
                   updateTxnProcessing(false);
                   updateIsStartModalOpen(false);
-                  initiateContracts(daoId);
+                  await initializeContracts(daoId);
                   router.push(`/dao/${daoId}/customize`);
                 }, 3000);
               }
@@ -1170,6 +1170,7 @@ const useGenesisDao = () => {
     makeBatchTxn,
     postMultiSigTxn,
     cancelMultisigTxnAndSend,
+    initiateContracts: initializeContracts,
   };
 };
 

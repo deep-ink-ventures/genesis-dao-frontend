@@ -8,8 +8,12 @@ import { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
+import { TxnResponse } from '@/types/response';
 import { isValidPolkadotAddress, uiTokens } from '@/utils';
+
+const GAS_LIMIT = 100000n * 1000000n;
 
 interface CreateVestingWalletFormValues {
   account?: string;
@@ -19,7 +23,7 @@ interface CreateVestingWalletFormValues {
 
 const CreateVestingWallet = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const formMethods = useForm<CreateVestingWalletFormValues>();
   const [hasExtension, setHasExtension] = useState(false);
   const [contract, setContract] = useState<ContractPromise | null>(null);
@@ -36,13 +40,17 @@ const CreateVestingWallet = () => {
     currentDao,
     apiConnection,
     createApiConnection,
+    addTxnNotification,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.daoTokenTreasuryBalance,
     s.currentDao,
     s.apiConnection,
     s.createApiConnection,
+    s.addTxnNotification,
   ]);
+
+  const { initiateContracts } = useGenesisDao();
 
   const handleEnablePlugin = () => {
     setIsOpen(true);
@@ -52,34 +60,62 @@ const CreateVestingWallet = () => {
     setIsOpen(false);
   };
 
+  const createVestingWallet = async (amount?: number, duration?: number) => {
+    if (!contract?.tx?.createVestingWalletFor || !currentWalletAccount?.address)
+      return;
+
+    await contract.tx
+      .createVestingWalletFor(
+        { value: amount, gasLimit: GAS_LIMIT },
+        currentWalletAccount.address,
+        amount,
+        duration
+      )
+      .signAndSend(currentWalletAccount.address, (result) => {
+        if (result.status.isInBlock) {
+          console.log('Vesting wallet created in a block');
+        } else if (result.status.isFinalized) {
+          console.log('Vesting wallet creation finalized');
+        }
+      });
+  };
+
   const onSubmit: SubmitHandler<CreateVestingWalletFormValues> = async (
     data
   ) => {
+    if (hasExtension) {
+      addTxnNotification({
+        title: `${TxnResponse.Error}`,
+        message: `Vesting Wallet already exists`,
+        type: TxnResponse.Error,
+        timestamp: Date.now(),
+      });
+      return;
+    }
+
     if (!apiConnection || !currentWalletAccount) return;
 
-    const gasLimit = 100000n * 1000000n;
+    if (currentDao && !currentDao?.inkVestingWalletContract) {
+      initiateContracts(currentDao.daoId);
+    }
 
     if (contract?.tx?.approve) {
-      await contract?.tx?.approve({ value: data.amount, gasLimit }).signAndSend(
-        currentWalletAccount.address,
-        {
-          signer: currentWalletAccount.signer,
-        },
-        (result) => {
-          if (result.status.isInBlock) {
-            console.log('Vesting wallet created in a block');
-          } else if (result.status.isFinalized) {
-            console.log('Vesting wallet creation finalized');
+      await contract?.tx
+        ?.approve({ value: data.amount, gasLimit: GAS_LIMIT })
+        .signAndSend(
+          currentWalletAccount.address,
+          {
+            signer: currentWalletAccount.signer,
+          },
+          async (result) => {
+            if (result.status.isInBlock || result.status.isFinalized) {
+              await createVestingWallet(data.amount, data.vestingTime);
+            }
           }
-        }
-      );
+        );
     }
 
-    if (!hasExtension) {
-      setHasExtension(true);
-    } else {
-      onClose();
-    }
+    onClose();
   };
 
   const buttonText = () => {
@@ -97,6 +133,8 @@ const CreateVestingWallet = () => {
     if (!currentWalletAccount) return;
 
     try {
+      setLoading(true);
+
       if (contract?.query?.getTotal) {
         const totalTokens = await contract.query.getTotal(
           currentWalletAccount.address,
@@ -114,11 +152,18 @@ const CreateVestingWallet = () => {
   };
 
   useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+    // eslint-disable-next-line
+  }, [apiConnection]);
+
+  useEffect(() => {
     if (contract) {
       queryGetTotal();
     }
     // eslint-disable-next-line
-  }, [contract]);
+  }, [apiConnection, contract]);
 
   useEffect(() => {
     const fetchContractData = async () => {
@@ -139,8 +184,11 @@ const CreateVestingWallet = () => {
       setContract(code);
     };
 
-    fetchContractData();
-  }, [apiConnection]);
+    if (apiConnection) {
+      fetchContractData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(apiConnection)]);
 
   return (
     <>
