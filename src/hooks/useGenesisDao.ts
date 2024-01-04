@@ -1170,7 +1170,7 @@ const useGenesisDao = () => {
     makeBatchTxn,
     postMultiSigTxn,
     cancelMultisigTxnAndSend,
-    initiateContracts: initializeContracts,
+    initializeContracts,
   };
 };
 

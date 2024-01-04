@@ -50,7 +50,7 @@ const CreateVestingWallet = () => {
     s.addTxnNotification,
   ]);
 
-  const { initiateContracts } = useGenesisDao();
+  const { initializeContracts } = useGenesisDao();
 
   const handleEnablePlugin = () => {
     setIsOpen(true);
@@ -60,8 +60,8 @@ const CreateVestingWallet = () => {
     setIsOpen(false);
   };
 
-  const getContract = async () => {
-    if (!apiConnection || !currentDao?.inkVestingWalletContract) return null;
+  const getContract = async (vestingWalletContractAddress: string) => {
+    if (!apiConnection || !vestingWalletContractAddress) return null;
 
     const metadataResponse = await fetch(
       '/contracts/vesting_wallet_contract.json'
@@ -71,7 +71,7 @@ const CreateVestingWallet = () => {
     const contract = new ContractPromise(
       apiConnection,
       metadata,
-      currentDao.inkVestingWalletContract
+      vestingWalletContractAddress
     );
 
     return contract;
@@ -126,8 +126,20 @@ const CreateVestingWallet = () => {
   ) => {
     setLoading(true);
 
+    let inkVestingWalletContractAddress = currentDao?.inkVestingWalletContract;
+
     try {
-      const contract = await getContract();
+      if (currentDao && !inkVestingWalletContractAddress) {
+        const daoMetadata = await initializeContracts(currentDao.daoId);
+        inkVestingWalletContractAddress =
+          daoMetadata?.ink_vesting_wallet_contract;
+      }
+
+      if (!inkVestingWalletContractAddress) {
+        throw new Error('Missing Vesting Wallet Contract Address');
+      }
+
+      const contract = await getContract(inkVestingWalletContractAddress);
 
       const hasVestingWallet = await queryGetTotal(contract);
 
@@ -142,10 +154,6 @@ const CreateVestingWallet = () => {
       }
 
       if (!apiConnection || !currentWalletAccount) return;
-
-      if (currentDao && !currentDao?.inkVestingWalletContract) {
-        initiateContracts(currentDao.daoId);
-      }
 
       if (contract?.tx?.approve) {
         await contract?.tx
