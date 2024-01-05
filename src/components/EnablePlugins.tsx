@@ -137,6 +137,7 @@ const EnablePlugins = () => {
             <div className='w-full space-y-8'>{descriptionText}</div>
             <div className='mt-10 flex w-full gap-2'>
               <button
+                type='button'
                 className={cn('btn mr-3 w-1/2 bg-white')}
                 onClick={onClose}
                 disabled={loading}>
