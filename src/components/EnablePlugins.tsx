@@ -1,11 +1,13 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import Modal from 'antd/lib/modal';
 import cn from 'classnames';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
+import { TxnResponse } from '@/types/response';
 
 interface EnablePluginFormValues {}
 
@@ -16,9 +18,21 @@ const EnablePlugins = () => {
 
   const { handleSubmit } = formMethods;
 
-  const [currentWalletAccount] = useGenesisStore((s) => [
+  const [
+    currentWalletAccount,
+    currentDao,
+    apiConnection,
+    createApiConnection,
+    addTxnNotification,
+  ] = useGenesisStore((s) => [
     s.currentWalletAccount,
+    s.currentDao,
+    s.apiConnection,
+    s.createApiConnection,
+    s.addTxnNotification,
   ]);
+
+  const { initializeContracts } = useGenesisDao();
 
   const handleEnablePlugin = () => {
     setIsOpen(true);
@@ -30,9 +44,29 @@ const EnablePlugins = () => {
     setIsOpen(false);
   };
 
-  const onSubmit: SubmitHandler<EnablePluginFormValues> = () => {
+  const onSubmit: SubmitHandler<EnablePluginFormValues> = async () => {
     if (!hasExtension) {
-      setHasExtension(true);
+      try {
+        if (currentDao) {
+          const daoMetadata = await initializeContracts(currentDao.daoId);
+
+          setHasExtension(!!daoMetadata?.ink_registry_contract);
+
+          addTxnNotification({
+            title: `${TxnResponse.Success}`,
+            message: `${currentDao.daoName} connected to ink!`,
+            type: TxnResponse.Error,
+            timestamp: Date.now(),
+          });
+        }
+      } catch (ex) {
+        addTxnNotification({
+          title: `${TxnResponse.Error}`,
+          message: `Error connecting ${currentDao.daoName} to ink!`,
+          type: TxnResponse.Error,
+          timestamp: Date.now(),
+        });
+      }
     } else {
       onClose();
     }
@@ -61,6 +95,18 @@ const EnablePlugins = () => {
   to extend the functionality of your ink layer.`,
     [hasExtension]
   );
+
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+    // eslint-disable-next-line
+  }, [apiConnection]);
+
+  useEffect(() => {
+    setHasExtension(!!currentDao?.inkRegistryContract);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(currentDao)]);
 
   return (
     <>
