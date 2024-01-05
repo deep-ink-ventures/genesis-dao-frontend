@@ -15,6 +15,7 @@ const EnablePlugins = () => {
   const [isOpen, setIsOpen] = useState(false);
   const formMethods = useForm<EnablePluginFormValues>();
   const [hasExtension, setHasExtension] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { handleSubmit } = formMethods;
 
@@ -38,15 +39,15 @@ const EnablePlugins = () => {
     setIsOpen(true);
   };
 
-  const loading = false;
-
   const onClose = () => {
     setIsOpen(false);
+    setLoading(false);
   };
 
   const onSubmit: SubmitHandler<EnablePluginFormValues> = async () => {
     if (!hasExtension) {
       try {
+        setLoading(true);
         if (currentDao) {
           const daoMetadata = await initializeContracts(currentDao.daoId);
 
@@ -66,6 +67,8 @@ const EnablePlugins = () => {
           type: TxnResponse.Error,
           timestamp: Date.now(),
         });
+      } finally {
+        setLoading(false);
       }
     } else {
       onClose();
