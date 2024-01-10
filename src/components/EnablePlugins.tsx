@@ -25,12 +25,14 @@ const EnablePlugins = () => {
     apiConnection,
     createApiConnection,
     addTxnNotification,
+    fetchDaoFromDB,
   ] = useGenesisStore((s) => [
     s.currentWalletAccount,
     s.currentDao,
     s.apiConnection,
     s.createApiConnection,
     s.addTxnNotification,
+    s.fetchDaoFromDB,
   ]);
 
   const { initializeContracts } = useGenesisDao();
@@ -52,6 +54,7 @@ const EnablePlugins = () => {
           const daoMetadata = await initializeContracts(currentDao.daoId);
 
           setHasExtension(!!daoMetadata?.ink_registry_contract);
+          fetchDaoFromDB(currentDao.daoId);
 
           addTxnNotification({
             title: `${TxnResponse.Success}`,
@@ -63,7 +66,7 @@ const EnablePlugins = () => {
       } catch (ex) {
         addTxnNotification({
           title: `${TxnResponse.Error}`,
-          message: `Error connecting ${currentDao.daoName} to ink!`,
+          message: `Error connecting ${currentDao?.daoName} to ink!`,
           type: TxnResponse.Error,
           timestamp: Date.now(),
         });
@@ -116,7 +119,7 @@ const EnablePlugins = () => {
       <div className='flex justify-center'>
         <button
           className={`btn btn-primary w-[180px] ${loading ? 'loading' : ''}`}
-          disabled={!currentWalletAccount}
+          disabled={!currentWalletAccount || !!currentDao?.inkRegistryContract}
           onClick={handleEnablePlugin}>
           Enable Plugins
         </button>
