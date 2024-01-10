@@ -404,6 +404,8 @@ const useGenesisStore = create<GenesisStore>()((set, get, store) => ({
       daoDetail.inkRegistryContract = d.ink_asset_contract;
       daoDetail.inkVestingWalletContract = d.ink_vesting_wallet_contract;
       daoDetail.inkVoteEscrowContract = d.ink_vote_escrow_contract;
+      daoDetail.inkRegistryContract = d.ink_registry_contract;
+      daoDetail.inkAssetContract = d.ink_asset_contract;
 
       if (d.metadata) {
         daoDetail.descriptionShort = d.metadata.description_short ?? null;

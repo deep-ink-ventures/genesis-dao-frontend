@@ -55,7 +55,7 @@ export interface ListDaosQueryParams {
 
 export interface InitializeContractsParams {
   daoId: string;
-  signature: string;
+  validatedSignature: string;
 }
 
 const get = async (daoId: string) => {
@@ -90,7 +90,7 @@ const list = async (params?: ListDaosQueryParams) => {
 
 const initializeContracts = async ({
   daoId,
-  signature,
+  validatedSignature,
 }: InitializeContractsParams) => {
   try {
     const response = await fetch(
@@ -99,7 +99,7 @@ const initializeContracts = async ({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Signature: signature,
+          Signature: validatedSignature,
         },
       }
     );

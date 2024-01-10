@@ -232,11 +232,14 @@ const useGenesisDao = () => {
   const initializeContracts = async (daoId: string) => {
     const signature = await doChallenge(daoId);
 
-    if (!signature) return null;
+    if (!signature) {
+      handleErrors('Not able to validate ownership');
+      return null;
+    }
 
     const response = await DaoService.initializeContracts({
       daoId,
-      signature,
+      validatedSignature: signature,
     });
 
     if (apiConnection?.tx?.hookpoints?.registerGlobalCallback) {
