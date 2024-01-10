@@ -1,19 +1,20 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import { ErrorMessage } from '@hookform/error-message';
 import { ContractPromise } from '@polkadot/api-contract';
-import { BN } from '@polkadot/util';
+import { BN, BN_ONE } from '@polkadot/util';
 import Modal from 'antd/lib/modal';
 import cn from 'classnames';
 import { useEffect, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
 import { TxnResponse } from '@/types/response';
 import { isValidPolkadotAddress, uiTokens } from '@/utils';
 
-const GAS_LIMIT = 100000n * 1000000n;
+const MAX_CALL_WEIGHT = new BN(5_000_000_000_000).isub(BN_ONE);
+const PROOFSIZE = new BN(1_000_000);
+const STORAGE_DEPOSIT_LIMIT = null;
 
 interface CreateVestingWalletFormValues {
   account?: string;
@@ -50,8 +51,6 @@ const CreateVestingWallet = () => {
     s.addTxnNotification,
   ]);
 
-  const { initializeContracts } = useGenesisDao();
-
   const handleEnablePlugin = () => {
     setIsOpen(true);
   };
@@ -60,12 +59,13 @@ const CreateVestingWallet = () => {
     setIsOpen(false);
   };
 
-  const getContract = async (vestingWalletContractAddress: string) => {
+  const getContract = async (
+    vestingWalletContractAddress: string,
+    abiPath: string
+  ) => {
     if (!apiConnection || !vestingWalletContractAddress) return null;
 
-    const metadataResponse = await fetch(
-      '/contracts/vesting_wallet_contract.json'
-    );
+    const metadataResponse = await fetch(abiPath);
     const metadata = await metadataResponse.json();
 
     const contract = new ContractPromise(
@@ -84,11 +84,21 @@ const CreateVestingWallet = () => {
       if (contract?.query?.getTotal) {
         const totalTokens = await contract.query.getTotal(
           currentWalletAccount.address,
-          { gasLimit: -1 },
+          {
+            gasLimit: apiConnection?.registry.createType('WeightV2', {
+              refTime: MAX_CALL_WEIGHT,
+              proofSize: PROOFSIZE,
+              storageDepositLimit: STORAGE_DEPOSIT_LIMIT,
+            }) as any,
+          },
           currentWalletAccount.address
         );
 
-        return !!totalTokens;
+        return (
+          totalTokens.result.isOk &&
+          totalTokens.output?.toHex() &&
+          (totalTokens.output.toHex() as any) > 0
+        );
       }
 
       return false;
@@ -102,23 +112,54 @@ const CreateVestingWallet = () => {
     amount?: number,
     duration?: number
   ) => {
-    if (!contract?.tx?.createVestingWalletFor || !currentWalletAccount?.address)
+    if (
+      !contract?.tx?.createVestingWalletFor ||
+      !currentWalletAccount?.address ||
+      !apiConnection
+    )
       return;
+
+    // @ts-ignore
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const { gasRequired } = await contract?.query?.createVestingWalletFor(
+      currentWalletAccount.address,
+      {
+        storageDepositLimit: null,
+        gasLimit: apiConnection.registry.createType('WeightV2', {
+          refTime: MAX_CALL_WEIGHT,
+          proofSize: PROOFSIZE,
+        }) as any,
+      },
+      currentWalletAccount.address,
+      1,
+      duration
+    );
 
     await contract.tx
       .createVestingWalletFor(
-        { value: amount, gasLimit: GAS_LIMIT },
+        {
+          value: amount,
+          gasLimit: gasRequired,
+        },
         currentWalletAccount.address,
         amount,
         duration
       )
-      .signAndSend(currentWalletAccount.address, (result) => {
-        if (result.status.isInBlock) {
-          console.log('Vesting wallet created in a block');
-        } else if (result.status.isFinalized) {
-          console.log('Vesting wallet creation finalized');
+      .signAndSend(
+        currentWalletAccount.address,
+        { signer: currentWalletAccount.signer },
+        (result) => {
+          if (result.status.isInBlock || result.status.isFinalized) {
+            addTxnNotification({
+              type: TxnResponse.Success,
+              title: `${TxnResponse.Success}`,
+              message: 'Vesting Wallet Created',
+              txnHash: result.status.asInBlock.toHex(),
+              timestamp: Date.now(),
+            });
+          }
         }
-      });
+      );
   };
 
   const onSubmit: SubmitHandler<CreateVestingWalletFormValues> = async (
@@ -126,20 +167,27 @@ const CreateVestingWallet = () => {
   ) => {
     setLoading(true);
 
-    let inkVestingWalletContractAddress = currentDao?.inkVestingWalletContract;
+    const inkVestingWalletContractAddress =
+      currentDao?.inkVestingWalletContract;
 
     try {
-      if (currentDao && !inkVestingWalletContractAddress) {
-        const daoMetadata = await initializeContracts(currentDao.daoId);
-        inkVestingWalletContractAddress =
-          daoMetadata?.ink_vesting_wallet_contract;
-      }
-
       if (!inkVestingWalletContractAddress) {
         throw new Error('Missing Vesting Wallet Contract Address');
       }
 
-      const contract = await getContract(inkVestingWalletContractAddress);
+      if (!currentDao?.inkAssetContract) {
+        throw new Error('Missing DAO Asset Contract Address');
+      }
+
+      const contract = await getContract(
+        inkVestingWalletContractAddress,
+        '/contracts/vesting_wallet_contract.json'
+      );
+
+      const assetContract = await getContract(
+        currentDao.inkAssetContract,
+        '/contracts/dao_asset_contract.json'
+      );
 
       const hasVestingWallet = await queryGetTotal(contract);
 
@@ -150,35 +198,48 @@ const CreateVestingWallet = () => {
           type: TxnResponse.Error,
           timestamp: Date.now(),
         });
+        setLoading(false);
         return;
       }
 
-      if (!apiConnection || !currentWalletAccount) return;
-
-      if (contract?.tx?.approve) {
-        await contract?.tx
-          ?.approve({ value: data.amount, gasLimit: GAS_LIMIT })
-          .signAndSend(
-            currentWalletAccount.address,
-            {
-              signer: currentWalletAccount.signer,
-            },
-            async (result) => {
-              if (result.status.isInBlock || result.status.isFinalized) {
-                await createVestingWallet(
-                  contract,
-                  data.amount,
-                  data.vestingTime
-                );
-              }
-            }
-          );
+      if (!apiConnection || !currentWalletAccount) {
+        setLoading(false);
+        return;
       }
 
-      onClose();
+      if (assetContract?.tx?.['psp22::approve']) {
+        await assetContract?.tx?.['psp22::approve'](
+          {
+            value: data.amount,
+            gasLimit: 100000n * 1000000n,
+          },
+          inkVestingWalletContractAddress,
+          data.amount
+        ).signAndSend(
+          currentWalletAccount.address,
+          {
+            signer: currentWalletAccount.signer,
+          },
+          async (result) => {
+            if (result.status.isInBlock || result.status.isFinalized) {
+              await createVestingWallet(
+                contract,
+                data.amount,
+                data.vestingTime
+              );
+              onClose();
+            }
+          }
+        );
+      }
+      setLoading(false);
     } catch (ex) {
-      console.error('Error creating vesting wallet');
-    } finally {
+      addTxnNotification({
+        title: `${TxnResponse.Error}`,
+        message: `${ex}`,
+        type: TxnResponse.Error,
+        timestamp: Date.now(),
+      });
       setLoading(false);
     }
   };
@@ -201,44 +262,14 @@ const CreateVestingWallet = () => {
     // eslint-disable-next-line
   }, [apiConnection]);
 
-  // useEffect(() => {
-  //   if (contract) {
-  //     queryGetTotal();
-  //   }
-  //   // eslint-disable-next-line
-  // }, [apiConnection, contract]);
-
-  // useEffect(() => {
-  //   const fetchContractData = async () => {
-  //     if (!apiConnection || !currentDao?.inkVestingWalletContract) return;
-
-  //     const metadataResponse = await fetch(
-  //       '/contracts/vesting_wallet_contract.json'
-  //     );
-  //     const metadata = await metadataResponse.json();
-
-  //     const code = new ContractPromise(
-  //       apiConnection,
-  //       metadata,
-  //       currentDao.inkVestingWalletContract
-  //     );
-
-  //     // Set the contract instance
-  //     setContract(code);
-  //   };
-
-  //   if (apiConnection) {
-  //     fetchContractData();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [JSON.stringify(apiConnection)]);
-
   return (
     <>
       <div className='flex justify-center'>
         <button
           className={`btn btn-primary w-[180px] ${loading ? 'loading' : ''}`}
-          disabled={!currentWalletAccount}
+          disabled={
+            !currentWalletAccount || !currentDao?.inkVestingWalletContract
+          }
           onClick={handleEnablePlugin}>
           Create Wallet
         </button>

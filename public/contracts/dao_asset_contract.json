@@ -1,0 +1,1012 @@
+{
+  "source": {
+    "hash": "0x90a67a5dc972e62079137516e848c72f4a11712f9e9a7ddd8587b19596a545fa",
+    "language": "ink! 4.3.0",
+    "compiler": "rustc 1.74.0-nightly",
+    "build_info": {
+      "build_mode": "Debug",
+      "cargo_contract_version": "3.2.0",
+      "rust_toolchain": "nightly-x86_64-unknown-linux-gnu",
+      "wasm_opt_settings": {
+        "keep_debug_symbols": false,
+        "optimization_passes": "Z"
+      }
+    }
+  },
+  "contract": {
+    "name": "dao-assets-contract",
+    "version": "1.0.0",
+    "authors": [
+      "chp"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [
+          {
+            "label": "asset_id",
+            "type": {
+              "displayName": [
+                "AssetId"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          "Constructs a new `AssetContract` with a given `asset_id`."
+        ],
+        "label": "new",
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink_primitives",
+            "ConstructorResult"
+          ],
+          "type": 1
+        },
+        "selector": "0x9bae9d5e"
+      }
+    ],
+    "docs": [
+      " The primary contract module for DAO assets."
+    ],
+    "environment": {
+      "accountId": {
+        "displayName": [
+          "AccountId"
+        ],
+        "type": 5
+      },
+      "balance": {
+        "displayName": [
+          "Balance"
+        ],
+        "type": 8
+      },
+      "blockNumber": {
+        "displayName": [
+          "BlockNumber"
+        ],
+        "type": 0
+      },
+      "chainExtension": {
+        "displayName": [
+          "ChainExtension"
+        ],
+        "type": 17
+      },
+      "hash": {
+        "displayName": [
+          "Hash"
+        ],
+        "type": 15
+      },
+      "maxEventTopics": 4,
+      "timestamp": {
+        "displayName": [
+          "Timestamp"
+        ],
+        "type": 16
+      }
+    },
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "asset_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [
+          "Event emitted when a new asset is created."
+        ],
+        "label": "AssetCreated"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "from",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 14
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "to",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 14
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "docs": [
+          "Event emitted when a token transfer occurs."
+        ],
+        "label": "Transfer"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "docs": [
+          "Event emitted when an approval occurs that `spender` is allowed to withdraw",
+          "up to the amount of `value` tokens from `owner`."
+        ],
+        "label": "Approval"
+      }
+    ],
+    "lang_error": {
+      "displayName": [
+        "ink",
+        "LangError"
+      ],
+      "type": 3
+    },
+    "messages": [
+      {
+        "args": [],
+        "default": false,
+        "docs": [
+          " Returns the asset id"
+        ],
+        "label": "get_asset_id",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 4
+        },
+        "selector": "0x28540a06"
+      },
+      {
+        "args": [
+          {
+            "label": "to",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Transfers an `amount` of assets to the `target` account, ensuring the sender stays",
+          " alive."
+        ],
+        "label": "transfer_keep_alive",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 9
+        },
+        "selector": "0xc28133f1"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [
+          " Returns the total supply of the asset."
+        ],
+        "label": "PSP22::total_supply",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 13
+        },
+        "selector": "0x162df8c2"
+      },
+      {
+        "args": [
+          {
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Returns the balance of the `owner` account."
+        ],
+        "label": "PSP22::balance_of",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 13
+        },
+        "selector": "0x6568382f"
+      },
+      {
+        "args": [
+          {
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Returns the allowance provided to `spender` by the `owner`."
+        ],
+        "label": "PSP22::allowance",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 13
+        },
+        "selector": "0x4d47d921"
+      },
+      {
+        "args": [
+          {
+            "label": "to",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          },
+          {
+            "label": "_data",
+            "type": {
+              "displayName": [
+                "Vec"
+              ],
+              "type": 12
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Transfer tokens from the caller to the `to` account."
+        ],
+        "label": "PSP22::transfer",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 9
+        },
+        "selector": "0xdb20f9f5"
+      },
+      {
+        "args": [
+          {
+            "label": "from",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "to",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          },
+          {
+            "label": "_data",
+            "type": {
+              "displayName": [
+                "Vec"
+              ],
+              "type": 12
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Transfer tokens from the `from` account to the `to` account on behalf of the caller."
+        ],
+        "label": "PSP22::transfer_from",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 9
+        },
+        "selector": "0x54b3c76e"
+      },
+      {
+        "args": [
+          {
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Approve the `spender` to transfer tokens on behalf of the caller."
+        ],
+        "label": "PSP22::approve",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 9
+        },
+        "selector": "0xb20f1bbd"
+      },
+      {
+        "args": [
+          {
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "delta_value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Increase the allowance provided to `spender` by `delta_value`."
+        ],
+        "label": "PSP22::increase_allowance",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 9
+        },
+        "selector": "0x96d6b57a"
+      },
+      {
+        "args": [
+          {
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "delta_value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Decrease the allowance provided to `spender` by `delta_value`."
+        ],
+        "label": "PSP22::decrease_allowance",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 9
+        },
+        "selector": "0xfecb57d5"
+      }
+    ]
+  },
+  "storage": {
+    "root": {
+      "layout": {
+        "struct": {
+          "fields": [
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 0
+                }
+              },
+              "name": "asset_id"
+            }
+          ],
+          "name": "AssetContract"
+        }
+      },
+      "root_key": "0x00000000"
+    }
+  },
+  "types": [
+    {
+      "id": 0,
+      "type": {
+        "def": {
+          "primitive": "u32"
+        }
+      }
+    },
+    {
+      "id": 1,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 2
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 2
+          },
+          {
+            "name": "E",
+            "type": 3
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": {
+        "def": {
+          "tuple": []
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 1,
+                "name": "CouldNotReadInput"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "LangError"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 0
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 0
+          },
+          {
+            "name": "E",
+            "type": 3
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 6,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "type": {
+        "def": {
+          "array": {
+            "len": 32,
+            "type": 7
+          }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": {
+        "def": {
+          "primitive": "u8"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": {
+        "def": {
+          "primitive": "u128"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 10
+          },
+          {
+            "name": "E",
+            "type": 3
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 2
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 11
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 2
+          },
+          {
+            "name": "E",
+            "type": 11
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 12,
+                    "typeName": "Vec<u8>"
+                  }
+                ],
+                "index": 0,
+                "name": "Custom"
+              },
+              {
+                "index": 1,
+                "name": "InsufficientBalance"
+              },
+              {
+                "index": 2,
+                "name": "InsufficientAllowance"
+              },
+              {
+                "index": 3,
+                "name": "ZeroRecipientAddress"
+              },
+              {
+                "index": 4,
+                "name": "ZeroSenderAddress"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 12,
+                    "typeName": "Vec<u8>"
+                  }
+                ],
+                "index": 5,
+                "name": "SafeTransferCheckFailed"
+              }
+            ]
+          }
+        },
+        "path": [
+          "dao_assets_contract",
+          "psp22",
+          "errors",
+          "PSP22Error"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 7
+          }
+        }
+      }
+    },
+    {
+      "id": 13,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 8
+          },
+          {
+            "name": "E",
+            "type": 3
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 5
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 5
+          }
+        ],
+        "path": [
+          "Option"
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 6,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "Hash"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "type": {
+        "def": {
+          "primitive": "u64"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "type": {
+        "def": {
+          "variant": {}
+        },
+        "path": [
+          "dao_assets_extension",
+          "AssetExtension"
+        ]
+      }
+    }
+  ],
+  "version": "4"
+}
