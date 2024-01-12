@@ -110,19 +110,21 @@ const CreateVestingWallet = () => {
   const createVestingWallet = async (
     contract: ContractPromise | null,
     amount?: number,
-    duration?: number
+    duration?: number,
+    recipient?: string
   ) => {
     if (
       !contract?.tx?.createVestingWalletFor ||
       !currentWalletAccount?.address ||
-      !apiConnection
+      !apiConnection ||
+      !recipient
     )
       return;
 
     // @ts-ignore
     // eslint-disable-next-line no-unsafe-optional-chaining
     const { gasRequired } = await contract?.query?.createVestingWalletFor(
-      currentWalletAccount.address,
+      recipient,
       {
         storageDepositLimit: null,
         gasLimit: apiConnection.registry.createType('WeightV2', {
@@ -130,8 +132,8 @@ const CreateVestingWallet = () => {
           proofSize: PROOFSIZE,
         }) as any,
       },
-      currentWalletAccount.address,
-      1,
+      recipient,
+      amount,
       duration
     );
 
@@ -141,7 +143,7 @@ const CreateVestingWallet = () => {
           value: amount,
           gasLimit: gasRequired,
         },
-        currentWalletAccount.address,
+        recipient,
         amount,
         duration
       )
@@ -153,7 +155,7 @@ const CreateVestingWallet = () => {
             addTxnNotification({
               type: TxnResponse.Success,
               title: `${TxnResponse.Success}`,
-              message: 'Vesting Wallet Created',
+              message: `Vesting Wallet Created ${recipient}`,
               txnHash: result.status.asInBlock.toHex(),
               timestamp: Date.now(),
             });
@@ -170,12 +172,14 @@ const CreateVestingWallet = () => {
     const inkVestingWalletContractAddress =
       currentDao?.inkVestingWalletContract;
 
+    const inkAssetContract = currentDao?.inkAssetContract;
+
     try {
       if (!inkVestingWalletContractAddress) {
         throw new Error('Missing Vesting Wallet Contract Address');
       }
 
-      if (!currentDao?.inkAssetContract) {
+      if (!inkAssetContract) {
         throw new Error('Missing DAO Asset Contract Address');
       }
 
@@ -185,7 +189,7 @@ const CreateVestingWallet = () => {
       );
 
       const assetContract = await getContract(
-        currentDao.inkAssetContract,
+        inkAssetContract,
         '/contracts/dao_asset_contract.json'
       );
 
@@ -225,14 +229,15 @@ const CreateVestingWallet = () => {
               await createVestingWallet(
                 contract,
                 data.amount,
-                data.vestingTime
+                data.vestingTime,
+                data.account
               );
+              setLoading(false);
               onClose();
             }
           }
         );
       }
-      setLoading(false);
     } catch (ex) {
       addTxnNotification({
         title: `${TxnResponse.Error}`,
