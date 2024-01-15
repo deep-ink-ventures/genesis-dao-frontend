@@ -212,10 +212,25 @@ const CreateVestingWallet = () => {
       }
 
       if (assetContract?.tx?.['psp22::approve']) {
+        // @ts-ignore
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        const { gasRequired } = await assetContract?.query?.['psp22::approve'](
+          currentWalletAccount.address,
+          {
+            storageDepositLimit: null,
+            gasLimit: apiConnection.registry.createType('WeightV2', {
+              refTime: MAX_CALL_WEIGHT,
+              proofSize: PROOFSIZE,
+            }) as any,
+          },
+          inkVestingWalletContractAddress,
+          data.amount
+        );
+
         await assetContract?.tx?.['psp22::approve'](
           {
             value: data.amount,
-            gasLimit: 100000n * 1000000n,
+            gasLimit: gasRequired,
           },
           inkVestingWalletContractAddress,
           data.amount
