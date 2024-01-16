@@ -59,7 +59,7 @@ const EnablePlugins = () => {
           addTxnNotification({
             title: `${TxnResponse.Success}`,
             message: `${currentDao.daoName} connected to ink!`,
-            type: TxnResponse.Error,
+            type: TxnResponse.Success,
             timestamp: Date.now(),
           });
         }
