@@ -155,7 +155,7 @@ const CreateVestingWallet = () => {
             addTxnNotification({
               type: TxnResponse.Success,
               title: `${TxnResponse.Success}`,
-              message: `Vesting Wallet Created ${recipient}`,
+              message: `Vesting Wallet Created`,
               txnHash: result.status.asInBlock.toHex(),
               timestamp: Date.now(),
             });
