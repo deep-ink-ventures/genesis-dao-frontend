@@ -85,8 +85,8 @@ export const DistributeTokensForm = ({
                   className='input input-primary'
                   disabled={disabled}
                   {...register(`tokenRecipients.${index}.walletAddress`, {
-                    required: 'Required',
                     validate: (add) =>
+                      !add ||
                       isValidPolkadotAddress(add) === true ||
                       'Not a valid address',
                   })}
@@ -108,8 +108,17 @@ export const DistributeTokensForm = ({
                 disabled={disabled}
                 {...register(`tokenRecipients.${index}.tokens`, {
                   required: 'Required',
-                  min: { value: 1, message: 'Minimum is 1' },
-                  validate: { onRemainingTokens: () => remain.gte(new BN(0)) },
+                  validate: (v) => {
+                    return (
+                      !tokensValues?.[index].walletAddress ||
+                      (remain.gte(new BN(0)) &&
+                        isValidPolkadotAddress(
+                          tokensValues[index].walletAddress
+                        ) &&
+                        parseInt(v, 10) > 0) ||
+                      'Minimum is zero'
+                    );
+                  },
                   setValueAs: (tokens) => {
                     const bnTokens = new BN(tokens);
                     return bnTokens.mul(new BN(DAO_UNITS));
