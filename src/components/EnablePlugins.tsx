@@ -1,11 +1,13 @@
 // import useGenesisDao from '@/hooks/useGenesisDao';
 import Modal from 'antd/lib/modal';
 import cn from 'classnames';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
+import useGenesisDao from '@/hooks/useGenesisDao';
 import useGenesisStore from '@/stores/genesisStore';
+import { TxnResponse } from '@/types/response';
 
 interface EnablePluginFormValues {}
 
@@ -13,26 +15,64 @@ const EnablePlugins = () => {
   const [isOpen, setIsOpen] = useState(false);
   const formMethods = useForm<EnablePluginFormValues>();
   const [hasExtension, setHasExtension] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { handleSubmit } = formMethods;
 
-  const [currentWalletAccount] = useGenesisStore((s) => [
+  const [
+    currentWalletAccount,
+    currentDao,
+    apiConnection,
+    createApiConnection,
+    addTxnNotification,
+    fetchDaoFromDB,
+  ] = useGenesisStore((s) => [
     s.currentWalletAccount,
+    s.currentDao,
+    s.apiConnection,
+    s.createApiConnection,
+    s.addTxnNotification,
+    s.fetchDaoFromDB,
   ]);
+
+  const { initializeContracts } = useGenesisDao();
 
   const handleEnablePlugin = () => {
     setIsOpen(true);
   };
 
-  const loading = false;
-
   const onClose = () => {
     setIsOpen(false);
+    setLoading(false);
   };
 
-  const onSubmit: SubmitHandler<EnablePluginFormValues> = () => {
+  const onSubmit: SubmitHandler<EnablePluginFormValues> = async () => {
     if (!hasExtension) {
-      setHasExtension(true);
+      try {
+        setLoading(true);
+        if (currentDao) {
+          const daoMetadata = await initializeContracts(currentDao.daoId);
+
+          setHasExtension(!!daoMetadata?.ink_registry_contract);
+          fetchDaoFromDB(currentDao.daoId);
+
+          addTxnNotification({
+            title: `${TxnResponse.Success}`,
+            message: `${currentDao.daoName} connected to ink!`,
+            type: TxnResponse.Success,
+            timestamp: Date.now(),
+          });
+        }
+      } catch (ex) {
+        addTxnNotification({
+          title: `${TxnResponse.Error}`,
+          message: `Error connecting ${currentDao?.daoName} to ink!`,
+          type: TxnResponse.Error,
+          timestamp: Date.now(),
+        });
+      } finally {
+        setLoading(false);
+      }
     } else {
       onClose();
     }
@@ -62,12 +102,24 @@ const EnablePlugins = () => {
     [hasExtension]
   );
 
+  useEffect(() => {
+    if (!apiConnection) {
+      createApiConnection();
+    }
+    // eslint-disable-next-line
+  }, [apiConnection]);
+
+  useEffect(() => {
+    setHasExtension(!!currentDao?.inkRegistryContract);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(currentDao)]);
+
   return (
     <>
       <div className='flex justify-center'>
         <button
           className={`btn btn-primary w-[180px] ${loading ? 'loading' : ''}`}
-          disabled={!currentWalletAccount}
+          disabled={!currentWalletAccount || !!currentDao?.inkRegistryContract}
           onClick={handleEnablePlugin}>
           Enable Plugins
         </button>
@@ -88,6 +140,7 @@ const EnablePlugins = () => {
             <div className='w-full space-y-8'>{descriptionText}</div>
             <div className='mt-10 flex w-full gap-2'>
               <button
+                type='button'
                 className={cn('btn mr-3 w-1/2 bg-white')}
                 onClick={onClose}
                 disabled={loading}>

@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
-    "@polkadot/api": "^9.11.1",
+    "@polkadot/api": "^10.11.2",
+    "@polkadot/api-contract": "^10.11.2",
     "@polkadot/keyring": "^10.2.3",
     "@polkadot/networks": "^10.2.3",
     "@polkadot/types": "^9.11.1",

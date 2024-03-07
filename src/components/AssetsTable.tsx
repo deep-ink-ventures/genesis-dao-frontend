@@ -80,7 +80,9 @@ const AssetItemRow = ({
           ? stringShorten(assetHolding.delegateAddress)
           : '-'}
       </span>
-      <span className='my-auto'>-</span>
+      <span className='my-auto'>
+        {assetHolding?.voteEscrow?.length ? 'In Escrow' : '-'}
+      </span>
       <span className='my-auto'>
         {uiTokens(
           assetHolding.balance,

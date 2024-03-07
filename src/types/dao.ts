@@ -27,6 +27,10 @@ export interface DaoDetail {
   numberOfTokenHolders: number | null;
   numberOfOpenProposals: number | null;
   mostRecentProposals: string[] | null;
+  inkAssetContract: string | null;
+  inkRegistryContract: string | null;
+  inkVestingWalletContract: string | null;
+  inkVoteEscrowContract: string | null;
 }
 
 export interface BasicDaoInfo {

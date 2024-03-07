@@ -18,6 +18,10 @@ export interface RawDao {
   number_of_token_holders: number;
   number_of_open_proposals: number;
   most_recent_proposals: string[];
+  ink_asset_contract: string;
+  ink_registry_contract: string;
+  ink_vesting_wallet_contract: string;
+  ink_vote_escrow_contract: string;
 }
 
 export interface Metadata {
@@ -47,6 +51,11 @@ export interface ListDaosQueryParams {
   offset?: number;
   ordering?: string;
   search?: string;
+}
+
+export interface InitializeContractsParams {
+  daoId: string;
+  validatedSignature: string;
 }
 
 const get = async (daoId: string) => {
@@ -79,7 +88,30 @@ const list = async (params?: ListDaosQueryParams) => {
   return objResponse as Paginated<RawDao[]>;
 };
 
+const initializeContracts = async ({
+  daoId,
+  validatedSignature,
+}: InitializeContractsParams) => {
+  try {
+    const response = await fetch(
+      `${SERVICE_URL}/daos/${daoId}/initiate-contracts/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Signature: validatedSignature,
+        },
+      }
+    );
+    const obj = await response.json();
+    return obj;
+  } catch (ex) {
+    throw new Error('Cannot initiate dao contracts');
+  }
+};
+
 export const DaoService = {
   get,
   list,
+  initializeContracts,
 };
